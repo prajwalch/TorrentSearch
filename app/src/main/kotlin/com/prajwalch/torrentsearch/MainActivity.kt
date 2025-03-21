@@ -49,13 +49,12 @@ fun App() {
 
 @Composable
 fun MainLayout() {
-    val (searchTerm, setSearchTerm) = remember { mutableStateOf("") }
+    val searchEngine = SearchEngine()
+    val (query, setQuery) = remember { mutableStateOf("") }
 
-    SearchBox(onSubmit = { setSearchTerm(it) })
-    Text(searchTerm)
+    SearchBox(onSubmit = { setQuery(it) })
 
-    val torrents = listOf(Torrent(), Torrent(), Torrent())
-
+    val torrents = if (query.isEmpty()) emptyList() else searchEngine.search(query).orEmpty()
     for (torrent in torrents) {
         TorrentListItem(torrent, onClick = {})
     }
