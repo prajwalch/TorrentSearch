@@ -4,13 +4,26 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
+import androidx.compose.material3.Button
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import com.prajwalch.torrentsearch.ui.theme.TorrentSearchTheme
 
 class MainActivity : ComponentActivity() {
@@ -18,30 +31,69 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            TorrentSearchTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Greeting(
-                        name = "Android",
-                        modifier = Modifier.padding(innerPadding)
-                    )
-                }
+            App()
+        }
+    }
+}
+
+@Composable
+fun App() {
+    TorrentSearchTheme {
+        Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
+            Column(modifier = Modifier.padding(innerPadding)) {
+                MainLayout()
             }
         }
     }
 }
 
 @Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
+fun MainLayout() {
+    val (searchTerm, setSearchTerm) = remember { mutableStateOf("") }
+
+    SearchBox(onSubmit = { setSearchTerm(it) })
+    Text(searchTerm)
+
+    val torrents = listOf(Torrent(), Torrent(), Torrent())
+
+    for (torrent in torrents) {
+        TorrentListItem(torrent, onClick = {})
+    }
 }
 
-@Preview(showBackground = true)
 @Composable
-fun GreetingPreview() {
-    TorrentSearchTheme {
-        Greeting("Android")
+fun SearchBox(onSubmit: (String) -> Unit, modifier: Modifier = Modifier) {
+    val (value, setValue) = remember { mutableStateOf("") }
+
+    Row(modifier) {
+        TextField(value = value, onValueChange = { setValue(it) })
+        Spacer(modifier = Modifier.width(10.dp))
+        Button(onClick = { onSubmit(value) }) { Text("Search") }
     }
+}
+
+@Composable
+fun TorrentListItem(torrent: Torrent, onClick: () -> Unit, modifier: Modifier = Modifier) {
+    Column(modifier = modifier.clickable(onClick = onClick)) {
+        Text(torrent.name)
+        TorrentMetadataInfo(torrent)
+        HorizontalDivider()
+    }
+}
+
+@Composable
+fun TorrentMetadataInfo(torrent: Torrent) {
+    Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+        Text("Size ${torrent.size}")
+        Text("↑ Seeds: ${torrent.seeds} ↓ Peers: ${torrent.peers}")
+    }
+}
+
+@Preview(
+    showBackground = true,
+    showSystemUi = true,
+)
+@Composable
+fun MainPreview() {
+    App()
 }
