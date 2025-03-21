@@ -51,10 +51,17 @@ fun App() {
 fun MainLayout() {
     val searchEngine = SearchEngine()
     val (query, setQuery) = remember { mutableStateOf("") }
+    val (contentType, setContentType) = remember { mutableStateOf(ContentType.All) }
 
     SearchBox(onSubmit = { setQuery(it) })
+    ContentTypeNavBar(onSelect = { setContentType(it) })
 
-    val torrents = if (query.isEmpty()) emptyList() else searchEngine.search(query).orEmpty()
+    val torrents = if (query.isEmpty()) {
+        emptyList()
+    } else {
+        searchEngine.search(query, contentType).orEmpty()
+    }
+
     for (torrent in torrents) {
         TorrentListItem(torrent, onClick = {})
     }
@@ -68,6 +75,20 @@ fun SearchBox(onSubmit: (String) -> Unit, modifier: Modifier = Modifier) {
         TextField(value = value, onValueChange = { setValue(it) })
         Spacer(modifier = Modifier.width(10.dp))
         Button(onClick = { onSubmit(value) }) { Text("Search") }
+    }
+}
+
+@Composable
+fun ContentTypeNavBar(onSelect: (ContentType) -> Unit) {
+    // FIXME: Make it scrollable.
+    Row {
+        for (contentType in ContentType.entries) {
+            Text(
+                text = contentType.toString(),
+                modifier = Modifier.clickable(onClick = { onSelect(contentType) })
+            )
+            Spacer(Modifier.width(5.dp))
+        }
     }
 }
 
