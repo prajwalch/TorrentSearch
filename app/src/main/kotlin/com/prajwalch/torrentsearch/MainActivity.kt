@@ -107,6 +107,7 @@ fun ContentTypeNavBarItem(label: String, isActive: Boolean, onClick: () -> Unit)
         text = label,
         modifier = Modifier.clickable(onClick = onClick),
         color = if (isActive) Color.Unspecified else Color.Gray,
+        fontSize = 14.sp
     )
 }
 
