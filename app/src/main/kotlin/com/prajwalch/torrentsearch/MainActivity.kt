@@ -99,9 +99,11 @@ fun ContentTypeNavBar(onSelect: (ContentType) -> Unit) {
 
 @Composable
 fun TorrentListItem(torrent: Torrent, onClick: () -> Unit, modifier: Modifier = Modifier) {
-    Column(modifier = modifier
-        .padding(10.dp)
-        .clickable(onClick = onClick)) {
+    Column(
+        modifier = modifier
+            .padding(10.dp)
+            .clickable(onClick = onClick)
+    ) {
         Text(torrent.name, fontSize = 16.sp, fontWeight = FontWeight.Bold)
         Spacer(Modifier.height(2.dp))
         TorrentMetadataInfo(torrent)
