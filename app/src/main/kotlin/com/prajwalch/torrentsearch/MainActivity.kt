@@ -55,7 +55,7 @@ fun App() {
 
 @Composable
 fun MainLayout() {
-    val searchEngine = remember { SearchEngine() }
+    val torrentsRepository = remember { TorrentsRepository() }
     var query by remember { mutableStateOf("") }
     var contentType by remember { mutableStateOf(ContentType.All) }
 
@@ -65,7 +65,7 @@ fun MainLayout() {
     val torrents = if (query.isEmpty()) {
         emptyList()
     } else {
-        searchEngine.search(query, contentType).orEmpty()
+        torrentsRepository.search(query, contentType).orEmpty()
     }
 
     for (torrent in torrents) {

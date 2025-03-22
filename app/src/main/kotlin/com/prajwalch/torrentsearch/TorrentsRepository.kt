@@ -2,7 +2,7 @@ package com.prajwalch.torrentsearch
 
 typealias SearchResults = List<Torrent>
 
-class SearchEngine {
+class TorrentsRepository {
     /** List of built-in providers. */
     private val providers: List<Provider> = emptyList()
 
