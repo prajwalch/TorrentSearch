@@ -1,16 +1,14 @@
 package com.prajwalch.torrentsearch
 
-typealias SearchResults = List<Torrent>
-
 class TorrentsRepository {
     /** List of built-in providers. */
     private val providers: List<Provider> = emptyList()
 
     /** Short-lived cache. */
-    private val cache: MutableMap<QueryId, SearchResults> = mutableMapOf()
+    private val cache: MutableMap<QueryId, List<Torrent>> = mutableMapOf()
 
     /** Starts a search for the given query. */
-    fun search(query: String, contentType: ContentType = ContentType.All): SearchResults? {
+    fun search(query: String, contentType: ContentType = ContentType.All): List<Torrent>? {
         val queryId = this.generateQueryId(query)
 
         if (this.cache.containsKey(queryId)) {
@@ -49,7 +47,7 @@ interface Provider {
     fun name(): String
 
     /** Performs a search and returns the results. */
-    fun fetch(query: String, contentType: ContentType): SearchResults
+    fun fetch(query: String, contentType: ContentType): List<Torrent>
 }
 
 /** The rank of a provider, indicating its priority and quality.
