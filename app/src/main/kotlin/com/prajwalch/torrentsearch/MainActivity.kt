@@ -25,6 +25,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -85,16 +86,28 @@ fun SearchBox(onSubmit: (String) -> Unit, modifier: Modifier = Modifier) {
 
 @Composable
 fun ContentTypeNavBar(onSelect: (ContentType) -> Unit) {
+    var activeContentType by remember { mutableStateOf(ContentType.All) }
+
     // FIXME: Make it scrollable.
-    Row {
-        for (contentType in ContentType.entries) {
-            Text(
-                text = contentType.toString(),
-                modifier = Modifier.clickable(onClick = { onSelect(contentType) })
-            )
-            Spacer(Modifier.width(5.dp))
-        }
+    Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceAround) {
+        for (contentType in ContentType.entries) ContentTypeNavBarItem(
+            label = contentType.toString(),
+            isActive = activeContentType == contentType,
+            onClick = {
+                activeContentType = contentType
+                onSelect(contentType)
+            }
+        )
     }
+}
+
+@Composable
+fun ContentTypeNavBarItem(label: String, isActive: Boolean, onClick: () -> Unit) {
+    Text(
+        text = label,
+        modifier = Modifier.clickable(onClick = onClick),
+        color = if (isActive) Color.Unspecified else Color.Gray,
+    )
 }
 
 @Composable
