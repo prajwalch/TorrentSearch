@@ -19,8 +19,10 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -49,12 +51,12 @@ fun App() {
 
 @Composable
 fun MainLayout() {
-    val searchEngine = SearchEngine()
-    val (query, setQuery) = remember { mutableStateOf("") }
-    val (contentType, setContentType) = remember { mutableStateOf(ContentType.All) }
+    val searchEngine = remember { SearchEngine() }
+    var query by remember { mutableStateOf("") }
+    var contentType by remember { mutableStateOf(ContentType.All) }
 
-    SearchBox(onSubmit = { setQuery(it) })
-    ContentTypeNavBar(onSelect = { setContentType(it) })
+    SearchBox(onSubmit = { query = it })
+    ContentTypeNavBar(onSelect = { contentType = it })
 
     val torrents = if (query.isEmpty()) {
         emptyList()
@@ -69,10 +71,10 @@ fun MainLayout() {
 
 @Composable
 fun SearchBox(onSubmit: (String) -> Unit, modifier: Modifier = Modifier) {
-    val (value, setValue) = remember { mutableStateOf("") }
+    var value by remember { mutableStateOf("") }
 
     Row(modifier) {
-        TextField(value = value, onValueChange = { setValue(it) })
+        TextField(value = value, onValueChange = { value = it })
         Spacer(modifier = Modifier.width(10.dp))
         Button(onClick = { onSubmit(value) }) { Text("Search") }
     }
