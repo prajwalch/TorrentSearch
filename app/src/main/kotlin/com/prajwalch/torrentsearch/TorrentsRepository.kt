@@ -1,25 +1,19 @@
 package com.prajwalch.torrentsearch
 
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.coroutineScope
+
 class TorrentsRepository {
     /** List of built-in providers. */
     private val providers: List<Provider> = emptyList()
 
-    /** Short-lived cache. */
-    private val cache: MutableMap<QueryId, List<Torrent>> = mutableMapOf()
-
     /** Starts a search for the given query. */
-    fun search(query: String, contentType: ContentType = ContentType.All): List<Torrent>? {
-        val queryId = this.generateQueryId(query)
-
-        if (this.cache.containsKey(queryId)) {
-            return this.cache.get(queryId)
+    suspend fun search(query: String, contentType: ContentType = ContentType.All): List<Torrent> =
+        coroutineScope {
+            val all = providers.map { async { it.fetch(query, contentType) } }
+            return@coroutineScope all.awaitAll().flatten()
         }
-
-        return this.providers.flatMap { provider -> provider.fetch(query, contentType) }
-    }
-
-    /** Generates query ID from the given query and the current search context. */
-    private fun generateQueryId(query: String) = QueryId(query.hashCode().toUInt())
 }
 
 /** A results provider.
@@ -47,7 +41,7 @@ interface Provider {
     fun name(): String
 
     /** Performs a search and returns the results. */
-    fun fetch(query: String, contentType: ContentType): List<Torrent>
+    suspend fun fetch(query: String, contentType: ContentType): List<Torrent>
 }
 
 /** The rank of a provider, indicating its priority and quality.
@@ -119,9 +113,6 @@ data class Rank(private val rank: UInt) {
     }
 }
 
-/** Identifier of query for the cache purpose. */
-private data class QueryId(private val hash: UInt)
-
 /** A type of content to search for. */
 enum class ContentType {
     All,
@@ -134,4 +125,3 @@ enum class ContentType {
     Porn,
     Series,
 }
-
