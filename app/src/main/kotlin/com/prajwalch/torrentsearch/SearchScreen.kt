@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
@@ -24,14 +25,16 @@ import androidx.compose.ui.unit.sp
 
 @Composable
 fun SearchScreen(viewModel: SearchScreenViewModel) {
-    val query by viewModel.query.collectAsState()
-    val contentType by viewModel.activeContentType.collectAsState()
-    val results by viewModel.results.collectAsState()
+    val uiState by viewModel.uiState.collectAsState()
 
-    SearchBox(query, onQueryChange = viewModel::setQuery, onSubmit = viewModel::onSubmit)
-    ContentTypeNavBar(contentType, onSelect = viewModel::setContentType)
+    SearchBox(uiState.query, onQueryChange = viewModel::setQuery, onSubmit = viewModel::onSubmit)
+    ContentTypeNavBar(uiState.contentType, onSelect = viewModel::setContentType)
 
-    for (torrent in results) {
+    if (uiState.isLoading) {
+        CircularProgressIndicator()
+    }
+
+    for (torrent in uiState.results) {
         TorrentListItem(torrent, onClick = {})
     }
 }
