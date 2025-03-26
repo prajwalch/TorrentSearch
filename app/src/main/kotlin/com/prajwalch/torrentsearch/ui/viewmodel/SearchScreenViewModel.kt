@@ -1,7 +1,11 @@
-package com.prajwalch.torrentsearch
+package com.prajwalch.torrentsearch.ui.viewmodel
+
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.prajwalch.torrentsearch.data.ContentType
+import com.prajwalch.torrentsearch.data.Torrent
+import com.prajwalch.torrentsearch.data.TorrentsRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update

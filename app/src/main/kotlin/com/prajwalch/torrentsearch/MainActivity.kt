@@ -12,26 +12,29 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+
+import com.prajwalch.torrentsearch.ui.screens.SearchScreen
 import com.prajwalch.torrentsearch.ui.theme.TorrentSearchTheme
+import com.prajwalch.torrentsearch.ui.viewmodel.SearchScreenViewModel
 
 class MainActivity : ComponentActivity() {
-    val viewModel: SearchScreenViewModel by viewModels()
+    val searchScreenViewModel: SearchScreenViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            App(viewModel)
+            App(searchScreenViewModel)
         }
     }
 }
 
 @Composable
-fun App(viewModel: SearchScreenViewModel) {
+fun App(searchScreenViewModel: SearchScreenViewModel) {
     TorrentSearchTheme {
         Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
             Column(modifier = Modifier.padding(innerPadding)) {
-                SearchScreen(viewModel)
+                SearchScreen(searchScreenViewModel)
             }
         }
     }
