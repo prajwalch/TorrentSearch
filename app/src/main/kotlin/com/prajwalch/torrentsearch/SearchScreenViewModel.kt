@@ -17,26 +17,15 @@ data class SearchScreenUIState(
 class SearchScreenViewModel : ViewModel() {
     private val repository = TorrentsRepository()
 
-    private val _query = MutableStateFlow("")
-    val query = _query.asStateFlow()
-
-    private val _contentType = MutableStateFlow(ContentType.All)
-    val activeContentType = _contentType.asStateFlow()
-
-    private val _results = MutableStateFlow(emptyList<Torrent>())
-    val results = _results.asStateFlow()
-
     private val _uiState = MutableStateFlow(SearchScreenUIState())
     val uiState = _uiState.asStateFlow()
 
     fun setQuery(query: String) {
         _uiState.update { it.copy(query = query) }
-//        _query.value = query
     }
 
     fun setContentType(contentType: ContentType) {
         _uiState.update { it.copy(contentType = contentType) }
-//        _contentType.value = contentType
     }
 
     fun onSubmit() {
