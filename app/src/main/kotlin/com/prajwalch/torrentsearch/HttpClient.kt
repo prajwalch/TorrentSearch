@@ -11,8 +11,8 @@ class HttpClient {
     private val innerClient = HttpClient(CIO)
 
     suspend fun getJson(url: String): JsonElement {
-        innerClient.use { client ->
-            return Json.parseToJsonElement(client.get(url).bodyAsText())
-        }
+        val response = innerClient.get(url).bodyAsText()
+        println("url=$url, response=$response")
+        return Json.parseToJsonElement(response)
     }
 }
