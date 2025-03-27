@@ -202,6 +202,6 @@ data class FileSize(val value: Float = 0.0F, val unit: String = "B") {
     }
 
     override fun toString(): String {
-        return "$value $unit"
+        return "${"%.2f".format(value)} $unit"
     }
 }
