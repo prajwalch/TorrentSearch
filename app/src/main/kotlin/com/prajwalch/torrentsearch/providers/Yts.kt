@@ -53,11 +53,11 @@ class Yts : Provider {
         val url = "$baseURL$path$query"
 
         val response = context.httpClient.getJson(url)
-        val torrents = response.jsonObject["data"]!!.jsonObject["movies"]!!.jsonArray.flatMap {
+        val torrents = response.jsonObject["data"]!!.jsonObject["movies"]?.jsonArray?.flatMap {
             parseMovieObject(it.jsonObject)
         }
 
-        return torrents
+        return torrents.orEmpty()
     }
 
     private fun parseMovieObject(jsonObject: JsonObject): List<Torrent> {
