@@ -7,10 +7,12 @@ import io.ktor.client.statement.bodyAsText
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonElement
 
-internal class HttpClient {
+class HttpClient {
     private val innerClient = HttpClient(CIO)
 
     suspend fun getJson(url: String): JsonElement {
-        return Json.parseToJsonElement(innerClient.get(url).bodyAsText())
+        innerClient.use { client ->
+            return Json.parseToJsonElement(client.get(url).bodyAsText())
+        }
     }
 }
