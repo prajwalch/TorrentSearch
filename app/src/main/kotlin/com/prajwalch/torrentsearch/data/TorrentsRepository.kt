@@ -1,5 +1,6 @@
 package com.prajwalch.torrentsearch.data
 
+import com.prajwalch.torrentsearch.HttpClient
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
@@ -8,10 +9,14 @@ class TorrentsRepository {
     /** List of built-in providers. */
     private val providers: List<Provider> = emptyList()
 
+    /** The main client for making request. */
+    private val httpClient = HttpClient()
+
     /** Starts a search for the given query. */
     suspend fun search(query: String, contentType: ContentType = ContentType.All): List<Torrent> =
         coroutineScope {
-            val all = providers.map { async { it.fetch(query, contentType) } }
+            val context = SearchContext(contentType, httpClient)
+            val all = providers.map { async { it.fetch(query, context) } }
             return@coroutineScope all.awaitAll().flatten()
         }
 }
@@ -41,7 +46,7 @@ interface Provider {
     fun name(): String
 
     /** Performs a search and returns the results. */
-    suspend fun fetch(query: String, contentType: ContentType): List<Torrent>
+    suspend fun fetch(query: String, context: SearchContext): List<Torrent>
 }
 
 /** The rank of a provider, indicating its priority and quality.
@@ -112,6 +117,12 @@ data class Rank(private val rank: UInt) {
         fun lowest(value: UInt) = Rank(value.coerceIn(91u, 100u))
     }
 }
+
+/** The search context. */
+data class SearchContext(
+    val contentType: ContentType,
+    val httpClient: HttpClient
+)
 
 /** A type of content to search for. */
 enum class ContentType {
