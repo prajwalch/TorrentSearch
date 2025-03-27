@@ -15,12 +15,10 @@ class TorrentsRepository {
     private val httpClient = HttpClient()
 
     /** Starts a search for the given query. */
-    suspend fun search(query: String, contentType: ContentType = ContentType.All): List<Torrent> =
-        coroutineScope {
-            val context = SearchContext(contentType, httpClient)
-            val all = providers.map { async { it.fetch(query, context) } }
-            return@coroutineScope all.awaitAll().flatten()
-        }
+    suspend fun search(query: String, contentType: ContentType): List<Torrent> = coroutineScope {
+        val context = SearchContext(contentType, httpClient)
+        providers.map { async { it.fetch(query, context) } }.awaitAll().flatten()
+    }
 }
 
 /** A results provider.
