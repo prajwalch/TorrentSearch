@@ -1,13 +1,15 @@
 package com.prajwalch.torrentsearch.data
 
 import com.prajwalch.torrentsearch.HttpClient
+import com.prajwalch.torrentsearch.providers.ThePirateBay
+
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
 
 class TorrentsRepository {
     /** List of built-in providers. */
-    private val providers: List<Provider> = emptyList()
+    private val providers: List<Provider> = listOf(ThePirateBay())
 
     /** The main client for making request. */
     private val httpClient = HttpClient()
