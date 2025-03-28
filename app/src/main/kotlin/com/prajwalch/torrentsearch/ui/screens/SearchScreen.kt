@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
@@ -51,7 +52,6 @@ fun SearchBox(
     onQueryChange: (String) -> Unit,
     onSubmit: () -> Unit,
 ) {
-
     Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceAround,
@@ -62,6 +62,7 @@ fun SearchBox(
             onValueChange = onQueryChange,
             placeholder = { Text("Search...") },
             singleLine = true,
+            keyboardActions = KeyboardActions(onDone = { onSubmit() })
         )
         Button(onClick = onSubmit) { Text("Search") }
     }
