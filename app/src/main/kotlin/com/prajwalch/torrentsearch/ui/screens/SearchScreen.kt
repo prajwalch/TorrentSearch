@@ -64,7 +64,9 @@ fun SearchScreen(viewModel: SearchScreenViewModel, onTorrentSelect: (Torrent) ->
 fun SearchBox(query: String, onQueryChange: (String) -> Unit, onSubmit: () -> Unit) {
     val colors = TextFieldDefaults.colors(
         unfocusedContainerColor = Color.Transparent,
-        focusedContainerColor = Color.Transparent
+        focusedContainerColor = Color.Transparent,
+        unfocusedIndicatorColor = Color.Transparent,
+        focusedIndicatorColor = Color.Unspecified,
     )
 
     TextField(
