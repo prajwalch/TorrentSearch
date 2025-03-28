@@ -173,10 +173,9 @@ data class Torrent(
         )
         // For example: &tr=<trackerurl>&tr=<tracker2url>
         val formattedTrackers = trackers.joinToString(
-            separator = "",
-            prefix = "&tr="
+            separator = "&tr=",
         )
-        return "magnet:?xt:urn:btih:${this.hash}$formattedTrackers"
+        return "magnet:?xt=urn:btih:${this.hash}&tr=$formattedTrackers"
     }
 }
 
