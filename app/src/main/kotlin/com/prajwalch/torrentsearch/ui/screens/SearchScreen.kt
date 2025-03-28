@@ -29,7 +29,7 @@ import com.prajwalch.torrentsearch.data.Torrent
 import com.prajwalch.torrentsearch.ui.viewmodel.SearchScreenViewModel
 
 @Composable
-fun SearchScreen(viewModel: SearchScreenViewModel) {
+fun SearchScreen(viewModel: SearchScreenViewModel, onTorrentSelect: (Torrent) -> Unit) {
     val uiState by viewModel.uiState.collectAsState()
 
     SearchBox(uiState.query, onQueryChange = viewModel::setQuery, onSubmit = viewModel::onSubmit)
@@ -40,7 +40,7 @@ fun SearchScreen(viewModel: SearchScreenViewModel) {
     }
 
     LazyColumn {
-        items(uiState.results) { TorrentListItem(it, onClick = {}) }
+        items(uiState.results) { TorrentListItem(it, onClick = { onTorrentSelect(it) }) }
     }
 }
 
