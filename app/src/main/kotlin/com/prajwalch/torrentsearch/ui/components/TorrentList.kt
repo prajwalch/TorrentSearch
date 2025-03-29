@@ -46,10 +46,10 @@ private fun TorrentListItem(torrent: Torrent, onClick: () -> Unit, modifier: Mod
 
 @Composable
 private fun TorrentMetadataInfo(torrent: Torrent) {
-    val color = Color.LightGray
-    val sizeAndSeedsBg = Color.Gray.copy(alpha = 0.2f)
+    val color = Color.Gray
+    val sizeAndSeedsBg = Color.Gray.copy(alpha = 0.1f)
     val fontSize = 11.sp
-    val spaceWidth = Modifier.width(10.dp)
+    val spaceWidth = Modifier.width(8.dp)
 
     Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
         Badge(
@@ -72,7 +72,7 @@ private fun TorrentMetadataInfo(torrent: Torrent) {
             text = torrent.providerName,
             color = color,
             fontSize = fontSize,
-            background = Color.Gray.copy(alpha = 0.5f)
+            background = Color.Gray.copy(alpha = 0.4f)
         )
     }
 }
