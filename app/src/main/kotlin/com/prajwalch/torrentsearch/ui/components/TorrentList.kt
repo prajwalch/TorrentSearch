@@ -7,13 +7,18 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.filled.Share
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.prajwalch.torrentsearch.data.Torrent
@@ -32,8 +37,8 @@ private fun TorrentListItem(torrent: Torrent, onClick: () -> Unit, modifier: Mod
             .clickable(onClick = onClick)
             .padding(10.dp)
     ) {
-        Text(torrent.name, fontSize = 16.sp, fontWeight = FontWeight.Bold)
-        Spacer(Modifier.height(2.dp))
+        Text(torrent.name, fontSize = 16.sp)
+        Spacer(Modifier.height(8.dp))
         TorrentMetadataInfo(torrent)
     }
     HorizontalDivider()
@@ -41,11 +46,33 @@ private fun TorrentListItem(torrent: Torrent, onClick: () -> Unit, modifier: Mod
 
 @Composable
 private fun TorrentMetadataInfo(torrent: Torrent) {
-    val fontSize = 14.sp
+    val color = Color.LightGray
+    val sizeAndSeedsBg = Color.Gray.copy(alpha = 0.2f)
+    val fontSize = 11.sp
+    val spaceWidth = Modifier.width(10.dp)
 
-    Row(modifier = Modifier.fillMaxWidth()) {
-        Text("Size ${torrent.size}", fontSize = fontSize)
-        Text("↑ Seeds: ${torrent.seeds} ↓ Peers: ${torrent.peers}", fontSize = fontSize)
-        Badge(torrent.providerName)
+    Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+        Badge(
+            text = torrent.size.toString(),
+            icon = Icons.Default.Info,
+            color = color,
+            fontSize = fontSize,
+            background = sizeAndSeedsBg
+        )
+        Spacer(spaceWidth)
+        Badge(
+            text = "Seeds ${torrent.seeds}",
+            icon = Icons.Default.Share,
+            color = color,
+            fontSize = fontSize,
+            background = sizeAndSeedsBg
+        )
+        Spacer(spaceWidth)
+        Badge(
+            text = torrent.providerName,
+            color = color,
+            fontSize = fontSize,
+            background = Color.Gray.copy(alpha = 0.5f)
+        )
     }
 }
