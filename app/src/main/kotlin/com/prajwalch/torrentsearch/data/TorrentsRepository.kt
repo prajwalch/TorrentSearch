@@ -144,7 +144,8 @@ data class Torrent(
     val hash: String = "0000",
     val size: FileSize = FileSize(),
     val seeds: UInt = 0U,
-    val peers: UInt = 0U
+    val peers: UInt = 0U,
+    val providerName: String = "default"
 ) {
     /** Constructs and return the magnet URL of this torrent */
     fun magnetURL(): String {

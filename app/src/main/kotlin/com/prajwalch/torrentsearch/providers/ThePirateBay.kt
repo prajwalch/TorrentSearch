@@ -45,6 +45,6 @@ class ThePirateBay : Provider {
         val seeds = jsonObject["seeders"]!!.toString().trim('"').toUInt()
         val peers = jsonObject["leechers"]!!.toString().trim('"').toUInt()
 
-        return Torrent(name, hash, size, seeds, peers)
+        return Torrent(name, hash, size, seeds, peers, providerName = name())
     }
 }

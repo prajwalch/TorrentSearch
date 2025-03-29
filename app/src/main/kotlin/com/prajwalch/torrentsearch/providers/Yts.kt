@@ -79,6 +79,6 @@ class Yts : Provider {
         val codec = jsonObject["video_codec"]!!.toString().trim('"')
 
         val name = "$title [$quality] [$type] [$codec]"
-        return Torrent(name, hash, size, seeds, peers)
+        return Torrent(name, hash, size, seeds, peers, providerName = name())
     }
 }
