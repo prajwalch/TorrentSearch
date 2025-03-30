@@ -17,6 +17,7 @@ data class SearchScreenUIState(
     val contentType: ContentType = ContentType.All,
     val results: List<Torrent> = emptyList(),
     val isLoading: Boolean = false,
+    val isInternetError: Boolean = false,
 )
 
 class SearchScreenViewModel : ViewModel() {
@@ -34,18 +35,26 @@ class SearchScreenViewModel : ViewModel() {
     }
 
     fun onSubmit() {
-        val query = _uiState.value.query
-        val contentType = _uiState.value.contentType
-
-        if (query.isEmpty()) {
+        if (_uiState.value.query.isEmpty()) {
             return
         }
 
         viewModelScope.launch {
-            _uiState.update { it.copy(isLoading = true) }
+            updateUIState { it.copy(isLoading = true) }
 
-            val results = repository.search(query, contentType)
-            _uiState.update { it.copy(results = results, isLoading = false) }
+            if (!repository.isInternetAvailable()) {
+                updateUIState { it.copy(isLoading = false, isInternetError = true) }
+                return@launch
+            }
+
+            val results = repository.search(_uiState.value.query, _uiState.value.contentType)
+            updateUIState {
+                it.copy(results = results, isLoading = false, isInternetError = false)
+            }
         }
+    }
+
+    private inline fun updateUIState(update: (SearchScreenUIState) -> SearchScreenUIState) {
+        _uiState.update(function = update)
     }
 }

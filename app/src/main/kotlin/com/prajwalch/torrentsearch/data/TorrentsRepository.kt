@@ -20,6 +20,9 @@ class TorrentsRepository {
         val context = SearchContext(contentType, httpClient)
         providers.map { async { it.fetch(query, context) } }.awaitAll().flatten()
     }
+
+    /** Returns `true` is the internet is available to perform a `search()`. */
+    suspend fun isInternetAvailable(): Boolean = coroutineScope { httpClient.isInternetAvailable() }
 }
 
 /** A results provider.

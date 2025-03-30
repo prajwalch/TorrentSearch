@@ -16,4 +16,13 @@ class HttpClient {
         println("url=$url, response=$response")
         return Json.parseToJsonElement(response)
     }
+
+    suspend fun isInternetAvailable(): Boolean {
+        return try {
+            val response = innerClient.get("https://clients3.google.com/generate_204")
+            response.status.value == 204
+        } catch (_: Exception) {
+            false
+        }
+    }
 }
