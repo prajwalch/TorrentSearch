@@ -33,7 +33,14 @@ fun SearchScreen(viewModel: SearchScreenViewModel, onTorrentSelect: (Torrent) ->
     HorizontalDivider()
 
     if (uiState.isLoading) {
-        CircularProgressIndicator()
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 20.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            CircularProgressIndicator()
+        }
         return
     }
 
