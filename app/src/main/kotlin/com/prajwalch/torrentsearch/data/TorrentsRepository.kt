@@ -16,8 +16,8 @@ class TorrentsRepository {
     private val httpClient = HttpClient()
 
     /** Starts a search for the given query. */
-    suspend fun search(query: String, contentType: ContentType): List<Torrent> = coroutineScope {
-        val context = SearchContext(contentType, httpClient)
+    suspend fun search(query: String, category: Category): List<Torrent> = coroutineScope {
+        val context = SearchContext(category, httpClient)
         providers.map { async { it.fetch(query, context) } }.awaitAll().flatten()
     }
 
@@ -40,11 +40,11 @@ interface Provider {
      */
     fun rank() = Rank.MEDIUM
 
-    /** Returns the content type the provider is specialized for, if any.
+    /** Returns the category the provider is specialized for, if any.
      *
-     * If `null` is returned, the provider will be used for all content types.
+     * If `null` is returned, the provider will be used for all categories.
      */
-    fun specializedContentType(): ContentType? = null
+    fun specializedCategory(): Category? = null
 
     /** Returns the name of the provider. */
     fun name(): String
@@ -63,7 +63,7 @@ interface Provider {
  *
  * ## Highest (`0-5`)
  *
- * Providers which are specialized for a specific content type and use an
+ * Providers which are specialized for a specific category and use an
  * official API of their data source fall into this range of ranks.
  *
  * Providers within this rank will be tried first and will be retried once
@@ -74,7 +74,7 @@ interface Provider {
  *
  * ## High (`6-40`)
  *
- * Providers which do not have a specific content type and use an official API
+ * Providers which do not have a specific category and use an official API
  * of their data source fall into this range of ranks.
  *
  * Providers in this rank are attempted if those in the highest rank either fail
@@ -83,7 +83,7 @@ interface Provider {
  * ## Medium (`41-90`)
  *
  * Providers which manually scrape results from a website and may or may not
- * be specialized for a specific content type fall into this range of ranks.
+ * be specialized for a specific category fall into this range of ranks.
  *
  * ## Lowest (`91-100`)
  *
@@ -124,12 +124,12 @@ data class Rank(private val rank: UInt) {
 
 /** The search context. */
 data class SearchContext(
-    val contentType: ContentType,
+    val category: Category,
     val httpClient: HttpClient
 )
 
-/** A type of content to search for. */
-enum class ContentType {
+/** Search category. */
+enum class Category {
     All,
     Anime,
     Apps,

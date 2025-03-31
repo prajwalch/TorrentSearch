@@ -18,34 +18,34 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.prajwalch.torrentsearch.data.ContentType
+import com.prajwalch.torrentsearch.data.Category
 
 @Composable
-fun ContentTypeNavBar(activeContentType: ContentType, onSelect: (ContentType) -> Unit) {
+fun CategoryNavBar(activeCategory: Category, onSelect: (Category) -> Unit) {
     LazyRow(
         modifier = Modifier.fillMaxWidth(),
         contentPadding = PaddingValues(5.dp),
         horizontalArrangement = Arrangement.Center,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        itemsIndexed(ContentType.entries.toList()) { index, contentType ->
+        itemsIndexed(Category.entries.toList()) { index, category ->
             // TODO: This is hack to add space between items.
             //       horizontalArrangement is not working.
             if (index != 0) {
                 Spacer(Modifier.width(10.dp))
             }
 
-            ContentTypeNavBarItem(
-                label = contentType.toString(),
-                isActive = activeContentType == contentType,
-                onClick = { onSelect(contentType) }
+            CategoryNavBarItem(
+                label = category.toString(),
+                isActive = activeCategory == category,
+                onClick = { onSelect(category) }
             )
         }
     }
 }
 
 @Composable
-private fun ContentTypeNavBarItem(label: String, isActive: Boolean, onClick: () -> Unit) {
+private fun CategoryNavBarItem(label: String, isActive: Boolean, onClick: () -> Unit) {
     FilterChip(
         selected = isActive,
         onClick = onClick,
@@ -53,7 +53,7 @@ private fun ContentTypeNavBarItem(label: String, isActive: Boolean, onClick: () 
         leadingIcon = {
             if (isActive) Icon(
                 imageVector = Icons.Default.Done,
-                contentDescription = "Selected content type",
+                contentDescription = "Selected category",
                 modifier = Modifier.Companion.size(FilterChipDefaults.IconSize)
             )
         },

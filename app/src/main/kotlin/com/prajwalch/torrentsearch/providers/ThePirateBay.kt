@@ -1,6 +1,6 @@
 package com.prajwalch.torrentsearch.providers
 
-import com.prajwalch.torrentsearch.data.ContentType
+import com.prajwalch.torrentsearch.data.Category
 import com.prajwalch.torrentsearch.data.FileSize
 import com.prajwalch.torrentsearch.data.Provider
 import com.prajwalch.torrentsearch.data.Rank
@@ -19,8 +19,8 @@ class ThePirateBay : Provider {
     override fun name() = "thepiratebay"
 
     override suspend fun fetch(query: String, context: SearchContext): List<Torrent> {
-        val contentTypeIndex = contentTypeIndex(context.contentType)
-        val url = "$url?q=$query&cat=$contentTypeIndex"
+        val categoryIndex = this@ThePirateBay.categoryIndex(context.category)
+        val url = "$url?q=$query&cat=$categoryIndex"
 
         val response = context.httpClient.getJson(url)
         val torrents = response?.let { it.jsonArray.map { it.jsonObject }.map(::parseJsonObject) }
@@ -28,14 +28,14 @@ class ThePirateBay : Provider {
         return torrents.orEmpty()
     }
 
-    fun contentTypeIndex(contentType: ContentType): UInt = when (contentType) {
-        ContentType.All, ContentType.Anime -> 0u
-        ContentType.Apps -> 300u
-        ContentType.Books -> 601u
-        ContentType.Games -> 400u
-        ContentType.Movies, ContentType.Series -> 200u
-        ContentType.Music -> 101u
-        ContentType.Porn -> 500u
+    fun categoryIndex(category: Category): UInt = when (category) {
+        Category.All, Category.Anime -> 0u
+        Category.Apps -> 300u
+        Category.Books -> 601u
+        Category.Games -> 400u
+        Category.Movies, Category.Series -> 200u
+        Category.Music -> 101u
+        Category.Porn -> 500u
     }
 
     fun parseJsonObject(jsonObject: JsonObject): Torrent {

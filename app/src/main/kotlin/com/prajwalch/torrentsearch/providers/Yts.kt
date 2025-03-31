@@ -1,6 +1,6 @@
 package com.prajwalch.torrentsearch.providers
 
-import com.prajwalch.torrentsearch.data.ContentType
+import com.prajwalch.torrentsearch.data.Category
 import com.prajwalch.torrentsearch.data.FileSize
 import com.prajwalch.torrentsearch.data.Provider
 import com.prajwalch.torrentsearch.data.Rank
@@ -19,7 +19,7 @@ class Yts : Provider {
 
     override fun rank() = Rank.Companion.highest(0u)
 
-    override fun specializedContentType(): ContentType? = ContentType.Movies
+    override fun specializedCategory(): Category? = Category.Movies
 
     override fun name() = "yts"
 

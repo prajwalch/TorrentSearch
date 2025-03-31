@@ -3,7 +3,7 @@ package com.prajwalch.torrentsearch.ui.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 
-import com.prajwalch.torrentsearch.data.ContentType
+import com.prajwalch.torrentsearch.data.Category
 import com.prajwalch.torrentsearch.data.Torrent
 import com.prajwalch.torrentsearch.data.TorrentsRepository
 
@@ -14,7 +14,7 @@ import kotlinx.coroutines.launch
 
 data class SearchScreenUIState(
     val query: String = "",
-    val contentType: ContentType = ContentType.All,
+    val category: Category = Category.All,
     val results: List<Torrent> = emptyList(),
     val isLoading: Boolean = false,
     val isInternetError: Boolean = false,
@@ -30,8 +30,8 @@ class SearchScreenViewModel : ViewModel() {
         _uiState.update { it.copy(query = query) }
     }
 
-    fun setContentType(contentType: ContentType) {
-        _uiState.update { it.copy(contentType = contentType) }
+    fun setCategory(category: Category) {
+        _uiState.update { it.copy(category = category) }
     }
 
     fun onSubmit() {
@@ -47,7 +47,7 @@ class SearchScreenViewModel : ViewModel() {
                 return@launch
             }
 
-            val results = repository.search(_uiState.value.query, _uiState.value.contentType)
+            val results = repository.search(_uiState.value.query, _uiState.value.category)
             updateUIState {
                 it.copy(results = results, isLoading = false, isInternetError = false)
             }

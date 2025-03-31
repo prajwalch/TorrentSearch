@@ -19,7 +19,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 
 import com.prajwalch.torrentsearch.data.Torrent
-import com.prajwalch.torrentsearch.ui.components.ContentTypeNavBar
+import com.prajwalch.torrentsearch.ui.components.CategoryNavBar
 import com.prajwalch.torrentsearch.ui.components.SearchBox
 import com.prajwalch.torrentsearch.ui.components.TorrentList
 import com.prajwalch.torrentsearch.ui.viewmodel.SearchScreenViewModel
@@ -29,7 +29,7 @@ fun SearchScreen(viewModel: SearchScreenViewModel, onTorrentSelect: (Torrent) ->
     val uiState by viewModel.uiState.collectAsState()
 
     SearchBox(uiState.query, onQueryChange = viewModel::setQuery, onSubmit = viewModel::onSubmit)
-    ContentTypeNavBar(uiState.contentType, onSelect = viewModel::setContentType)
+    CategoryNavBar(uiState.category, onSelect = viewModel::setCategory)
     HorizontalDivider()
 
     if (uiState.isLoading) {
