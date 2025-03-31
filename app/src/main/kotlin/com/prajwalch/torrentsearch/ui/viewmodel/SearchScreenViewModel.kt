@@ -57,4 +57,8 @@ class SearchScreenViewModel : ViewModel() {
     private inline fun updateUIState(update: (SearchScreenUIState) -> SearchScreenUIState) {
         _uiState.update(function = update)
     }
+
+    fun closeConnection() {
+        repository.close()
+    }
 }

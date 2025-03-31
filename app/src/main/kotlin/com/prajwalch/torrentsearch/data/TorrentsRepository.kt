@@ -15,6 +15,11 @@ class TorrentsRepository {
     /** The main client for making request. */
     private val httpClient = HttpClient()
 
+    /** Releases the resource by shutting down the connection. */
+    fun close() {
+        httpClient.close()
+    }
+
     /** Starts a search for the given query. */
     suspend fun search(query: String, category: Category): List<Torrent> = coroutineScope {
         val context = SearchContext(category, httpClient)

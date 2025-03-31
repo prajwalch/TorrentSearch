@@ -37,6 +37,11 @@ class MainActivity : ComponentActivity() {
         }
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+        searchScreenViewModel.closeConnection()
+    }
+
     /**
      * Starts the available torrent client for downloading the given torrent.
      *

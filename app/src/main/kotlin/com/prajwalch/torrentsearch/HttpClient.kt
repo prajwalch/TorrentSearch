@@ -11,6 +11,10 @@ import kotlinx.serialization.json.JsonElement
 class HttpClient {
     private val innerClient = HttpClient(CIO)
 
+    fun close() {
+        innerClient.close()
+    }
+
     suspend fun getJson(url: String): JsonElement? {
         val response = innerClient.get(url).bodyAsText()
         println("url=$url, response=$response")
