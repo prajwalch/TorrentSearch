@@ -11,10 +11,10 @@ import kotlinx.serialization.json.JsonElement
 class HttpClient {
     private val innerClient = HttpClient(CIO)
 
-    suspend fun getJson(url: String): JsonElement {
+    suspend fun getJson(url: String): JsonElement? {
         val response = innerClient.get(url).bodyAsText()
         println("url=$url, response=$response")
-        return Json.parseToJsonElement(response)
+        return if (response.isNotEmpty()) Json.parseToJsonElement(response) else null
     }
 
     suspend fun isInternetAvailable(): Boolean {

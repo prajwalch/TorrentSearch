@@ -41,10 +41,11 @@ class Yts : Provider {
         val url = "$baseURL$path$query"
 
         val response = context.httpClient.getJson(url)
-        val torrents =
-            parseMovieObject(response.jsonObject["data"]!!.jsonObject["movie"]!!.jsonObject)
+        val torrents = response?.let {
+            parseMovieObject(it.jsonObject["data"]!!.jsonObject["movie"]!!.jsonObject)
+        }
 
-        return torrents
+        return torrents.orEmpty()
     }
 
     private suspend fun multipleMovieLinks(query: String, context: SearchContext): List<Torrent> {
@@ -53,8 +54,10 @@ class Yts : Provider {
         val url = "$baseURL$path$query"
 
         val response = context.httpClient.getJson(url)
-        val torrents = response.jsonObject["data"]!!.jsonObject["movies"]?.jsonArray?.flatMap {
-            parseMovieObject(it.jsonObject)
+        val torrents = response?.let {
+            it.jsonObject["data"]!!.jsonObject["movies"]?.jsonArray?.flatMap {
+                parseMovieObject(it.jsonObject)
+            }
         }
 
         return torrents.orEmpty()

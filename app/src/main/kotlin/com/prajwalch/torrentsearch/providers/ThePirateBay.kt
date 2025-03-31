@@ -23,9 +23,9 @@ class ThePirateBay : Provider {
         val url = "$url?q=$query&cat=$contentTypeIndex"
 
         val response = context.httpClient.getJson(url)
-        val torrents = response.jsonArray.map { it.jsonObject }.map(::parseJsonObject)
+        val torrents = response?.let { it.jsonArray.map { it.jsonObject }.map(::parseJsonObject) }
 
-        return torrents
+        return torrents.orEmpty()
     }
 
     fun contentTypeIndex(contentType: ContentType): UInt = when (contentType) {
