@@ -19,7 +19,7 @@ class Yts : Provider {
 
     override fun rank() = Rank.Companion.highest(0u)
 
-    override fun specializedCategory(): Category? = Category.Movies
+    override fun specializedCategory() = Category.Movies
 
     override fun name() = "yts"
 
