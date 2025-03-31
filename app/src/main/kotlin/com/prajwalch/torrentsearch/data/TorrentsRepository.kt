@@ -18,7 +18,10 @@ class TorrentsRepository {
     /** Starts a search for the given query. */
     suspend fun search(query: String, category: Category): List<Torrent> = coroutineScope {
         val context = SearchContext(category, httpClient)
-        providers.map { async { it.fetch(query, context) } }.awaitAll().flatten()
+
+        providers
+            .filter { (category == Category.All) || (category == it.specializedCategory()) }
+            .map { async { it.fetch(query, context) } }.awaitAll().flatten()
     }
 
     /** Returns `true` is the internet is available to perform a `search()`. */
@@ -40,11 +43,8 @@ interface Provider {
      */
     fun rank() = Rank.MEDIUM
 
-    /** Returns the category the provider is specialized for, if any.
-     *
-     * If `null` is returned, the provider will be used for all categories.
-     */
-    fun specializedCategory(): Category? = null
+    /** Returns the category the provider is specialized for. */
+    fun specializedCategory() = Category.All
 
     /** Returns the name of the provider. */
     fun name(): String
