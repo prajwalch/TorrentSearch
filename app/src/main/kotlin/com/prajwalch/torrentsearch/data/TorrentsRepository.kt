@@ -25,7 +25,11 @@ class TorrentsRepository {
         val context = SearchContext(category, httpClient)
 
         providers
-            .filter { (category == Category.All) || (category == it.specializedCategory()) }
+            .filter {
+                (category == Category.All) ||
+                        (it.specializedCategory() == Category.All) ||
+                        (category == it.specializedCategory())
+            }
             .map { async { it.fetch(query, context) } }.awaitAll().flatten()
     }
 
