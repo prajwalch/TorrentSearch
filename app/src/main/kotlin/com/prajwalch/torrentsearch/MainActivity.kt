@@ -8,6 +8,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
+import androidx.browser.customtabs.CustomTabsIntent
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -33,7 +34,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            App(searchScreenViewModel, downloadTorrentViaClient = ::downloadTorrentViaClient)
+            App(searchScreenViewModel, downloadTorrentViaClient = ::downloadTorrentViaBrowser)
         }
     }
 
@@ -56,6 +57,15 @@ class MainActivity : ComponentActivity() {
         } catch (_: ActivityNotFoundException) {
             false
         }
+    }
+
+    private fun downloadTorrentViaBrowser(torrent: Torrent): Boolean {
+        val url = "https://webtor.io/${torrent.hash}"
+        val customTabIntent = CustomTabsIntent.Builder().build()
+
+        customTabIntent.launchUrl(this, url.toUri())
+
+        return true
     }
 }
 
