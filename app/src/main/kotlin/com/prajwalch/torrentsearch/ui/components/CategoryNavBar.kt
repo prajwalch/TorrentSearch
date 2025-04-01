@@ -32,7 +32,7 @@ fun CategoryNavBar(activeCategory: Category, onSelect: (Category) -> Unit) {
             // TODO: This is hack to add space between items.
             //       horizontalArrangement is not working.
             if (index != 0) {
-                Spacer(Modifier.width(10.dp))
+                Spacer(Modifier.width(8.dp))
             }
 
             CategoryNavBarItem(
