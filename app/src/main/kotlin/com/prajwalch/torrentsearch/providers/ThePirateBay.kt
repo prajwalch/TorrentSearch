@@ -3,7 +3,6 @@ package com.prajwalch.torrentsearch.providers
 import com.prajwalch.torrentsearch.data.Category
 import com.prajwalch.torrentsearch.data.FileSize
 import com.prajwalch.torrentsearch.data.Provider
-import com.prajwalch.torrentsearch.data.Rank
 import com.prajwalch.torrentsearch.data.SearchContext
 import com.prajwalch.torrentsearch.data.Torrent
 
@@ -13,8 +12,6 @@ import kotlinx.serialization.json.jsonObject
 
 class ThePirateBay : Provider {
     private val url = "https://apibay.org/q.php"
-
-    override fun rank() = Rank.HIGH
 
     override fun name() = "thepiratebay"
 

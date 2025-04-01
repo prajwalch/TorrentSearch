@@ -3,7 +3,6 @@ package com.prajwalch.torrentsearch.providers
 import com.prajwalch.torrentsearch.data.Category
 import com.prajwalch.torrentsearch.data.FileSize
 import com.prajwalch.torrentsearch.data.Provider
-import com.prajwalch.torrentsearch.data.Rank
 import com.prajwalch.torrentsearch.data.SearchContext
 import com.prajwalch.torrentsearch.data.Torrent
 
@@ -16,8 +15,6 @@ import kotlinx.serialization.json.jsonPrimitive
 
 class Yts : Provider {
     private val baseURL = "https://yts.mx"
-
-    override fun rank() = Rank.Companion.highest(0u)
 
     override fun specializedCategory() = Category.Movies
 
