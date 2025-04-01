@@ -1,6 +1,6 @@
 # Torrent Search
 
-![ic_launcher](https://github.com/user-attachments/assets/86bcb95c-c8b3-46c5-ad91-9b6785b024a9)
+![ic_launcher](https://github.com/user-attachments/assets/3f21b032-0c22-45dd-bc42-60bb5b798c5c)
 
 A work in progress android app to search and download torrents from multiple providers.
 
