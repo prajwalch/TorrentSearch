@@ -1,6 +1,5 @@
 package com.prajwalch.torrentsearch.data
 
-import com.prajwalch.torrentsearch.HttpClient
 import com.prajwalch.torrentsearch.providers.ThePirateBay
 import com.prajwalch.torrentsearch.providers.Yts
 

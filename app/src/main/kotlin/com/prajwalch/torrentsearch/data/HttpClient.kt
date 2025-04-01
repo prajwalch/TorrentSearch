@@ -1,4 +1,4 @@
-package com.prajwalch.torrentsearch
+package com.prajwalch.torrentsearch.data
 
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.cio.CIO
@@ -18,7 +18,7 @@ class HttpClient {
     suspend fun getJson(url: String): JsonElement? {
         val response = innerClient.get(url).bodyAsText()
         println("url=$url, response=$response")
-        return if (response.isNotEmpty()) Json.parseToJsonElement(response) else null
+        return if (response.isNotEmpty()) Json.Default.parseToJsonElement(response) else null
     }
 
     suspend fun isInternetAvailable(): Boolean {
