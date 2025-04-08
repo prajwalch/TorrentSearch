@@ -17,7 +17,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.prajwalch.torrentsearch.R
 import com.prajwalch.torrentsearch.data.Category
 
 @Composable
@@ -53,7 +55,7 @@ private fun CategoryNavBarItem(label: String, isActive: Boolean, onClick: () -> 
         leadingIcon = {
             if (isActive) Icon(
                 imageVector = Icons.Default.Done,
-                contentDescription = "Selected category",
+                contentDescription = stringResource(R.string.selected_category),
                 modifier = Modifier.Companion.size(FilterChipDefaults.IconSize)
             )
         },

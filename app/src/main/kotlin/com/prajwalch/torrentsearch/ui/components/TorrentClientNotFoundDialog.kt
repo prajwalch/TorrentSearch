@@ -10,23 +10,30 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.platform.UriHandler
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.LinkAnnotation
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextLinkStyles
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.withLink
+import com.prajwalch.torrentsearch.R
 
 @Composable
 fun TorrentClientNotFoundDialog(onConfirmation: () -> Unit) {
     val uriHandler = LocalUriHandler.current
 
     AlertDialog(
-        icon = { Icon(Icons.Default.Info, contentDescription = "Example Icon") },
-        title = { Text("Torrent client not found") },
+        icon = {
+            Icon(
+                Icons.Default.Info,
+                contentDescription = stringResource(R.string.torrent_client_missing_warning)
+            )
+        },
+        title = { Text(stringResource(R.string.torrent_client_not_found)) },
         text = { Text(dialogContent(uriHandler)) },
         onDismissRequest = { onConfirmation() },
-        confirmButton = { TextButton(onClick = onConfirmation) { Text("Done") } },
+        confirmButton = { TextButton(onClick = onConfirmation) { Text(stringResource(R.string.done)) } },
     )
 }
 

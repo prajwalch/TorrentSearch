@@ -13,6 +13,8 @@ import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
+import com.prajwalch.torrentsearch.R
 
 @Composable
 fun SearchBox(query: String, onQueryChange: (String) -> Unit, onSubmit: () -> Unit) {
@@ -27,13 +29,13 @@ fun SearchBox(query: String, onQueryChange: (String) -> Unit, onSubmit: () -> Un
         value = query,
         onValueChange = onQueryChange,
         modifier = Modifier.Companion.fillMaxWidth(),
-        placeholder = { Text("Search...") },
+        placeholder = { Text(stringResource(R.string.search)) },
         leadingIcon = { Icon(Icons.Default.Search, contentDescription = null) },
         trailingIcon = {
             IconButton(onClick = { onQueryChange("") }) {
                 Icon(
                     Icons.Default.Clear,
-                    contentDescription = "Clear search query"
+                    contentDescription = stringResource(R.string.clear_search_query)
                 )
             }
         },

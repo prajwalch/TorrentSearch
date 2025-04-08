@@ -15,8 +15,10 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.prajwalch.torrentsearch.R
 
 import com.prajwalch.torrentsearch.data.Torrent
 import com.prajwalch.torrentsearch.ui.components.CategoryNavBar
@@ -61,9 +63,9 @@ fun NoInternetConnectionMessage(onRetry: () -> Unit) {
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        Text("No internet connection", fontWeight = FontWeight.Bold)
+        Text(stringResource(R.string.no_internet_connection), fontWeight = FontWeight.Bold)
         Spacer(Modifier.height(10.dp))
-        Button(onClick = onRetry) { Text("Retry") }
+        Button(onClick = onRetry) { Text(stringResource(R.string.retry)) }
     }
 }
 
