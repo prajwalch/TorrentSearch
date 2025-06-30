@@ -56,7 +56,7 @@ private fun CategoryNavBarItem(label: String, isActive: Boolean, onClick: () -> 
             if (isActive) Icon(
                 imageVector = Icons.Default.Done,
                 contentDescription = stringResource(R.string.selected_category),
-                modifier = Modifier.Companion.size(FilterChipDefaults.IconSize)
+                modifier = Modifier.size(FilterChipDefaults.IconSize)
             )
         },
     )

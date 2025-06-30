@@ -14,11 +14,11 @@ import androidx.compose.ui.Modifier
 import com.prajwalch.torrentsearch.data.MagnetUri
 import com.prajwalch.torrentsearch.ui.components.TorrentClientNotFoundDialog
 import com.prajwalch.torrentsearch.ui.screens.SearchScreen
-import com.prajwalch.torrentsearch.ui.viewmodel.SearchScreenViewModel
+import com.prajwalch.torrentsearch.ui.viewmodel.SearchViewModel
 
 @Composable
 fun TorrentSearchApp(
-    searchScreenViewModel: SearchScreenViewModel,
+    searchViewModel: SearchViewModel,
     onDownloadRequest: (MagnetUri) -> Boolean,
 ) {
     var isTorrentClientMissing by remember { mutableStateOf(false) }
@@ -31,7 +31,7 @@ fun TorrentSearchApp(
                 )
             }
             SearchScreen(
-                viewModel = searchScreenViewModel,
+                viewModel = searchViewModel,
                 onTorrentSelect = {
                     isTorrentClientMissing = !onDownloadRequest(it.magnetUri())
                 }

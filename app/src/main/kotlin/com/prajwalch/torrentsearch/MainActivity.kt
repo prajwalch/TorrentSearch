@@ -11,10 +11,10 @@ import androidx.core.net.toUri
 import com.prajwalch.torrentsearch.data.MagnetUri
 import com.prajwalch.torrentsearch.ui.TorrentSearchApp
 import com.prajwalch.torrentsearch.ui.theme.TorrentSearchTheme
-import com.prajwalch.torrentsearch.ui.viewmodel.SearchScreenViewModel
+import com.prajwalch.torrentsearch.ui.viewmodel.SearchViewModel
 
 class MainActivity : ComponentActivity() {
-    val searchScreenViewModel: SearchScreenViewModel by viewModels()
+    val searchViewModel: SearchViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -22,7 +22,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             TorrentSearchTheme {
                 TorrentSearchApp(
-                    searchScreenViewModel = searchScreenViewModel,
+                    searchViewModel = searchViewModel,
                     onDownloadRequest = ::downloadTorrentViaClient
                 )
             }
@@ -31,7 +31,7 @@ class MainActivity : ComponentActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
-        searchScreenViewModel.closeConnection()
+        searchViewModel.closeConnection()
     }
 
     /**

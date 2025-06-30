@@ -20,22 +20,26 @@ data class SearchScreenUIState(
     val isInternetError: Boolean = false,
 )
 
-class SearchScreenViewModel : ViewModel() {
+/** Drives the search logic. */
+class SearchViewModel : ViewModel() {
     private val repository = TorrentsRepository()
 
-    private val _uiState = MutableStateFlow(SearchScreenUIState())
-    val uiState = _uiState.asStateFlow()
+    private val mUiState = MutableStateFlow(SearchScreenUIState())
+    val uiState = mUiState.asStateFlow()
 
+    /** Changes the current query with the given query. */
     fun setQuery(query: String) {
-        _uiState.update { it.copy(query = query) }
+        mUiState.update { it.copy(query = query) }
     }
 
+    /** Changes the current category. */
     fun setCategory(category: Category) {
-        _uiState.update { it.copy(category = category) }
+        mUiState.update { it.copy(category = category) }
     }
 
-    fun onSubmit() {
-        if (_uiState.value.query.isEmpty()) {
+    /** Performs a search. */
+    fun performSearch() {
+        if (mUiState.value.query.isEmpty()) {
             return
         }
 
@@ -47,17 +51,19 @@ class SearchScreenViewModel : ViewModel() {
                 return@launch
             }
 
-            val results = repository.search(_uiState.value.query, _uiState.value.category)
+            val results = repository.search(mUiState.value.query, mUiState.value.category)
             updateUIState {
                 it.copy(results = results, isLoading = false, isInternetError = false)
             }
         }
     }
 
+    /** Updates the current ui states. */
     private inline fun updateUIState(update: (SearchScreenUIState) -> SearchScreenUIState) {
-        _uiState.update(function = update)
+        mUiState.update(function = update)
     }
 
+    /** Closes the internal connection. */
     fun closeConnection() {
         repository.close()
     }

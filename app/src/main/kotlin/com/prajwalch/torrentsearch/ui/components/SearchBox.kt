@@ -28,7 +28,7 @@ fun SearchBox(query: String, onQueryChange: (String) -> Unit, onSubmit: () -> Un
     TextField(
         value = query,
         onValueChange = onQueryChange,
-        modifier = Modifier.Companion.fillMaxWidth(),
+        modifier = Modifier.fillMaxWidth(),
         placeholder = { Text(stringResource(R.string.search)) },
         leadingIcon = { Icon(Icons.Default.Search, contentDescription = null) },
         trailingIcon = {
