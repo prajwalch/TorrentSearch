@@ -18,6 +18,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.core.net.toUri
+
 import com.prajwalch.torrentsearch.data.Torrent
 import com.prajwalch.torrentsearch.ui.components.TorrentClientNotFoundDialog
 import com.prajwalch.torrentsearch.ui.screens.SearchScreen
@@ -60,7 +61,7 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun App(
     searchScreenViewModel: SearchScreenViewModel,
-    downloadTorrentViaClient: (Torrent) -> Boolean
+    downloadTorrentViaClient: (Torrent) -> Boolean,
 ) {
     var isTorrentClientMissing by remember { mutableStateOf(false) }
 

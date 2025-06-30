@@ -39,7 +39,7 @@ fun SearchScreen(viewModel: SearchScreenViewModel, onTorrentSelect: (Torrent) ->
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(top = 20.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
+            horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             CircularProgressIndicator()
         }
@@ -68,4 +68,3 @@ fun NoInternetConnectionMessage(onRetry: () -> Unit) {
         Button(onClick = onRetry) { Text(stringResource(R.string.retry)) }
     }
 }
-

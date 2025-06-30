@@ -28,7 +28,7 @@ fun Badge(
     icon: ImageVector? = null,
     color: Color = Color.White,
     background: Color = Color.DarkGray,
-    fontSize: TextUnit = 14.sp
+    fontSize: TextUnit = 14.sp,
 ) {
     Row(
         modifier = Modifier

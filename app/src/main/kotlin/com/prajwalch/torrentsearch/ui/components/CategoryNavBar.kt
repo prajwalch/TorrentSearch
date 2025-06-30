@@ -28,7 +28,7 @@ fun CategoryNavBar(activeCategory: Category, onSelect: (Category) -> Unit) {
         modifier = Modifier.fillMaxWidth(),
         contentPadding = PaddingValues(5.dp),
         horizontalArrangement = Arrangement.Center,
-        verticalAlignment = Alignment.CenterVertically
+        verticalAlignment = Alignment.CenterVertically,
     ) {
         itemsIndexed(Category.entries.toList()) { index, category ->
             // TODO: This is hack to add space between items.
@@ -40,7 +40,7 @@ fun CategoryNavBar(activeCategory: Category, onSelect: (Category) -> Unit) {
             CategoryNavBarItem(
                 label = category.toString(),
                 isActive = activeCategory == category,
-                onClick = { onSelect(category) }
+                onClick = { onSelect(category) },
             )
         }
     }

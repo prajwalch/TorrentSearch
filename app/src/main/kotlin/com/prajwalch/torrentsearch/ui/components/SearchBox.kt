@@ -19,10 +19,10 @@ import com.prajwalch.torrentsearch.R
 @Composable
 fun SearchBox(query: String, onQueryChange: (String) -> Unit, onSubmit: () -> Unit) {
     val colors = TextFieldDefaults.colors(
-        unfocusedContainerColor = Color.Companion.Transparent,
-        focusedContainerColor = Color.Companion.Transparent,
-        unfocusedIndicatorColor = Color.Companion.Transparent,
-        focusedIndicatorColor = Color.Companion.Unspecified,
+        unfocusedContainerColor = Color.Transparent,
+        focusedContainerColor = Color.Transparent,
+        unfocusedIndicatorColor = Color.Transparent,
+        focusedIndicatorColor = Color.Unspecified,
     )
 
     TextField(
@@ -41,6 +41,6 @@ fun SearchBox(query: String, onQueryChange: (String) -> Unit, onSubmit: () -> Un
         },
         singleLine = true,
         keyboardActions = KeyboardActions(onDone = { onSubmit() }),
-        colors = colors
+        colors = colors,
     )
 }
