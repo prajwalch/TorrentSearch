@@ -13,7 +13,7 @@ import kotlinx.serialization.json.jsonObject
 class ThePirateBay : Provider {
     private val url = "https://apibay.org/q.php"
 
-    override fun name() = "thepiratebay"
+    override fun name() = "thepiratebay.org"
 
     override suspend fun fetch(query: String, context: SearchContext): List<Torrent> {
         val categoryIndex = this@ThePirateBay.categoryIndex(context.category)

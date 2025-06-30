@@ -18,7 +18,7 @@ class Yts : Provider {
 
     override fun specializedCategory() = Category.Movies
 
-    override fun name() = "yts"
+    override fun name() = "yts.mx"
 
     override suspend fun fetch(query: String, context: SearchContext): List<Torrent> {
         return if (isQueryIMDBId(query)) {
