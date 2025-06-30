@@ -26,11 +26,14 @@ class TorrentsRepository {
 
         providers
             .filter {
-                (category == Category.All) ||
-                        (it.specializedCategory() == Category.All) ||
-                        (category == it.specializedCategory())
+                (category == Category.All)
+                        || (it.specializedCategory() == Category.All)
+                        || (category == it.specializedCategory())
             }
-            .map { async { it.fetch(query, context) } }.awaitAll().flatten()
+            .map { async { it.fetch(query, context) } }
+            .awaitAll()
+            .flatten()
+            .sortedByDescending { it.seeds }
     }
 
     /** Returns `true` is the internet is available to perform a `search()`. */
@@ -56,7 +59,7 @@ interface Provider {
 /** The search context. */
 data class SearchContext(
     val category: Category,
-    val httpClient: HttpClient
+    val httpClient: HttpClient,
 )
 
 /** Search category. */
@@ -79,7 +82,7 @@ data class Torrent(
     val size: FileSize = FileSize(),
     val seeds: UInt = 0U,
     val peers: UInt = 0U,
-    val providerName: String = "default"
+    val providerName: String = "default",
 ) {
     /** Constructs and return the magnet URL of this torrent */
     fun magnetURL(): String {
