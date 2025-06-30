@@ -22,7 +22,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-
 import com.prajwalch.torrentsearch.R
 import com.prajwalch.torrentsearch.data.Torrent
 
@@ -52,7 +51,9 @@ private fun TorrentListItem(torrent: Torrent, modifier: Modifier = Modifier) {
         supportingContent = {
             TorrentMetadataInfo(
                 torrent = torrent,
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 8.dp),
             )
         },
     )
