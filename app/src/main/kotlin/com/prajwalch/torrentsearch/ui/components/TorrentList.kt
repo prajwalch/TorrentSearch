@@ -28,7 +28,7 @@ import com.prajwalch.torrentsearch.data.Torrent
 @Composable
 fun TorrentList(torrents: List<Torrent>, onClick: (Torrent) -> Unit) {
     LazyColumn {
-        items(items = torrents, key = { it.hash }) {
+        items(items = torrents) {
             TorrentListItem(
                 torrent = it,
                 modifier = Modifier.clickable { onClick(it) },
