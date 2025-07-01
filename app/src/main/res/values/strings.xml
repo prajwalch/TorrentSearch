@@ -3,9 +3,17 @@
     <string name="selected_category">Selected category</string>
     <string name="search">Search...</string>
     <string name="clear_search_query">Clear search query</string>
-    <string name="torrent_client_not_found">Torrent client not found</string>
-    <string name="done">Done</string>
-    <string name="torrent_client_missing_warning">Torrent client missing warning</string>
     <string name="no_internet_connection">No internet connection</string>
     <string name="retry">Retry</string>
+
+    <!-- Torrent client not found dialog -->
+    <string name="torrent_client_not_found">Torrent client not found</string>
+    <string name="torrent_client_not_found_main_content">
+        Download functionality requires an external torrent client to be installed.
+        Install any one of the client from the following client list. Then, once
+        the installation finishes, open and setup it and then come back to this app.
+    </string>
+    <string name="flud_client_link_label">Flud (recommended)</string>
+    <string name="libretorrent_client_link_label">LibreTorrent</string>
+    <string name="button_done">Done</string>
 </resources>
