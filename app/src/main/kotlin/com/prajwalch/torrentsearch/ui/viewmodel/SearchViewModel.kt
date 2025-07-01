@@ -1,6 +1,7 @@
 package com.prajwalch.torrentsearch.ui.viewmodel
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 
 import com.prajwalch.torrentsearch.data.Category
@@ -21,9 +22,7 @@ data class SearchScreenUIState(
 )
 
 /** Drives the search logic. */
-class SearchViewModel : ViewModel() {
-    private val repository = TorrentsRepository()
-
+class SearchViewModel(private val torrentsRepository: TorrentsRepository) : ViewModel() {
     private val mUiState = MutableStateFlow(SearchScreenUIState())
     val uiState = mUiState.asStateFlow()
 
@@ -46,12 +45,12 @@ class SearchViewModel : ViewModel() {
         viewModelScope.launch {
             updateUIState { it.copy(isLoading = true) }
 
-            if (!repository.isInternetAvailable()) {
+            if (!torrentsRepository.isInternetAvailable()) {
                 updateUIState { it.copy(isLoading = false, isInternetError = true) }
                 return@launch
             }
 
-            val results = repository.search(mUiState.value.query, mUiState.value.category)
+            val results = torrentsRepository.search(mUiState.value.query, mUiState.value.category)
             updateUIState {
                 it.copy(results = results, isLoading = false, isInternetError = false)
             }
@@ -62,9 +61,17 @@ class SearchViewModel : ViewModel() {
     private inline fun updateUIState(update: (SearchScreenUIState) -> SearchScreenUIState) {
         mUiState.update(function = update)
     }
+}
 
-    /** Closes the internal connection. */
-    fun closeConnection() {
-        repository.close()
+class SearchViewModelFactory(private val torrentsRepository: TorrentsRepository) :
+    ViewModelProvider.Factory {
+        
+    @Suppress("UNCHECKED_CAST")
+    override fun <T : ViewModel> create(modelClass: Class<T>): T {
+        if (modelClass.isAssignableFrom(SearchViewModel::class.java)) {
+            return SearchViewModel(torrentsRepository = torrentsRepository) as T
+        }
+
+        throw IllegalArgumentException("Unknown ViewModel class")
     }
 }

@@ -8,16 +8,24 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.core.net.toUri
+
 import com.prajwalch.torrentsearch.data.MagnetUri
+import com.prajwalch.torrentsearch.data.TorrentsRepository
+import com.prajwalch.torrentsearch.network.HttpClient
 import com.prajwalch.torrentsearch.ui.TorrentSearchApp
 import com.prajwalch.torrentsearch.ui.theme.TorrentSearchTheme
 import com.prajwalch.torrentsearch.ui.viewmodel.SearchViewModel
+import com.prajwalch.torrentsearch.ui.viewmodel.SearchViewModelFactory
 
 class MainActivity : ComponentActivity() {
-    val searchViewModel: SearchViewModel by viewModels()
+    private val searchViewModel: SearchViewModel by viewModels {
+        val torrentsRepository = TorrentsRepository(httpClient = HttpClient)
+        SearchViewModelFactory(torrentsRepository = torrentsRepository)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         enableEdgeToEdge()
         setContent {
             TorrentSearchTheme {
@@ -27,11 +35,6 @@ class MainActivity : ComponentActivity() {
                 )
             }
         }
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        searchViewModel.closeConnection()
     }
 
     /**

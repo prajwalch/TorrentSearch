@@ -8,17 +8,9 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
 
-class TorrentsRepository {
+class TorrentsRepository(private val httpClient: HttpClient) {
     /** List of built-in providers. */
     private val providers: List<Provider> = listOf(ThePirateBay(), Yts())
-
-    /** The main client for making request. */
-    private val httpClient = HttpClient()
-
-    /** Releases the resource by shutting down the connection. */
-    fun close() {
-        httpClient.close()
-    }
 
     /** Starts a search for the given query. */
     suspend fun search(query: String, category: Category): List<Torrent> = coroutineScope {

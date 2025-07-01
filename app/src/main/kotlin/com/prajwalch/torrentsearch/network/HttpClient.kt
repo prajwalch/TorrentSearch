@@ -8,8 +8,10 @@ import io.ktor.client.statement.bodyAsText
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonElement
 
-class HttpClient {
-    private val innerClient = HttpClient(CIO)
+object HttpClient {
+    private val innerClient by lazy {
+        HttpClient(CIO)
+    }
 
     fun close() {
         innerClient.close()
@@ -18,7 +20,7 @@ class HttpClient {
     suspend fun getJson(url: String): JsonElement? {
         val response = innerClient.get(url).bodyAsText()
         println("url=$url, response=$response")
-        return if (response.isNotEmpty()) Json.Default.parseToJsonElement(response) else null
+        return if (response.isNotEmpty()) Json.parseToJsonElement(response) else null
     }
 
     suspend fun isInternetAvailable(): Boolean {
