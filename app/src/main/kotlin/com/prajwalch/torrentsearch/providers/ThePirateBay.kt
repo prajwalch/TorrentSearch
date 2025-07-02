@@ -5,6 +5,7 @@ import com.prajwalch.torrentsearch.data.FileSize
 import com.prajwalch.torrentsearch.data.Provider
 import com.prajwalch.torrentsearch.data.SearchContext
 import com.prajwalch.torrentsearch.data.Torrent
+import com.prajwalch.torrentsearch.utils.prettyDate
 
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.jsonArray
@@ -42,6 +43,17 @@ class ThePirateBay : Provider {
         val seeds = jsonObject["seeders"]!!.toString().trim('"').toUInt()
         val peers = jsonObject["leechers"]!!.toString().trim('"').toUInt()
 
-        return Torrent(name, hash, size, seeds, peers, providerName = name())
+        val uploadDateEpochSeconds = jsonObject["added"]!!.toString().trim('"').toLong()
+        val uploadDate = prettyDate(uploadDateEpochSeconds)
+
+        return Torrent(
+            name,
+            hash,
+            size,
+            seeds,
+            peers,
+            providerName = name(),
+            uploadDate = uploadDate
+        )
     }
 }

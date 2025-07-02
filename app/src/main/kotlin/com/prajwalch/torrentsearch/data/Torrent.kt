@@ -11,6 +11,7 @@ data class Torrent(
     val seeds: UInt = 0U,
     val peers: UInt = 0U,
     val providerName: String = "default",
+    val uploadDate: String = "0000-00-00",
 ) {
     /** Constructs and return the magnet URL of this torrent */
     fun magnetUri(): MagnetUri {

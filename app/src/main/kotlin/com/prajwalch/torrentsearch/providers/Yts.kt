@@ -5,6 +5,7 @@ import com.prajwalch.torrentsearch.data.FileSize
 import com.prajwalch.torrentsearch.data.Provider
 import com.prajwalch.torrentsearch.data.SearchContext
 import com.prajwalch.torrentsearch.data.Torrent
+import com.prajwalch.torrentsearch.utils.prettyDate
 
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.float
@@ -12,6 +13,7 @@ import kotlinx.serialization.json.int
 import kotlinx.serialization.json.jsonArray
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
+import kotlinx.serialization.json.long
 
 class Yts : Provider {
     private val baseURL = "https://yts.mx"
@@ -74,11 +76,23 @@ class Yts : Provider {
         val seeds = jsonObject["seeds"]!!.jsonPrimitive.int.toUInt()
         val peers = jsonObject["peers"]!!.jsonPrimitive.int.toUInt()
 
+        val uploadDateEpochSeconds = jsonObject["date_uploaded_unix"]!!.jsonPrimitive.long
+        val uploadDate = prettyDate(uploadDateEpochSeconds)
+
         val quality = jsonObject["quality"]!!.toString().trim('"')
         val type = jsonObject["type"]!!.toString().trim('"')
         val codec = jsonObject["video_codec"]!!.toString().trim('"')
 
         val name = "$title [$quality] [$type] [$codec]"
-        return Torrent(name, hash, size, seeds, peers, providerName = name())
+
+        return Torrent(
+            name,
+            hash,
+            size,
+            seeds,
+            peers,
+            providerName = name(),
+            uploadDate = uploadDate
+        )
     }
 }

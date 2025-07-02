@@ -22,6 +22,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+
 import com.prajwalch.torrentsearch.R
 import com.prajwalch.torrentsearch.data.Torrent
 
@@ -42,9 +43,9 @@ private fun TorrentListItem(torrent: Torrent, modifier: Modifier = Modifier) {
     ListItem(
         modifier = modifier,
         overlineContent = {
-            Text(
-                text = torrent.providerName,
-                color = MaterialTheme.colorScheme.primary
+            TorrentProviderNameAndUploadDate(
+                provider = torrent.providerName,
+                uploadDate = torrent.uploadDate,
             )
         },
         headlineContent = { Text(torrent.name) },
@@ -58,6 +59,29 @@ private fun TorrentListItem(torrent: Torrent, modifier: Modifier = Modifier) {
         },
     )
     HorizontalDivider()
+}
+
+@Composable
+private fun TorrentProviderNameAndUploadDate(
+    provider: String,
+    uploadDate: String,
+    modifier: Modifier = Modifier,
+) {
+    Row(
+        modifier = modifier,
+        horizontalArrangement = Arrangement.spacedBy(4.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Text(
+            text = provider,
+            color = MaterialTheme.colorScheme.primary,
+        )
+        Text("\u2022")
+        Text(
+            text = uploadDate,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+    }
 }
 
 @Composable
