@@ -1,15 +1,14 @@
 package com.prajwalch.torrentsearch.providers
 
+import com.prajwalch.torrentsearch.data.Category
 import com.prajwalch.torrentsearch.data.FileSize
 import com.prajwalch.torrentsearch.data.Provider
 import com.prajwalch.torrentsearch.data.SearchContext
 import com.prajwalch.torrentsearch.data.Torrent
 import com.prajwalch.torrentsearch.network.HttpClient
-
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
-
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Element
 
@@ -40,9 +39,14 @@ class TheRarBg : Provider {
         query: String,
         context: SearchContext,
     ): List<Torrent> = coroutineScope {
-        val requestUrl = "$BASE_URL/get-posts/keywords:$query/"
-        val resultsPageHtml = context.httpClient.get(requestUrl)
+        var requestUrl = "$BASE_URL/get-posts/keywords:$query"
 
+        if (context.category != Category.All) {
+            val category = getCategoryString(category = context.category)
+            requestUrl = "$requestUrl:category:$category"
+        }
+
+        val resultsPageHtml = context.httpClient.get(requestUrl)
         val resultsTableBody = Jsoup
             .parse(resultsPageHtml)
             .selectFirst("table > tbody")
@@ -60,6 +64,21 @@ class TheRarBg : Provider {
                 }
             }
             .awaitAll()
+    }
+
+    /** Returns the compatible category string. */
+    private fun getCategoryString(category: Category): String {
+        return when (category) {
+            Category.All -> ""
+            Category.Anime -> "Anime"
+            Category.Apps -> "Apps"
+            Category.Books -> "Books"
+            Category.Games -> "Games"
+            Category.Movies -> "Movies"
+            Category.Music -> "Music"
+            Category.Porn -> "XXX"
+            Category.Series -> "Tv"
+        }
     }
 
     /** Parses and extracts the necessary information from the table row. */
