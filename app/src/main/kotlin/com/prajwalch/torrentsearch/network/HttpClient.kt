@@ -17,8 +17,12 @@ object HttpClient {
         innerClient.close()
     }
 
+    suspend fun get(url: String): String {
+        return innerClient.get(url).bodyAsText()
+    }
+
     suspend fun getJson(url: String): JsonElement? {
-        val response = innerClient.get(url).bodyAsText()
+        val response = get(url)
         println("url=$url, response=$response")
         return if (response.isNotEmpty()) Json.parseToJsonElement(response) else null
     }

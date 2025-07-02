@@ -56,6 +56,7 @@ dependencies {
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
     implementation(libs.kotlinx.serialization.json)
+    implementation(libs.jsoup)
     implementation(libs.ktor.client.core)
     implementation(libs.ktor.client.cio)
     testImplementation(libs.junit)
