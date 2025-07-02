@@ -6,9 +6,11 @@ import com.prajwalch.torrentsearch.data.Provider
 import com.prajwalch.torrentsearch.data.SearchContext
 import com.prajwalch.torrentsearch.data.Torrent
 import com.prajwalch.torrentsearch.network.HttpClient
+
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
+
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Element
 
