@@ -24,7 +24,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 
 import com.prajwalch.torrentsearch.R
-import com.prajwalch.torrentsearch.data.Torrent
+import com.prajwalch.torrentsearch.models.Torrent
 
 @Composable
 fun TorrentList(torrents: List<Torrent>, onClick: (Torrent) -> Unit) {

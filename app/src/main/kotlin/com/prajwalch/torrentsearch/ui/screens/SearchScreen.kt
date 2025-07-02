@@ -24,7 +24,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 
 import com.prajwalch.torrentsearch.R
-import com.prajwalch.torrentsearch.data.Torrent
+import com.prajwalch.torrentsearch.models.Torrent
 import com.prajwalch.torrentsearch.ui.components.CategoryNavBar
 import com.prajwalch.torrentsearch.ui.components.TopSearchBar
 import com.prajwalch.torrentsearch.ui.components.TorrentList

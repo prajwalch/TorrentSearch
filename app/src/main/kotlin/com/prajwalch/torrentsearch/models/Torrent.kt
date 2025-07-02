@@ -1,4 +1,4 @@
-package com.prajwalch.torrentsearch.data
+package com.prajwalch.torrentsearch.models
 
 /** Represents a magnet URI. */
 typealias MagnetUri = String

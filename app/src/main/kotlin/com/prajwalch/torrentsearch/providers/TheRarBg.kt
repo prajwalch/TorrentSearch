@@ -1,10 +1,10 @@
 package com.prajwalch.torrentsearch.providers
 
 import com.prajwalch.torrentsearch.data.Category
-import com.prajwalch.torrentsearch.data.FileSize
 import com.prajwalch.torrentsearch.data.Provider
 import com.prajwalch.torrentsearch.data.SearchContext
-import com.prajwalch.torrentsearch.data.Torrent
+import com.prajwalch.torrentsearch.models.FileSize
+import com.prajwalch.torrentsearch.models.Torrent
 import com.prajwalch.torrentsearch.network.HttpClient
 
 import kotlinx.coroutines.async

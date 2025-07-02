@@ -1,5 +1,6 @@
 package com.prajwalch.torrentsearch.data
 
+import com.prajwalch.torrentsearch.models.Torrent
 import com.prajwalch.torrentsearch.network.HttpClient
 import com.prajwalch.torrentsearch.providers.ThePirateBay
 import com.prajwalch.torrentsearch.providers.TheRarBg

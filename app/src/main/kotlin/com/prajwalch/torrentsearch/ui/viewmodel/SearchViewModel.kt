@@ -5,8 +5,8 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 
 import com.prajwalch.torrentsearch.data.Category
-import com.prajwalch.torrentsearch.data.Torrent
 import com.prajwalch.torrentsearch.data.TorrentsRepository
+import com.prajwalch.torrentsearch.models.Torrent
 
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -65,7 +65,7 @@ class SearchViewModel(private val torrentsRepository: TorrentsRepository) : View
 
 class SearchViewModelFactory(private val torrentsRepository: TorrentsRepository) :
     ViewModelProvider.Factory {
-        
+
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(SearchViewModel::class.java)) {
