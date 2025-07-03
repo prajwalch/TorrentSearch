@@ -1,8 +1,8 @@
 package com.prajwalch.torrentsearch.providers
 
 import com.prajwalch.torrentsearch.data.Category
-import com.prajwalch.torrentsearch.data.Provider
 import com.prajwalch.torrentsearch.data.SearchContext
+import com.prajwalch.torrentsearch.data.SearchProvider
 import com.prajwalch.torrentsearch.models.FileSize
 import com.prajwalch.torrentsearch.models.Torrent
 import com.prajwalch.torrentsearch.utils.prettyDate
@@ -11,12 +11,12 @@ import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.jsonArray
 import kotlinx.serialization.json.jsonObject
 
-class ThePirateBay : Provider {
+class ThePirateBay : SearchProvider {
     private val url = "https://apibay.org/q.php"
 
     override fun name() = "thepiratebay.org"
 
-    override suspend fun fetch(query: String, context: SearchContext): List<Torrent> {
+    override suspend fun search(query: String, context: SearchContext): List<Torrent> {
         val categoryIndex = this@ThePirateBay.categoryIndex(context.category)
         val url = "$url?q=$query&cat=$categoryIndex"
 

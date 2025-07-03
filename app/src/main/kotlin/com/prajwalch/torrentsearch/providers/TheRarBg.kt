@@ -1,8 +1,8 @@
 package com.prajwalch.torrentsearch.providers
 
 import com.prajwalch.torrentsearch.data.Category
-import com.prajwalch.torrentsearch.data.Provider
 import com.prajwalch.torrentsearch.data.SearchContext
+import com.prajwalch.torrentsearch.data.SearchProvider
 import com.prajwalch.torrentsearch.models.FileSize
 import com.prajwalch.torrentsearch.models.Torrent
 import com.prajwalch.torrentsearch.network.HttpClient
@@ -34,10 +34,10 @@ private data class TableRowParsedResult(
     val uploadDate: String,
 )
 
-class TheRarBg : Provider {
+class TheRarBg : SearchProvider {
     override fun name() = "therarbg.com"
 
-    override suspend fun fetch(
+    override suspend fun search(
         query: String,
         context: SearchContext,
     ): List<Torrent> = coroutineScope {

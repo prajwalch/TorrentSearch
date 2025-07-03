@@ -1,8 +1,8 @@
 package com.prajwalch.torrentsearch.providers
 
 import com.prajwalch.torrentsearch.data.Category
-import com.prajwalch.torrentsearch.data.Provider
 import com.prajwalch.torrentsearch.data.SearchContext
+import com.prajwalch.torrentsearch.data.SearchProvider
 import com.prajwalch.torrentsearch.models.FileSize
 import com.prajwalch.torrentsearch.models.Torrent
 import com.prajwalch.torrentsearch.utils.prettyDate
@@ -15,14 +15,14 @@ import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
 import kotlinx.serialization.json.long
 
-class Yts : Provider {
+class Yts : SearchProvider {
     private val baseURL = "https://yts.mx"
 
     override fun specializedCategory() = Category.Movies
 
     override fun name() = "yts.mx"
 
-    override suspend fun fetch(query: String, context: SearchContext): List<Torrent> {
+    override suspend fun search(query: String, context: SearchContext): List<Torrent> {
         return if (isQueryIMDBId(query)) {
             singleMovieLinks(query, context)
         } else {
