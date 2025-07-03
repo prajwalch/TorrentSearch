@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
@@ -22,6 +21,7 @@ import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+
 import com.prajwalch.torrentsearch.R
 import com.prajwalch.torrentsearch.data.Category
 import com.prajwalch.torrentsearch.models.MagnetUri
@@ -69,15 +69,14 @@ private fun SearchScreenContent(
     onSearch: () -> Unit,
     onTorrentSelect: (MagnetUri) -> Unit,
 ) {
+    Spacer(Modifier.height(8.dp))
     TopSearchBar(
-        modifier = Modifier.padding(vertical = 8.dp),
         query = uiState.query,
         onQueryChange = onQueryChange,
         onSearch = onSearch,
     )
-
+    Spacer(Modifier.height(8.dp))
     CategoryChipsRow(
-        modifier = Modifier.padding(bottom = 8.dp),
         selectedCategory = uiState.category,
         onSelect = { newCategory ->
             if (uiState.category != newCategory) {
@@ -86,6 +85,7 @@ private fun SearchScreenContent(
             }
         },
     )
+    Spacer(Modifier.height(8.dp))
     HorizontalDivider()
 
     if (uiState.isLoading) {
