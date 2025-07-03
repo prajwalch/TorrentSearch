@@ -13,16 +13,19 @@ import kotlinx.serialization.json.jsonObject
 
 class ThePirateBay : SearchProvider {
     override suspend fun search(query: String, context: SearchContext): List<Torrent> {
-        val categoryIndex = this@ThePirateBay.categoryIndex(context.category)
-        val url = "$URL?q=$query&cat=$categoryIndex"
+        val categoryIndex = categoryIndex(context.category)
+        val requestUrl = "$URL?q=$query&cat=$categoryIndex"
 
-        val response = context.httpClient.getJson(url)
-        val torrents = response?.let { it.jsonArray.map { it.jsonObject }.map(::parseJsonObject) }
+        val response = context.httpClient.getJson(requestUrl)
+        val torrents = response
+            ?.jsonArray
+            ?.map { arrayItem -> arrayItem.jsonObject }
+            ?.mapNotNull(::parseJsonObject)
 
         return torrents.orEmpty()
     }
 
-    fun categoryIndex(category: Category): UInt = when (category) {
+    private fun categoryIndex(category: Category): UInt = when (category) {
         Category.All, Category.Anime -> 0u
         Category.Apps -> 300u
         Category.Books -> 601u
@@ -32,22 +35,29 @@ class ThePirateBay : SearchProvider {
         Category.Porn -> 500u
     }
 
-    fun parseJsonObject(jsonObject: JsonObject): Torrent {
-        val name = jsonObject["name"]!!.toString().trim('"')
-        val hash = jsonObject["info_hash"]!!.toString().trim('"')
-        val size = FileSize.fromString(jsonObject["size"]!!.toString().trim('"'))
-        val seeds = jsonObject["seeders"]!!.toString().trim('"').toUInt()
-        val peers = jsonObject["leechers"]!!.toString().trim('"').toUInt()
+    private fun parseJsonObject(jsonObject: JsonObject): Torrent? {
+        val name = jsonObject["name"]?.toString()?.trim('"') ?: return null
 
-        val uploadDateEpochSeconds = jsonObject["added"]!!.toString().trim('"').toLong()
+        // Yeah, this is how it returns empty results.
+        if (name == "No results returned") {
+            return null
+        }
+
+        val hash = jsonObject["info_hash"]?.toString()?.trim('"') ?: return null
+        val sizeBytes = jsonObject["size"]?.toString()?.trim('"') ?: return null
+        val seeds = jsonObject["seeders"]?.toString()?.trim('"')?.toUIntOrNull() ?: return null
+        val peers = jsonObject["leechers"]?.toString()?.trim('"')?.toUIntOrNull() ?: return null
+
+        val uploadDateEpochSeconds =
+            jsonObject["added"]?.toString()?.trim('"')?.toLongOrNull() ?: return null
         val uploadDate = prettyDate(uploadDateEpochSeconds)
 
         return Torrent(
-            name,
-            hash,
-            size,
-            seeds,
-            peers,
+            name = name,
+            hash = hash,
+            size = FileSize.fromString(sizeBytes),
+            seeds = seeds,
+            peers = peers,
             providerName = NAME,
             uploadDate = uploadDate
         )
