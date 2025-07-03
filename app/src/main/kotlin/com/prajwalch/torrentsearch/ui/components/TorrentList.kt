@@ -123,7 +123,7 @@ private fun TorrentMetaInfo(
     val containerPaddingValues = PaddingValues(horizontal = 8.dp, vertical = 4.dp)
 
     val contentSpacing = 4.dp
-    val iconSize = 18.dp
+    val iconSize = 16.dp
     val textStyle = MaterialTheme.typography.labelLarge
 
     Row(
