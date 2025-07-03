@@ -64,6 +64,7 @@ class TheRarBg : SearchProvider {
                 }
             }
             .awaitAll()
+            .filterNotNull()
     }
 
     /** Returns the compatible category string. */
@@ -106,15 +107,19 @@ class TheRarBg : SearchProvider {
 
     /**
      * Further processes the table row parsed result and returns the fully
-     * constructed [Torrent].
+     * constructed [Torrent] if process succeed.
      */
     private suspend fun processTableRowParsedResult(
         httpClient: HttpClient,
         parsedResult: TableRowParsedResult,
-    ): Torrent {
+    ): Torrent? {
         // 1. Get the info hash from the details page.
         val detailsPageHtml = httpClient.get(url = parsedResult.detailsPageUrl)
-        val infoHash = Jsoup.parse(detailsPageHtml).selectFirst(".info-hash-value")!!.ownText()
+        val infoHash = Jsoup
+            .parse(detailsPageHtml)
+            .selectFirst(".info-hash-value")
+            ?.ownText()
+            ?: return null
 
         // 2. Construct torrent data.
         val sizeValue = parsedResult.size.takeWhile { !it.isWhitespace() }.toFloat()
