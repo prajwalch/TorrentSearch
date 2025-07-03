@@ -16,11 +16,7 @@ import kotlinx.serialization.json.jsonPrimitive
 import kotlinx.serialization.json.long
 
 class Yts : SearchProvider {
-    private val baseURL = "https://yts.mx"
-
     override fun specializedCategory() = Category.Movies
-
-    override fun name() = "yts.mx"
 
     override suspend fun search(query: String, context: SearchContext): List<Torrent> {
         return if (isQueryIMDBId(query)) {
@@ -37,7 +33,7 @@ class Yts : SearchProvider {
     private suspend fun singleMovieLinks(imdbId: String, context: SearchContext): List<Torrent> {
         val path = "/api/v2/movie_details.json"
         val query = "?imdb_id=$imdbId"
-        val url = "$baseURL$path$query"
+        val url = "$BASE_URL$path$query"
 
         val response = context.httpClient.getJson(url)
         val torrents = response?.let {
@@ -50,7 +46,7 @@ class Yts : SearchProvider {
     private suspend fun multipleMovieLinks(query: String, context: SearchContext): List<Torrent> {
         val path = "/api/v2/list_movies.json"
         val query = "?query_term=$query"
-        val url = "$baseURL$path$query"
+        val url = "$BASE_URL$path$query"
 
         val response = context.httpClient.getJson(url)
         val torrents = response?.let {
@@ -91,8 +87,13 @@ class Yts : SearchProvider {
             size,
             seeds,
             peers,
-            providerName = name(),
+            providerName = NAME,
             uploadDate = uploadDate
         )
+    }
+
+    private companion object {
+        private const val BASE_URL = "https://yts.mx"
+        private const val NAME = "yts.mx"
     }
 }

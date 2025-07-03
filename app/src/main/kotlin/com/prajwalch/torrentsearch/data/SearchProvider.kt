@@ -11,9 +11,6 @@ interface SearchProvider {
     /** Returns the category the provider is specialized for. */
     fun specializedCategory() = Category.All
 
-    /** Returns the name of the provider. */
-    fun name(): String
-
     /** Performs a search and returns the results. */
     suspend fun search(query: String, context: SearchContext): List<Torrent>
 }

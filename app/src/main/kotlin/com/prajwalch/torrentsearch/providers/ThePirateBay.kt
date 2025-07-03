@@ -12,13 +12,9 @@ import kotlinx.serialization.json.jsonArray
 import kotlinx.serialization.json.jsonObject
 
 class ThePirateBay : SearchProvider {
-    private val url = "https://apibay.org/q.php"
-
-    override fun name() = "thepiratebay.org"
-
     override suspend fun search(query: String, context: SearchContext): List<Torrent> {
         val categoryIndex = this@ThePirateBay.categoryIndex(context.category)
-        val url = "$url?q=$query&cat=$categoryIndex"
+        val url = "$URL?q=$query&cat=$categoryIndex"
 
         val response = context.httpClient.getJson(url)
         val torrents = response?.let { it.jsonArray.map { it.jsonObject }.map(::parseJsonObject) }
@@ -52,8 +48,13 @@ class ThePirateBay : SearchProvider {
             size,
             seeds,
             peers,
-            providerName = name(),
+            providerName = NAME,
             uploadDate = uploadDate
         )
+    }
+
+    private companion object {
+        private const val URL = "https://apibay.org/q.php"
+        private const val NAME = "thepiratebay.org"
     }
 }

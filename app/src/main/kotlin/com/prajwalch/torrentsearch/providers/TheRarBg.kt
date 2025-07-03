@@ -35,8 +35,6 @@ private data class TableRowParsedResult(
 )
 
 class TheRarBg : SearchProvider {
-    override fun name() = "therarbg.com"
-
     override suspend fun search(
         query: String,
         context: SearchContext,
@@ -128,12 +126,13 @@ class TheRarBg : SearchProvider {
             size = FileSize(value = sizeValue, unit = sizeUnit),
             seeds = parsedResult.seeds.toUInt(),
             peers = parsedResult.peers.toUInt(),
-            providerName = name(),
+            providerName = NAME,
             uploadDate = parsedResult.uploadDate,
         )
     }
 
     private companion object {
         private const val BASE_URL = "https://therarbg.com"
+        private const val NAME = "therarbg.com"
     }
 }
