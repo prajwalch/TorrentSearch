@@ -22,11 +22,10 @@ import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-
 import com.prajwalch.torrentsearch.R
 import com.prajwalch.torrentsearch.data.Category
 import com.prajwalch.torrentsearch.models.MagnetUri
-import com.prajwalch.torrentsearch.ui.components.CategoryNavBar
+import com.prajwalch.torrentsearch.ui.components.CategoryChipsRow
 import com.prajwalch.torrentsearch.ui.components.TopSearchBar
 import com.prajwalch.torrentsearch.ui.components.TorrentList
 import com.prajwalch.torrentsearch.ui.viewmodel.SearchScreenUIState
@@ -77,8 +76,9 @@ private fun SearchScreenContent(
         onSearch = onSearch,
     )
 
-    CategoryNavBar(
-        activeCategory = uiState.category,
+    CategoryChipsRow(
+        modifier = Modifier.padding(bottom = 8.dp),
+        selectedCategory = uiState.category,
         onSelect = { newCategory ->
             if (uiState.category != newCategory) {
                 onCategoryChange(newCategory)

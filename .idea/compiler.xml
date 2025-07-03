@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="CompilerConfiguration">
+    <option name="PARALLEL_COMPILATION_OPTION" value="Disabled" />
     <bytecodeTargetLevel target="21" />
   </component>
 </project>
