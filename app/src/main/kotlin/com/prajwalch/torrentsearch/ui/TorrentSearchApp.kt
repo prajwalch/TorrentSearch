@@ -1,6 +1,5 @@
 package com.prajwalch.torrentsearch.ui
 
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
@@ -21,21 +20,23 @@ fun TorrentSearchApp(
     searchViewModel: SearchViewModel,
     onDownloadRequest: (MagnetUri) -> Boolean,
 ) {
-    var isTorrentClientMissing by remember { mutableStateOf(false) }
-
     Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-        Column(modifier = Modifier.padding(innerPadding)) {
-            if (isTorrentClientMissing) {
-                TorrentClientNotFoundDialog(
-                    onConfirmation = { isTorrentClientMissing = false }
-                )
-            }
-            SearchScreen(
-                viewModel = searchViewModel,
-                onTorrentSelect = {
-                    isTorrentClientMissing = !onDownloadRequest(it.magnetUri())
-                }
+        var isTorrentClientMissing by remember { mutableStateOf(false) }
+
+        if (isTorrentClientMissing) {
+            TorrentClientNotFoundDialog(
+                onConfirmation = { isTorrentClientMissing = false }
             )
         }
+
+        SearchScreen(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(innerPadding),
+            viewModel = searchViewModel,
+            onTorrentSelect = { magnetUri ->
+                isTorrentClientMissing = !onDownloadRequest(magnetUri)
+            }
+        )
     }
 }

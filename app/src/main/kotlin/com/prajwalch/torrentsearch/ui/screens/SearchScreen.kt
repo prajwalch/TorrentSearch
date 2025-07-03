@@ -24,36 +24,68 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 
 import com.prajwalch.torrentsearch.R
-import com.prajwalch.torrentsearch.models.Torrent
+import com.prajwalch.torrentsearch.data.Category
+import com.prajwalch.torrentsearch.models.MagnetUri
 import com.prajwalch.torrentsearch.ui.components.CategoryNavBar
 import com.prajwalch.torrentsearch.ui.components.TopSearchBar
 import com.prajwalch.torrentsearch.ui.components.TorrentList
+import com.prajwalch.torrentsearch.ui.viewmodel.SearchScreenUIState
 import com.prajwalch.torrentsearch.ui.viewmodel.SearchViewModel
 
 @Composable
-fun SearchScreen(viewModel: SearchViewModel, onTorrentSelect: (Torrent) -> Unit) {
+fun SearchScreen(
+    viewModel: SearchViewModel,
+    onTorrentSelect: (MagnetUri) -> Unit,
+    modifier: Modifier = Modifier,
+) {
     val uiState by viewModel.uiState.collectAsState()
 
-    val focusRequester = LocalFocusManager.current
+    val focusManager = LocalFocusManager.current
     val keyboardController = LocalSoftwareKeyboardController.current
 
     LaunchedEffect(uiState.isLoading) {
-        focusRequester.clearFocus(force = true)
+        focusManager.clearFocus()
         keyboardController?.hide()
     }
 
+    Column(
+        modifier = modifier,
+        horizontalAlignment = Alignment.CenterHorizontally,
+    ) {
+        SearchScreenContent(
+            uiState = uiState,
+            onQueryChange = viewModel::setQuery,
+            onCategoryChange = viewModel::setCategory,
+            onSearch = viewModel::performSearch,
+            onTorrentSelect = onTorrentSelect,
+        )
+    }
+}
+
+@Composable
+private fun SearchScreenContent(
+    uiState: SearchScreenUIState,
+    onQueryChange: (String) -> Unit,
+    onCategoryChange: (Category) -> Unit,
+    onSearch: () -> Unit,
+    onTorrentSelect: (MagnetUri) -> Unit,
+) {
     TopSearchBar(
+        modifier = Modifier.padding(vertical = 8.dp),
         query = uiState.query,
-        onQueryChange = viewModel::setQuery,
-        onSearch = viewModel::performSearch,
-        modifier = Modifier.padding(vertical = 8.dp)
+        onQueryChange = onQueryChange,
+        onSearch = onSearch,
     )
-    CategoryNavBar(activeCategory = uiState.category, onSelect = { newCategory ->
-        if (uiState.category != newCategory) {
-            viewModel.setCategory(category = newCategory)
-            viewModel.performSearch()
-        }
-    })
+
+    CategoryNavBar(
+        activeCategory = uiState.category,
+        onSelect = { newCategory ->
+            if (uiState.category != newCategory) {
+                onCategoryChange(newCategory)
+                onSearch()
+            }
+        },
+    )
     HorizontalDivider()
 
     if (uiState.isLoading) {
@@ -63,13 +95,13 @@ fun SearchScreen(viewModel: SearchViewModel, onTorrentSelect: (Torrent) -> Unit)
 
     if (uiState.isInternetError) {
         NoInternetConnectionMessage(
-            onRetry = viewModel::performSearch,
-            modifier = Modifier.fillMaxSize()
+            modifier = Modifier.fillMaxSize(),
+            onRetry = onSearch,
         )
         return
     }
 
-    TorrentList(torrents = uiState.results, onClick = onTorrentSelect)
+    TorrentList(torrents = uiState.results, onTorrentSelect = onTorrentSelect)
 }
 
 @Composable
