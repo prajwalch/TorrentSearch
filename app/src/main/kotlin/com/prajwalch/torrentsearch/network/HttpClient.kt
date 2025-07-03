@@ -5,6 +5,7 @@ import io.ktor.client.engine.cio.CIO
 import io.ktor.client.request.get
 import io.ktor.client.statement.bodyAsText
 
+import kotlinx.serialization.SerializationException
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonElement
 
@@ -24,7 +25,16 @@ object HttpClient {
     suspend fun getJson(url: String): JsonElement? {
         val response = get(url)
         println("url=$url, response=$response")
-        return if (response.isNotEmpty()) Json.parseToJsonElement(response) else null
+
+        if (response.isEmpty()) {
+            return null
+        }
+
+        return try {
+            Json.parseToJsonElement(response)
+        } catch (_: SerializationException) {
+            null
+        }
     }
 
     suspend fun isInternetAvailable(): Boolean {
