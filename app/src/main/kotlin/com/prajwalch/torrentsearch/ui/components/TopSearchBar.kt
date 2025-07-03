@@ -1,7 +1,11 @@
 package com.prajwalch.torrentsearch.ui.components
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateIntAsState
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsFocusedAsState
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -63,7 +67,16 @@ fun TopSearchBar(
                 onBack = { focusManager.clearFocus() }
             )
         },
-        trailingIcon = { ClearQueryIconButton(onClick = { onQueryChange("") }) },
+        trailingIcon = {
+            AnimatedVisibility(
+                visible = query.isNotEmpty(),
+                enter = fadeIn(animationSpec = tween(200)),
+                exit = fadeOut(animationSpec = tween(200)),
+                label = "Clear query button visibility animation"
+            ) {
+                ClearQueryIconButton(onClick = { onQueryChange("") })
+            }
+        },
         singleLine = true,
         keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
         keyboardActions = KeyboardActions(onSearch = { onSearch() }),
