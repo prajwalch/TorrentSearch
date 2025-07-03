@@ -1,8 +1,12 @@
 <resources>
     <string name="app_name" translatable="false">Torrent Search</string>
-    <string name="selected_category">Selected category</string>
+
+    <!-- Top search bar -->
     <string name="search">Search...</string>
+    <string name="btn_unfocus_search_bar">Unfocus search bar and hide keyboard</string>
     <string name="clear_search_query">Clear search query</string>
+    <string name="selected_category">Selected category</string>
+
     <string name="no_internet_connection">No internet connection</string>
     <string name="retry">Retry</string>
 

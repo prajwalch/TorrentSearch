@@ -10,8 +10,9 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.outlined.ArrowBack
 import androidx.compose.material.icons.filled.Clear
-import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -22,6 +23,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
@@ -35,11 +37,12 @@ fun TopSearchBar(
     modifier: Modifier = Modifier,
 ) {
     val interactionSource = remember { MutableInteractionSource() }
-    val focused by interactionSource.collectIsFocusedAsState()
+    val isFocused by interactionSource.collectIsFocusedAsState()
 
-    val horizontalPadding by animateDpAsState(if (focused) 0.dp else 16.dp)
-    val roundedShapePrecent by animateIntAsState(if (focused) 0 else 100)
+    val horizontalPadding by animateDpAsState(if (isFocused) 0.dp else 16.dp)
+    val roundedShapePrecent by animateIntAsState(if (isFocused) 0 else 100)
 
+    val focusManager = LocalFocusManager.current
     val colors = TextFieldDefaults.colors(
         unfocusedContainerColor = MaterialTheme.colorScheme.surfaceContainer,
         focusedContainerColor = MaterialTheme.colorScheme.surface,
@@ -54,7 +57,12 @@ fun TopSearchBar(
         value = query,
         onValueChange = onQueryChange,
         placeholder = { Text(stringResource(R.string.search)) },
-        leadingIcon = { Icon(Icons.Default.Search, contentDescription = null) },
+        leadingIcon = {
+            LeadingIcon(
+                isFocused = isFocused,
+                onBack = { focusManager.clearFocus() }
+            )
+        },
         trailingIcon = { ClearQueryIconButton(onClick = { onQueryChange("") }) },
         singleLine = true,
         keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
@@ -63,6 +71,26 @@ fun TopSearchBar(
         interactionSource = interactionSource,
         shape = RoundedCornerShape(percent = roundedShapePrecent)
     )
+}
+
+@Composable
+private fun LeadingIcon(isFocused: Boolean, onBack: () -> Unit, modifier: Modifier = Modifier) {
+    if (!isFocused) {
+        Icon(
+            modifier = modifier,
+            imageVector = Icons.Outlined.Search,
+            contentDescription = null,
+        )
+        return
+    }
+
+    IconButton(onClick = onBack) {
+        Icon(
+            modifier = modifier,
+            imageVector = Icons.AutoMirrored.Outlined.ArrowBack,
+            contentDescription = stringResource(R.string.btn_unfocus_search_bar),
+        )
+    }
 }
 
 @Composable
