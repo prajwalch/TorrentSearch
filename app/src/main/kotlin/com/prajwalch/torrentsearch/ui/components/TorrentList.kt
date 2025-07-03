@@ -118,7 +118,7 @@ private fun TorrentMetaInfo(
     @DrawableRes
     icon: Int? = null,
 ) {
-    val containerShape = RoundedCornerShape(size = 16.dp)
+    val containerShape = RoundedCornerShape(percent = 100)
     val containerBackgroundColor = MaterialTheme.colorScheme.surfaceContainer
     val containerPaddingValues = PaddingValues(horizontal = 8.dp, vertical = 4.dp)
 
