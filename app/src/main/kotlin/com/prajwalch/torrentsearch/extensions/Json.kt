@@ -24,10 +24,10 @@ fun JsonObject.getUInt(key: String): UInt? = this[key]?.asUInt()
 /** Returns the value of a given key as a [Long]. */
 fun JsonObject.getLong(key: String): Long? = this[key]?.asLong()
 
-/** Returns the json element as an array. */
+/** Returns the json element as a [JsonArray]. */
 fun JsonElement.asArray(): JsonArray = this.jsonArray
 
-/** Returns the json element as an object. */
+/** Returns the json element as a [JsonObject]. */
 fun JsonElement.asObject(): JsonObject = this.jsonObject
 
 /** Returns the json element as string by properly removing the quotes. */
