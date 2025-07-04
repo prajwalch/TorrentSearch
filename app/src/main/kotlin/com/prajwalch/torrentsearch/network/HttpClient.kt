@@ -3,6 +3,7 @@ package com.prajwalch.torrentsearch.network
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.cio.CIO
 import io.ktor.client.request.get
+import io.ktor.client.request.header
 import io.ktor.client.statement.bodyAsText
 
 import kotlinx.serialization.SerializationException
@@ -18,8 +19,15 @@ object HttpClient {
         innerClient.close()
     }
 
-    suspend fun get(url: String): String {
-        return innerClient.get(url).bodyAsText()
+    suspend fun get(
+        url: String,
+        headers: Map<String, String> = emptyMap(),
+    ): String {
+        return innerClient
+            .get(urlString = url) {
+                for ((key, value) in headers) header(key = key, value = value)
+            }
+            .bodyAsText()
     }
 
     suspend fun getJson(url: String): JsonElement? {

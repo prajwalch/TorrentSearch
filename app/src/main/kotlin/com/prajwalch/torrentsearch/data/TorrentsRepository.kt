@@ -2,6 +2,7 @@ package com.prajwalch.torrentsearch.data
 
 import com.prajwalch.torrentsearch.models.Torrent
 import com.prajwalch.torrentsearch.network.HttpClient
+import com.prajwalch.torrentsearch.providers.Eztv
 import com.prajwalch.torrentsearch.providers.ThePirateBay
 import com.prajwalch.torrentsearch.providers.TheRarBg
 import com.prajwalch.torrentsearch.providers.Yts
@@ -13,9 +14,10 @@ import kotlinx.coroutines.coroutineScope
 class TorrentsRepository(private val httpClient: HttpClient) {
     /** List of built-in providers. */
     private val searchProviders: List<SearchProvider> = listOf(
+        Eztv(),
         ThePirateBay(),
         TheRarBg(),
-        Yts()
+        Yts(),
     )
 
     /** Starts a search for the given query. */
