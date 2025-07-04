@@ -16,9 +16,10 @@ import kotlinx.coroutines.launch
 data class SearchScreenUIState(
     val query: String = "",
     val category: Category = Category.All,
-    val results: List<Torrent> = emptyList(),
     val isLoading: Boolean = false,
     val isInternetError: Boolean = false,
+    val resultsNotFound: Boolean = false,
+    val results: List<Torrent> = emptyList(),
 )
 
 /** Drives the search logic. */
@@ -37,23 +38,32 @@ class SearchViewModel(private val torrentsRepository: TorrentsRepository) : View
     }
 
     /** Performs a search. */
-    fun performSearch() {
+    fun performSearch() = viewModelScope.launch {
         if (mUiState.value.query.isEmpty()) {
-            return
+            return@launch
         }
 
-        viewModelScope.launch {
-            updateUIState { it.copy(isLoading = true) }
+        updateUIState { it.copy(isLoading = true) }
 
-            if (!torrentsRepository.isInternetAvailable()) {
-                updateUIState { it.copy(isLoading = false, isInternetError = true) }
-                return@launch
-            }
-
-            val results = torrentsRepository.search(mUiState.value.query, mUiState.value.category)
+        if (!torrentsRepository.isInternetAvailable()) {
             updateUIState {
-                it.copy(results = results, isLoading = false, isInternetError = false)
+                it.copy(
+                    isLoading = false,
+                    isInternetError = true,
+                    resultsNotFound = false
+                )
             }
+            return@launch
+        }
+
+        val results = torrentsRepository.search(mUiState.value.query, mUiState.value.category)
+        updateUIState {
+            it.copy(
+                isLoading = false,
+                isInternetError = false,
+                resultsNotFound = results.isEmpty(),
+                results = results,
+            )
         }
     }
 

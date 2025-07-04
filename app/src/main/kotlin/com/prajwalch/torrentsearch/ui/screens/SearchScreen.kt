@@ -6,9 +6,11 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -18,6 +20,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -99,6 +102,11 @@ private fun SearchScreenContent(
         )
     }
 
+    if (uiState.resultsNotFound) {
+        Spacer(Modifier.height(16.dp))
+        ResultsNotFoundMessage()
+    }
+
     if (uiState.results.isNotEmpty()) {
         TorrentList(torrents = uiState.results, onTorrentSelect = onTorrentSelect)
     }
@@ -124,5 +132,25 @@ private fun NoInternetConnectionMessage(onRetry: () -> Unit, modifier: Modifier 
         Text(stringResource(R.string.no_internet_connection), fontWeight = FontWeight.Bold)
         Spacer(Modifier.height(10.dp))
         Button(onClick = onRetry) { Text(stringResource(R.string.retry)) }
+    }
+}
+
+@Composable
+fun ResultsNotFoundMessage(modifier: Modifier = Modifier) {
+    Column(
+        modifier = modifier,
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center,
+    ) {
+        Icon(
+            modifier = Modifier.size(58.dp),
+            painter = painterResource(R.drawable.ic_sad),
+            contentDescription = null,
+        )
+        Spacer(Modifier.height(8.dp))
+        Text(
+            text = stringResource(R.string.msg_no_results_found),
+            fontWeight = FontWeight.Bold,
+        )
     }
 }
