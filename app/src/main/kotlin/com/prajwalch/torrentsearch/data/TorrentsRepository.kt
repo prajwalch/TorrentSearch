@@ -24,7 +24,7 @@ class TorrentsRepository(private val httpClient: HttpClient) {
 
     /** Starts a search for the given query. */
     suspend fun search(query: String, category: Category): List<Torrent> = coroutineScope {
-        val query = query.replace(oldChar = ' ', newChar = '+')
+        val query = query.replace(oldChar = ' ', newChar = '+').trim()
         val context = SearchContext(category, httpClient)
 
         searchProviders
