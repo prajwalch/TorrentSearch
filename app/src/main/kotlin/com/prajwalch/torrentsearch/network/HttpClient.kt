@@ -32,7 +32,6 @@ object HttpClient {
 
     suspend fun getJson(url: String): JsonElement? {
         val response = get(url)
-        println("url=$url, response=$response")
 
         if (response.isEmpty()) {
             return null
