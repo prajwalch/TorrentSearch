@@ -3,15 +3,16 @@ package com.prajwalch.torrentsearch.providers
 import com.prajwalch.torrentsearch.data.Category
 import com.prajwalch.torrentsearch.data.SearchContext
 import com.prajwalch.torrentsearch.data.SearchProvider
+import com.prajwalch.torrentsearch.extensions.asObject
+import com.prajwalch.torrentsearch.extensions.getArray
+import com.prajwalch.torrentsearch.extensions.getLong
+import com.prajwalch.torrentsearch.extensions.getObject
+import com.prajwalch.torrentsearch.extensions.getString
+import com.prajwalch.torrentsearch.extensions.getUInt
 import com.prajwalch.torrentsearch.models.Torrent
 import com.prajwalch.torrentsearch.utils.prettyDate
 
 import kotlinx.serialization.json.JsonObject
-import kotlinx.serialization.json.int
-import kotlinx.serialization.json.jsonArray
-import kotlinx.serialization.json.jsonObject
-import kotlinx.serialization.json.jsonPrimitive
-import kotlinx.serialization.json.long
 
 class Yts : SearchProvider {
     override fun specializedCategory() = Category.Movies
@@ -49,11 +50,11 @@ class Yts : SearchProvider {
         val responseObject = context
             .httpClient
             .getJson(requestUrl)
-            ?.jsonObject
+            ?.asObject()
             ?: return emptyList()
-        val movieObject = responseObject["data"]
-            ?.jsonObject["movie"]
-            ?.jsonObject
+        val movieObject = responseObject
+            .getObject("data")
+            ?.getObject("movie")
             ?: return emptyList()
 
         return parseMovieObject(movieObject = movieObject)
@@ -83,13 +84,13 @@ class Yts : SearchProvider {
         val responseObject = context
             .httpClient
             .getJson(requestUrl)
-            ?.jsonObject
+            ?.asObject()
             ?: return emptyList()
 
-        val movieObjects = responseObject["data"]
-            ?.jsonObject["movies"]
-            ?.jsonArray
-            ?.map { rawArrayItem -> rawArrayItem.jsonObject }
+        val movieObjects = responseObject
+            .getObject("data")
+            ?.getArray("movies")
+            ?.map { rawArrayItem -> rawArrayItem.asObject() }
             ?: return emptyList()
 
         return movieObjects.flatMap { movieObject ->
@@ -109,14 +110,10 @@ class Yts : SearchProvider {
      * @see [parseTorrentObject]
      */
     private fun parseMovieObject(movieObject: JsonObject): List<Torrent> {
-        val titleLong = movieObject["title_long"]
-            ?.toString()
-            ?.trim('"')
-            ?: return emptyList()
+        val titleLong = movieObject.getString("title_long") ?: return emptyList()
 
-        val torrents = movieObject["torrents"]
-            ?.jsonArray
-            ?.map { rawArrayItem -> rawArrayItem.jsonObject }
+        val torrents = movieObject.getArray("torrents")
+            ?.map { rawArrayItem -> rawArrayItem.asObject() }
             ?.mapNotNull { torrentObject -> parseTorrentObject(titleLong, torrentObject) }
 
         return torrents.orEmpty()
@@ -143,21 +140,18 @@ class Yts : SearchProvider {
      *     Day of the Fight (1951) [720p] [bluray] [x264]
      */
     private fun parseTorrentObject(movieTitle: String, torrentObject: JsonObject): Torrent? {
-        val quality = torrentObject["quality"]?.toString()?.trim('"') ?: "-"
-        val type = torrentObject["type"]?.toString()?.trim('"') ?: "-"
-        val codec = torrentObject["video_codec"]?.toString()?.trim('"') ?: "-"
+        val quality = torrentObject.getString("quality") ?: "-"
+        val type = torrentObject.getString("type") ?: "-"
+        val codec = torrentObject.getString("video_codec") ?: "-"
 
         val name = "$movieTitle [$quality] [$type] [$codec]"
-        val hash = torrentObject["hash"]?.toString()?.trim('"') ?: return null
+        val hash = torrentObject.getString("hash") ?: return null
 
-        val size = torrentObject["size"]?.toString()?.trim('"') ?: return null
-        val seeds = torrentObject["seeds"]?.jsonPrimitive?.int?.toUInt() ?: return null
-        val peers = torrentObject["peers"]?.jsonPrimitive?.int?.toUInt() ?: return null
+        val size = torrentObject.getString("size") ?: return null
+        val seeds = torrentObject.getUInt("seeds") ?: return null
+        val peers = torrentObject.getUInt("peers") ?: return null
 
-        val uploadDateEpochSeconds = torrentObject["date_uploaded_unix"]
-            ?.jsonPrimitive
-            ?.long
-            ?: return null
+        val uploadDateEpochSeconds = torrentObject.getLong("date_uploaded_unix") ?: return null
         val uploadDate = prettyDate(uploadDateEpochSeconds)
 
         return Torrent(

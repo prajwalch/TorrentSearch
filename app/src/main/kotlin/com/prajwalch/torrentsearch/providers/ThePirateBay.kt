@@ -3,13 +3,14 @@ package com.prajwalch.torrentsearch.providers
 import com.prajwalch.torrentsearch.data.Category
 import com.prajwalch.torrentsearch.data.SearchContext
 import com.prajwalch.torrentsearch.data.SearchProvider
+import com.prajwalch.torrentsearch.extensions.asArray
+import com.prajwalch.torrentsearch.extensions.asObject
+import com.prajwalch.torrentsearch.extensions.getString
 import com.prajwalch.torrentsearch.models.Torrent
 import com.prajwalch.torrentsearch.utils.prettyDate
 import com.prajwalch.torrentsearch.utils.prettyFileSize
 
 import kotlinx.serialization.json.JsonObject
-import kotlinx.serialization.json.jsonArray
-import kotlinx.serialization.json.jsonObject
 
 class ThePirateBay : SearchProvider {
     override suspend fun search(query: String, context: SearchContext): List<Torrent> {
@@ -20,14 +21,14 @@ class ThePirateBay : SearchProvider {
         val responseArray = context
             .httpClient
             .getJson(requestUrl)
-            ?.jsonArray
+            ?.asArray()
             ?: return emptyList()
 
         val torrents = responseArray
-            .map { rawArrayItem -> rawArrayItem.jsonObject }
+            .map { rawArrayItem -> rawArrayItem.asObject() }
             .mapNotNull { torrentObject -> parseTorrentObject(torrentObject = torrentObject) }
 
-        return torrents.orEmpty()
+        return torrents
     }
 
     /**
@@ -59,24 +60,20 @@ class ThePirateBay : SearchProvider {
      *     added:              <seconds in string>
      */
     private fun parseTorrentObject(torrentObject: JsonObject): Torrent? {
-        val name = torrentObject["name"]?.toString()?.trim('"') ?: return null
+        val name = torrentObject.getString("name") ?: return null
 
         // Yeah, this is how it returns empty results.
         if (name == "No results returned") {
             return null
         }
 
-        val hash = torrentObject["info_hash"]?.toString()?.trim('"') ?: return null
-        val sizeBytes = torrentObject["size"]?.toString()?.trim('"') ?: return null
+        val hash = torrentObject.getString("info_hash") ?: return null
+        val sizeBytes = torrentObject.getString("size") ?: return null
         val size = prettyFileSize(bytes = sizeBytes)
-        val seeds = torrentObject["seeders"]?.toString()?.trim('"')?.toUIntOrNull() ?: return null
-        val peers = torrentObject["leechers"]?.toString()?.trim('"')?.toUIntOrNull() ?: return null
+        val seeds = torrentObject.getString("seeders")?.toUIntOrNull() ?: return null
+        val peers = torrentObject.getString("leechers")?.toUIntOrNull() ?: return null
 
-        val uploadDateEpochSeconds = torrentObject["added"]
-            ?.toString()
-            ?.trim('"')
-            ?.toLongOrNull()
-            ?: return null
+        val uploadDateEpochSeconds = torrentObject.getString("added")?.toLongOrNull() ?: return null
         val uploadDate = prettyDate(uploadDateEpochSeconds)
 
         return Torrent(
