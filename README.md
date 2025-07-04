@@ -24,9 +24,12 @@ test the application.
 
 ## Screenshots
 
-<img width="256" src="https://github.com/user-attachments/assets/82636251-b2ee-47b7-a0e8-952459b03607" alt="search results for all category">
-<img width="256" src="https://github.com/user-attachments/assets/23e34e86-c3f2-4e83-8377-1bbac80c9833" alt="search results for books category">
-<img width="256" src="https://github.com/user-attachments/assets/d40ac8a4-4f8b-4ad0-9eb8-69954917dff2" alt="client missing dialog with guides on it">
+<img width="256" src="https://github.com/prajwalch/TorrentSearch/blob/main/screenshots/dark_1.jpg" alt="search results for all category">
+<img width="256" src="https://github.com/prajwalch/TorrentSearch/blob/main/screenshots/dark_2.jpg" alt="search results for books category">
+<img width="256" src="https://github.com/prajwalch/TorrentSearch/blob/main/screenshots/dark_3.jpg" alt="client missing dialog with guides on it">
+<img width="256" src="https://github.com/prajwalch/TorrentSearch/blob/main/screenshots/light_1.jpg" alt="search results for all category">
+<img width="256" src="https://github.com/prajwalch/TorrentSearch/blob/main/screenshots/light_2.jpg" alt="search results for books category">
+<img width="256" src="https://github.com/prajwalch/TorrentSearch/blob/main/screenshots/light_3.jpg" alt="client missing dialog with guides on it">
 
 ## Thanks
 
