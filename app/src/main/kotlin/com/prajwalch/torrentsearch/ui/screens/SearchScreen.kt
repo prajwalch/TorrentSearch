@@ -136,7 +136,7 @@ private fun NoInternetConnectionMessage(onRetry: () -> Unit, modifier: Modifier 
 }
 
 @Composable
-fun ResultsNotFoundMessage(modifier: Modifier = Modifier) {
+private fun ResultsNotFoundMessage(modifier: Modifier = Modifier) {
     Column(
         modifier = modifier,
         horizontalAlignment = Alignment.CenterHorizontally,
