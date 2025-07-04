@@ -3,8 +3,8 @@ package com.prajwalch.torrentsearch.providers
 import com.prajwalch.torrentsearch.data.Category
 import com.prajwalch.torrentsearch.data.SearchContext
 import com.prajwalch.torrentsearch.data.SearchProvider
-import com.prajwalch.torrentsearch.models.FileSize
 import com.prajwalch.torrentsearch.models.Torrent
+
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Element
 
@@ -101,14 +101,10 @@ class Eztv : SearchProvider {
         //       from the details page. Let's do that in future.
         val peers = 0u
 
-        // File size parsing.
-        val sizeValue = size.takeWhile { !it.isWhitespace() }.toFloatOrNull() ?: return null
-        val sizeUnit = size.takeLastWhile { !it.isWhitespace() }
-
         return Torrent(
             name = torrentName,
             hash = infoHash,
-            size = FileSize(value = sizeValue, unit = sizeUnit),
+            size = size,
             seeds = seeds.toUIntOrNull() ?: 0u,
             peers = peers,
             providerName = NAME,

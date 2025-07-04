@@ -3,7 +3,6 @@ package com.prajwalch.torrentsearch.providers
 import com.prajwalch.torrentsearch.data.Category
 import com.prajwalch.torrentsearch.data.SearchContext
 import com.prajwalch.torrentsearch.data.SearchProvider
-import com.prajwalch.torrentsearch.models.FileSize
 import com.prajwalch.torrentsearch.models.Torrent
 import com.prajwalch.torrentsearch.network.HttpClient
 
@@ -136,14 +135,10 @@ class TheRarBg : SearchProvider {
             detailsPageUrl = parsedResult.detailsPageUrl,
         ) ?: return null
 
-        // 2. Construct torrent data.
-        val sizeValue = parsedResult.size.takeWhile { !it.isWhitespace() }.toFloat()
-        val sizeUnit = parsedResult.size.takeLastWhile { !it.isWhitespace() }
-
         return Torrent(
             name = parsedResult.name,
             hash = infoHash,
-            size = FileSize(value = sizeValue, unit = sizeUnit),
+            size = parsedResult.size,
             seeds = parsedResult.seeds.toUInt(),
             peers = parsedResult.peers.toUInt(),
             providerName = NAME,

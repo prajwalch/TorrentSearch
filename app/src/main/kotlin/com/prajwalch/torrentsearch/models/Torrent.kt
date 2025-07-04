@@ -7,7 +7,7 @@ typealias MagnetUri = String
 data class Torrent(
     val name: String = "UNKNOWN",
     val hash: String = "0000",
-    val size: FileSize = FileSize(),
+    val size: String = "0 B",
     val seeds: UInt = 0U,
     val peers: UInt = 0U,
     val providerName: String = "default",
@@ -43,32 +43,5 @@ data class Torrent(
             separator = "&tr=",
         )
         return "magnet:?xt=urn:btih:${this.hash}&tr=$formattedTrackers"
-    }
-}
-
-data class FileSize(val value: Float = 0.0F, val unit: String = "B") {
-    companion object {
-        const val KB: Float = 1024.0F
-        const val MB: Float = KB * 1024.0F
-        const val GB: Float = MB * 1024.0F
-        const val TB: Float = GB * 1024.0F
-        const val PB: Float = TB * 1024.0F
-
-        fun fromBytes(bytes: Float): FileSize = when {
-            bytes >= PB -> FileSize(bytes / PB, "PB")
-            bytes >= TB -> FileSize(bytes / TB, "TB")
-            bytes >= GB -> FileSize(bytes / GB, "GB")
-            bytes >= MB -> FileSize(bytes / MB, "MB")
-            bytes >= KB -> FileSize(bytes / KB, "KB")
-            else -> FileSize(0.0F, "B")
-        }
-
-        fun fromString(str: String): FileSize {
-            return fromBytes(str.toFloatOrNull() ?: 0.0F)
-        }
-    }
-
-    override fun toString(): String {
-        return "${"%.2f".format(value)} $unit"
     }
 }

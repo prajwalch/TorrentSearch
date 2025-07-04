@@ -3,12 +3,10 @@ package com.prajwalch.torrentsearch.providers
 import com.prajwalch.torrentsearch.data.Category
 import com.prajwalch.torrentsearch.data.SearchContext
 import com.prajwalch.torrentsearch.data.SearchProvider
-import com.prajwalch.torrentsearch.models.FileSize
 import com.prajwalch.torrentsearch.models.Torrent
 import com.prajwalch.torrentsearch.utils.prettyDate
 
 import kotlinx.serialization.json.JsonObject
-import kotlinx.serialization.json.floatOrNull
 import kotlinx.serialization.json.int
 import kotlinx.serialization.json.jsonArray
 import kotlinx.serialization.json.jsonObject
@@ -152,9 +150,7 @@ class Yts : SearchProvider {
         val name = "$movieTitle [$quality] [$type] [$codec]"
         val hash = torrentObject["hash"]?.toString()?.trim('"') ?: return null
 
-        val sizeBytes = torrentObject["size_bytes"]?.jsonPrimitive?.floatOrNull ?: return null
-        val size = FileSize.fromBytes(sizeBytes)
-
+        val size = torrentObject["size"]?.toString()?.trim('"') ?: return null
         val seeds = torrentObject["seeds"]?.jsonPrimitive?.int?.toUInt() ?: return null
         val peers = torrentObject["peers"]?.jsonPrimitive?.int?.toUInt() ?: return null
 

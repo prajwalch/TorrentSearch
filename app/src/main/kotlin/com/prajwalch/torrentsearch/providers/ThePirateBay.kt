@@ -3,9 +3,9 @@ package com.prajwalch.torrentsearch.providers
 import com.prajwalch.torrentsearch.data.Category
 import com.prajwalch.torrentsearch.data.SearchContext
 import com.prajwalch.torrentsearch.data.SearchProvider
-import com.prajwalch.torrentsearch.models.FileSize
 import com.prajwalch.torrentsearch.models.Torrent
 import com.prajwalch.torrentsearch.utils.prettyDate
+import com.prajwalch.torrentsearch.utils.prettyFileSize
 
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.jsonArray
@@ -68,6 +68,7 @@ class ThePirateBay : SearchProvider {
 
         val hash = torrentObject["info_hash"]?.toString()?.trim('"') ?: return null
         val sizeBytes = torrentObject["size"]?.toString()?.trim('"') ?: return null
+        val size = prettyFileSize(bytes = sizeBytes)
         val seeds = torrentObject["seeders"]?.toString()?.trim('"')?.toUIntOrNull() ?: return null
         val peers = torrentObject["leechers"]?.toString()?.trim('"')?.toUIntOrNull() ?: return null
 
@@ -81,7 +82,7 @@ class ThePirateBay : SearchProvider {
         return Torrent(
             name = name,
             hash = hash,
-            size = FileSize.fromString(sizeBytes),
+            size = size,
             seeds = seeds,
             peers = peers,
             providerName = NAME,
