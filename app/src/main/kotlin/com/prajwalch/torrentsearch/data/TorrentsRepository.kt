@@ -5,6 +5,7 @@ import com.prajwalch.torrentsearch.network.HttpClient
 import com.prajwalch.torrentsearch.providers.Eztv
 import com.prajwalch.torrentsearch.providers.ThePirateBay
 import com.prajwalch.torrentsearch.providers.TheRarBg
+import com.prajwalch.torrentsearch.providers.TorrentsCsv
 import com.prajwalch.torrentsearch.providers.Yts
 
 import kotlinx.coroutines.async
@@ -17,6 +18,7 @@ class TorrentsRepository(private val httpClient: HttpClient) {
         Eztv(),
         ThePirateBay(),
         TheRarBg(),
+        TorrentsCsv(),
         Yts(),
     )
 
