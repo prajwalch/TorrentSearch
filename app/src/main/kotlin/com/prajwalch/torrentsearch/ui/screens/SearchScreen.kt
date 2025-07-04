@@ -90,7 +90,6 @@ private fun SearchScreenContent(
 
     if (uiState.isLoading) {
         LoadingIndicator(modifier = Modifier.fillMaxSize())
-        return
     }
 
     if (uiState.isInternetError) {
@@ -98,10 +97,11 @@ private fun SearchScreenContent(
             modifier = Modifier.fillMaxSize(),
             onRetry = onSearch,
         )
-        return
     }
 
-    TorrentList(torrents = uiState.results, onTorrentSelect = onTorrentSelect)
+    if (uiState.results.isNotEmpty()) {
+        TorrentList(torrents = uiState.results, onTorrentSelect = onTorrentSelect)
+    }
 }
 
 @Composable
