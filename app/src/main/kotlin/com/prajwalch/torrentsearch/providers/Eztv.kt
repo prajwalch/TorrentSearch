@@ -60,6 +60,11 @@ class Eztv : SearchProvider {
     private fun validateHeader(headerTr: Element): Boolean {
         // Checking only the first two would be sufficient? I guess?
         val allTd = headerTr.select("td")
+
+        if (allTd.size != 6) {
+            return false
+        }
+
         // "Show"
         val firstTd = allTd.first() ?: return false
         // "Episode Name"
