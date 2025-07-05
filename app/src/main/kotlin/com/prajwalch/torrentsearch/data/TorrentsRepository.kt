@@ -2,6 +2,7 @@ package com.prajwalch.torrentsearch.data
 
 import com.prajwalch.torrentsearch.models.Torrent
 import com.prajwalch.torrentsearch.network.HttpClient
+import com.prajwalch.torrentsearch.network.HttpClientResponse
 import com.prajwalch.torrentsearch.providers.Eztv
 import com.prajwalch.torrentsearch.providers.ThePirateBay
 import com.prajwalch.torrentsearch.providers.TheRarBg
@@ -9,8 +10,8 @@ import com.prajwalch.torrentsearch.providers.TorrentsCsv
 import com.prajwalch.torrentsearch.providers.Yts
 
 import kotlinx.coroutines.async
-import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.supervisorScope
 
 class TorrentsRepository(private val httpClient: HttpClient) {
     /** List of built-in providers. */
@@ -23,22 +24,49 @@ class TorrentsRepository(private val httpClient: HttpClient) {
     )
 
     /** Starts a search for the given query. */
-    suspend fun search(query: String, category: Category): List<Torrent> = coroutineScope {
-        val query = query.replace(oldChar = ' ', newChar = '+').trim()
-        val context = SearchContext(category, httpClient)
+    suspend fun search(query: String, category: Category): TorrentsRepositoryResult {
+        val query = query.replace(' ', '+').trim()
+        val context = SearchContext(category = category, httpClient = httpClient)
 
-        searchProviders
-            .filter {
-                (category == Category.All)
-                        || (it.specializedCategory() == Category.All)
-                        || (category == it.specializedCategory())
+        return supervisorScope {
+            val results = chooseSearchProviders(category = category)
+                .map { async { it.search(query = query, context = context) } }
+                .map { httpClient.withExceptionHandler { it.await() } }
+
+            // Check for network error.
+            if (results.all { it is HttpClientResponse.Error.NetworkError }) {
+                TorrentsRepositoryResult(isNetworkError = true)
             }
-            .map { async { it.search(query, context) } }
-            .awaitAll()
-            .flatten()
-            .sortedByDescending { it.seeds }
+
+            val torrents = results
+                .filter { it is HttpClientResponse.Ok }
+                .flatMap { (it as HttpClientResponse.Ok).result }
+                .sortedByDescending { it.seeds }
+
+            TorrentsRepositoryResult(torrents = torrents)
+        }
+    }
+
+    /**
+     * Returns the search providers that is capable of handling the given
+     * category.
+     */
+    private fun chooseSearchProviders(category: Category): List<SearchProvider> {
+        if (category == Category.All) {
+            return searchProviders
+        }
+
+        return searchProviders.filter {
+            (it.specializedCategory() == Category.All) || (category == it.specializedCategory())
+        }
     }
 
     /** Returns `true` is the internet is available to perform a `search()`. */
     suspend fun isInternetAvailable(): Boolean = coroutineScope { httpClient.isInternetAvailable() }
 }
+
+data class TorrentsRepositoryResult(
+    val torrents: List<Torrent>? = null,
+    /** Indicates whether network error happened or not. */
+    val isNetworkError: Boolean = false,
+)

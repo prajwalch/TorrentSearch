@@ -56,13 +56,16 @@ class SearchViewModel(private val torrentsRepository: TorrentsRepository) : View
             return@launch
         }
 
-        val results = torrentsRepository.search(mUiState.value.query, mUiState.value.category)
+        val result = torrentsRepository.search(
+            query = mUiState.value.query,
+            category = mUiState.value.category,
+        )
         updateUIState {
             it.copy(
                 isLoading = false,
-                isInternetError = false,
-                resultsNotFound = results.isEmpty(),
-                results = results,
+                isInternetError = result.isNetworkError,
+                resultsNotFound = result.torrents?.isEmpty() ?: false,
+                results = result.torrents.orEmpty(),
             )
         }
     }
