@@ -4,6 +4,7 @@ import com.prajwalch.torrentsearch.models.Torrent
 import com.prajwalch.torrentsearch.network.HttpClient
 import com.prajwalch.torrentsearch.network.HttpClientResponse
 import com.prajwalch.torrentsearch.providers.Eztv
+import com.prajwalch.torrentsearch.providers.NyaaSi
 import com.prajwalch.torrentsearch.providers.ThePirateBay
 import com.prajwalch.torrentsearch.providers.TheRarBg
 import com.prajwalch.torrentsearch.providers.TorrentsCsv
@@ -18,6 +19,7 @@ class TorrentsRepository(private val httpClient: HttpClient) {
     /** List of built-in providers. */
     private val searchProviders: List<SearchProvider> = listOf(
         Eztv(),
+        NyaaSi(),
         ThePirateBay(),
         TheRarBg(),
         TorrentsCsv(),
