@@ -80,14 +80,10 @@ class Eztv : SearchProvider {
 
     /** Parses the table row and returns the [Torrent] if parse succeed. */
     private fun parseTableRow(tr: Element): Torrent? {
-        val torrentName = tr
-            .selectFirst("td:nth-child(2)")
-            ?.selectFirst("a")
-            ?.ownText()
-            ?: return null
+        val torrentName = tr.selectFirst("a.epinfo")?.ownText() ?: return null
 
-        val dloadTd = tr.selectFirst("td:nth-child(3)") ?: return null
-        val infoHash = parseInfoHash(dloadTd = dloadTd) ?: return null
+        val magnetUri = tr.selectFirst("a.magnet")?.attr("href") ?: return null
+        val infoHash = getInfoHashFromMagnetUri(magnetUri = magnetUri) ?: return null
 
         val size = tr.selectFirst("td:nth-child(4)")?.ownText() ?: return null
         // TODO: The date format used the results page is 'time ago'
@@ -117,17 +113,8 @@ class Eztv : SearchProvider {
         )
     }
 
-    /**
-     * Parses and returns the info hash from given <td>, if it's the correct
-     * element.
-     *
-     * Table data layout:
-     *     <anchor with magnet uri><anchor which is not needed>
-     */
-    private fun parseInfoHash(dloadTd: Element): String? {
-        val firstAnchor = dloadTd.firstElementChild() ?: return null
-
-        val magnetUri = firstAnchor.attr("href")
+    /** Extracts and returns the info hash from the given magnet uri. */
+    private fun getInfoHashFromMagnetUri(magnetUri: String): String? {
         val magnetUriPrefix = "magnet:?xt=urn:btih:"
 
         if (!magnetUri.startsWith(magnetUriPrefix)) {
