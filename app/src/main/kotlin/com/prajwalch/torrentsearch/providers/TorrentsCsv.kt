@@ -7,6 +7,7 @@ import com.prajwalch.torrentsearch.extensions.getArray
 import com.prajwalch.torrentsearch.extensions.getLong
 import com.prajwalch.torrentsearch.extensions.getString
 import com.prajwalch.torrentsearch.extensions.getUInt
+import com.prajwalch.torrentsearch.models.InfoHashOrMagnetUri
 import com.prajwalch.torrentsearch.models.Torrent
 import com.prajwalch.torrentsearch.utils.prettyDate
 import com.prajwalch.torrentsearch.utils.prettyFileSize
@@ -51,8 +52,8 @@ class TorrentsCsv : SearchProvider {
      * */
     private fun parseTorrentObject(torrentObject: JsonObject): Torrent? {
         val name = torrentObject.getString("name") ?: return null
-        val hash = torrentObject.getString("infohash") ?: return null
-
+        val infoHash = torrentObject.getString("infohash") ?: return null
+        
         val sizeBytes = torrentObject.getLong("size_bytes") ?: return null
         val size = prettyFileSize(bytes = sizeBytes.toFloat())
 
@@ -64,12 +65,12 @@ class TorrentsCsv : SearchProvider {
 
         return Torrent(
             name = name,
-            hash = hash,
             size = size,
             seeds = seeds,
             peers = peers,
             providerName = NAME,
             uploadDate = uploadDate,
+            infoHashOrMagnetUri = InfoHashOrMagnetUri.InfoHash(infoHash),
         )
     }
 

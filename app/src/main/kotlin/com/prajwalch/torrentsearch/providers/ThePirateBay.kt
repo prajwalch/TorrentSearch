@@ -6,6 +6,7 @@ import com.prajwalch.torrentsearch.data.SearchProvider
 import com.prajwalch.torrentsearch.extensions.asArray
 import com.prajwalch.torrentsearch.extensions.asObject
 import com.prajwalch.torrentsearch.extensions.getString
+import com.prajwalch.torrentsearch.models.InfoHashOrMagnetUri
 import com.prajwalch.torrentsearch.models.Torrent
 import com.prajwalch.torrentsearch.utils.prettyDate
 import com.prajwalch.torrentsearch.utils.prettyFileSize
@@ -69,7 +70,7 @@ class ThePirateBay : SearchProvider {
             return null
         }
 
-        val hash = torrentObject.getString("info_hash") ?: return null
+        val infoHash = torrentObject.getString("info_hash") ?: return null
         val sizeBytes = torrentObject.getString("size") ?: return null
         val size = prettyFileSize(bytes = sizeBytes)
         val seeds = torrentObject.getString("seeders")?.toUIntOrNull() ?: return null
@@ -80,12 +81,12 @@ class ThePirateBay : SearchProvider {
 
         return Torrent(
             name = name,
-            hash = hash,
             size = size,
             seeds = seeds,
             peers = peers,
             providerName = NAME,
-            uploadDate = uploadDate
+            uploadDate = uploadDate,
+            infoHashOrMagnetUri = InfoHashOrMagnetUri.InfoHash(infoHash),
         )
     }
 

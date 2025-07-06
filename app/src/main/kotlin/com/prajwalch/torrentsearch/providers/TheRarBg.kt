@@ -3,6 +3,7 @@ package com.prajwalch.torrentsearch.providers
 import com.prajwalch.torrentsearch.data.Category
 import com.prajwalch.torrentsearch.data.SearchContext
 import com.prajwalch.torrentsearch.data.SearchProvider
+import com.prajwalch.torrentsearch.models.InfoHashOrMagnetUri
 import com.prajwalch.torrentsearch.models.Torrent
 import com.prajwalch.torrentsearch.network.HttpClient
 import com.prajwalch.torrentsearch.network.HttpClientResponse
@@ -147,12 +148,12 @@ class TheRarBg : SearchProvider {
 
         return Torrent(
             name = parsedResult.name,
-            hash = infoHash,
             size = parsedResult.size,
             seeds = parsedResult.seeds.toUInt(),
             peers = parsedResult.peers.toUInt(),
             providerName = NAME,
             uploadDate = parsedResult.uploadDate,
+            infoHashOrMagnetUri = InfoHashOrMagnetUri.InfoHash(infoHash),
         )
     }
 

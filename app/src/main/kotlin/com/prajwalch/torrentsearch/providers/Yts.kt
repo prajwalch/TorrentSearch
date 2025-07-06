@@ -9,8 +9,10 @@ import com.prajwalch.torrentsearch.extensions.getLong
 import com.prajwalch.torrentsearch.extensions.getObject
 import com.prajwalch.torrentsearch.extensions.getString
 import com.prajwalch.torrentsearch.extensions.getUInt
+import com.prajwalch.torrentsearch.models.InfoHashOrMagnetUri
 import com.prajwalch.torrentsearch.models.Torrent
 import com.prajwalch.torrentsearch.utils.prettyDate
+
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
@@ -146,7 +148,7 @@ class Yts : SearchProvider {
         val codec = torrentObject.getString("video_codec") ?: "-"
 
         val name = "$movieTitle [$quality] [$type] [$codec]"
-        val hash = torrentObject.getString("hash") ?: return null
+        val infoHash = torrentObject.getString("hash") ?: return null
 
         val size = torrentObject.getString("size") ?: return null
         val seeds = torrentObject.getUInt("seeds") ?: return null
@@ -157,12 +159,12 @@ class Yts : SearchProvider {
 
         return Torrent(
             name = name,
-            hash = hash,
             size = size,
             seeds = seeds,
             peers = peers,
             providerName = NAME,
-            uploadDate = uploadDate
+            uploadDate = uploadDate,
+            infoHashOrMagnetUri = InfoHashOrMagnetUri.InfoHash(infoHash),
         )
     }
 
