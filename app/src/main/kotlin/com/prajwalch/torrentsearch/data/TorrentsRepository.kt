@@ -9,6 +9,7 @@ import com.prajwalch.torrentsearch.providers.TheRarBg
 import com.prajwalch.torrentsearch.providers.TorrentsCsv
 import com.prajwalch.torrentsearch.providers.Yts
 
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.supervisorScope
@@ -30,7 +31,7 @@ class TorrentsRepository(private val httpClient: HttpClient) {
 
         return supervisorScope {
             val results = chooseSearchProviders(category = category)
-                .map { async { it.search(query = query, context = context) } }
+                .map { async(Dispatchers.IO) { it.search(query = query, context = context) } }
                 .map { httpClient.withExceptionHandler { it.await() } }
 
             // Check for network error.
@@ -39,8 +40,8 @@ class TorrentsRepository(private val httpClient: HttpClient) {
             }
 
             val torrents = results
-                .filter { it is HttpClientResponse.Ok }
-                .flatMap { (it as HttpClientResponse.Ok).result }
+                .mapNotNull { it as? HttpClientResponse.Ok }
+                .flatMap { it.result }
                 .sortedByDescending { it.seeds }
 
             TorrentsRepositoryResult(torrents = torrents)

@@ -11,6 +11,8 @@ import com.prajwalch.torrentsearch.models.Torrent
 import com.prajwalch.torrentsearch.utils.prettyDate
 import com.prajwalch.torrentsearch.utils.prettyFileSize
 
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.JsonObject
 
 class TorrentsCsv : SearchProvider {
@@ -18,16 +20,17 @@ class TorrentsCsv : SearchProvider {
         val queryParams = "?q=$query"
         val requestUrl = "$URL$queryParams"
 
-        val responseObject = context
-            .httpClient
-            .getJson(url = requestUrl)
-            ?.asObject()
-            ?: return emptyList()
+        val responseJson = context.httpClient.getJson(url = requestUrl) ?: return emptyList()
 
-        val torrents = responseObject
-            .getArray("torrents")
-            ?.map { arrayRawItem -> arrayRawItem.asObject() }
-            ?.mapNotNull { torrentObject -> parseTorrentObject(torrentObject = torrentObject) }
+        val torrents = withContext(Dispatchers.Default) {
+            responseJson
+                .asObject()
+                .getArray("torrents")
+                ?.map { arrayRawItem -> arrayRawItem.asObject() }
+                ?.mapNotNull { torrentObject ->
+                    parseTorrentObject(torrentObject = torrentObject)
+                }
+        }
 
         return torrents.orEmpty()
     }

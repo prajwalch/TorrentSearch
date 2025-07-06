@@ -10,6 +10,8 @@ import com.prajwalch.torrentsearch.models.Torrent
 import com.prajwalch.torrentsearch.utils.prettyDate
 import com.prajwalch.torrentsearch.utils.prettyFileSize
 
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.JsonObject
 
 class ThePirateBay : SearchProvider {
@@ -18,15 +20,15 @@ class ThePirateBay : SearchProvider {
         val queryParams = "?q=$query&cat=$categoryIndex"
         val requestUrl = "$URL$queryParams"
 
-        val responseArray = context
-            .httpClient
-            .getJson(requestUrl)
-            ?.asArray()
-            ?: return emptyList()
-
-        val torrents = responseArray
-            .map { rawArrayItem -> rawArrayItem.asObject() }
-            .mapNotNull { torrentObject -> parseTorrentObject(torrentObject = torrentObject) }
+        val responseJson = context.httpClient.getJson(requestUrl) ?: return emptyList()
+        val torrents = withContext(Dispatchers.Default) {
+            responseJson
+                .asArray()
+                .map { rawArrayItem -> rawArrayItem.asObject() }
+                .mapNotNull { torrentObject ->
+                    parseTorrentObject(torrentObject = torrentObject)
+                }
+        }
 
         return torrents
     }

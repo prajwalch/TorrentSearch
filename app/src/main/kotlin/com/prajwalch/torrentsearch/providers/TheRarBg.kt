@@ -5,10 +5,12 @@ import com.prajwalch.torrentsearch.data.SearchContext
 import com.prajwalch.torrentsearch.data.SearchProvider
 import com.prajwalch.torrentsearch.models.Torrent
 import com.prajwalch.torrentsearch.network.HttpClient
+import com.prajwalch.torrentsearch.network.HttpClientResponse
 
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
-import kotlinx.coroutines.awaitAll
-import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.supervisorScope
+import kotlinx.coroutines.withContext
 
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Element
@@ -42,8 +44,17 @@ class TheRarBg : SearchProvider {
             requestUrl = "$requestUrl:category:$category"
         }
 
-        val resultsPageHtml = context.httpClient.get(requestUrl)
-        return parseAndExtractTorrents(httpClient = context.httpClient, html = resultsPageHtml)
+        val resultPageHtml = context.httpClient.get(requestUrl)
+        val parsedRows = withContext(Dispatchers.Default) {
+            parseResultPage(html = resultPageHtml)
+        }
+
+        return parsedRows?.let {
+            processParsedRows(
+                parsedRows = it,
+                httpClient = context.httpClient
+            )
+        }.orEmpty()
     }
 
     /** Returns the compatible category string. */
@@ -61,35 +72,19 @@ class TheRarBg : SearchProvider {
         }
     }
 
-    /** Parses the HTML and returns all the extracted torrents from it. */
-    private suspend fun parseAndExtractTorrents(
-        httpClient: HttpClient,
-        html: String,
-    ): List<Torrent> = coroutineScope {
-        // Results are presented in a <table>, which is the only one present
-        // in a entire document.
-        //
-        // For some time saving, we can directly grab the table body, where the
-        // results are listed.
-        val resultsTableBody = Jsoup
+    /** Parses the HTML and returns all the parsed rows where the data is present. */
+    private fun parseResultPage(html: String): List<TableRowParsedResult>? {
+        return Jsoup
+            // Results are presented in a <table>, which is the only one present
+            // in a entire document.
             .parse(html)
+            // For some time saving, we can directly grab the table body, where the
+            // results are listed.
             .selectFirst("table > tbody")
-            ?: return@coroutineScope emptyList()
-
-        resultsTableBody
             // Grab all the children i.e. <tr>.
-            .children()
+            ?.children()
             // Parse it and extract all the available but required data from it.
-            .mapNotNull { tr -> parseTableRow(tr = tr) }
-            // The info hash is not presented in a table, we have to grab it
-            // from the details page. Therefore, extract it and construct `Torrent`.
-            .map { parsedResult ->
-                async {
-                    processParsedTableRow(httpClient = httpClient, parsedResult = parsedResult)
-                }
-            }
-            .awaitAll()
-            .filterNotNull()
+            ?.mapNotNull { tr -> parseTableRow(tr = tr) }
     }
 
     /** Parses and extracts the necessary information from the table row. */
@@ -122,12 +117,27 @@ class TheRarBg : SearchProvider {
     }
 
     /**
-     * Further processes the parsed table row and returns the fully
-     * constructed [Torrent] if process succeed.
+     * Further processes the parsed table rows and returns the list of final
+     * [Torrent] if process completes successfully.
      */
-    private suspend fun processParsedTableRow(
+    private suspend fun processParsedRows(
+        parsedRows: List<TableRowParsedResult>,
         httpClient: HttpClient,
+    ): List<Torrent> = supervisorScope {
+        parsedRows
+            .map { async { processParsedRow(parsedResult = it, httpClient = httpClient) } }
+            .map { httpClient.withExceptionHandler { it.await() } }
+            .mapNotNull { it as? HttpClientResponse.Ok }
+            .mapNotNull { it.result }
+    }
+
+    /**
+     * Further processes the parsed table row and returns the fully constructed
+     * [Torrent] if process completes successfully.
+     */
+    private suspend fun processParsedRow(
         parsedResult: TableRowParsedResult,
+        httpClient: HttpClient,
     ): Torrent? {
         // 1. Get the info hash from the details page.
         val infoHash = extractInfoHash(
@@ -149,7 +159,10 @@ class TheRarBg : SearchProvider {
     /** Extracts and returns the info hash from the details page, if exists. */
     private suspend fun extractInfoHash(httpClient: HttpClient, detailsPageUrl: String): String? {
         val detailsPageHtml = httpClient.get(url = detailsPageUrl)
-        return Jsoup.parse(detailsPageHtml).selectFirst(".info-hash-value")?.ownText()
+
+        return withContext(Dispatchers.Default) {
+            Jsoup.parse(detailsPageHtml).selectFirst(".info-hash-value")?.ownText()
+        }
     }
 
     private companion object {

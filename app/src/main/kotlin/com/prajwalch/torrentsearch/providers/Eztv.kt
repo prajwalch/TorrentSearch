@@ -5,6 +5,9 @@ import com.prajwalch.torrentsearch.data.SearchContext
 import com.prajwalch.torrentsearch.data.SearchProvider
 import com.prajwalch.torrentsearch.models.Torrent
 
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Element
 
@@ -19,7 +22,9 @@ class Eztv : SearchProvider {
             headers = mapOf("Cookie" to "layout=def_wlinks"),
         )
 
-        return parseHtml(html = responseHtml)
+        return withContext(Dispatchers.Default) {
+            parseHtml(html = responseHtml)
+        }
     }
 
     /** Parses the HTML and returns all the extracted [Torrent]s. */

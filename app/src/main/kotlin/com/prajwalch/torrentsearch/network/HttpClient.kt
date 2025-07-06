@@ -12,6 +12,8 @@ import io.ktor.client.request.get
 import io.ktor.client.request.header
 import io.ktor.client.statement.bodyAsText
 
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import kotlinx.io.IOException
 import kotlinx.serialization.SerializationException
 import kotlinx.serialization.json.Json
@@ -76,8 +78,12 @@ object HttpClient {
             return null
         }
 
-        return try {
-            Json.parseToJsonElement(response)
+        return parseJson(response)
+    }
+
+    private suspend fun parseJson(string: String) = withContext(Dispatchers.Default) {
+        try {
+            Json.parseToJsonElement(string)
         } catch (_: SerializationException) {
             null
         }

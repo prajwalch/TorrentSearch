@@ -11,6 +11,8 @@ import com.prajwalch.torrentsearch.extensions.getString
 import com.prajwalch.torrentsearch.extensions.getUInt
 import com.prajwalch.torrentsearch.models.Torrent
 import com.prajwalch.torrentsearch.utils.prettyDate
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
 import kotlinx.serialization.json.JsonObject
 
@@ -47,17 +49,18 @@ class Yts : SearchProvider {
         val queryParams = "?imdb_id=$imdbId"
         val requestUrl = "$BASE_URL$path$queryParams"
 
-        val responseObject = context
-            .httpClient
-            .getJson(requestUrl)
-            ?.asObject()
-            ?: return emptyList()
-        val movieObject = responseObject
-            .getObject("data")
-            ?.getObject("movie")
-            ?: return emptyList()
+        val responseJson = context.httpClient.getJson(url = requestUrl) ?: return emptyList()
+        val torrents = withContext(Dispatchers.Default) {
+            responseJson
+                .asObject()
+                .getObject("data")
+                ?.getObject("movie")
+                ?.let { movieObject ->
+                    parseMovieObject(movieObject = movieObject)
+                }
+        }
 
-        return parseMovieObject(movieObject = movieObject)
+        return torrents.orEmpty()
     }
 
     /**
@@ -81,21 +84,19 @@ class Yts : SearchProvider {
         val queryParams = "?query_term=$query"
         val requestUrl = "$BASE_URL$path$queryParams"
 
-        val responseObject = context
-            .httpClient
-            .getJson(requestUrl)
-            ?.asObject()
-            ?: return emptyList()
-
-        val movieObjects = responseObject
-            .getObject("data")
-            ?.getArray("movies")
-            ?.map { rawArrayItem -> rawArrayItem.asObject() }
-            ?: return emptyList()
-
-        return movieObjects.flatMap { movieObject ->
-            parseMovieObject(movieObject = movieObject)
+        val responseJson = context.httpClient.getJson(url = requestUrl) ?: return emptyList()
+        val torrents = withContext(Dispatchers.Default) {
+            responseJson
+                .asObject()
+                .getObject("data")
+                ?.getArray("movies")
+                ?.map { rawArrayItem -> rawArrayItem.asObject() }
+                ?.flatMap { movieObject ->
+                    parseMovieObject(movieObject = movieObject)
+                }
         }
+
+        return torrents.orEmpty()
     }
 
     /**
