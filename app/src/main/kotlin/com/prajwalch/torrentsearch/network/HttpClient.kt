@@ -1,7 +1,9 @@
 package com.prajwalch.torrentsearch.network
 
+import android.util.Log
+
 import io.ktor.client.HttpClient
-import io.ktor.client.engine.cio.CIO
+import io.ktor.client.engine.okhttp.OkHttp
 import io.ktor.client.network.sockets.ConnectTimeoutException
 import io.ktor.client.network.sockets.SocketTimeoutException
 import io.ktor.client.plugins.HttpRequestRetry
@@ -19,20 +21,28 @@ import kotlinx.serialization.SerializationException
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonElement
 
+/** Primary object for making network request. */
 object HttpClient {
-    private val innerClient by lazy {
-        HttpClient(CIO) {
-            install(HttpRequestRetry) {
-                retryOnExceptionIf(maxRetries = 3) { request, cause ->
-                    cause is HttpRequestTimeoutException
-                            || cause is ConnectTimeoutException
-                            || cause is SocketTimeoutException
+    private const val TAG = "TorrentSearchHttpClient"
+    private val innerClient by lazy { createClient() }
+
+    /** Creates and configures the inner/underlying http client. */
+    private fun createClient() = HttpClient(OkHttp) {
+        install(HttpRequestRetry) {
+            retryOnExceptionIf(maxRetries = 3) { request, cause ->
+                when (cause) {
+                    is HttpRequestTimeoutException -> true
+                    is ConnectTimeoutException -> true
+                    is SocketTimeoutException -> true
+                    else -> false
                 }
             }
         }
     }
 
+    /** Completely closes the connection. */
     fun close() {
+        Log.i(TAG, "Closing the connection")
         innerClient.close()
     }
 
@@ -60,7 +70,34 @@ object HttpClient {
         }
     }
 
+    /**
+     * Makes a GET request and returns the response as is.
+     *
+     * This function throws an exception therefore it is recommended to wrap
+     * the calling function inside the [HttpClient.withExceptionHandler], as shown in the
+     * code below.
+     *
+     * ```kotlin
+     * suspend fun makeRequest(): SomeCustomData {
+     *     val res = httpClient.get(...)
+     *     // may parsing?
+     *     return ...
+     * }
+     *
+     * suspend fun fetchAllData(): List<SomeCustomData> {
+     *     for (i in 1..5) {
+     *         val response = httpClient.withExceptionHandler { makeRequest() }
+     *         // Handle response gracefully.
+     *     }
+     *     ...
+     * }
+     * ```
+     *
+     * Note: The optional headers are currently being used by Eztv provider only.
+     *       See its source code to understand why.
+     */
     suspend fun get(url: String, headers: Map<String, String> = emptyMap()): String {
+        Log.i(TAG, "Making a request to $url (headers=$headers)")
         return innerClient.get(urlString = url) {
             for ((key, value) in headers) header(key = key, value = value)
             timeout {
@@ -71,6 +108,10 @@ object HttpClient {
         }.bodyAsText()
     }
 
+    /**
+     * Makes a GET request, parses the response body as Json and returns it,
+     * if no any parsing error occurs, otherwise returns `null`.
+     */
     suspend fun getJson(url: String): JsonElement? {
         val response = get(url)
 
@@ -78,17 +119,30 @@ object HttpClient {
             return null
         }
 
+        Log.i(TAG, "Received a maybe json?: $response")
+        Log.i(TAG, "Parsing it...")
         return parseJson(response)
     }
 
+    /**
+     * Parses teh given string as json and returns it, if parsing error
+     * doesn't occurs, otherwise returns `null`.
+     */
     private suspend fun parseJson(string: String) = withContext(Dispatchers.Default) {
         try {
-            Json.parseToJsonElement(string)
-        } catch (_: SerializationException) {
+            val json = Json.parseToJsonElement(string)
+            Log.i(TAG, "Json parsed successfully")
+            json
+        } catch (e: SerializationException) {
+            Log.e(TAG, "Json parsing failed, ${e.message}")
             null
         }
     }
 
+    /**
+     * Returns `true` if the network is reachable, meaning if a successful
+     * request can be made.
+     */
     suspend fun isInternetAvailable(): Boolean {
         return try {
             val response = innerClient.get("https://clients3.google.com/generate_204")
