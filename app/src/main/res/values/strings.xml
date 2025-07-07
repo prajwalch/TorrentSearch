@@ -21,4 +21,10 @@
     <string name="flud_client_link_label">Flud (recommended)</string>
     <string name="libretorrent_client_link_label">LibreTorrent</string>
     <string name="button_done">Done</string>
+
+    <!-- Torrent actions bottom sheet-->
+    <string name="action_download">Download</string>
+    <string name="action_copy_magnet_link">Copy magnet link</string>
+    <string name="action_share_magnet_link">Share magnet link</string>
+    <string name="hint_magnet_link_copied">Magnet link copied to clipboard!</string>
 </resources>

@@ -27,7 +27,7 @@ import androidx.compose.ui.unit.dp
 
 import com.prajwalch.torrentsearch.R
 import com.prajwalch.torrentsearch.data.Category
-import com.prajwalch.torrentsearch.models.MagnetUri
+import com.prajwalch.torrentsearch.models.Torrent
 import com.prajwalch.torrentsearch.ui.components.CategoryChipsRow
 import com.prajwalch.torrentsearch.ui.components.TopSearchBar
 import com.prajwalch.torrentsearch.ui.components.TorrentList
@@ -37,7 +37,7 @@ import com.prajwalch.torrentsearch.ui.viewmodel.SearchViewModel
 @Composable
 fun SearchScreen(
     viewModel: SearchViewModel,
-    onTorrentSelect: (MagnetUri) -> Unit,
+    onTorrentSelect: (Torrent) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val uiState by viewModel.uiState.collectAsState()
@@ -70,7 +70,7 @@ private fun SearchScreenContent(
     onQueryChange: (String) -> Unit,
     onCategoryChange: (Category) -> Unit,
     onSearch: () -> Unit,
-    onTorrentSelect: (MagnetUri) -> Unit,
+    onTorrentSelect: (Torrent) -> Unit,
 ) {
     Spacer(Modifier.height(8.dp))
     TopSearchBar(

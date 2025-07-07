@@ -3,6 +3,7 @@ package com.prajwalch.torrentsearch
 import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -32,7 +33,8 @@ class MainActivity : ComponentActivity() {
             TorrentSearchTheme {
                 TorrentSearchApp(
                     searchViewModel = searchViewModel,
-                    onDownloadRequest = ::downloadTorrentViaClient
+                    onDownloadRequest = ::downloadTorrentViaClient,
+                    onMagnetLinkShareRequest = ::shareMagnetLink,
                 )
             }
         }
@@ -50,7 +52,28 @@ class MainActivity : ComponentActivity() {
             startActivity(torrentClientOpenIntent)
             true
         } catch (_: ActivityNotFoundException) {
+            Log.e(TAG, "Torrent client launch failed. (Activity not found)")
             false
         }
+    }
+
+    /** Starts the application chooser to share magnet uri with. */
+    private fun shareMagnetLink(magnetUri: MagnetUri) {
+        val sendIntent = Intent().apply {
+            action = Intent.ACTION_SEND
+            putExtra(Intent.EXTRA_TEXT, magnetUri)
+            type = "text/plain"
+        }
+        val shareIntent = Intent.createChooser(sendIntent, null)
+
+        try {
+            startActivity(shareIntent)
+        } catch (_: ActivityNotFoundException) {
+            Log.e(TAG, "Magnet uri share intent launch failed. (Activity not found)")
+        }
+    }
+
+    private companion object {
+        private const val TAG = "MainActivity"
     }
 }

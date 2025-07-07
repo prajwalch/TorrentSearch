@@ -24,20 +24,19 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 
 import com.prajwalch.torrentsearch.R
-import com.prajwalch.torrentsearch.models.MagnetUri
 import com.prajwalch.torrentsearch.models.Torrent
 
 @Composable
 fun TorrentList(
     torrents: List<Torrent>,
-    onTorrentSelect: (MagnetUri) -> Unit,
+    onTorrentSelect: (Torrent) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     LazyColumn(modifier = modifier) {
         items(items = torrents) {
             TorrentListItem(
                 torrent = it,
-                modifier = Modifier.clickable { onTorrentSelect(it.magnetUri()) },
+                modifier = Modifier.clickable { onTorrentSelect(it) },
             )
         }
     }
