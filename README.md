@@ -1,6 +1,6 @@
 # Torrent Search
 
-![ic_launcher](https://github.com/prajwalch/TorrentSearch/blob/main/app/src/main/res/mipmap-xxxhdpi/ic_launcher.webp)
+![ic_launcher](https://github.com/prajwalch/TorrentSearch/blob/main/fastlane/metadata/android/en-US/images/icon.png)
 
 An android app to search and download torrents from multiple providers.
 
@@ -24,9 +24,9 @@ test the application.
 
 ## Screenshots
 
-| <img width="256" src="https://github.com/prajwalch/TorrentSearch/blob/main/screenshots/dark_1.jpg?raw=true" alt="search results for all category">  	| <img width="256" src="https://github.com/prajwalch/TorrentSearch/blob/main/screenshots/dark_2.jpg?raw=true" alt="search results for books category">  	| <img width="256" src="https://github.com/prajwalch/TorrentSearch/blob/main/screenshots/dark_3.jpg?raw=true" alt="client missing dialog with guides on it">  	|
+| <img width="256" src="https://github.com/prajwalch/TorrentSearch/blob/main/fastlane/metadata/android/en-US/images/phoneScreenshots/dark_1.jpg" alt="search results for all category">  	| <img width="256" src="https://github.com/prajwalch/TorrentSearch/blob/main/fastlane/metadata/android/en-US/images/phoneScreenshots/dark_2.jpg" alt="search results for books category">  	| <img width="256" src="https://github.com/prajwalch/TorrentSearch/blob/main/fastlane/metadata/android/en-US/images/phoneScreenshots/dark_3.jpg" alt="client missing dialog with guides on it">  	|
 |-----------------------------------------------------------------------------------------------------------------------------------------------------	|-------------------------------------------------------------------------------------------------------------------------------------------------------	|-------------------------------------------------------------------------------------------------------------------------------------------------------------	|
-| <img width="256" src="https://github.com/prajwalch/TorrentSearch/blob/main/screenshots/light_1.jpg?raw=true" alt="search results for all category"> 	| <img width="256" src="https://github.com/prajwalch/TorrentSearch/blob/main/screenshots/light_2.jpg?raw=true" alt="search results for books category"> 	| <img width="256" src="https://github.com/prajwalch/TorrentSearch/blob/main/screenshots/light_3.jpg?raw=true" alt="client missing dialog with guides on it"> 	|
+| <img width="256" src="https://github.com/prajwalch/TorrentSearch/blob/main/fastlane/metadata/android/en-US/images/phoneScreenshots/light_1.jpg" alt="search results for all category"> 	| <img width="256" src="https://github.com/prajwalch/TorrentSearch/blob/main/fastlane/metadata/android/en-US/images/phoneScreenshots/light_2.jpg" alt="search results for books category"> 	| <img width="256" src="https://github.com/prajwalch/TorrentSearch/blob/main/fastlane/metadata/android/en-US/images/phoneScreenshots/light_3.jpg" alt="client missing dialog with guides on it"> 	|
 
 ## Thanks
 
