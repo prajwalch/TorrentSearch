@@ -129,9 +129,9 @@ private fun NoInternetConnectionMessage(onRetry: () -> Unit, modifier: Modifier 
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        Text(stringResource(R.string.no_internet_connection), fontWeight = FontWeight.Bold)
+        Text(stringResource(R.string.msg_no_internet_connection), fontWeight = FontWeight.Bold)
         Spacer(Modifier.height(10.dp))
-        Button(onClick = onRetry) { Text(stringResource(R.string.retry)) }
+        Button(onClick = onRetry) { Text(stringResource(R.string.button_retry)) }
     }
 }
 

@@ -2,13 +2,15 @@
     <string name="app_name" translatable="false">Torrent Search</string>
 
     <!-- Top search bar -->
-    <string name="search">Search...</string>
-    <string name="btn_unfocus_search_bar">Unfocus search bar and hide keyboard</string>
-    <string name="clear_search_query">Clear search query</string>
-    <string name="selected_category">Selected category</string>
+    <string name="search">Search…</string>
+    <string name="desc_unfocus_search_bar">Unfocus search bar and hide keyboard</string>
+    <string name="desc_clear_search_query">Clear search query</string>
+    <string name="desc_selected_category">Selected category</string>
 
-    <string name="no_internet_connection">No internet connection</string>
-    <string name="retry">Retry</string>
+    <!-- No internet connection error -->
+    <string name="msg_no_internet_connection">No internet connection</string>
+    <string name="button_retry">Retry</string>
+
     <string name="msg_no_results_found">No results found</string>
 
     <!-- Torrent client not found dialog -->
@@ -22,7 +24,7 @@
     <string name="libretorrent_client_link_label">LibreTorrent</string>
     <string name="button_done">Done</string>
 
-    <!-- Torrent actions bottom sheet-->
+    <!-- Torrent actions bottom sheet -->
     <string name="action_download">Download</string>
     <string name="action_copy_magnet_link">Copy magnet link</string>
     <string name="action_share_magnet_link">Share magnet link</string>

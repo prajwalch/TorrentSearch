@@ -67,7 +67,7 @@ private fun CategoryChip(
             if (selected) Icon(
                 modifier = Modifier.size(leadingIconSize),
                 imageVector = Icons.Outlined.Done,
-                contentDescription = stringResource(R.string.selected_category),
+                contentDescription = stringResource(R.string.desc_selected_category),
             )
         },
         border = border

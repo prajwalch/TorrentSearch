@@ -31,6 +31,7 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
+
 import com.prajwalch.torrentsearch.R
 
 @Composable
@@ -101,7 +102,7 @@ private fun LeadingIcon(isFocused: Boolean, onBack: () -> Unit, modifier: Modifi
         Icon(
             modifier = modifier,
             imageVector = Icons.AutoMirrored.Outlined.ArrowBack,
-            contentDescription = stringResource(R.string.btn_unfocus_search_bar),
+            contentDescription = stringResource(R.string.desc_unfocus_search_bar),
         )
     }
 }
@@ -111,7 +112,7 @@ private fun ClearQueryIconButton(onClick: () -> Unit, modifier: Modifier = Modif
     IconButton(onClick = onClick, modifier = modifier) {
         Icon(
             Icons.Default.Clear,
-            contentDescription = stringResource(R.string.clear_search_query)
+            contentDescription = stringResource(R.string.desc_clear_search_query)
         )
     }
 }
