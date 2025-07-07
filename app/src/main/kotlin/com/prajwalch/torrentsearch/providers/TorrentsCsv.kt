@@ -53,7 +53,7 @@ class TorrentsCsv : SearchProvider {
     private fun parseTorrentObject(torrentObject: JsonObject): Torrent? {
         val name = torrentObject.getString("name") ?: return null
         val infoHash = torrentObject.getString("infohash") ?: return null
-        
+
         val sizeBytes = torrentObject.getLong("size_bytes") ?: return null
         val size = prettyFileSize(bytes = sizeBytes.toFloat())
 
