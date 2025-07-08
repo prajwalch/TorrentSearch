@@ -79,14 +79,40 @@ private fun ClientList(modifier: Modifier = Modifier) {
     // 1. Create links and then create text content.
     val links = listOf(
         // (link, label)
-        Pair(
-            buildPlayStoreLink(packageId = "com.delphicoder.flud"),
-            stringResource(R.string.flud_client_link_label)
-        ),
+        //
+        // LibreTorrent.
         Pair(
             buildPlayStoreLink(packageId = "org.proninyaroslav.libretorrent"),
-            stringResource(R.string.libretorrent_client_link_label)
-        )
+            stringResource(R.string.libretorrent_client_link_label, "PlayStore"),
+        ),
+        Pair(
+            buildFDroidLink(packageId = "org.proninyaroslav.libretorrent"),
+            stringResource(R.string.libretorrent_client_link_label, "F-Droid"),
+        ),
+        // Aria2App.
+        Pair(
+            buildFDroidLink(packageId = "com.gianlu.aria2app"),
+            stringResource(R.string.aria2_client_link_label),
+        ),
+        // PikaTorrent.
+        Pair(
+            buildPlayStoreLink(packageId = "com.pikatorrent.PikaTorrent"),
+            stringResource(R.string.pikatorrent_client_link_label, "PlayStore"),
+        ),
+        Pair(
+            buildGithubReleaseLink(username = "G-Ray", repo = "pikatorrent"),
+            stringResource(R.string.pikatorrent_client_link_label, "Github"),
+        ),
+        // Gopeed.
+        Pair(
+            buildGithubReleaseLink(username = "GopeedLab", repo = "gopeed"),
+            stringResource(R.string.gopeed_client_link_label),
+        ),
+        // TorrServe.
+        Pair(
+            buildFDroidLink(packageId = "ru.yourok.torrserve"),
+            stringResource(R.string.torrserve_client_link_label),
+        ),
     )
     // <url>[placeholder]
     val linkIndicatorPlaceholder = "link_indicator"
@@ -133,9 +159,22 @@ private fun ClientList(modifier: Modifier = Modifier) {
     Text(modifier = modifier, text = content, inlineContent = placeholderReplacements)
 }
 
+private fun buildFDroidLink(packageId: String): LinkAnnotation.Url {
+    val url = "https://f-droid.org/en/packages/$packageId"
+    return buildLink(url = url)
+}
+
+private fun buildGithubReleaseLink(username: String, repo: String): LinkAnnotation.Url {
+    val url = "https://github.com/$username/$repo/releases"
+    return buildLink(url = url)
+}
+
 private fun buildPlayStoreLink(packageId: String): LinkAnnotation.Url {
     val url = "https://play.google.com/store/apps/details?id=$packageId"
+    return buildLink(url = url)
+}
 
+private fun buildLink(url: String): LinkAnnotation.Url {
     val urlColor = Color(0xFF2196F3)
     val urlStyle = TextLinkStyles(
         style = SpanStyle(color = urlColor)
