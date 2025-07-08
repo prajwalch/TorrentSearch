@@ -1,32 +1,39 @@
-# Torrent Search
+<div align="center"
 
 ![ic_launcher](https://github.com/prajwalch/TorrentSearch/blob/main/fastlane/metadata/android/en-US/images/icon.png)
 
-An android app to search and download torrents from multiple providers.
+[![Latest release](https://img.shields.io/github/v/release/prajwalch/TorrentSearch?style=for-the-badge)](https://github.com/prajwalch/TorrentSearch/releases) 
+[![IzzyOnDroid version](https://img.shields.io/endpoint?url=https://apt.izzysoft.de/fdroid/api/v1/shield/com.prajwalch.torrentsearch&style=for-the-badge)](https://apt.izzysoft.de/fdroid/index/apk/com.prajwalch.torrentsearch)
+[![Downloads](https://img.shields.io/github/downloads/prajwalch/TorrentSearch/total?style=for-the-badge)](https://github.com/prajwalch/TorrentSearch/releases)
+
+# Torrent Search
+
+An Android app to search and download torrents from multiple providers.
+
+<br>
+<br>
+
+<img width="20.5%" src="https://github.com/prajwalch/TorrentSearch/blob/main/fastlane/metadata/android/en-US/images/phoneScreenshots/dark_1.jpg" alt="search results for all category">
+<img width="20.5%" src="https://github.com/prajwalch/TorrentSearch/blob/main/fastlane/metadata/android/en-US/images/phoneScreenshots/dark_3.jpg" alt="client missing dialog with guides on it">  	
+<img width="20.5%" src="https://github.com/prajwalch/TorrentSearch/blob/main/fastlane/metadata/android/en-US/images/phoneScreenshots/light_2.jpg" alt="search results for books category">
+<img width="20.5%" src="https://github.com/prajwalch/TorrentSearch/blob/main/fastlane/metadata/android/en-US/images/phoneScreenshots/light_3.jpg" alt="client missing dialog with guides on it">
+
+</div>
 
 ## Features
 
 - Search
     - For tuning the search, different categories is provided.
-- Download (requires external client)
+- Download (requires an external client)
 
-## Installation
+## Download
 
-As of now, builds are only available on Github either
-from [releases page](https://github.com/prajwalch/TorrentSearch/releases) or
-from [build action](https://github.com/prajwalch/TorrentSearch/actions?query=event:push).
+[<img src="https://github.com/machiav3lli/oandbackupx/blob/034b226cea5c1b30eb4f6a6f313e4dadcbb0ece4/badge_github.png" alt="Get it on GitHub" height="80">](https://github.com/prajwalch/TorrentSearch/releases/latest/)
+[<img src="https://gitlab.com/IzzyOnDroid/repo/-/raw/master/assets/IzzyOnDroid.png" height="80" alt="Get it on IzzyOnDroid">](https://apt.izzysoft.de/fdroid/index/apk/com.prajwalch.torrentsearch)
 
-The release APK will be listed on the release page automatically when a new version is released.
-
-The debug APK will be provided under the artifact section of workflow run. These are created for
-each commit/push done to the repository and can be used by anyone to try out new features or just to
-test the application.
-
-## Screenshots
-
-| <img width="256" src="https://github.com/prajwalch/TorrentSearch/blob/main/fastlane/metadata/android/en-US/images/phoneScreenshots/dark_1.jpg" alt="search results for all category">  	| <img width="256" src="https://github.com/prajwalch/TorrentSearch/blob/main/fastlane/metadata/android/en-US/images/phoneScreenshots/dark_2.jpg" alt="search results for books category">  	| <img width="256" src="https://github.com/prajwalch/TorrentSearch/blob/main/fastlane/metadata/android/en-US/images/phoneScreenshots/dark_3.jpg" alt="client missing dialog with guides on it">  	|
-|-----------------------------------------------------------------------------------------------------------------------------------------------------	|-------------------------------------------------------------------------------------------------------------------------------------------------------	|-------------------------------------------------------------------------------------------------------------------------------------------------------------	|
-| <img width="256" src="https://github.com/prajwalch/TorrentSearch/blob/main/fastlane/metadata/android/en-US/images/phoneScreenshots/light_1.jpg" alt="search results for all category"> 	| <img width="256" src="https://github.com/prajwalch/TorrentSearch/blob/main/fastlane/metadata/android/en-US/images/phoneScreenshots/light_2.jpg" alt="search results for books category"> 	| <img width="256" src="https://github.com/prajwalch/TorrentSearch/blob/main/fastlane/metadata/android/en-US/images/phoneScreenshots/light_3.jpg" alt="client missing dialog with guides on it"> 	|
+The Nightly versions are also available under the artifact section of workflow run (You may require to logging in to Github). These are created for
+each commit/push done to the repository and can be used by anyone to test new features. Please note
+that Nightly builds can contain bugs and may not work properly.
 
 ## Thanks
 
