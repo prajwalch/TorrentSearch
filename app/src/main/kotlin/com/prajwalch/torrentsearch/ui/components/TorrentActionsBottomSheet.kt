@@ -31,6 +31,9 @@ fun TorrentActionsBottomSheet(
     onDownloadClick: () -> Unit,
     onCopyMagnetLinkClick: () -> Unit,
     onShareMagnetLinkClick: () -> Unit,
+    onOpenDescriptionPageClick: () -> Unit,
+    onCopyDescriptionPageUrlClick: () -> Unit,
+    onShareDescriptionPageUrlClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     // Make the background slightly darker.
@@ -59,6 +62,21 @@ fun TorrentActionsBottomSheet(
         }
         ShareMagnetLinkAction {
             onShareMagnetLinkClick()
+            onDismissRequest()
+        }
+
+        HorizontalDivider()
+
+        OpenDescriptionPageAction {
+            onOpenDescriptionPageClick()
+            onDismissRequest()
+        }
+        CopyDescriptionPageUrlAction {
+            onCopyDescriptionPageUrlClick()
+            onDismissRequest()
+        }
+        ShareDescriptionPageUrlAction {
+            onShareDescriptionPageUrlClick()
             onDismissRequest()
         }
         Spacer(Modifier.Companion.height(8.dp))
@@ -91,6 +109,36 @@ private fun ShareMagnetLinkAction(modifier: Modifier = Modifier, onClick: () -> 
         modifier = modifier,
         leadingIconId = R.drawable.ic_share,
         label = stringResource(R.string.action_share_magnet_link),
+        onClick = onClick,
+    )
+}
+
+@Composable
+private fun OpenDescriptionPageAction(modifier: Modifier = Modifier, onClick: () -> Unit) {
+    Action(
+        modifier = modifier,
+        leadingIconId = R.drawable.ic_public,
+        label = stringResource(R.string.action_open_description_page),
+        onClick = onClick,
+    )
+}
+
+@Composable
+private fun CopyDescriptionPageUrlAction(modifier: Modifier = Modifier, onClick: () -> Unit) {
+    Action(
+        modifier = modifier,
+        leadingIconId = R.drawable.ic_copy,
+        label = stringResource(R.string.action_copy_description_page_url),
+        onClick = onClick,
+    )
+}
+
+@Composable
+private fun ShareDescriptionPageUrlAction(modifier: Modifier = Modifier, onClick: () -> Unit) {
+    Action(
+        modifier = modifier,
+        leadingIconId = R.drawable.ic_share,
+        label = stringResource(R.string.action_share_description_page_url),
         onClick = onClick,
     )
 }

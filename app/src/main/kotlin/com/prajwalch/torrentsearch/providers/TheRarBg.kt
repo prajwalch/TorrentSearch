@@ -153,6 +153,7 @@ class TheRarBg : SearchProvider {
             peers = parsedResult.peers.toUInt(),
             providerName = NAME,
             uploadDate = parsedResult.uploadDate,
+            descriptionPageUrl = parsedResult.detailsPageUrl,
             infoHashOrMagnetUri = InfoHashOrMagnetUri.InfoHash(infoHash),
         )
     }

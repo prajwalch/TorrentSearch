@@ -16,7 +16,7 @@ class Eztv : SearchProvider {
     override fun specializedCategory() = Category.Series
 
     override suspend fun search(query: String, context: SearchContext): List<Torrent> {
-        val requestUrl = "$URL$query"
+        val requestUrl = "$BASE_URL/search/$query"
         // Without setting that cookie, it returns results without magnet links.
         val responseHtml = context.httpClient.get(
             url = requestUrl,
@@ -81,7 +81,11 @@ class Eztv : SearchProvider {
 
     /** Parses the table row and returns the [Torrent] if parse succeed. */
     private fun parseTableRow(tr: Element): Torrent? {
-        val torrentName = tr.selectFirst("a.epinfo")?.ownText() ?: return null
+        val epInfoAnchorElement = tr.selectFirst("a.epinfo") ?: return null
+        val torrentName = epInfoAnchorElement.ownText()
+
+        val descriptionPagePath = epInfoAnchorElement.attr("href")
+        val descriptionPageUrl = "$BASE_URL$descriptionPagePath"
 
         val magnetUri = tr.selectFirst("a.magnet")?.attr("href") ?: return null
         val size = tr.selectFirst("td:nth-child(4)")?.ownText() ?: return null
@@ -108,12 +112,13 @@ class Eztv : SearchProvider {
             peers = peers,
             providerName = NAME,
             uploadDate = uploadDate,
+            descriptionPageUrl = descriptionPageUrl,
             infoHashOrMagnetUri = InfoHashOrMagnetUri.MagnetUri(magnetUri),
         )
     }
 
     private companion object {
-        private const val URL = "https://eztvx.to/search/"
+        private const val BASE_URL = "https://eztvx.to"
         private const val NAME = "eztvx.to"
     }
 }

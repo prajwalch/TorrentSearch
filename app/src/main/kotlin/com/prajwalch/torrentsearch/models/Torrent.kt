@@ -17,6 +17,8 @@ data class Torrent(
     val providerName: String,
     /** Torrent upload date (in pretty format). */
     val uploadDate: String,
+    /** URL of the page where the torrent details is available. */
+    val descriptionPageUrl: String,
     /**
      * Either info hash or magnet URI of the torrent.
      *

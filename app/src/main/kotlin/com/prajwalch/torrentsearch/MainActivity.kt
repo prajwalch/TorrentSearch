@@ -35,6 +35,8 @@ class MainActivity : ComponentActivity() {
                     searchViewModel = searchViewModel,
                     onDownloadRequest = ::downloadTorrentViaClient,
                     onMagnetLinkShareRequest = ::shareMagnetLink,
+                    onOpenDescriptionPageRequest = ::openDescriptionPage,
+                    onShareDescriptionPageUrlRequest = ::shareDescriptionPageUrl,
                 )
             }
         }
@@ -70,6 +72,33 @@ class MainActivity : ComponentActivity() {
             startActivity(shareIntent)
         } catch (_: ActivityNotFoundException) {
             Log.e(TAG, "Magnet uri share intent launch failed. (Activity not found)")
+        }
+    }
+
+    /** Opens a description page in a default browser. */
+    private fun openDescriptionPage(url: String) {
+        val openPageIntent = Intent(Intent.ACTION_VIEW, url.toUri())
+
+        try {
+            startActivity(openPageIntent)
+        } catch (_: ActivityNotFoundException) {
+            Log.e(TAG, "Failed to open description page. (Activity not found)")
+        }
+    }
+
+    /** Starts the application chooser to share url with. */
+    private fun shareDescriptionPageUrl(url: String) {
+        val sendIntent = Intent().apply {
+            action = Intent.ACTION_SEND
+            putExtra(Intent.EXTRA_TEXT, url)
+            type = "text/html"
+        }
+        val shareIntent = Intent.createChooser(sendIntent, null)
+
+        try {
+            startActivity(shareIntent)
+        } catch (_: ActivityNotFoundException) {
+            Log.e(TAG, "Description page URL share intent launch failed. (Activity not found)")
         }
     }
 

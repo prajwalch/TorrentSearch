@@ -106,6 +106,7 @@ class Yts : SearchProvider {
      *
      * Object layout (only shown necessary fields):
      *
+     *    url:        <string>
      *    title_long: <string>
      *    torrents:   <array of torrent object>
      *    ...
@@ -113,11 +114,18 @@ class Yts : SearchProvider {
      * @see [parseTorrentObject]
      */
     private fun parseMovieObject(movieObject: JsonObject): List<Torrent> {
+        val descriptionPageUrl = movieObject.getString("url") ?: return emptyList()
         val titleLong = movieObject.getString("title_long") ?: return emptyList()
 
         val torrents = movieObject.getArray("torrents")
             ?.map { rawArrayItem -> rawArrayItem.asObject() }
-            ?.mapNotNull { torrentObject -> parseTorrentObject(titleLong, torrentObject) }
+            ?.mapNotNull { torrentObject ->
+                parseTorrentObject(
+                    descriptionPageUrl = descriptionPageUrl,
+                    movieTitle = titleLong,
+                    torrentObject = torrentObject,
+                )
+            }
 
         return torrents.orEmpty()
     }
@@ -142,7 +150,11 @@ class Yts : SearchProvider {
      *
      *     Day of the Fight (1951) [720p] [bluray] [x264]
      */
-    private fun parseTorrentObject(movieTitle: String, torrentObject: JsonObject): Torrent? {
+    private fun parseTorrentObject(
+        descriptionPageUrl: String,
+        movieTitle: String,
+        torrentObject: JsonObject,
+    ): Torrent? {
         val quality = torrentObject.getString("quality") ?: "-"
         val type = torrentObject.getString("type") ?: "-"
         val codec = torrentObject.getString("video_codec") ?: "-"
@@ -164,6 +176,7 @@ class Yts : SearchProvider {
             peers = peers,
             providerName = NAME,
             uploadDate = uploadDate,
+            descriptionPageUrl = descriptionPageUrl,
             infoHashOrMagnetUri = InfoHashOrMagnetUri.InfoHash(infoHash),
         )
     }

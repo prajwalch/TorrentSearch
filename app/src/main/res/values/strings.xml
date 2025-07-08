@@ -31,5 +31,9 @@
     <string name="action_download">Download</string>
     <string name="action_copy_magnet_link">Copy magnet link</string>
     <string name="action_share_magnet_link">Share magnet link</string>
+    <string name="action_open_description_page">Open description page</string>
+    <string name="action_copy_description_page_url">Copy description page URL</string>
+    <string name="action_share_description_page_url">Share description page URL</string>
     <string name="hint_magnet_link_copied">Magnet link copied to clipboard!</string>
+    <string name="hint_description_page_url_copied">Url copied to clipboard!</string>
 </resources>

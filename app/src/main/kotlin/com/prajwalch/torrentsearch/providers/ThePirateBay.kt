@@ -55,6 +55,7 @@ class ThePirateBay : SearchProvider {
      *
      * Object layout (only shown necessary fields).
      *
+     *     id:                 <string>
      *     name:               <string>
      *     info_hash:          <string>
      *     leechers:           <number>
@@ -69,6 +70,9 @@ class ThePirateBay : SearchProvider {
         if (name == "No results returned") {
             return null
         }
+
+        val id = torrentObject.getString("id") ?: return null
+        val descriptionPageUrl = "$DESCRIPTION_URL?id=$id"
 
         val infoHash = torrentObject.getString("info_hash") ?: return null
         val sizeBytes = torrentObject.getString("size") ?: return null
@@ -86,12 +90,14 @@ class ThePirateBay : SearchProvider {
             peers = peers,
             providerName = NAME,
             uploadDate = uploadDate,
+            descriptionPageUrl = descriptionPageUrl,
             infoHashOrMagnetUri = InfoHashOrMagnetUri.InfoHash(infoHash),
         )
     }
 
     private companion object {
         private const val URL = "https://apibay.org/q.php"
+        private const val DESCRIPTION_URL = "https://thepiratebay.org/description.php"
         private const val NAME = "thepiratebay.org"
     }
 }

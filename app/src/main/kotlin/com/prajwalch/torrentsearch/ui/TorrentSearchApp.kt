@@ -33,6 +33,8 @@ fun TorrentSearchApp(
     searchViewModel: SearchViewModel,
     onDownloadRequest: (MagnetUri) -> Boolean,
     onMagnetLinkShareRequest: (MagnetUri) -> Unit,
+    onOpenDescriptionPageRequest: (String) -> Unit,
+    onShareDescriptionPageUrlRequest: (String) -> Unit,
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
 
@@ -54,6 +56,9 @@ fun TorrentSearchApp(
 
         selectedTorrent?.let { torrent ->
             val magnetLinkCopiedHint = stringResource(R.string.hint_magnet_link_copied)
+            val descriptionPageUrlCopiedHint = stringResource(
+                R.string.hint_description_page_url_copied
+            )
 
             TorrentActionsBottomSheet(
                 title = torrent.name,
@@ -63,11 +68,23 @@ fun TorrentSearchApp(
                 },
                 onCopyMagnetLinkClick = {
                     coroutineScope.launch {
-                        clipboard.copyMagnetUri(uri = torrent.magnetUri())
+                        clipboard.copyText(text = torrent.magnetUri())
                         snackbarHostState.showSnackbar(magnetLinkCopiedHint)
                     }
                 },
                 onShareMagnetLinkClick = { onMagnetLinkShareRequest(torrent.magnetUri()) },
+                onOpenDescriptionPageClick = {
+                    onOpenDescriptionPageRequest(torrent.descriptionPageUrl)
+                },
+                onCopyDescriptionPageUrlClick = {
+                    coroutineScope.launch {
+                        clipboard.copyText(text = torrent.descriptionPageUrl)
+                        snackbarHostState.showSnackbar(descriptionPageUrlCopiedHint)
+                    }
+                },
+                onShareDescriptionPageUrlClick = {
+                    onShareDescriptionPageUrlRequest(torrent.descriptionPageUrl)
+                },
             )
         }
 
@@ -81,15 +98,15 @@ fun TorrentSearchApp(
     }
 }
 
-/** Copies the magnet URI into the clipboard. */
-private suspend fun Clipboard.copyMagnetUri(uri: String) {
+/** Copies the text into the clipboard. */
+private suspend fun Clipboard.copyText(text: String) {
     val clipData = ClipData.newPlainText(
         /* label = */
-        "Magnet uri",
+        null,
         /* text = */
-        uri,
+        text,
     )
     val clipEntry = ClipEntry(clipData = clipData)
 
-    this@copyMagnetUri.setClipEntry(clipEntry = clipEntry)
+    this@copyText.setClipEntry(clipEntry = clipEntry)
 }

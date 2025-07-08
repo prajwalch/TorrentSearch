@@ -17,7 +17,8 @@ class NyaaSi : SearchProvider {
     override fun specializedCategory() = Category.Anime
 
     override suspend fun search(query: String, context: SearchContext): List<Torrent> {
-        val requestUrl = "$URL$query"
+        val queryParams = "?f=0&c=0_0&q=$query"
+        val requestUrl = "$BASE_URL/?$queryParams"
 
         val responseHtml = context.httpClient.get(url = requestUrl)
         val torrents = withContext(Dispatchers.Default) {
@@ -44,18 +45,20 @@ class NyaaSi : SearchProvider {
      * completes successfully, otherwise `null` if the row has unexpected layout.
      */
     private fun parseTableRow(tr: Element): Torrent? {
-        val name = tr
+        val anchorElement = tr
             .selectFirst("td:nth-child(2)")
             ?.selectFirst("a:nth-child(2)")
-            ?.ownText()
             ?: return null
+        val name = anchorElement.ownText()
+
+        val descriptionPagePath = anchorElement.attr("href")
+        val descriptionPageUrl = "$BASE_URL$descriptionPagePath"
 
         val magnetUri = tr
             .selectFirst("td:nth-child(3)")
             ?.selectFirst("a:nth-child(2)")
             ?.attr("href")
             ?: return null
-
         val size = tr.selectFirst("td:nth-child(4)")?.ownText() ?: return null
 
         val uploadDateEpochSeconds = tr
@@ -74,12 +77,13 @@ class NyaaSi : SearchProvider {
             peers = peers.toUIntOrNull() ?: 0u,
             providerName = NAME,
             uploadDate = uploadDate,
+            descriptionPageUrl = descriptionPageUrl,
             infoHashOrMagnetUri = InfoHashOrMagnetUri.MagnetUri(magnetUri),
         )
     }
 
     private companion object {
-        private const val URL = "https://nyaa.si/?f=0&c=0_0&q="
+        private const val BASE_URL = "https://nyaa.si"
         private const val NAME = "nyaa.si"
     }
 }
