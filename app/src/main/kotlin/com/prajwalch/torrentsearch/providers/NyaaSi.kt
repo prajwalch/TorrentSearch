@@ -17,7 +17,7 @@ class NyaaSi : SearchProvider {
     override fun specializedCategory() = Category.Anime
 
     override suspend fun search(query: String, context: SearchContext): List<Torrent> {
-        val queryParams = "?f=0&c=0_0&q=$query"
+        val queryParams = "?f=0&c=1_0&q=$query"
         val requestUrl = "$BASE_URL/?$queryParams"
 
         val responseHtml = context.httpClient.get(url = requestUrl)
