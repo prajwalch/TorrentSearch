@@ -17,6 +17,13 @@ data class Torrent(
     val providerName: String,
     /** Torrent upload date (in pretty format). */
     val uploadDate: String,
+    /**
+     * Category of the torrent.
+     *
+     * NOTE: The nullable is made only to support TorrentsCsv.
+     * TorrentsCsv doesn't return any category.
+     */
+    val category: Category? = null,
     /** URL of the page where the torrent details is available. */
     val descriptionPageUrl: String,
     /**
@@ -32,6 +39,20 @@ data class Torrent(
         is InfoHashOrMagnetUri.MagnetUri -> infoHashOrMagnetUri.uri
     }
 
+}
+
+/** Search category. */
+enum class Category {
+    All,
+    Anime,
+    Apps,
+    Books,
+    Games,
+    Movies,
+    Music,
+    Porn,
+    Series,
+    Other,
 }
 
 /** Represents either a info hash or magnet URI. */

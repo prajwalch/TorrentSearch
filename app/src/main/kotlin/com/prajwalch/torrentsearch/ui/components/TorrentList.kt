@@ -24,6 +24,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 
 import com.prajwalch.torrentsearch.R
+import com.prajwalch.torrentsearch.models.Category
 import com.prajwalch.torrentsearch.models.Torrent
 
 @Composable
@@ -47,9 +48,11 @@ private fun TorrentListItem(torrent: Torrent, modifier: Modifier = Modifier) {
     ListItem(
         modifier = modifier,
         overlineContent = {
-            TorrentProviderNameAndUploadDate(
+            TorrentListItemOverlineContent(
+                modifier = Modifier.fillMaxWidth(),
                 provider = torrent.providerName,
                 uploadDate = torrent.uploadDate,
+                category = torrent.category,
             )
         },
         headlineContent = { Text(torrent.name) },
@@ -63,6 +66,26 @@ private fun TorrentListItem(torrent: Torrent, modifier: Modifier = Modifier) {
         },
     )
     HorizontalDivider()
+}
+
+@Composable
+private fun TorrentListItemOverlineContent(
+    provider: String,
+    uploadDate: String,
+    category: Category?,
+    modifier: Modifier = Modifier,
+) {
+    Row(
+        modifier = modifier,
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        TorrentProviderNameAndUploadDate(
+            provider = provider,
+            uploadDate = uploadDate,
+        )
+        category?.let { Text(text = it.toString()) }
+    }
 }
 
 @Composable

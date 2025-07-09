@@ -1,5 +1,6 @@
 package com.prajwalch.torrentsearch.data
 
+import com.prajwalch.torrentsearch.models.Category
 import com.prajwalch.torrentsearch.models.Torrent
 import com.prajwalch.torrentsearch.network.HttpClient
 
@@ -20,16 +21,3 @@ data class SearchContext(
     val category: Category,
     val httpClient: HttpClient,
 )
-
-/** Search category. */
-enum class Category {
-    All,
-    Anime,
-    Apps,
-    Books,
-    Games,
-    Movies,
-    Music,
-    Porn,
-    Series,
-}

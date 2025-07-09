@@ -19,7 +19,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 
 import com.prajwalch.torrentsearch.R
-import com.prajwalch.torrentsearch.data.Category
+import com.prajwalch.torrentsearch.models.Category
 
 @Composable
 fun CategoryChipsRow(

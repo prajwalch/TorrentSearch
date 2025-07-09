@@ -1,8 +1,8 @@
 package com.prajwalch.torrentsearch.providers
 
-import com.prajwalch.torrentsearch.data.Category
 import com.prajwalch.torrentsearch.data.SearchContext
 import com.prajwalch.torrentsearch.data.SearchProvider
+import com.prajwalch.torrentsearch.models.Category
 import com.prajwalch.torrentsearch.models.InfoHashOrMagnetUri
 import com.prajwalch.torrentsearch.models.Torrent
 import com.prajwalch.torrentsearch.network.HttpClient
@@ -34,6 +34,8 @@ private data class TableRowParsedResult(
     val peers: String,
     /** Torrent upload date. */
     val uploadDate: String,
+    /** Torrent category. */
+    val category: String,
 )
 
 class TheRarBg : SearchProvider {
@@ -59,18 +61,17 @@ class TheRarBg : SearchProvider {
     }
 
     /** Returns the compatible category string. */
-    private fun getCategoryString(category: Category): String {
-        return when (category) {
-            Category.All -> ""
-            Category.Anime -> "Anime"
-            Category.Apps -> "Apps"
-            Category.Books -> "Books"
-            Category.Games -> "Games"
-            Category.Movies -> "Movies"
-            Category.Music -> "Music"
-            Category.Porn -> "XXX"
-            Category.Series -> "Tv"
-        }
+    private fun getCategoryString(category: Category): String = when (category) {
+        Category.All -> ""
+        Category.Anime -> "Anime"
+        Category.Apps -> "Apps"
+        Category.Books -> "Books"
+        Category.Games -> "Games"
+        Category.Movies -> "Movies"
+        Category.Music -> "Music"
+        Category.Porn -> "XXX"
+        Category.Series -> "Tv"
+        Category.Other -> "Other"
     }
 
     /** Parses the HTML and returns all the parsed rows where the data is present. */
@@ -99,6 +100,11 @@ class TheRarBg : SearchProvider {
         val detailsPath = nameAnchorElement.attr("href")
         val torrentName = nameAnchorElement.ownText()
 
+        val category = tr
+            .selectFirst("td:nth-child(3)")
+            ?.selectFirst("a")
+            ?.ownText()
+            ?: return null
         val uploadDate = tr.selectFirst("td:nth-child(4)")
             ?.selectFirst("div")
             ?.ownText()
@@ -114,6 +120,7 @@ class TheRarBg : SearchProvider {
             seeds = seeds,
             peers = peers,
             uploadDate = uploadDate,
+            category = category,
         )
     }
 
@@ -146,6 +153,8 @@ class TheRarBg : SearchProvider {
             detailsPageUrl = parsedResult.detailsPageUrl,
         ) ?: return null
 
+        val category = getCategoryFromString(string = parsedResult.category)
+
         return Torrent(
             name = parsedResult.name,
             size = parsedResult.size,
@@ -153,6 +162,7 @@ class TheRarBg : SearchProvider {
             peers = parsedResult.peers.toUInt(),
             providerName = NAME,
             uploadDate = parsedResult.uploadDate,
+            category = category,
             descriptionPageUrl = parsedResult.detailsPageUrl,
             infoHashOrMagnetUri = InfoHashOrMagnetUri.InfoHash(infoHash),
         )
@@ -166,6 +176,21 @@ class TheRarBg : SearchProvider {
             Jsoup.parse(detailsPageHtml).selectFirst(".info-hash-value")?.ownText()
         }
     }
+
+    /** Returns the [Category] that matches the string extracted from page. */
+    private fun getCategoryFromString(string: String): Category = when (string) {
+        "Anime" -> Category.Anime
+        "Apps" -> Category.Apps
+        "Books" -> Category.Books
+        "Games" -> Category.Games
+        "Movies" -> Category.Movies
+        "Music" -> Category.Music
+        "XXX" -> Category.Porn
+        "Tv" -> Category.Series
+        "Other" -> Category.Other
+        else -> Category.Other
+    }
+
 
     private companion object {
         private const val BASE_URL = "https://therarbg.com"

@@ -1,8 +1,8 @@
 package com.prajwalch.torrentsearch.providers
 
-import com.prajwalch.torrentsearch.data.Category
 import com.prajwalch.torrentsearch.data.SearchContext
 import com.prajwalch.torrentsearch.data.SearchProvider
+import com.prajwalch.torrentsearch.models.Category
 import com.prajwalch.torrentsearch.models.InfoHashOrMagnetUri
 import com.prajwalch.torrentsearch.models.Torrent
 
@@ -112,6 +112,7 @@ class Eztv : SearchProvider {
             peers = peers,
             providerName = NAME,
             uploadDate = uploadDate,
+            category = Category.Series,
             descriptionPageUrl = descriptionPageUrl,
             infoHashOrMagnetUri = InfoHashOrMagnetUri.MagnetUri(magnetUri),
         )

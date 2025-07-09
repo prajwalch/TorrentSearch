@@ -1,11 +1,11 @@
 package com.prajwalch.torrentsearch.providers
 
-import com.prajwalch.torrentsearch.data.Category
 import com.prajwalch.torrentsearch.data.SearchContext
 import com.prajwalch.torrentsearch.data.SearchProvider
 import com.prajwalch.torrentsearch.extensions.asArray
 import com.prajwalch.torrentsearch.extensions.asObject
 import com.prajwalch.torrentsearch.extensions.getString
+import com.prajwalch.torrentsearch.models.Category
 import com.prajwalch.torrentsearch.models.InfoHashOrMagnetUri
 import com.prajwalch.torrentsearch.models.Torrent
 import com.prajwalch.torrentsearch.utils.prettyDate
@@ -47,6 +47,7 @@ class ThePirateBay : SearchProvider {
         Category.Movies, Category.Series -> 200u
         Category.Music -> 101u
         Category.Porn -> 500u
+        Category.Other -> 600u
     }
 
     /**
@@ -62,6 +63,7 @@ class ThePirateBay : SearchProvider {
      *     seeders:            <number>
      *     size:               <bytes in string>
      *     added:              <seconds in string>
+     *     category:           <seconds in string>
      */
     private fun parseTorrentObject(torrentObject: JsonObject): Torrent? {
         val name = torrentObject.getString("name") ?: return null
@@ -83,6 +85,9 @@ class ThePirateBay : SearchProvider {
         val uploadDateEpochSeconds = torrentObject.getString("added")?.toLongOrNull() ?: return null
         val uploadDate = prettyDate(uploadDateEpochSeconds)
 
+        val categoryIndex = torrentObject.getString("category") ?: return null
+        val category = getCategoryFromIndex(categoryIndex = categoryIndex.toInt())
+
         return Torrent(
             name = name,
             size = size,
@@ -90,9 +95,33 @@ class ThePirateBay : SearchProvider {
             peers = peers,
             providerName = NAME,
             uploadDate = uploadDate,
+            category = category,
             descriptionPageUrl = descriptionPageUrl,
             infoHashOrMagnetUri = InfoHashOrMagnetUri.InfoHash(infoHash),
         )
+    }
+
+    /** Returns the [Category] that matches the index. */
+    private fun getCategoryFromIndex(categoryIndex: Int): Category = when (categoryIndex) {
+        // Apps
+        in 300..306, 399 -> Category.Apps
+        // Books
+        601 -> Category.Books
+        // Games
+        in 400..408, 499 -> Category.Games
+        // Movies
+        201, 202, 204, 207, 209, 210, 211 -> Category.Movies
+        // Music
+        in 100..104, 199 -> Category.Music
+        // Porn
+        in 500..507, 599 -> Category.Porn
+        // Series
+        205, 208, 212 -> Category.Series
+        // All, Anime
+        //
+        // TPB doesn't have dedicated anime category instead it mostly falls
+        // under the series category.
+        else -> Category.Other
     }
 
     private companion object {

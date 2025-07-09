@@ -1,8 +1,8 @@
 package com.prajwalch.torrentsearch.providers
 
-import com.prajwalch.torrentsearch.data.Category
 import com.prajwalch.torrentsearch.data.SearchContext
 import com.prajwalch.torrentsearch.data.SearchProvider
+import com.prajwalch.torrentsearch.models.Category
 import com.prajwalch.torrentsearch.models.InfoHashOrMagnetUri
 import com.prajwalch.torrentsearch.models.Torrent
 import com.prajwalch.torrentsearch.utils.prettyDate
@@ -77,6 +77,7 @@ class NyaaSi : SearchProvider {
             peers = peers.toUIntOrNull() ?: 0u,
             providerName = NAME,
             uploadDate = uploadDate,
+            category = Category.Anime,
             descriptionPageUrl = descriptionPageUrl,
             infoHashOrMagnetUri = InfoHashOrMagnetUri.MagnetUri(magnetUri),
         )
