@@ -14,6 +14,7 @@ import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -36,12 +37,15 @@ fun TorrentActionsBottomSheet(
     onShareDescriptionPageUrlClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    // Always expand the sheet to full.
+    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     // Make the background slightly darker.
     val scrimColor = BottomSheetDefaults.ScrimColor.copy(alpha = 0.5f)
 
     ModalBottomSheet(
         modifier = modifier,
         onDismissRequest = onDismissRequest,
+        sheetState = sheetState,
         scrimColor = scrimColor,
     ) {
         Text(
