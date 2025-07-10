@@ -69,7 +69,7 @@ sealed class InfoHashOrMagnetUri {
 //   https://raw.githubusercontent.com/ngosang/trackerslist/master/trackers_best.txt (updated daily) (https://github.com/ngosang/trackerslist/blob/master/trackers_best.txt)
 private val trackers = listOf(
     "udp://1c.premierzal.ru:6969/announce",
-    "udp://9.rarbg.me:2970/announce",,
+    "udp://9.rarbg.me:2970/announce",
     "udp://bandito.byterunner.io:6969/announce",
     "udp://bittorrent-tracker.e-n-c-r-y-p-t.net:1337/announce",
     "udp://bt.ktrackers.com:6666/announce",
