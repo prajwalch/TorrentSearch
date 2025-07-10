@@ -29,12 +29,12 @@ import com.prajwalch.torrentsearch.R
 fun TorrentActionsBottomSheet(
     title: String,
     onDismissRequest: () -> Unit,
-    onDownloadClick: () -> Unit,
-    onCopyMagnetLinkClick: () -> Unit,
-    onShareMagnetLinkClick: () -> Unit,
-    onOpenDescriptionPageClick: () -> Unit,
-    onCopyDescriptionPageUrlClick: () -> Unit,
-    onShareDescriptionPageUrlClick: () -> Unit,
+    onDownloadTorrent: () -> Unit,
+    onCopyMagnetLink: () -> Unit,
+    onShareMagnetLink: () -> Unit,
+    onOpenDescriptionPage: () -> Unit,
+    onCopyDescriptionPageUrl: () -> Unit,
+    onShareDescriptionPageUrl: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     // Always expand the sheet to full.
@@ -57,30 +57,30 @@ fun TorrentActionsBottomSheet(
         HorizontalDivider()
         Spacer(Modifier.Companion.height(8.dp))
         DownloadAction {
-            onDownloadClick()
+            onDownloadTorrent()
             onDismissRequest()
         }
         CopyMagnetLinkAction {
-            onCopyMagnetLinkClick()
+            onCopyMagnetLink()
             onDismissRequest()
         }
         ShareMagnetLinkAction {
-            onShareMagnetLinkClick()
+            onShareMagnetLink()
             onDismissRequest()
         }
 
         HorizontalDivider()
 
         OpenDescriptionPageAction {
-            onOpenDescriptionPageClick()
+            onOpenDescriptionPage()
             onDismissRequest()
         }
         CopyDescriptionPageUrlAction {
-            onCopyDescriptionPageUrlClick()
+            onCopyDescriptionPageUrl()
             onDismissRequest()
         }
         ShareDescriptionPageUrlAction {
-            onShareDescriptionPageUrlClick()
+            onShareDescriptionPageUrl()
             onDismissRequest()
         }
         Spacer(Modifier.Companion.height(8.dp))

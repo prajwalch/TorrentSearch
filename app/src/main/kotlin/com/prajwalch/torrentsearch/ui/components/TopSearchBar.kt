@@ -1,16 +1,11 @@
 package com.prajwalch.torrentsearch.ui.components
 
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.core.animateDpAsState
-import androidx.compose.animation.core.animateIntAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsFocusedAsState
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
@@ -27,11 +22,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.unit.dp
-
 import com.prajwalch.torrentsearch.R
 
 @Composable
@@ -40,12 +34,13 @@ fun TopSearchBar(
     onQueryChange: (String) -> Unit,
     onSearch: () -> Unit,
     modifier: Modifier = Modifier,
+    shape: Shape = TextFieldDefaults.shape,
 ) {
     val interactionSource = remember { MutableInteractionSource() }
     val isFocused by interactionSource.collectIsFocusedAsState()
 
-    val horizontalPadding by animateDpAsState(if (isFocused) 0.dp else 16.dp)
-    val roundedShapePrecent by animateIntAsState(if (isFocused) 0 else 100)
+//    val horizontalPadding by animateDpAsState(if (isFocused) 0.dp else 16.dp)
+//    val roundedShapePrecent by animateIntAsState(if (isFocused) 0 else 100)
 
     val focusManager = LocalFocusManager.current
     val colors = TextFieldDefaults.colors(
@@ -56,9 +51,7 @@ fun TopSearchBar(
     )
 
     TextField(
-        modifier = modifier
-            .fillMaxWidth()
-            .padding(horizontal = horizontalPadding),
+        modifier = modifier,
         value = query,
         onValueChange = onQueryChange,
         placeholder = { Text(stringResource(R.string.search)) },
@@ -83,7 +76,7 @@ fun TopSearchBar(
         keyboardActions = KeyboardActions(onSearch = { onSearch() }),
         colors = colors,
         interactionSource = interactionSource,
-        shape = RoundedCornerShape(percent = roundedShapePrecent)
+        shape = shape,
     )
 }
 

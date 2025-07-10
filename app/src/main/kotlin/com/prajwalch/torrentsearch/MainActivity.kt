@@ -1,16 +1,23 @@
 package com.prajwalch.torrentsearch
 
 import android.content.ActivityNotFoundException
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
-
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
+import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.runtime.getValue
 import androidx.core.net.toUri
-
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.preferencesDataStore
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.prajwalch.torrentsearch.data.DarkTheme
+import com.prajwalch.torrentsearch.data.SettingsRepository
 import com.prajwalch.torrentsearch.data.TorrentsRepository
 import com.prajwalch.torrentsearch.models.MagnetUri
 import com.prajwalch.torrentsearch.network.HttpClient
@@ -18,6 +25,10 @@ import com.prajwalch.torrentsearch.ui.TorrentSearchApp
 import com.prajwalch.torrentsearch.ui.theme.TorrentSearchTheme
 import com.prajwalch.torrentsearch.ui.viewmodel.SearchViewModel
 import com.prajwalch.torrentsearch.ui.viewmodel.SearchViewModelFactory
+import com.prajwalch.torrentsearch.ui.viewmodel.SettingsViewModel
+import com.prajwalch.torrentsearch.ui.viewmodel.SettingsViewModelFactory
+
+val Context.settingsDataStore: DataStore<Preferences> by preferencesDataStore(name = "settings")
 
 class MainActivity : ComponentActivity() {
     private val searchViewModel: SearchViewModel by viewModels {
@@ -25,18 +36,38 @@ class MainActivity : ComponentActivity() {
         SearchViewModelFactory(torrentsRepository = torrentsRepository)
     }
 
+    private val settingsManager: SettingsRepository by lazy {
+        SettingsRepository(settingsDataStore = settingsDataStore)
+    }
+
+    private val settingsViewModel: SettingsViewModel by viewModels {
+        SettingsViewModelFactory(settingsManager = settingsManager)
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         enableEdgeToEdge()
         setContent {
-            TorrentSearchTheme {
+            val settings by settingsViewModel.settings.collectAsStateWithLifecycle()
+
+            val darkTheme = when (settings.darkTheme) {
+                DarkTheme.On -> true
+                DarkTheme.Off -> false
+                DarkTheme.FollowSystem -> isSystemInDarkTheme()
+            }
+
+            TorrentSearchTheme(
+                darkTheme = darkTheme,
+                dynamicColor = settings.enableDynamicTheme,
+            ) {
                 TorrentSearchApp(
                     searchViewModel = searchViewModel,
-                    onDownloadRequest = ::downloadTorrentViaClient,
-                    onMagnetLinkShareRequest = ::shareMagnetLink,
-                    onOpenDescriptionPageRequest = ::openDescriptionPage,
-                    onShareDescriptionPageUrlRequest = ::shareDescriptionPageUrl,
+                    settingsViewModel = settingsViewModel,
+                    onDownloadTorrent = ::downloadTorrentViaClient,
+                    onShareMagnetLink = ::shareMagnetLink,
+                    onOpenDescriptionPage = ::openDescriptionPage,
+                    onShareDescriptionPageUrl = ::shareDescriptionPageUrl,
                 )
             }
         }
