@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
@@ -44,6 +45,7 @@ import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.prajwalch.torrentsearch.R
 import com.prajwalch.torrentsearch.models.Category
@@ -221,6 +223,8 @@ private fun SearchScreenContent(
         if (results.isNotEmpty()) {
             TorrentList(torrents = results, onTorrentSelect = onTorrentSelect)
         }
+
+        EmptySearchPlaceholder()
     }
 }
 
@@ -264,6 +268,34 @@ private fun ResultsNotFoundMessage(modifier: Modifier = Modifier) {
             text = stringResource(R.string.msg_no_results_found),
             fontWeight = FontWeight.Bold,
         )
+    }
+}
+
+@Composable
+private fun EmptySearchPlaceholder() {
+    Box(
+        modifier = Modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center
+    ) {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+            modifier = Modifier
+                .padding(horizontal = 32.dp)
+        ) {
+            Text(
+                text = stringResource(R.string.msg_page_empty),
+                fontWeight = FontWeight.SemiBold,
+                textAlign = TextAlign.Center,
+                modifier = Modifier.fillMaxWidth()
+            )
+            Text(
+                text = stringResource(R.string.msg_start_searching),
+                fontWeight = FontWeight.Normal,
+                textAlign = TextAlign.Center,
+                modifier = Modifier.fillMaxWidth()
+            )
+        }
     }
 }
 
