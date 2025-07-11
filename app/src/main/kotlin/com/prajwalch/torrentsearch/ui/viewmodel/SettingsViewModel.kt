@@ -4,26 +4,61 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 
-import com.prajwalch.torrentsearch.data.Settings
+import com.prajwalch.torrentsearch.data.DarkTheme
 import com.prajwalch.torrentsearch.data.SettingsRepository
+import com.prajwalch.torrentsearch.providers.ProviderId
+import com.prajwalch.torrentsearch.providers.SearchProviders
 
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
-class SettingsViewModel(private val repository: SettingsRepository) : ViewModel() {
-    val settings = repository
-        .settings
-        .stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.Eagerly,
-            initialValue = repository.defaultSettings,
-        )
+data class AppearanceSettings(
+    val enableDynamicTheme: Boolean = true,
+    val darkTheme: DarkTheme = DarkTheme.FollowSystem,
+)
 
-    fun updateSettings(settings: Settings) {
-        viewModelScope.launch {
-            repository.updateSettings(settings = settings)
-        }
+data class SearchSettings(
+    val enableNSFWSearch: Boolean = false,
+    val searchProviders: Set<ProviderId> = SearchProviders.ids(),
+)
+
+class SettingsViewModel(private val repository: SettingsRepository) : ViewModel() {
+    val appearanceSettings = combine(
+        repository.enableDynamicTheme,
+        repository.darkTheme,
+        ::AppearanceSettings
+    ).stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5000),
+        initialValue = AppearanceSettings()
+    )
+
+    val searchSettings = combine(
+        repository.enableNSFWSearch,
+        repository.searchProviders,
+        ::SearchSettings
+    ).stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5000),
+        initialValue = SearchSettings()
+    )
+
+    fun updateEnableDynamicTheme(enabled: Boolean) {
+        viewModelScope.launch { repository.updateEnableDynamicTheme(enabled) }
+    }
+
+    fun updateDarkTheme(darkTheme: DarkTheme) {
+        viewModelScope.launch { repository.updateDarkTheme(darkTheme) }
+    }
+
+    fun updateEnableNSFWSearch(enabled: Boolean) {
+        viewModelScope.launch { repository.updateEnableNSFWSearch(enabled) }
+    }
+
+    fun updateSearchProviders(providers: Set<ProviderId>) {
+        viewModelScope.launch { repository.updateSearchProviders(providers) }
     }
 }
 

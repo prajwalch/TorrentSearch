@@ -10,14 +10,8 @@ import androidx.datastore.preferences.core.stringSetPreferencesKey
 import com.prajwalch.torrentsearch.providers.ProviderId
 import com.prajwalch.torrentsearch.providers.SearchProviders
 
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
-
-data class Settings(
-    val enableDynamicTheme: Boolean = true,
-    val darkTheme: DarkTheme = DarkTheme.FollowSystem,
-    val enableNSFWSearch: Boolean = false,
-    val searchProviders: Set<ProviderId> = SearchProviders.ids(),
-)
 
 enum class DarkTheme {
     On,
@@ -37,42 +31,51 @@ enum class DarkTheme {
     }
 }
 
-class SettingsRepository(private val settingsDataStore: DataStore<Preferences>) {
-    val defaultSettings = Settings()
-    val settings = settingsDataStore.data.map { prefs -> readSettings(prefs) }
-
-    private fun readSettings(preferences: Preferences): Settings {
-        val enableDynamicTheme = preferences[PreferencesKeys.enableDynamicTheme]
-            ?: defaultSettings.enableDynamicTheme
-        val darkTheme = preferences[PreferencesKeys.darkTheme]
-            ?.let { DarkTheme.fromInt(it) }
-            ?: defaultSettings.darkTheme
-        val enableNSFWSearch = preferences[PreferencesKeys.enableNSFWSearch]
-            ?: defaultSettings.enableNSFWSearch
-        val searchProviders = preferences[PreferencesKeys.searchProviders]
-            ?: defaultSettings.searchProviders
-
-        return Settings(
-            enableDynamicTheme = enableDynamicTheme,
-            darkTheme = darkTheme,
-            enableNSFWSearch = enableNSFWSearch,
-            searchProviders = searchProviders,
-        )
+class SettingsRepository(private val dataStore: DataStore<Preferences>) {
+    val enableDynamicTheme: Flow<Boolean> = dataStore.data.map { preferences ->
+        preferences[ENABLE_DYNAMIC_THEME] ?: true
     }
 
-    suspend fun updateSettings(settings: Settings) {
-        settingsDataStore.edit { prefs ->
-            prefs[PreferencesKeys.enableDynamicTheme] = settings.enableDynamicTheme
-            prefs[PreferencesKeys.darkTheme] = settings.darkTheme.ordinal
-            prefs[PreferencesKeys.enableNSFWSearch] = settings.enableNSFWSearch
-            prefs[PreferencesKeys.searchProviders] = settings.searchProviders
+    val darkTheme: Flow<DarkTheme> = dataStore.data.map { preferences ->
+        preferences[DARK_THEME]?.let(DarkTheme::fromInt) ?: DarkTheme.FollowSystem
+    }
+
+    val enableNSFWSearch: Flow<Boolean> = dataStore.data.map { preferences ->
+        preferences[ENABLE_NSFW_SEARCH] ?: false
+    }
+
+    val searchProviders: Flow<Set<String>> = dataStore.data.map { preferences ->
+        preferences[SEARCH_PROVIDERS] ?: SearchProviders.ids()
+    }
+
+    suspend fun updateEnableDynamicTheme(enabled: Boolean) {
+        dataStore.edit { preferences ->
+            preferences[ENABLE_DYNAMIC_THEME] = enabled
         }
     }
 
-    private object PreferencesKeys {
-        val enableDynamicTheme = booleanPreferencesKey("enable_dynamic_theme")
-        val darkTheme = intPreferencesKey("dark_theme")
-        val enableNSFWSearch = booleanPreferencesKey("enable_nsfw_search")
-        val searchProviders = stringSetPreferencesKey("search_providers")
+    suspend fun updateDarkTheme(darkTheme: DarkTheme) {
+        dataStore.edit { preferences ->
+            preferences[DARK_THEME] = darkTheme.ordinal
+        }
+    }
+
+    suspend fun updateEnableNSFWSearch(enabled: Boolean) {
+        dataStore.edit { preferences ->
+            preferences[ENABLE_NSFW_SEARCH] = enabled
+        }
+    }
+
+    suspend fun updateSearchProviders(providers: Set<ProviderId>) {
+        dataStore.edit { preferences ->
+            preferences[SEARCH_PROVIDERS] = providers
+        }
+    }
+
+    private companion object PreferencesKeys {
+        val ENABLE_DYNAMIC_THEME = booleanPreferencesKey("enable_dynamic_theme")
+        val DARK_THEME = intPreferencesKey("dark_theme")
+        val ENABLE_NSFW_SEARCH = booleanPreferencesKey("enable_nsfw_search")
+        val SEARCH_PROVIDERS = stringSetPreferencesKey("search_providers")
     }
 }

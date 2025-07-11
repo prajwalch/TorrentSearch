@@ -31,16 +31,18 @@ import com.prajwalch.torrentsearch.ui.viewmodel.SearchViewModelFactory
 import com.prajwalch.torrentsearch.ui.viewmodel.SettingsViewModel
 import com.prajwalch.torrentsearch.ui.viewmodel.SettingsViewModelFactory
 
-val Context.settingsDataStore: DataStore<Preferences> by preferencesDataStore(name = "settings")
+private val Context.settingsDataStore: DataStore<Preferences> by preferencesDataStore(
+    name = "settings"
+)
 
 class MainActivity : ComponentActivity() {
+    private val settingsRepository: SettingsRepository by lazy {
+        SettingsRepository(dataStore = settingsDataStore)
+    }
+
     private val searchViewModel: SearchViewModel by viewModels {
         val torrentsRepository = TorrentsRepository(httpClient = HttpClient)
         SearchViewModelFactory(torrentsRepository = torrentsRepository)
-    }
-
-    private val settingsRepository: SettingsRepository by lazy {
-        SettingsRepository(settingsDataStore = settingsDataStore)
     }
 
     private val settingsViewModel: SettingsViewModel by viewModels {
@@ -52,10 +54,12 @@ class MainActivity : ComponentActivity() {
 
         enableEdgeToEdge()
         setContent {
-            val settings by settingsViewModel.settings.collectAsStateWithLifecycle()
-            SearchProviders.setEnabledProviders(settings.searchProviders)
+            val appearanceSettings by settingsViewModel.appearanceSettings.collectAsStateWithLifecycle()
+            val searchSettings by settingsViewModel.searchSettings.collectAsStateWithLifecycle()
 
-            val darkTheme = when (settings.darkTheme) {
+            SearchProviders.setEnabledProviders(searchSettings.searchProviders)
+            
+            val darkTheme = when (appearanceSettings.darkTheme) {
                 DarkTheme.On -> true
                 DarkTheme.Off -> false
                 DarkTheme.FollowSystem -> isSystemInDarkTheme()
@@ -63,7 +67,7 @@ class MainActivity : ComponentActivity() {
 
             TorrentSearchTheme(
                 darkTheme = darkTheme,
-                dynamicColor = settings.enableDynamicTheme,
+                dynamicColor = appearanceSettings.enableDynamicTheme,
             ) {
                 TorrentSearchApp(
                     searchViewModel = searchViewModel,

@@ -9,6 +9,7 @@ import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -18,15 +19,17 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 
 import com.prajwalch.torrentsearch.R
-import com.prajwalch.torrentsearch.data.Settings
 import com.prajwalch.torrentsearch.providers.ProviderId
 import com.prajwalch.torrentsearch.providers.SearchProviders
 import com.prajwalch.torrentsearch.ui.components.SettingsDialog
 import com.prajwalch.torrentsearch.ui.components.SettingsItem
 import com.prajwalch.torrentsearch.ui.components.SettingsSectionTitle
+import com.prajwalch.torrentsearch.ui.viewmodel.SettingsViewModel
 
 @Composable
-fun SearchSettings(settings: Settings, onSettingsChange: (Settings) -> Unit) {
+fun SearchSettings(viewModel: SettingsViewModel) {
+    val settings by viewModel.searchSettings.collectAsState()
+
     val allProviders = remember { SearchProviders.namesWithId() }
     var showListDialog by remember { mutableStateOf(false) }
 
@@ -35,7 +38,7 @@ fun SearchSettings(settings: Settings, onSettingsChange: (Settings) -> Unit) {
             allProviders = allProviders,
             enabledProviders = settings.searchProviders,
             onDismissRequest = { showListDialog = false },
-            onProvidersChange = { onSettingsChange(settings.copy(searchProviders = it)) }
+            onProvidersChange = { viewModel.updateSearchProviders(it) }
         )
     }
 
@@ -46,16 +49,10 @@ fun SearchSettings(settings: Settings, onSettingsChange: (Settings) -> Unit) {
         trailingContent = {
             Switch(
                 checked = settings.enableNSFWSearch,
-                onCheckedChange = {
-                    onSettingsChange(settings.copy(enableNSFWSearch = it))
-                }
+                onCheckedChange = { viewModel.updateEnableNSFWSearch(it) }
             )
         },
-        onClick = {
-            onSettingsChange(
-                settings.copy(enableNSFWSearch = !settings.enableNSFWSearch)
-            )
-        }
+        onClick = { viewModel.updateEnableNSFWSearch(!settings.enableNSFWSearch) }
     )
     SettingsItem(
         leadingIconId = R.drawable.ic_graph,
