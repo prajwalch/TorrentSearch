@@ -7,7 +7,7 @@ import androidx.compose.ui.res.stringResource
 import com.prajwalch.torrentsearch.R
 import com.prajwalch.torrentsearch.data.DarkTheme
 import com.prajwalch.torrentsearch.data.Settings
-import com.prajwalch.torrentsearch.ui.components.SettingsListItem
+import com.prajwalch.torrentsearch.ui.components.SettingsItem
 import com.prajwalch.torrentsearch.ui.components.SettingsSectionTitle
 
 @Composable
@@ -17,7 +17,7 @@ fun AppearanceSettings(
     onOpenOptionMenu: (SettingsOptionMenuEvent) -> Unit,
 ) {
     SettingsSectionTitle(title = stringResource(R.string.settings_section_appearance))
-    SettingsListItem(
+    SettingsItem(
         leadingIconId = R.drawable.ic_palette,
         headline = stringResource(R.string.setting_enable_dynamic_theme),
         trailingContent = {
@@ -31,7 +31,7 @@ fun AppearanceSettings(
             )
         }
     )
-    SettingsListItem(
+    SettingsItem(
         leadingIconId = R.drawable.ic_dark_mode,
         headline = stringResource(R.string.setting_dark_theme),
         supportingContent = settings.darkTheme.toString(),

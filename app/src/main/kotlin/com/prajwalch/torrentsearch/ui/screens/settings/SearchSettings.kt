@@ -22,7 +22,7 @@ import com.prajwalch.torrentsearch.data.Settings
 import com.prajwalch.torrentsearch.providers.ProviderId
 import com.prajwalch.torrentsearch.providers.SearchProviders
 import com.prajwalch.torrentsearch.ui.components.SettingsDialog
-import com.prajwalch.torrentsearch.ui.components.SettingsListItem
+import com.prajwalch.torrentsearch.ui.components.SettingsItem
 import com.prajwalch.torrentsearch.ui.components.SettingsSectionTitle
 
 @Composable
@@ -40,7 +40,7 @@ fun SearchSettings(settings: Settings, onSettingsChange: (Settings) -> Unit) {
     }
 
     SettingsSectionTitle(stringResource(R.string.settings_section_search))
-    SettingsListItem(
+    SettingsItem(
         leadingIconId = R.drawable.ic_18_up_rating,
         headline = stringResource(R.string.setting_enable_nsfw_search),
         trailingContent = {
@@ -57,7 +57,7 @@ fun SearchSettings(settings: Settings, onSettingsChange: (Settings) -> Unit) {
             )
         }
     )
-    SettingsListItem(
+    SettingsItem(
         leadingIconId = R.drawable.ic_graph,
         headline = stringResource(R.string.setting_search_providers),
         supportingContent = "${settings.searchProviders.size} of ${allProviders.size} enabled",
