@@ -30,6 +30,8 @@
     <string name="button_retry">Retry</string>
 
     <string name="msg_no_results_found">No results found</string>
+    <string name="msg_page_empty">Nothing here yet</string>
+    <string name="msg_start_searching">Start searching to see results</string>
 
     <!-- Torrent actions bottom sheet -->
     <string name="action_download">Download</string>
@@ -41,8 +43,7 @@
     <string name="hint_magnet_link_copied">Magnet link copied to clipboard!</string>
     <string name="hint_description_page_url_copied">Url copied to clipboard!</string>
     <!-- Search Screen -->
-    <string name="msg_page_empty">Nothing here yet</string>
-    <string name="msg_start_searching">Start searching to see results</string>
+
     <!-- Settings Screen -->
     <!-- Top app bar -->
     <string name="settings_screen_title">Settings</string>
