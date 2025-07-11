@@ -27,13 +27,13 @@ class SettingsViewModel(private val repository: SettingsRepository) : ViewModel(
     }
 }
 
-class SettingsViewModelFactory(private val settingsManager: SettingsRepository) :
+class SettingsViewModelFactory(private val settingsRepository: SettingsRepository) :
     ViewModelProvider.Factory {
 
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(SettingsViewModel::class.java)) {
-            return SettingsViewModel(repository = settingsManager) as T
+            return SettingsViewModel(repository = settingsRepository) as T
         }
 
         throw IllegalArgumentException("Unknown ViewModel class")

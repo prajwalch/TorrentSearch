@@ -5,12 +5,18 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.intPreferencesKey
+import androidx.datastore.preferences.core.stringSetPreferencesKey
+
+import com.prajwalch.torrentsearch.providers.ProviderId
+import com.prajwalch.torrentsearch.providers.SearchProviders
+
 import kotlinx.coroutines.flow.map
 
 data class Settings(
     val enableDynamicTheme: Boolean = true,
     val darkTheme: DarkTheme = DarkTheme.FollowSystem,
     val enableNSFWSearch: Boolean = false,
+    val searchProviders: Set<ProviderId> = SearchProviders.ids(),
 )
 
 enum class DarkTheme {
@@ -43,11 +49,14 @@ class SettingsRepository(private val settingsDataStore: DataStore<Preferences>) 
             ?: defaultSettings.darkTheme
         val enableNSFWSearch = preferences[PreferencesKeys.enableNSFWSearch]
             ?: defaultSettings.enableNSFWSearch
+        val searchProviders = preferences[PreferencesKeys.searchProviders]
+            ?: defaultSettings.searchProviders
 
         return Settings(
             enableDynamicTheme = enableDynamicTheme,
             darkTheme = darkTheme,
             enableNSFWSearch = enableNSFWSearch,
+            searchProviders = searchProviders,
         )
     }
 
@@ -56,6 +65,7 @@ class SettingsRepository(private val settingsDataStore: DataStore<Preferences>) 
             prefs[PreferencesKeys.enableDynamicTheme] = settings.enableDynamicTheme
             prefs[PreferencesKeys.darkTheme] = settings.darkTheme.ordinal
             prefs[PreferencesKeys.enableNSFWSearch] = settings.enableNSFWSearch
+            prefs[PreferencesKeys.searchProviders] = settings.searchProviders
         }
     }
 
@@ -63,5 +73,6 @@ class SettingsRepository(private val settingsDataStore: DataStore<Preferences>) 
         val enableDynamicTheme = booleanPreferencesKey("enable_dynamic_theme")
         val darkTheme = intPreferencesKey("dark_theme")
         val enableNSFWSearch = booleanPreferencesKey("enable_nsfw_search")
+        val searchProviders = stringSetPreferencesKey("search_providers")
     }
 }
