@@ -126,7 +126,9 @@ fun SearchScreen(
         }
     ) { innerPadding ->
         SearchScreenContent(
-            modifier = Modifier.padding(innerPadding),
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(innerPadding),
             isLoading = uiState.isLoading,
             isInternetError = uiState.isInternetError,
             resultsNotFound = uiState.resultsNotFound,
@@ -200,7 +202,7 @@ private fun SearchScreenContent(
     onTorrentSelect: (Torrent) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    Column(modifier = modifier) {
+    Column(modifier = modifier, horizontalAlignment = Alignment.CenterHorizontally) {
         if (isLoading) {
             LoadingIndicator(modifier = Modifier.fillMaxSize())
         }
