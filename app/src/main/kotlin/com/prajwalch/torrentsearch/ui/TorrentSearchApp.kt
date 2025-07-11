@@ -18,7 +18,7 @@ import com.prajwalch.torrentsearch.models.MagnetUri
 import com.prajwalch.torrentsearch.ui.components.TorrentClientNotFoundDialog
 import com.prajwalch.torrentsearch.ui.screens.Screens
 import com.prajwalch.torrentsearch.ui.screens.SearchScreen
-import com.prajwalch.torrentsearch.ui.screens.SettingsScreen
+import com.prajwalch.torrentsearch.ui.screens.settings.SettingsScreen
 import com.prajwalch.torrentsearch.ui.viewmodel.SearchViewModel
 import com.prajwalch.torrentsearch.ui.viewmodel.SettingsViewModel
 
