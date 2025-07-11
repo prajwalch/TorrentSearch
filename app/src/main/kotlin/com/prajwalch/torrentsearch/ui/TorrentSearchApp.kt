@@ -14,6 +14,7 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+
 import com.prajwalch.torrentsearch.models.MagnetUri
 import com.prajwalch.torrentsearch.ui.components.TorrentClientNotFoundDialog
 import com.prajwalch.torrentsearch.ui.screens.Screens
@@ -50,7 +51,12 @@ fun TorrentSearchApp(
             SearchScreen(
                 modifier = Modifier.fillMaxSize(),
                 viewModel = searchViewModel,
-                onNavigateToSettings = { navController.navigate(Screens.SETTINGS) },
+                onNavigateToSettings = {
+                    navController.navigate(Screens.SEARCH) {
+                        launchSingleTop = true
+                        restoreState = true
+                    }
+                },
                 onDownloadTorrent = { isTorrentClientMissing = !onDownloadTorrent(it) },
                 onShareMagnetLink = onShareMagnetLink,
                 onOpenDescriptionPage = onOpenDescriptionPage,
@@ -59,13 +65,13 @@ fun TorrentSearchApp(
         }
 
         composable(
-            route = Screens.SETTINGS,
-            enterTransition = { slideInHorizontally() { fullWidth -> fullWidth } },
-            exitTransition = { slideOutHorizontally() { fullWidth -> fullWidth } }
+            route = Screens.SEARCH,
+            enterTransition = { slideInHorizontally { fullWidth -> fullWidth } },
+            exitTransition = { slideOutHorizontally { fullWidth -> fullWidth } }
         ) {
             SettingsScreen(
                 viewModel = settingsViewModel,
-                onNavigateBack = { navController.popBackStack() },
+                onNavigateBack = { navController.navigateUp() },
             )
         }
     }
