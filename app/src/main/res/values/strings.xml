@@ -58,6 +58,7 @@
     <string name="settings_section_search">Search</string>
     <string name="setting_enable_nsfw_search">Enable NSFW search</string>
     <string name="setting_search_providers">Search providers</string>
+    <string name="x_of_x_enabled">%1$d of %2$d enabled</string>
 
     <!-- Settings dialog -->
     <string name="settings_dialog_button_cancel">Cancel</string>

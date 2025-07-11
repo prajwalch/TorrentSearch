@@ -57,7 +57,11 @@ fun SearchSettings(viewModel: SettingsViewModel) {
     SettingsItem(
         leadingIconId = R.drawable.ic_graph,
         headline = stringResource(R.string.setting_search_providers),
-        supportingContent = "${settings.searchProviders.size} of ${allProviders.size} enabled",
+        supportingContent = stringResource(
+            R.string.x_of_x_enabled,
+            settings.searchProviders.size,
+            allProviders.size
+        ),
         onClick = {
             showListDialog = true
         }
