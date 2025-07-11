@@ -12,6 +12,7 @@ object SearchProviders {
         Pair("4", TheRarBg()),
         Pair("5", TorrentsCsv()),
         Pair("6", Yts()),
+        Pair("7", AnimeTosho()),
     )
 
     private var enabledProviders = ids()
