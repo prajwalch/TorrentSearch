@@ -13,6 +13,7 @@ object SearchProviders {
         Pair("5", TorrentsCsv()),
         Pair("6", Yts()),
         Pair("7", AnimeTosho()),
+        Pair("8", LimeTorrents()),
     )
 
     private var enabledProviders = ids()
