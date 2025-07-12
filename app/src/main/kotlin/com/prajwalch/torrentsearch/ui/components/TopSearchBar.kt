@@ -1,5 +1,6 @@
 package com.prajwalch.torrentsearch.ui.components
 
+import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
@@ -22,6 +23,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
@@ -39,19 +42,36 @@ fun TopSearchBar(
     val interactionSource = remember { MutableInteractionSource() }
     val isFocused by interactionSource.collectIsFocusedAsState()
 
-//    val horizontalPadding by animateDpAsState(if (isFocused) 0.dp else 16.dp)
-//    val roundedShapePrecent by animateIntAsState(if (isFocused) 0 else 100)
-
     val focusManager = LocalFocusManager.current
+
+    val colorAlpha = 0.5f
+    val unfocusedContainerColor =
+        MaterialTheme.colorScheme.secondaryContainer.copy(alpha = colorAlpha)
+    val unfocusedContentColor = MaterialTheme.colorScheme.onSurface.copy(alpha = colorAlpha)
+
+    val focusedContainerColor = MaterialTheme.colorScheme.surfaceContainer
+    val focusedContentColor = MaterialTheme.colorScheme.onSurface
+    
+    val indicatorColor = Color.Transparent
+
     val colors = TextFieldDefaults.colors(
-        unfocusedContainerColor = MaterialTheme.colorScheme.surfaceContainer,
-        focusedContainerColor = MaterialTheme.colorScheme.surface,
-        unfocusedIndicatorColor = MaterialTheme.colorScheme.surface,
-        focusedIndicatorColor = MaterialTheme.colorScheme.primary,
+        unfocusedContainerColor = unfocusedContainerColor,
+        unfocusedTextColor = unfocusedContentColor,
+        unfocusedPlaceholderColor = unfocusedContentColor,
+        unfocusedLeadingIconColor = unfocusedContentColor,
+        unfocusedTrailingIconColor = unfocusedContentColor,
+        unfocusedIndicatorColor = indicatorColor,
+
+        focusedContainerColor = focusedContainerColor,
+        focusedTextColor = focusedContentColor,
+        focusedPlaceholderColor = focusedContentColor,
+        focusedLeadingIconColor = focusedContentColor,
+        focusedTrailingIconColor = focusedContentColor,
+        focusedIndicatorColor = indicatorColor,
     )
 
     TextField(
-        modifier = modifier,
+        modifier = modifier.clip(shape = shape),
         value = query,
         onValueChange = onQueryChange,
         placeholder = { Text(stringResource(R.string.search)) },
@@ -82,21 +102,22 @@ fun TopSearchBar(
 
 @Composable
 private fun LeadingIcon(isFocused: Boolean, onBack: () -> Unit, modifier: Modifier = Modifier) {
-    if (!isFocused) {
-        Icon(
-            modifier = modifier,
-            imageVector = Icons.Outlined.Search,
-            contentDescription = null,
-        )
-        return
-    }
-
-    IconButton(onClick = onBack) {
-        Icon(
-            modifier = modifier,
-            imageVector = Icons.AutoMirrored.Outlined.ArrowBack,
-            contentDescription = stringResource(R.string.desc_unfocus_search_bar),
-        )
+    AnimatedContent(targetState = isFocused) { focused ->
+        if (focused) {
+            IconButton(onClick = onBack) {
+                Icon(
+                    modifier = modifier,
+                    imageVector = Icons.AutoMirrored.Outlined.ArrowBack,
+                    contentDescription = stringResource(R.string.desc_unfocus_search_bar),
+                )
+            }
+        } else {
+            Icon(
+                modifier = modifier,
+                imageVector = Icons.Outlined.Search,
+                contentDescription = null,
+            )
+        }
     }
 }
 
