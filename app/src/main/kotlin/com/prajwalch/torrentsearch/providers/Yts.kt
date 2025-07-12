@@ -19,6 +19,8 @@ import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.JsonObject
 
 class Yts(override val id: SearchProviderId) : SearchProvider {
+    override val name = "Yts"
+
     override fun specializedCategory() = Category.Movies
 
     override suspend fun search(query: String, context: SearchContext): List<Torrent> {
@@ -175,7 +177,7 @@ class Yts(override val id: SearchProviderId) : SearchProvider {
             seeds = seeds,
             peers = peers,
             providerId = id,
-            providerName = NAME,
+            providerName = this.name,
             uploadDate = uploadDate,
             category = Category.Movies,
             descriptionPageUrl = descriptionPageUrl,
@@ -185,6 +187,5 @@ class Yts(override val id: SearchProviderId) : SearchProvider {
 
     private companion object {
         private const val BASE_URL = "https://yts.mx"
-        private const val NAME = "yts.mx"
     }
 }

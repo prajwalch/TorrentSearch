@@ -20,6 +20,8 @@ import org.jsoup.nodes.Element
  * This provider uses InfoHash, not Magnet URIs.
  */
 class LimeTorrents(override val id: SearchProviderId) : SearchProvider {
+    override val name = "LimeTorrents"
+    
     override fun specializedCategory(): Category = Category.All
 
     override suspend fun search(query: String, context: SearchContext): List<Torrent> {
@@ -79,7 +81,7 @@ class LimeTorrents(override val id: SearchProviderId) : SearchProvider {
             seeds = seeds,
             peers = peers,
             providerId = id,
-            providerName = PROVIDER_NAME,
+            providerName = this.name,
             uploadDate = uploadDate,
             category = category,
             descriptionPageUrl = descriptionPageUrl,
@@ -129,7 +131,6 @@ class LimeTorrents(override val id: SearchProviderId) : SearchProvider {
 
     private companion object {
         private const val BASE_URL = "https://www.limetorrents.lol"
-        private const val PROVIDER_NAME = "limetorrents.lol"
         private val INFO_HASH_REGEX = Regex("""/torrent/([A-Fa-f0-9]{40})\.torrent""")
     }
 }

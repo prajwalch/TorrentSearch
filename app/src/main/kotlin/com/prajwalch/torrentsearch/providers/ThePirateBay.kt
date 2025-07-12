@@ -16,6 +16,8 @@ import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.JsonObject
 
 class ThePirateBay(override val id: String) : SearchProvider {
+    override val name = "ThePirateBay"
+
     override suspend fun search(query: String, context: SearchContext): List<Torrent> {
         val categoryIndex = categoryIndex(context.category)
         val queryParams = "?q=$query&cat=$categoryIndex"
@@ -94,7 +96,7 @@ class ThePirateBay(override val id: String) : SearchProvider {
             seeds = seeds,
             peers = peers,
             providerId = id,
-            providerName = NAME,
+            providerName = this.name,
             uploadDate = uploadDate,
             category = category,
             descriptionPageUrl = descriptionPageUrl,
@@ -128,6 +130,5 @@ class ThePirateBay(override val id: String) : SearchProvider {
     private companion object {
         private const val URL = "https://apibay.org/q.php"
         private const val DESCRIPTION_URL = "https://thepiratebay.org/description.php"
-        private const val NAME = "thepiratebay.org"
     }
 }

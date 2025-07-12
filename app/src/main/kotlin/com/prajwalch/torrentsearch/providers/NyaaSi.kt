@@ -15,6 +15,8 @@ import org.jsoup.Jsoup
 import org.jsoup.nodes.Element
 
 class NyaaSi(override val id: SearchProviderId) : SearchProvider {
+    override val name = "Nyaa"
+
     override fun specializedCategory() = Category.Anime
 
     override suspend fun search(query: String, context: SearchContext): List<Torrent> {
@@ -77,7 +79,7 @@ class NyaaSi(override val id: SearchProviderId) : SearchProvider {
             seeds = seeds.toUIntOrNull() ?: 0u,
             peers = peers.toUIntOrNull() ?: 0u,
             providerId = id,
-            providerName = NAME,
+            providerName = this.name,
             uploadDate = uploadDate,
             category = Category.Anime,
             descriptionPageUrl = descriptionPageUrl,
@@ -87,6 +89,5 @@ class NyaaSi(override val id: SearchProviderId) : SearchProvider {
 
     private companion object {
         private const val BASE_URL = "https://nyaa.si"
-        private const val NAME = "nyaa.si"
     }
 }

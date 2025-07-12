@@ -40,6 +40,8 @@ private data class TableRowParsedResult(
 )
 
 class TheRarBg(override val id: SearchProviderId) : SearchProvider {
+    override val name: String = "TheRarBg"
+
     override suspend fun search(query: String, context: SearchContext): List<Torrent> {
         var requestUrl = "$BASE_URL/get-posts/keywords:$query"
 
@@ -162,7 +164,7 @@ class TheRarBg(override val id: SearchProviderId) : SearchProvider {
             seeds = parsedResult.seeds.toUInt(),
             peers = parsedResult.peers.toUInt(),
             providerId = id,
-            providerName = NAME,
+            providerName = name,
             uploadDate = parsedResult.uploadDate,
             category = category,
             descriptionPageUrl = parsedResult.detailsPageUrl,
@@ -196,6 +198,5 @@ class TheRarBg(override val id: SearchProviderId) : SearchProvider {
 
     private companion object {
         private const val BASE_URL = "https://therarbg.com"
-        private const val NAME = "therarbg.com"
     }
 }

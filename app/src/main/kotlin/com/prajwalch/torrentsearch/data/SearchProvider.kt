@@ -15,6 +15,9 @@ interface SearchProvider {
     /** Provider id. */
     val id: SearchProviderId
 
+    /** Name of the provider. */
+    val name: String
+
     /** Returns the category the provider is specialized for. */
     fun specializedCategory() = Category.All
 

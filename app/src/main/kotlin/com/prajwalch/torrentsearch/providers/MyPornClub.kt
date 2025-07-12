@@ -14,6 +14,8 @@ import org.jsoup.Jsoup
 import org.jsoup.nodes.Element
 
 class MyPornClub(override val id: SearchProviderId) : SearchProvider {
+    override val name = "MyPornClub"
+
     override fun specializedCategory(): Category = Category.Porn
 
     override suspend fun search(query: String, context: SearchContext): List<Torrent> {
@@ -65,7 +67,7 @@ class MyPornClub(override val id: SearchProviderId) : SearchProvider {
             seeds = seeds,
             peers = peers,
             providerId = id,
-            providerName = PROVIDER_NAME,
+            providerName = this.name,
             uploadDate = uploadDate,
             category = Category.Porn,
             descriptionPageUrl = descriptionPageUrl,
@@ -90,7 +92,6 @@ class MyPornClub(override val id: SearchProviderId) : SearchProvider {
 
     private companion object {
         private const val BASE_URL = "https://myporn.club"
-        private const val PROVIDER_NAME = "myporn.club"
         private val HASH_REGEX = Regex("""\[hash_info]:(\w{32,40})""")
     }
 }

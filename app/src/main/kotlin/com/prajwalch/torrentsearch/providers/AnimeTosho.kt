@@ -22,6 +22,8 @@ import java.time.format.DateTimeFormatter
 import java.util.Locale
 
 class AnimeTosho(override val id: SearchProviderId) : SearchProvider {
+    override val name: String = "AnimeTosho"
+
     override fun specializedCategory() = Category.Anime
 
     override suspend fun search(query: String, context: SearchContext): List<Torrent> {
@@ -68,7 +70,7 @@ class AnimeTosho(override val id: SearchProviderId) : SearchProvider {
             seeds = seeds,
             peers = peers,
             providerId = id,
-            providerName = NAME,
+            providerName = name,
             uploadDate = uploadDate,
             category = Category.Anime,
             descriptionPageUrl = descriptionPageUrl,
@@ -129,7 +131,6 @@ class AnimeTosho(override val id: SearchProviderId) : SearchProvider {
 
     private companion object {
         private const val BASE_URL = "https://animetosho.org"
-        private const val NAME = "animetosho.org"
         private const val DATE_PREFIX = "Date/time submitted: "
         private val STATS_REGEX = """\[(\d+)↑/(\d+)↓]""".toRegex()
 

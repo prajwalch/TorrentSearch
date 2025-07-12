@@ -13,6 +13,8 @@ import org.jsoup.Jsoup
 import org.jsoup.nodes.Element
 
 class Eztv(override val id: String) : SearchProvider {
+    override val name = "Eztv"
+
     override fun specializedCategory() = Category.Series
 
     override suspend fun search(query: String, context: SearchContext): List<Torrent> {
@@ -111,7 +113,7 @@ class Eztv(override val id: String) : SearchProvider {
             seeds = seeds.toUIntOrNull() ?: 0u,
             peers = peers,
             providerId = id,
-            providerName = NAME,
+            providerName = name,
             uploadDate = uploadDate,
             category = Category.Series,
             descriptionPageUrl = descriptionPageUrl,
@@ -121,6 +123,5 @@ class Eztv(override val id: String) : SearchProvider {
 
     private companion object {
         private const val BASE_URL = "https://eztvx.to"
-        private const val NAME = "eztvx.to"
     }
 }

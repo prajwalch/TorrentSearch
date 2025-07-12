@@ -21,7 +21,7 @@ object SearchProviders {
     }
 
     fun namesWithId(): List<Pair<SearchProviderId, String>> {
-        return allProviders.map { Pair(it.id, it::class.simpleName!!) }
+        return allProviders.map { Pair(it.id, it.name) }
     }
 
     fun ids(): Set<SearchProviderId> {
