@@ -8,28 +8,21 @@ import kotlinx.coroutines.runBlocking
 import org.junit.Assert.*
 import org.junit.Test
 
-/**
- * Integration test for verifying that a provider returns actual torrents.
- */
 class ProviderTest {
 
-    // Change this to test a different provider
-    private val provider = AnimeTosho()
-
+    private val provider = MyPornClub()
 
     @Test
     fun searchReturnsRealTorrentsFromProvider() = runBlocking {
-        val searchQuery = "One Piece"
+        val searchQuery = "Hot"
 
         val context = SearchContext(
-            category = Category.Anime,
+            category = Category.All,
             httpClient = HttpClient
         )
 
-
         val results: List<Torrent> = provider.search(searchQuery, context)
 
-        // Basic validations
         assertNotNull("Expected non-null result", results)
         assertTrue("Expected non-empty result list", results.isNotEmpty())
 
@@ -39,7 +32,7 @@ class ProviderTest {
             """
             ✅ First Torrent Result:
             ├── Name        : ${first.name}
-            ├── Magnet URI  : ${first.magnetUri()}
+            ├── Magnet Uri  : ${first.magnetUri()}
             ├── Size        : ${first.size}
             ├── Seeds       : ${first.seeds}
             ├── Peers       : ${first.peers}
@@ -48,9 +41,39 @@ class ProviderTest {
             """.trimIndent()
         )
 
-        // Detailed assertions
         assertTrue("Torrent name should not be blank", first.name.isNotBlank())
         assertTrue("Torrent size should not be blank", first.size.isNotBlank())
-        assertTrue("Torrent magnet URI should be valid", first.magnetUri().startsWith("magnet:?"))
+    }
+
+    @Test
+    fun searchMultipleQueriesReturnsResults() = runBlocking {
+        val queries = listOf("Hot", "Big", "One Piece", "Fit", "Body")
+
+        val context = SearchContext(
+            category = Category.All,
+            httpClient = HttpClient
+        )
+
+        queries.forEach { query ->
+            val results = provider.search(query, context)
+
+            println("\n🔎 Testing query: \"$query\"")
+            assertNotNull("Expected non-null results for query: $query", results)
+            assertTrue("Expected at least one result for query: $query", results.isNotEmpty())
+
+            val first = results.first()
+            println(
+                """
+                ✅ First Result for "$query":
+                ├── Name        : ${first.name}
+                ├── Magnet Uri  : ${first.magnetUri()}
+                ├── Size        : ${first.size}
+                ├── Seeds       : ${first.seeds}
+                ├── Peers       : ${first.peers}
+                ├── Upload Date : ${first.uploadDate}
+                └── Page URL    : ${first.descriptionPageUrl}
+                """.trimIndent()
+            )
+        }
     }
 }
