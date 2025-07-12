@@ -1,8 +1,8 @@
 package com.prajwalch.torrentsearch.ui.screens.settings
 
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.ArrowBack
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -28,9 +28,9 @@ fun SettingsScreen(
         modifier = modifier.fillMaxSize(),
         topBar = { SettingsScreenTopBar(onNavigateBack = onNavigateBack) }
     ) { innerPadding ->
-        Column(modifier = Modifier.padding(innerPadding)) {
-            AppearanceSettings(viewModel = viewModel)
-            SearchSettings(viewModel = viewModel)
+        LazyColumn(modifier = Modifier.padding(innerPadding)) {
+            item { AppearanceSettings(viewModel = viewModel) }
+            item { SearchSettings(viewModel = viewModel) }
         }
     }
 }
