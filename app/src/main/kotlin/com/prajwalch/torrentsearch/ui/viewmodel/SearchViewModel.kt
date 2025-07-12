@@ -111,11 +111,14 @@ class SearchViewModel(
             currentUiState.selectedCategory
         }
 
-        val results = currentUiState.results.filter { torrent ->
-            // Torrent with no category is also NSFW.
-            val categoryIsNullOrNSFW = torrent.category?.isNSFW ?: true
-            enableNSFWSearch || !categoryIsNullOrNSFW
-        }
+        val results = currentUiState
+            .results
+            .filter { torrent -> searchProviders.contains(torrent.providerId) }
+            .filter { torrent ->
+                // Torrent with no category is also NSFW.
+                val categoryIsNullOrNSFW = torrent.category?.isNSFW ?: true
+                enableNSFWSearch || !categoryIsNullOrNSFW
+            }
 
         updateUIState { uIState ->
             uIState.copy(
