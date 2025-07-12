@@ -2,124 +2,187 @@ package com.prajwalch.torrentsearch.providers
 
 import android.os.Build
 import androidx.annotation.RequiresApi
+
 import com.prajwalch.torrentsearch.data.SearchContext
 import com.prajwalch.torrentsearch.data.SearchProvider
 import com.prajwalch.torrentsearch.data.SearchProviderId
+import com.prajwalch.torrentsearch.extensions.*
 import com.prajwalch.torrentsearch.models.Category
 import com.prajwalch.torrentsearch.models.InfoHashOrMagnetUri
 import com.prajwalch.torrentsearch.models.Torrent
+import com.prajwalch.torrentsearch.utils.prettyFileSize
+
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import org.jsoup.Jsoup
-import org.jsoup.nodes.Element
-import java.time.LocalDateTime
+import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.JsonPrimitive
+import kotlinx.serialization.json.buildJsonObject
+import kotlinx.serialization.json.putJsonArray
+
+import java.time.OffsetDateTime
 import java.time.format.DateTimeFormatter
 import java.util.Locale
 
 /**
- * Provider implementation for [Knaben](https://knaben.org).
- *
- * Extracts magnet URI results from HTML torrent listings.
- * This provider does not use a description/details page.
+ * Provider implementation using the official [Knaben API](https://knaben.org/api/v1).
+ * Returns magnet-based torrents.
  */
 class Knaben(override val id: SearchProviderId) : SearchProvider {
 
+    override val name: String = "Knaben"
+
     override suspend fun search(query: String, context: SearchContext): List<Torrent> {
-        val formattedQuery = query.trim().replace("\\s+".toRegex(), "%20")
-        val categoryCode = getCategoryCode(context.category)
-        val url = "$BASE_URL/search/$formattedQuery/$categoryCode/1/seeders"
+        val requestBody = buildRequestJson(query, context.category)
 
-        val html = context.httpClient.get(url)
+        val responseJson = context.httpClient.postJson(
+            url = "$BASE_URL/v1",
+            payload = requestBody,
+        ) ?: return emptyList()
 
-        return withContext(Dispatchers.Default) {
-            parseSearchResults(html)
+        val torrents = withContext(Dispatchers.Default) {
+            responseJson
+                .asObject()
+                .getArray("hits")
+                ?.map { it.asObject() }
+                ?.mapNotNull(::parseTorrentObject)
+        }
+
+        return torrents.orEmpty()
+    }
+
+    /** Builds the API request payload. */
+    private fun buildRequestJson(query: String, category: Category): JsonObject {
+        return buildJsonObject {
+            put("query", JsonPrimitive(query))
+            put("size", JsonPrimitive(50))
+            put("order_by", JsonPrimitive("peers"))
+            put("order_direction", JsonPrimitive("desc"))
+            put("hide_unsafe", JsonPrimitive(true))
+            put("hide_xxx", JsonPrimitive(false)) // TODO: NSFW can be implemented here
+            putJsonArray("categories") {
+                getKnabenCategoryIds(category).forEach { add(JsonPrimitive(it)) }
+            }
         }
     }
 
-    /** Maps internal [Category] enums to Knaben's category codes. */
-    private fun getCategoryCode(category: Category): String = when (category) {
-        Category.All -> "0"
-        Category.Music -> "1000000"
-        Category.Series -> "2000000"
-        Category.Movies -> "3000000"
-        Category.Apps -> "4000000"
-        Category.Porn -> "5000000"
-        Category.Anime -> "6000000"
-        Category.Games -> "7000000"
-        Category.Other -> "10000000"
-        Category.Books -> "9000000"
-    }
+    /**
+     * Parses a single result entry into a [Torrent].
+     *
+     * Example structure:
+     * - "title": "Some Torrent"
+     * - "hash": "ABCDEF..."
+     * - "magnetUrl": "magnet:?..."
+     * - "bytes": 123456
+     * - "seeders": 10
+     * - "peers": 20
+     * - "date": "2025-06-11T06:13:57+00:00"
+     */
+    private fun parseTorrentObject(obj: JsonObject): Torrent? {
+        val name = obj.getString("title") ?: return null
+        val magnetUri = obj.getString("magnetUrl") ?: return null
+        val sizeBytes = obj.getLong("bytes") ?: return null
+        val size = prettyFileSize(sizeBytes.toFloat())
 
-    /** Parses all valid <tr> rows into a list of torrents. */
-    private fun parseSearchResults(html: String): List<Torrent> {
-        return Jsoup.parse(html)
-            .select("tbody > tr")
-            .mapNotNull(::parseRow)
-    }
+        val seeds = obj.getUInt("seeders") ?: 0u
+        val peers = obj.getUInt("peers") ?: 0u
+        val uploadDateIso = obj.getString("date") ?: ""
+        val uploadDate = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
+            formatIsoDateToPrettyDate(uploadDateIso)
+        else
+            uploadDateIso
 
-    /** Parses a single row from the result table into a [Torrent] object. */
-    private fun parseRow(row: Element): Torrent? {
-        val name = row.selectFirst("td:nth-child(2) > a")?.text()?.trim().orEmpty()
-        val magnetUri = row.selectFirst("a[href^=magnet:?xt=]")?.attr("href") ?: return null
-        val size = row.selectFirst("td:nth-child(3)")?.text()?.trim().orEmpty()
-
-        val uploadDate = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            parseUploadDate(row)
-        } else {
-            row.selectFirst("td:nth-child(4)")?.attr("title").orEmpty()
-        }
-
-        val seeds = row.selectFirst("td:nth-child(5)")?.text()?.trim()?.toUIntOrNull() ?: 0u
-        val peers = row.selectFirst("td:nth-child(6)")?.text()?.trim()?.toUIntOrNull() ?: 0u
-        val category = extractCategory(row)
+        val descriptionPageUrl = obj.getString("details").orEmpty()
+        val category = extractCategory(obj)
 
         return Torrent(
             name = name,
             size = size,
             seeds = seeds,
             peers = peers,
-            providerId = id,
-            providerName = PROVIDER_NAME,
+            providerId = this.id,
+            providerName = this.name,
             uploadDate = uploadDate,
+            descriptionPageUrl = descriptionPageUrl,
             category = category,
-            descriptionPageUrl = "", // No description page
-            infoHashOrMagnetUri = InfoHashOrMagnetUri.MagnetUri(magnetUri)
+            infoHashOrMagnetUri = InfoHashOrMagnetUri.MagnetUri(magnetUri),
         )
     }
 
     /**
-     * Extracts a [Category] enum by matching category label text.
-     * Falls back to [Category.All] for unknown or missing labels.
+     * Maps the internal [Category] enum to a list of Knaben category IDs.
      */
-    private fun extractCategory(row: Element): Category {
-        return when (row.selectFirst("td:first-child > a")?.text()?.trim().orEmpty()) {
-            "Anime" -> Category.Anime
-            "Movies" -> Category.Movies
-            "TV" -> Category.Series
-            "Audio" -> Category.Music
-            "Console" -> Category.Games
-            "PC" -> Category.Apps
-            "Books" -> Category.Books
-            "XXX" -> Category.Porn
-            "Other" -> Category.Other
+    private fun getKnabenCategoryIds(category: Category): List<Int> = when (category) {
+        Category.All -> listOf()
+        Category.Music -> listOf(1000000)
+        Category.Series -> listOf(2000000)
+        Category.Movies -> listOf(3000000)
+        Category.Apps -> listOf(4000000)
+        Category.Porn -> listOf(5000000)
+        Category.Anime -> listOf(6000000)
+        Category.Games -> listOf(7000000)
+        Category.Books -> listOf(9000000)
+        Category.Other -> listOf(10000000)
+    }
+
+    /**
+     * Parses ISO 8601 date (e.g., `2025-06-11T06:13:57+00:00`) into a more readable format.
+     *
+     * @return Date formatted as `"dd MMM yyyy"`, e.g., `"11 Jun 2025"`.
+     */
+    @RequiresApi(Build.VERSION_CODES.O)
+    fun formatIsoDateToPrettyDate(isoDate: String): String {
+        val parsedDate = OffsetDateTime.parse(isoDate)
+        val outputFormatter = DateTimeFormatter.ofPattern("dd MMM yyyy", Locale.ENGLISH)
+        return parsedDate.format(outputFormatter)
+    }
+
+    /**
+     * Attempts to infer the [Category] from Knaben's numeric `categoryId` list.
+     *
+     * Knaben returns a list of numeric category IDs for each torrent result.
+     * These IDs follow a specific pattern:
+     * - Music       → 1000000
+     * - Series      → 2000000
+     * - Movies      → 3000000
+     * - Apps        → 4000000
+     * - Porn        → 5000000
+     * - Anime       → 6000000
+     * - Games       → 7000000
+     * - Books       → 9000000
+     * - Other       → 10000000
+     *
+     * Note: Simply using the first digit of the ID (e.g., '1') to determine the category
+     * is **not reliable**, because both Music (`1000000`) and Other (`10000000`) start with '1'.
+     * Therefore, this function uses numeric range matching to accurately determine the category.
+     *
+     * If multiple IDs are present, the one with the smallest value is used as the most specific.
+     *
+     * @param obj The JSON object representing the torrent result.
+     * @return The inferred [Category], or [Category.All] if unable to classify.
+     */
+    private fun extractCategory(obj: JsonObject): Category {
+        val categoryIds = obj.getArray("categoryId") ?: return Category.All
+
+        // Use the smallest (most specific) categoryId for classification
+        val firstId = categoryIds
+            .mapNotNull { it.toString().toLongOrNull() }
+            .minOrNull() ?: return Category.All
+
+        return when (firstId) {
+            in 1000000L..1999999L -> Category.Music
+            in 2000000L..2999999L -> Category.Series
+            in 3000000L..3999999L -> Category.Movies
+            in 4000000L..4999999L -> Category.Apps
+            in 5000000L..5999999L -> Category.Porn
+            in 6000000L..6999999L -> Category.Anime
+            in 7000000L..7999999L -> Category.Games
+            in 9000000L..9999999L -> Category.Books
+            in 10000000L..10999999L -> Category.Other
             else -> Category.All
         }
     }
 
-    /**
-     * Parses the upload date from the [title] attribute into `dd MMM yyyy`.
-     * If parsing fails, falls back to the visible text.
-     */
-    @RequiresApi(Build.VERSION_CODES.O)
-    private fun parseUploadDate(row: Element): String {
-        val raw = row.selectFirst("td:nth-child(4)")?.attr("title") ?: return ""
-        val inputFmt = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss", Locale.ENGLISH)
-        val outputFmt = DateTimeFormatter.ofPattern("dd MMM yyyy", Locale.ENGLISH)
-        return LocalDateTime.parse(raw, inputFmt).format(outputFmt)
-    }
-
     private companion object {
-        private const val BASE_URL = "https://knaben.org"
-        private const val PROVIDER_NAME = "knaben.org"
+        private const val BASE_URL = "https://api.knaben.org"
     }
 }
