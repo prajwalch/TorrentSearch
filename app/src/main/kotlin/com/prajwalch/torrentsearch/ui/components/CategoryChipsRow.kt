@@ -23,6 +23,7 @@ import com.prajwalch.torrentsearch.models.Category
 
 @Composable
 fun CategoryChipsRow(
+    categories: List<Category>,
     selectedCategory: Category,
     onSelect: (Category) -> Unit,
     modifier: Modifier = Modifier,
@@ -33,8 +34,13 @@ fun CategoryChipsRow(
         horizontalArrangement = Arrangement.spacedBy(8.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        items(Category.entries.toList()) { category ->
+        items(
+            items = categories,
+            key = { it.ordinal },
+            contentType = { it },
+        ) { category ->
             CategoryChip(
+                modifier = Modifier.animateItem(),
                 label = category.toString(),
                 selected = selectedCategory == category,
                 onClick = { onSelect(category) },

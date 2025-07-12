@@ -14,7 +14,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
@@ -47,6 +46,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+
 import com.prajwalch.torrentsearch.R
 import com.prajwalch.torrentsearch.models.Category
 import com.prajwalch.torrentsearch.models.MagnetUri
@@ -56,6 +56,7 @@ import com.prajwalch.torrentsearch.ui.components.TopSearchBar
 import com.prajwalch.torrentsearch.ui.components.TorrentActionsBottomSheet
 import com.prajwalch.torrentsearch.ui.components.TorrentList
 import com.prajwalch.torrentsearch.ui.viewmodel.SearchViewModel
+
 import kotlinx.coroutines.launch
 
 @Composable
@@ -116,11 +117,12 @@ fun SearchScreen(
             SearchScreenTopBar(
                 modifier = Modifier.fillMaxWidth(),
                 searchQuery = uiState.query,
-                onSearchQueryChange = viewModel::setQuery,
-                onSearch = viewModel::performSearch,
+                categories = uiState.categories,
+                selectedCategory = uiState.selectedCategory,
                 onNavigateToSettings = onNavigateToSettings,
-                category = uiState.category,
+                onSearchQueryChange = viewModel::setQuery,
                 onCategoryChange = viewModel::setCategory,
+                onSearch = viewModel::performSearch,
             )
         }
     ) { innerPadding ->
@@ -142,11 +144,12 @@ fun SearchScreen(
 @Composable
 private fun SearchScreenTopBar(
     searchQuery: String,
-    onSearchQueryChange: (String) -> Unit,
-    onSearch: () -> Unit,
+    categories: List<Category>,
+    selectedCategory: Category,
     onNavigateToSettings: () -> Unit,
-    category: Category,
+    onSearchQueryChange: (String) -> Unit,
     onCategoryChange: (Category) -> Unit,
+    onSearch: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val windowInsets = TopAppBarDefaults.windowInsets
@@ -180,9 +183,10 @@ private fun SearchScreenTopBar(
         }
         Spacer(Modifier.height(8.dp))
         CategoryChipsRow(
-            selectedCategory = category,
+            selectedCategory = selectedCategory,
+            categories = categories,
             onSelect = { newCategory ->
-                if (category != newCategory) {
+                if (selectedCategory != newCategory) {
                     onCategoryChange(newCategory)
                     onSearch()
                 }

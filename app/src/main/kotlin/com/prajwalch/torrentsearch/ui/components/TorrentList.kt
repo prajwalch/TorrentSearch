@@ -34,10 +34,16 @@ fun TorrentList(
     modifier: Modifier = Modifier,
 ) {
     LazyColumn(modifier = modifier) {
-        items(items = torrents) {
+        items(
+            items = torrents,
+            key = { it.hashCode() },
+            contentType = { it.category },
+        ) {
             TorrentListItem(
+                modifier = Modifier
+                    .animateItem()
+                    .clickable { onTorrentSelect(it) },
                 torrent = it,
-                modifier = Modifier.clickable { onTorrentSelect(it) },
             )
         }
     }

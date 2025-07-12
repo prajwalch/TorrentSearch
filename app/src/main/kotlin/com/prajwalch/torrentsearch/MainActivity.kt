@@ -42,7 +42,11 @@ class MainActivity : ComponentActivity() {
 
     private val searchViewModel: SearchViewModel by viewModels {
         val torrentsRepository = TorrentsRepository(httpClient = HttpClient)
-        SearchViewModelFactory(torrentsRepository = torrentsRepository)
+        
+        SearchViewModelFactory(
+            settingsRepository = settingsRepository,
+            torrentsRepository = torrentsRepository,
+        )
     }
 
     private val settingsViewModel: SettingsViewModel by viewModels {
@@ -58,7 +62,7 @@ class MainActivity : ComponentActivity() {
             val searchSettings by settingsViewModel.searchSettings.collectAsStateWithLifecycle()
 
             SearchProviders.setEnabledProviders(searchSettings.searchProviders)
-            
+
             val darkTheme = when (appearanceSettings.darkTheme) {
                 DarkTheme.On -> true
                 DarkTheme.Off -> false
