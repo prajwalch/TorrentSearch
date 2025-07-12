@@ -14,36 +14,65 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
-data class AppearanceSettings(
+data class AppearanceSettingsUiState(
     val enableDynamicTheme: Boolean = true,
     val darkTheme: DarkTheme = DarkTheme.FollowSystem,
 )
 
-data class SearchSettings(
+data class SearchSettingsUiState(
     val enableNSFWSearch: Boolean = false,
-    val searchProviders: Set<SearchProviderId> = SearchProviders.ids(),
+    val searchProviders1: List<SearchProviderUiState> = emptyList(),
+    val totalSearchProviders: Int = SearchProviders.namesWithId().size,
+    val enabledSearchProviders: Int = 0,
+)
+
+data class SearchProviderUiState(
+    val id: SearchProviderId,
+    val name: String,
+    val enabled: Boolean,
 )
 
 class SettingsViewModel(private val repository: SettingsRepository) : ViewModel() {
+    private val allSearchProviders = SearchProviders.namesWithId()
+    private var enabledSearchProviders: Set<SearchProviderId> = emptySet()
+
     val appearanceSettings = combine(
         repository.enableDynamicTheme,
         repository.darkTheme,
-        ::AppearanceSettings
+        ::AppearanceSettingsUiState
     ).stateIn(
         scope = viewModelScope,
-        started = SharingStarted.WhileSubscribed(5000),
-        initialValue = AppearanceSettings()
+        started = SharingStarted.Eagerly,
+        initialValue = AppearanceSettingsUiState()
     )
 
     val searchSettings = combine(
         repository.enableNSFWSearch,
-        repository.searchProviders,
-        ::SearchSettings
-    ).stateIn(
+        repository.searchProviders
+    ) { enableNSFWSearch, searchProviders ->
+        enabledSearchProviders = searchProviders
+
+        SearchSettingsUiState(
+            enableNSFWSearch = enableNSFWSearch,
+            searchProviders1 = createSearchProviderStates(),
+            totalSearchProviders = allSearchProviders.size,
+            enabledSearchProviders = enabledSearchProviders.size,
+        )
+    }.stateIn(
         scope = viewModelScope,
-        started = SharingStarted.WhileSubscribed(5000),
-        initialValue = SearchSettings()
+        started = SharingStarted.Eagerly,
+        initialValue = SearchSettingsUiState()
     )
+
+    private fun createSearchProviderStates(): List<SearchProviderUiState> {
+        return allSearchProviders.map { (id, name) ->
+            SearchProviderUiState(
+                id = id,
+                name = name,
+                enabled = enabledSearchProviders.contains(id)
+            )
+        }
+    }
 
     fun updateEnableDynamicTheme(enabled: Boolean) {
         viewModelScope.launch { repository.updateEnableDynamicTheme(enabled) }
@@ -57,8 +86,16 @@ class SettingsViewModel(private val repository: SettingsRepository) : ViewModel(
         viewModelScope.launch { repository.updateEnableNSFWSearch(enabled) }
     }
 
-    fun updateSearchProviders(providers: Set<SearchProviderId>) {
-        viewModelScope.launch { repository.updateSearchProviders(providers) }
+    fun enableSearchProvider(providerId: SearchProviderId, enable: Boolean) {
+        val updatedSearchProviders = if (enable) {
+            enabledSearchProviders + providerId
+        } else {
+            enabledSearchProviders - providerId
+        }
+        
+        viewModelScope.launch {
+            repository.updateSearchProviders(providers = updatedSearchProviders)
+        }
     }
 }
 

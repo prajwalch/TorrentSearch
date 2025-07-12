@@ -20,25 +20,27 @@ import androidx.compose.ui.res.stringResource
 
 import com.prajwalch.torrentsearch.R
 import com.prajwalch.torrentsearch.data.SearchProviderId
-import com.prajwalch.torrentsearch.providers.SearchProviders
 import com.prajwalch.torrentsearch.ui.components.SettingsDialog
 import com.prajwalch.torrentsearch.ui.components.SettingsItem
 import com.prajwalch.torrentsearch.ui.components.SettingsSectionTitle
+import com.prajwalch.torrentsearch.ui.viewmodel.SearchProviderUiState
 import com.prajwalch.torrentsearch.ui.viewmodel.SettingsViewModel
 
 @Composable
 fun SearchSettings(viewModel: SettingsViewModel) {
     val settings by viewModel.searchSettings.collectAsState()
-
-    val allProviders = remember { SearchProviders.namesWithId() }
     var showListDialog by remember { mutableStateOf(false) }
 
     if (showListDialog) {
         SearchProvidersListDialog(
-            allProviders = allProviders,
-            enabledProviders = settings.searchProviders,
+            searchProviders = settings.searchProviders1,
             onDismissRequest = { showListDialog = false },
-            onProvidersChange = { viewModel.updateSearchProviders(it) }
+            onCheckedChange = { providerId, enable ->
+                viewModel.enableSearchProvider(
+                    providerId = providerId,
+                    enable = enable
+                )
+            }
         )
     }
 
@@ -59,8 +61,8 @@ fun SearchSettings(viewModel: SettingsViewModel) {
         headline = stringResource(R.string.setting_search_providers),
         supportingContent = stringResource(
             R.string.x_of_x_enabled,
-            settings.searchProviders.size,
-            allProviders.size
+            settings.enabledSearchProviders,
+            settings.totalSearchProviders
         ),
         onClick = {
             showListDialog = true
@@ -70,10 +72,9 @@ fun SearchSettings(viewModel: SettingsViewModel) {
 
 @Composable
 private fun SearchProvidersListDialog(
-    allProviders: List<Pair<SearchProviderId, String>>,
-    enabledProviders: Set<SearchProviderId>,
+    searchProviders: List<SearchProviderUiState>,
     onDismissRequest: () -> Unit,
-    onProvidersChange: (Set<SearchProviderId>) -> Unit,
+    onCheckedChange: (SearchProviderId, Boolean) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     SettingsDialog(
@@ -82,16 +83,8 @@ private fun SearchProvidersListDialog(
         onDismissRequest = onDismissRequest,
         content = {
             SearchProvidersList(
-                allProviders = allProviders,
-                enabledProviders = enabledProviders,
-                onProviderClick = { (id, enable) ->
-                    val newEnabledProviders = if (enable) {
-                        enabledProviders + id
-                    } else {
-                        enabledProviders - id
-                    }
-                    onProvidersChange(newEnabledProviders)
-                },
+                searchProviders = searchProviders,
+                onCheckedChange = onCheckedChange,
             )
         }
     )
@@ -99,21 +92,20 @@ private fun SearchProvidersListDialog(
 
 @Composable
 private fun SearchProvidersList(
-    allProviders: List<Pair<SearchProviderId, String>>,
-    enabledProviders: Set<SearchProviderId>,
-    onProviderClick: (Pair<SearchProviderId, Boolean>) -> Unit,
+    searchProviders: List<SearchProviderUiState>,
+    onCheckedChange: (SearchProviderId, Boolean) -> Unit,
     modifier: Modifier = Modifier,
 ) {
 
     LazyColumn(modifier = modifier) {
         items(
-            items = allProviders,
-            key = { (id, _) -> id },
-        ) { (id, name) ->
+            items = searchProviders,
+            key = { it.id },
+        ) { searchProvider ->
             SearchProvidersListItem(
-                enabled = enabledProviders.contains(id),
-                name = name,
-                onClick = { onProviderClick(Pair(id, it)) }
+                enabled = searchProvider.enabled,
+                name = searchProvider.name,
+                onCheckedChange = { onCheckedChange(searchProvider.id, it) }
             )
         }
     }
@@ -123,17 +115,17 @@ private fun SearchProvidersList(
 private fun SearchProvidersListItem(
     enabled: Boolean,
     name: String,
-    onClick: (Boolean) -> Unit,
+    onCheckedChange: (Boolean) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val colors = ListItemDefaults.colors(containerColor = Color.Unspecified)
 
     ListItem(
-        modifier = modifier.clickable(onClick = { onClick(!enabled) }),
+        modifier = modifier.clickable(onClick = { onCheckedChange(!enabled) }),
         leadingContent = {
             Checkbox(
                 checked = enabled,
-                onCheckedChange = onClick,
+                onCheckedChange = onCheckedChange,
             )
         },
         headlineContent = { Text(text = name) },
