@@ -2,6 +2,7 @@ package com.prajwalch.torrentsearch.providers
 
 import com.prajwalch.torrentsearch.data.SearchContext
 import com.prajwalch.torrentsearch.data.SearchProvider
+import com.prajwalch.torrentsearch.data.SearchProviderId
 import com.prajwalch.torrentsearch.extensions.asObject
 import com.prajwalch.torrentsearch.extensions.getArray
 import com.prajwalch.torrentsearch.extensions.getLong
@@ -17,7 +18,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.JsonObject
 
-class Yts : SearchProvider {
+class Yts(override val id: SearchProviderId) : SearchProvider {
     override fun specializedCategory() = Category.Movies
 
     override suspend fun search(query: String, context: SearchContext): List<Torrent> {

@@ -12,7 +12,7 @@ import kotlinx.coroutines.withContext
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Element
 
-class Eztv : SearchProvider {
+class Eztv(override val id: String) : SearchProvider {
     override fun specializedCategory() = Category.Series
 
     override suspend fun search(query: String, context: SearchContext): List<Torrent> {

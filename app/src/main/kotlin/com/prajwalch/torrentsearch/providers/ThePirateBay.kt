@@ -15,7 +15,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.JsonObject
 
-class ThePirateBay : SearchProvider {
+class ThePirateBay(override val id: String) : SearchProvider {
     override suspend fun search(query: String, context: SearchContext): List<Torrent> {
         val categoryIndex = categoryIndex(context.category)
         val queryParams = "?q=$query&cat=$categoryIndex"

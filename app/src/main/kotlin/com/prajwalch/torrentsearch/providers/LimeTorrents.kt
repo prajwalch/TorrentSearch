@@ -2,11 +2,14 @@ package com.prajwalch.torrentsearch.providers
 
 import com.prajwalch.torrentsearch.data.SearchContext
 import com.prajwalch.torrentsearch.data.SearchProvider
+import com.prajwalch.torrentsearch.data.SearchProviderId
 import com.prajwalch.torrentsearch.models.Category
 import com.prajwalch.torrentsearch.models.InfoHashOrMagnetUri
 import com.prajwalch.torrentsearch.models.Torrent
+
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Element
 
@@ -16,7 +19,7 @@ import org.jsoup.nodes.Element
  * Extracts torrent results from the HTML search page.
  * This provider uses InfoHash, not Magnet URIs.
  */
-class LimeTorrents : SearchProvider {
+class LimeTorrents(override val id: SearchProviderId) : SearchProvider {
 
     override fun specializedCategory(): Category = Category.All
 

@@ -19,7 +19,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 
 import com.prajwalch.torrentsearch.R
-import com.prajwalch.torrentsearch.providers.ProviderId
+import com.prajwalch.torrentsearch.data.SearchProviderId
 import com.prajwalch.torrentsearch.providers.SearchProviders
 import com.prajwalch.torrentsearch.ui.components.SettingsDialog
 import com.prajwalch.torrentsearch.ui.components.SettingsItem
@@ -70,10 +70,10 @@ fun SearchSettings(viewModel: SettingsViewModel) {
 
 @Composable
 private fun SearchProvidersListDialog(
-    allProviders: List<Pair<ProviderId, String>>,
-    enabledProviders: Set<ProviderId>,
+    allProviders: List<Pair<SearchProviderId, String>>,
+    enabledProviders: Set<SearchProviderId>,
     onDismissRequest: () -> Unit,
-    onProvidersChange: (Set<ProviderId>) -> Unit,
+    onProvidersChange: (Set<SearchProviderId>) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     SettingsDialog(
@@ -99,9 +99,9 @@ private fun SearchProvidersListDialog(
 
 @Composable
 private fun SearchProvidersList(
-    allProviders: List<Pair<ProviderId, String>>,
-    enabledProviders: Set<ProviderId>,
-    onProviderClick: (Pair<ProviderId, Boolean>) -> Unit,
+    allProviders: List<Pair<SearchProviderId, String>>,
+    enabledProviders: Set<SearchProviderId>,
+    onProviderClick: (Pair<SearchProviderId, Boolean>) -> Unit,
     modifier: Modifier = Modifier,
 ) {
 

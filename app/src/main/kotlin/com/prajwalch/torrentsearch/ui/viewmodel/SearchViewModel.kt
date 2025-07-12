@@ -4,11 +4,11 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 
+import com.prajwalch.torrentsearch.data.SearchProviderId
 import com.prajwalch.torrentsearch.data.SettingsRepository
 import com.prajwalch.torrentsearch.data.TorrentsRepository
 import com.prajwalch.torrentsearch.models.Category
 import com.prajwalch.torrentsearch.models.Torrent
-import com.prajwalch.torrentsearch.providers.ProviderId
 import com.prajwalch.torrentsearch.providers.SearchProviders
 
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -36,7 +36,7 @@ class SearchViewModel(
     private val mUiState = MutableStateFlow(SearchScreenUIState())
     val uiState = mUiState.asStateFlow()
 
-    private var enabledSearchProviders: Set<ProviderId> = emptySet()
+    private var enabledSearchProviders: Set<SearchProviderId> = emptySet()
 
     init {
         observeSettingsChange()

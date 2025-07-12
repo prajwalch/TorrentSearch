@@ -1,35 +1,30 @@
 package com.prajwalch.torrentsearch.providers
 
 import com.prajwalch.torrentsearch.data.SearchProvider
-
-typealias ProviderId = String
+import com.prajwalch.torrentsearch.data.SearchProviderId
 
 object SearchProviders {
-    private val allProviders = mapOf(
-        Pair("1", Eztv()),
-        Pair("2", NyaaSi()),
-        Pair("3", ThePirateBay()),
-        Pair("4", TheRarBg()),
-        Pair("5", TorrentsCsv()),
-        Pair("6", Yts()),
-        Pair("7", AnimeTosho()),
-        Pair("8", LimeTorrents()),
-        Pair("9", MyPornClub()),
+    private val allProviders = setOf(
+        Eztv(id = "1"),
+        NyaaSi(id = "2"),
+        ThePirateBay(id = "3"),
+        TheRarBg(id = "4"),
+        TorrentsCsv(id = "5"),
+        Yts(id = "6"),
+        AnimeTosho(id = "7"),
+        LimeTorrents(id = "8"),
+        MyPornClub(id = "9"),
     )
 
-    fun get(ids: Set<ProviderId>): List<SearchProvider> {
-        return allProviders.mapNotNull { (id, provider) ->
-            if (ids.contains(id)) provider else null
-        }
+    fun get(ids: Set<SearchProviderId>): List<SearchProvider> {
+        return allProviders.filter { ids.contains(it.id) }
     }
 
-    fun namesWithId(): List<Pair<ProviderId, String>> {
-        return allProviders.map { (id, provider) ->
-            Pair(id, provider::class.simpleName!!)
-        }
+    fun namesWithId(): List<Pair<SearchProviderId, String>> {
+        return allProviders.map { Pair(it.id, it::class.simpleName!!) }
     }
 
-    fun ids(): Set<ProviderId> {
-        return allProviders.map { (id, _) -> id }.toSet()
+    fun ids(): Set<SearchProviderId> {
+        return allProviders.map { it.id }.toSet()
     }
 }

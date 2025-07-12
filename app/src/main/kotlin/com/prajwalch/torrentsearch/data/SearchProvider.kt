@@ -4,11 +4,17 @@ import com.prajwalch.torrentsearch.models.Category
 import com.prajwalch.torrentsearch.models.Torrent
 import com.prajwalch.torrentsearch.network.HttpClient
 
+/** Unique identifier of the provider. */
+typealias SearchProviderId = String
+
 /**
  * A search provider is responsible for initiating the search for the given
  * query, parsing the response and then returning structured result.
  */
 interface SearchProvider {
+    /** Provider id. */
+    val id: SearchProviderId
+
     /** Returns the category the provider is specialized for. */
     fun specializedCategory() = Category.All
 

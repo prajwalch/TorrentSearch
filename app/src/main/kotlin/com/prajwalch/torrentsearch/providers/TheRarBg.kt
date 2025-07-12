@@ -2,6 +2,7 @@ package com.prajwalch.torrentsearch.providers
 
 import com.prajwalch.torrentsearch.data.SearchContext
 import com.prajwalch.torrentsearch.data.SearchProvider
+import com.prajwalch.torrentsearch.data.SearchProviderId
 import com.prajwalch.torrentsearch.models.Category
 import com.prajwalch.torrentsearch.models.InfoHashOrMagnetUri
 import com.prajwalch.torrentsearch.models.Torrent
@@ -38,7 +39,7 @@ private data class TableRowParsedResult(
     val category: String,
 )
 
-class TheRarBg : SearchProvider {
+class TheRarBg(override val id: SearchProviderId) : SearchProvider {
     override suspend fun search(query: String, context: SearchContext): List<Torrent> {
         var requestUrl = "$BASE_URL/get-posts/keywords:$query"
 

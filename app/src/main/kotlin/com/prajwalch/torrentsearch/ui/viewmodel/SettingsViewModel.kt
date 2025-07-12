@@ -5,8 +5,8 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 
 import com.prajwalch.torrentsearch.data.DarkTheme
+import com.prajwalch.torrentsearch.data.SearchProviderId
 import com.prajwalch.torrentsearch.data.SettingsRepository
-import com.prajwalch.torrentsearch.providers.ProviderId
 import com.prajwalch.torrentsearch.providers.SearchProviders
 
 import kotlinx.coroutines.flow.SharingStarted
@@ -21,7 +21,7 @@ data class AppearanceSettings(
 
 data class SearchSettings(
     val enableNSFWSearch: Boolean = false,
-    val searchProviders: Set<ProviderId> = SearchProviders.ids(),
+    val searchProviders: Set<SearchProviderId> = SearchProviders.ids(),
 )
 
 class SettingsViewModel(private val repository: SettingsRepository) : ViewModel() {
@@ -57,7 +57,7 @@ class SettingsViewModel(private val repository: SettingsRepository) : ViewModel(
         viewModelScope.launch { repository.updateEnableNSFWSearch(enabled) }
     }
 
-    fun updateSearchProviders(providers: Set<ProviderId>) {
+    fun updateSearchProviders(providers: Set<SearchProviderId>) {
         viewModelScope.launch { repository.updateSearchProviders(providers) }
     }
 }

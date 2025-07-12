@@ -7,7 +7,6 @@ import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.stringSetPreferencesKey
 
-import com.prajwalch.torrentsearch.providers.ProviderId
 import com.prajwalch.torrentsearch.providers.SearchProviders
 
 import kotlinx.coroutines.flow.Flow
@@ -66,7 +65,7 @@ class SettingsRepository(private val dataStore: DataStore<Preferences>) {
         }
     }
 
-    suspend fun updateSearchProviders(providers: Set<ProviderId>) {
+    suspend fun updateSearchProviders(providers: Set<SearchProviderId>) {
         dataStore.edit { preferences ->
             preferences[SEARCH_PROVIDERS] = providers
         }
