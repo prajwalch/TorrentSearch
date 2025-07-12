@@ -23,17 +23,26 @@ class LimeTorrents(override val id: SearchProviderId) : SearchProvider {
     override fun specializedCategory(): Category = Category.All
 
     override suspend fun search(query: String, context: SearchContext): List<Torrent> {
-        val url = "$BASE_URL/search/all/$query/date/1/"
+        val categoryString = getCategoryString(context.category)
+        val requestUrl = "$BASE_URL/search/$categoryString/$query/date/1/"
 
-        val html = try {
-            context.httpClient.get(url)
-        } catch (e: Exception) {
-            return emptyList()
-        }
+        val responseHtml = context.httpClient.get(url = requestUrl)
 
         return withContext(Dispatchers.Default) {
-            parseSearchResults(html)
+            parseSearchResults(html = responseHtml)
         }
+    }
+
+    /** Returns the category string used by it. */
+    private fun getCategoryString(category: Category): String = when (category) {
+        Category.All, Category.Books, Category.Porn -> "all"
+        Category.Anime -> "anime"
+        Category.Apps -> "applications"
+        Category.Games -> "games"
+        Category.Movies -> "movies"
+        Category.Music -> "music"
+        Category.Series -> "tv"
+        Category.Other -> "other"
     }
 
     /** Parses all torrent rows from the result HTML page. */
