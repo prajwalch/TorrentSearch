@@ -69,6 +69,7 @@ class TorrentsCsv(override val id: SearchProviderId) : SearchProvider {
             size = size,
             seeds = seeds,
             peers = peers,
+            providerId = id,
             providerName = NAME,
             uploadDate = uploadDate,
             descriptionPageUrl = BASE_URL,

@@ -161,6 +161,7 @@ class TheRarBg(override val id: SearchProviderId) : SearchProvider {
             size = parsedResult.size,
             seeds = parsedResult.seeds.toUInt(),
             peers = parsedResult.peers.toUInt(),
+            providerId = id,
             providerName = NAME,
             uploadDate = parsedResult.uploadDate,
             category = category,

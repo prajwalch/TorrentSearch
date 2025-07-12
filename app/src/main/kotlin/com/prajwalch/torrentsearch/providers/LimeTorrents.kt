@@ -20,7 +20,6 @@ import org.jsoup.nodes.Element
  * This provider uses InfoHash, not Magnet URIs.
  */
 class LimeTorrents(override val id: SearchProviderId) : SearchProvider {
-
     override fun specializedCategory(): Category = Category.All
 
     override suspend fun search(query: String, context: SearchContext): List<Torrent> {
@@ -70,6 +69,7 @@ class LimeTorrents(override val id: SearchProviderId) : SearchProvider {
             size = size,
             seeds = seeds,
             peers = peers,
+            providerId = id,
             providerName = PROVIDER_NAME,
             uploadDate = uploadDate,
             category = category,

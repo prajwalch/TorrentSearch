@@ -67,6 +67,7 @@ class AnimeTosho(override val id: SearchProviderId) : SearchProvider {
             size = size,
             seeds = seeds,
             peers = peers,
+            providerId = id,
             providerName = NAME,
             uploadDate = uploadDate,
             category = Category.Anime,

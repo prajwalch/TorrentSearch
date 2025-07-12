@@ -93,6 +93,7 @@ class ThePirateBay(override val id: String) : SearchProvider {
             size = size,
             seeds = seeds,
             peers = peers,
+            providerId = id,
             providerName = NAME,
             uploadDate = uploadDate,
             category = category,

@@ -174,6 +174,7 @@ class Yts(override val id: SearchProviderId) : SearchProvider {
             size = size,
             seeds = seeds,
             peers = peers,
+            providerId = id,
             providerName = NAME,
             uploadDate = uploadDate,
             category = Category.Movies,

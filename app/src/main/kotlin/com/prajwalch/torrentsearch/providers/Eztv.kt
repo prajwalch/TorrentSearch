@@ -110,6 +110,7 @@ class Eztv(override val id: String) : SearchProvider {
             size = size,
             seeds = seeds.toUIntOrNull() ?: 0u,
             peers = peers,
+            providerId = id,
             providerName = NAME,
             uploadDate = uploadDate,
             category = Category.Series,

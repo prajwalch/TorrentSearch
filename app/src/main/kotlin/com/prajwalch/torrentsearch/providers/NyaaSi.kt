@@ -76,6 +76,7 @@ class NyaaSi(override val id: SearchProviderId) : SearchProvider {
             size = size,
             seeds = seeds.toUIntOrNull() ?: 0u,
             peers = peers.toUIntOrNull() ?: 0u,
+            providerId = id,
             providerName = NAME,
             uploadDate = uploadDate,
             category = Category.Anime,

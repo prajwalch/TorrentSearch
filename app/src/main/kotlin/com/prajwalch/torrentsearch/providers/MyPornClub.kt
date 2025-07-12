@@ -60,6 +60,7 @@ class MyPornClub(override val id: SearchProviderId) : SearchProvider {
             size = size,
             seeds = seeds,
             peers = peers,
+            providerId = id,
             providerName = PROVIDER_NAME,
             uploadDate = uploadDate,
             category = Category.Porn,
