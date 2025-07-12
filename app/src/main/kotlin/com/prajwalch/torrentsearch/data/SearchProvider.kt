@@ -18,8 +18,9 @@ interface SearchProvider {
     /** Name of the provider. */
     val name: String
 
-    /** Returns the category the provider is specialized for. */
-    fun specializedCategory() = Category.All
+    /** Category the provider is specialized for. */
+    val specializedCategory: Category
+        get() = Category.All
 
     /** Performs a search and returns the results. */
     suspend fun search(query: String, context: SearchContext): List<Torrent>

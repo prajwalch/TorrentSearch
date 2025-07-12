@@ -15,7 +15,7 @@ import org.jsoup.nodes.Element
 class Eztv(override val id: String) : SearchProvider {
     override val name = "Eztv"
 
-    override fun specializedCategory() = Category.Series
+    override val specializedCategory = Category.Series
 
     override suspend fun search(query: String, context: SearchContext): List<Torrent> {
         val requestUrl = "$BASE_URL/search/$query"

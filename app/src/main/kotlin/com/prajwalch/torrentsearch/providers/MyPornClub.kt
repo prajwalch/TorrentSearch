@@ -16,7 +16,7 @@ import org.jsoup.nodes.Element
 class MyPornClub(override val id: SearchProviderId) : SearchProvider {
     override val name = "MyPornClub"
 
-    override fun specializedCategory(): Category = Category.Porn
+    override val specializedCategory = Category.Porn
 
     override suspend fun search(query: String, context: SearchContext): List<Torrent> {
         val formattedQuery = query.trim().replace("\\s+".toRegex(), "-")

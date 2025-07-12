@@ -21,7 +21,7 @@ import kotlinx.serialization.json.JsonObject
 class Yts(override val id: SearchProviderId) : SearchProvider {
     override val name = "Yts"
 
-    override fun specializedCategory() = Category.Movies
+    override val specializedCategory = Category.Movies
 
     override suspend fun search(query: String, context: SearchContext): List<Torrent> {
         return if (isQueryIMDBId(query)) {

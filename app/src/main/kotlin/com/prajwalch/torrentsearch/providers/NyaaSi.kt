@@ -17,7 +17,7 @@ import org.jsoup.nodes.Element
 class NyaaSi(override val id: SearchProviderId) : SearchProvider {
     override val name = "Nyaa"
 
-    override fun specializedCategory() = Category.Anime
+    override val specializedCategory = Category.Anime
 
     override suspend fun search(query: String, context: SearchContext): List<Torrent> {
         val queryParams = "?f=0&c=1_0&q=$query"

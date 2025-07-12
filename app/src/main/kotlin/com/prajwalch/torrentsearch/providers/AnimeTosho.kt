@@ -23,8 +23,8 @@ import java.util.Locale
 
 class AnimeTosho(override val id: SearchProviderId) : SearchProvider {
     override val name: String = "AnimeTosho"
-
-    override fun specializedCategory() = Category.Anime
+    
+    override val specializedCategory = Category.Anime
 
     override suspend fun search(query: String, context: SearchContext): List<Torrent> {
         val requestUrl = "$BASE_URL/search?q=$query"

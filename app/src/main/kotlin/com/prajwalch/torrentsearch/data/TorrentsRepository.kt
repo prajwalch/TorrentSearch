@@ -52,7 +52,7 @@ class TorrentsRepository(private val httpClient: HttpClient) {
         }
 
         return providers.filter {
-            (it.specializedCategory() == Category.All) || (category == it.specializedCategory())
+            (it.specializedCategory == Category.All) || (category == it.specializedCategory)
         }
     }
 
