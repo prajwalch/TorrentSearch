@@ -224,11 +224,13 @@ private fun SearchScreenContent(
             ResultsNotFoundMessage()
         }
 
+        if (!resultsNotFound && results.isEmpty()) {
+            EmptySearchPlaceholder(modifier = Modifier.fillMaxSize())
+        }
+
         if (results.isNotEmpty()) {
             TorrentList(torrents = results, onTorrentSelect = onTorrentSelect)
         }
-
-        EmptySearchPlaceholder()
     }
 }
 
@@ -276,9 +278,9 @@ private fun ResultsNotFoundMessage(modifier: Modifier = Modifier) {
 }
 
 @Composable
-private fun EmptySearchPlaceholder() {
+private fun EmptySearchPlaceholder(modifier: Modifier = Modifier) {
     Box(
-        modifier = Modifier.fillMaxSize(),
+        modifier = modifier,
         contentAlignment = Alignment.Center
     ) {
         Column(
