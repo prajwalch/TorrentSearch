@@ -10,14 +10,14 @@ import org.junit.Test
 
 class ProviderTest {
 
-    private val provider = MyPornClub()
+    private val provider = Knaben(id = "10")
 
     @Test
     fun searchReturnsRealTorrentsFromProvider() = runBlocking {
-        val searchQuery = "Hot"
+        val searchQuery = "Wild West"
 
         val context = SearchContext(
-            category = Category.All,
+            category = Category.Books,
             httpClient = HttpClient
         )
 
@@ -37,6 +37,7 @@ class ProviderTest {
             ├── Seeds       : ${first.seeds}
             ├── Peers       : ${first.peers}
             ├── Upload Date : ${first.uploadDate}
+            ├── Category    : ${first.category.toString()}
             └── Page URL    : ${first.descriptionPageUrl}
             """.trimIndent()
         )
@@ -47,7 +48,7 @@ class ProviderTest {
 
     @Test
     fun searchMultipleQueriesReturnsResults() = runBlocking {
-        val queries = listOf("Hot", "Big", "One Piece", "Fit", "Body")
+        val queries = listOf("One Piece", "The Boys", "Wild West Murim", "Computer Science", "Nothing")
 
         val context = SearchContext(
             category = Category.All,
@@ -71,6 +72,7 @@ class ProviderTest {
                 ├── Seeds       : ${first.seeds}
                 ├── Peers       : ${first.peers}
                 ├── Upload Date : ${first.uploadDate}
+                ├── Category    : ${first.category.toString()}
                 └── Page URL    : ${first.descriptionPageUrl}
                 """.trimIndent()
             )
