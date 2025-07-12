@@ -42,7 +42,7 @@ data class Torrent(
 }
 
 /** Search category. */
-enum class Category {
+enum class Category(val isNSFW: Boolean = false) {
     All,
     Anime,
     Apps,
@@ -50,7 +50,7 @@ enum class Category {
     Games,
     Movies,
     Music,
-    Porn,
+    Porn(isNSFW = true),
     Series,
     Other,
 }
@@ -66,7 +66,8 @@ sealed class InfoHashOrMagnetUri {
 // Taken from:
 //   https://yts.mx/api
 //   https://github.com/qbittorrent/search-plugins/blob/master/nova3/engines/torrentscsv.py#L41
-//   https://raw.githubusercontent.com/ngosang/trackerslist/master/trackers_best.txt (updated daily) (https://github.com/ngosang/trackerslist/blob/master/trackers_best.txt)
+//   https://raw.githubusercontent.com/ngosang/trackerslist/master/trackers_best.txt (updated daily)
+//   (https://github.com/ngosang/trackerslist/blob/master/trackers_best.txt)
 private val trackers = listOf(
     "udp://1c.premierzal.ru:6969/announce",
     "udp://9.rarbg.me:2970/announce",
