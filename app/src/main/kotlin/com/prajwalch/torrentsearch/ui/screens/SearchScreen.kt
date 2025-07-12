@@ -87,6 +87,7 @@ fun SearchScreen(
     selectedTorrent?.let { torrent ->
         val magnetLinkCopiedHint = stringResource(R.string.hint_magnet_link_copied)
         val descriptionPageUrlCopiedHint = stringResource(R.string.hint_description_page_url_copied)
+        val hasDescriptionPage = torrent.descriptionPageUrl.isNotEmpty()
 
         TorrentActionsBottomSheet(
             title = torrent.name,
@@ -107,6 +108,7 @@ fun SearchScreen(
                 }
             },
             onShareDescriptionPageUrl = { onShareDescriptionPageUrl(torrent.descriptionPageUrl) },
+            hasDescriptionPage = hasDescriptionPage,
         )
     }
 

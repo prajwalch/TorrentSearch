@@ -12,7 +12,11 @@ import io.ktor.client.plugins.ResponseException
 import io.ktor.client.plugins.timeout
 import io.ktor.client.request.get
 import io.ktor.client.request.header
+import io.ktor.client.request.post
+import io.ktor.client.request.setBody
 import io.ktor.client.statement.bodyAsText
+import io.ktor.http.ContentType
+import io.ktor.http.contentType
 
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -29,7 +33,7 @@ object HttpClient {
     /** Creates and configures the inner/underlying http client. */
     private fun createClient() = HttpClient(OkHttp) {
         install(HttpRequestRetry) {
-            retryOnExceptionIf(maxRetries = 3) { request, cause ->
+            retryOnExceptionIf(maxRetries = 3) { _, cause ->
                 when (cause) {
                     is HttpRequestTimeoutException -> true
                     is ConnectTimeoutException -> true
@@ -121,6 +125,47 @@ object HttpClient {
 
         Log.i(TAG, "Received a maybe json?: $response")
         Log.i(TAG, "Parsing it...")
+        return parseJson(response)
+    }
+
+    /**
+     * Makes a POST request with the given JSON payload and returns the response as raw text.
+     */
+    private suspend fun post(
+        url: String,
+        payload: JsonElement,
+        headers: Map<String, String> = emptyMap(),
+    ): String {
+        val payloadString = payload.toString()
+        Log.i(TAG, "Making POST request to $url with payload: $payloadString")
+        return innerClient.post(url) {
+            headers.forEach { (key, value) ->
+                header(key, value)
+            }
+            timeout {
+                requestTimeoutMillis = 20_000
+                connectTimeoutMillis = 10_000
+                socketTimeoutMillis = 15_000
+            }
+            contentType(ContentType.Application.Json)
+            setBody(payloadString)
+        }.bodyAsText()
+    }
+
+    /**
+     * Makes a POST request with the given JSON payload and returns the response parsed as Json.
+     * Returns null if parsing fails or response is empty.
+     */
+    suspend fun postJson(
+        url: String,
+        payload: JsonElement,
+        headers: Map<String, String> = emptyMap()
+    ): JsonElement? {
+        val response = post(url = url, payload = payload, headers = headers)
+        if (response.isEmpty()) {
+            return null
+        }
+        Log.i(TAG, "Parsing POST response as JSON: $response")
         return parseJson(response)
     }
 

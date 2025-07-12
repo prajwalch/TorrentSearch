@@ -36,6 +36,7 @@ fun TorrentActionsBottomSheet(
     onCopyDescriptionPageUrl: () -> Unit,
     onShareDescriptionPageUrl: () -> Unit,
     modifier: Modifier = Modifier,
+    hasDescriptionPage: Boolean = true,
 ) {
     // Always expand the sheet to full.
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
@@ -69,20 +70,22 @@ fun TorrentActionsBottomSheet(
             onDismissRequest()
         }
 
-        HorizontalDivider()
+        if (hasDescriptionPage) {
+            HorizontalDivider()
+            OpenDescriptionPageAction {
+                onOpenDescriptionPage()
+                onDismissRequest()
+            }
+            CopyDescriptionPageUrlAction {
+                onCopyDescriptionPageUrl()
+                onDismissRequest()
+            }
+            ShareDescriptionPageUrlAction {
+                onShareDescriptionPageUrl()
+                onDismissRequest()
+            }
+        }
 
-        OpenDescriptionPageAction {
-            onOpenDescriptionPage()
-            onDismissRequest()
-        }
-        CopyDescriptionPageUrlAction {
-            onCopyDescriptionPageUrl()
-            onDismissRequest()
-        }
-        ShareDescriptionPageUrlAction {
-            onShareDescriptionPageUrl()
-            onDismissRequest()
-        }
         Spacer(Modifier.Companion.height(8.dp))
     }
 }
