@@ -8,6 +8,8 @@ import com.prajwalch.torrentsearch.data.SettingsRepository
 import com.prajwalch.torrentsearch.data.TorrentsRepository
 import com.prajwalch.torrentsearch.models.Category
 import com.prajwalch.torrentsearch.models.Torrent
+import com.prajwalch.torrentsearch.providers.ProviderId
+import com.prajwalch.torrentsearch.providers.SearchProviders
 
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -33,6 +35,8 @@ class SearchViewModel(
 ) : ViewModel() {
     private val mUiState = MutableStateFlow(SearchScreenUIState())
     val uiState = mUiState.asStateFlow()
+
+    private var enabledSearchProviders: Set<ProviderId> = emptySet()
 
     init {
         observeSettingsChange()
@@ -67,9 +71,11 @@ class SearchViewModel(
             return@launch
         }
 
+        val searchProviders = SearchProviders.get(enabledSearchProviders)
         val result = torrentsRepository.search(
             query = mUiState.value.query,
             category = mUiState.value.selectedCategory,
+            providers = searchProviders,
         )
         updateUIState {
             it.copy(
@@ -94,6 +100,9 @@ class SearchViewModel(
     private fun updateStateOnSettingsChange(searchSettings: SearchSettings) {
         val (enableNSFWSearch, searchProviders) = searchSettings
         val currentUiState = mUiState.value
+
+        // Update the enabled search providers.
+        enabledSearchProviders = searchProviders
 
         val categories = Category.entries.filter { enableNSFWSearch || !it.isNSFW }
         val category = if (!enableNSFWSearch && currentUiState.selectedCategory.isNSFW) {

@@ -5,7 +5,6 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
-
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -17,13 +16,11 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.preferencesDataStore
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-
 import com.prajwalch.torrentsearch.data.DarkTheme
 import com.prajwalch.torrentsearch.data.SettingsRepository
 import com.prajwalch.torrentsearch.data.TorrentsRepository
 import com.prajwalch.torrentsearch.models.MagnetUri
 import com.prajwalch.torrentsearch.network.HttpClient
-import com.prajwalch.torrentsearch.providers.SearchProviders
 import com.prajwalch.torrentsearch.ui.TorrentSearchApp
 import com.prajwalch.torrentsearch.ui.theme.TorrentSearchTheme
 import com.prajwalch.torrentsearch.ui.viewmodel.SearchViewModel
@@ -42,7 +39,7 @@ class MainActivity : ComponentActivity() {
 
     private val searchViewModel: SearchViewModel by viewModels {
         val torrentsRepository = TorrentsRepository(httpClient = HttpClient)
-        
+
         SearchViewModelFactory(
             settingsRepository = settingsRepository,
             torrentsRepository = torrentsRepository,
@@ -59,9 +56,6 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             val appearanceSettings by settingsViewModel.appearanceSettings.collectAsStateWithLifecycle()
-            val searchSettings by settingsViewModel.searchSettings.collectAsStateWithLifecycle()
-
-            SearchProviders.setEnabledProviders(searchSettings.searchProviders)
 
             val darkTheme = when (appearanceSettings.darkTheme) {
                 DarkTheme.On -> true

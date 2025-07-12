@@ -17,7 +17,11 @@ object SearchProviders {
         Pair("9", MyPornClub()),
     )
 
-    private var enabledProviders = ids()
+    fun get(ids: Set<ProviderId>): List<SearchProvider> {
+        return allProviders.mapNotNull { (id, provider) ->
+            if (ids.contains(id)) provider else null
+        }
+    }
 
     fun namesWithId(): List<Pair<ProviderId, String>> {
         return allProviders.map { (id, provider) ->
@@ -27,15 +31,5 @@ object SearchProviders {
 
     fun ids(): Set<ProviderId> {
         return allProviders.map { (id, _) -> id }.toSet()
-    }
-
-    fun enabled(): List<SearchProvider> {
-        return allProviders
-            .filter { (id, _) -> enabledProviders.contains(id) }
-            .map { (_, provider) -> provider }
-    }
-
-    fun setEnabledProviders(providers: Set<ProviderId>) {
-        enabledProviders = providers
     }
 }

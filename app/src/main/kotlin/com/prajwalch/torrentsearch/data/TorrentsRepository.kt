@@ -4,7 +4,6 @@ import com.prajwalch.torrentsearch.models.Category
 import com.prajwalch.torrentsearch.models.Torrent
 import com.prajwalch.torrentsearch.network.HttpClient
 import com.prajwalch.torrentsearch.network.HttpClientResponse
-import com.prajwalch.torrentsearch.providers.SearchProviders
 
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
@@ -13,12 +12,16 @@ import kotlinx.coroutines.supervisorScope
 
 class TorrentsRepository(private val httpClient: HttpClient) {
     /** Starts a search for the given query. */
-    suspend fun search(query: String, category: Category): TorrentsRepositoryResult {
+    suspend fun search(
+        query: String,
+        category: Category,
+        providers: List<SearchProvider>,
+    ): TorrentsRepositoryResult {
         val query = query.replace(' ', '+').trim()
         val context = SearchContext(category = category, httpClient = httpClient)
 
         return supervisorScope {
-            val results = chooseSearchProviders(category = category)
+            val results = chooseSearchProviders(providers = providers, category = category)
                 .map { async(Dispatchers.IO) { it.search(query = query, context = context) } }
                 .map { httpClient.withExceptionHandler { it.await() } }
 
@@ -40,9 +43,10 @@ class TorrentsRepository(private val httpClient: HttpClient) {
      * Returns the search providers that is capable of handling the given
      * category.
      */
-    private fun chooseSearchProviders(category: Category): List<SearchProvider> {
-        val providers = SearchProviders.enabled()
-
+    private fun chooseSearchProviders(
+        providers: List<SearchProvider>,
+        category: Category,
+    ): List<SearchProvider> {
         if (category == Category.All) {
             return providers
         }
