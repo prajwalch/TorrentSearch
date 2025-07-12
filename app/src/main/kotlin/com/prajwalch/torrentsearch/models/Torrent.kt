@@ -56,7 +56,7 @@ enum class Category(val isNSFW: Boolean = false) {
     Music,
     Porn(isNSFW = true),
     Series,
-    Other,
+    Other(isNSFW = true),
 }
 
 /** Represents either a info hash or magnet URI. */
