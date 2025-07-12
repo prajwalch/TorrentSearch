@@ -44,7 +44,7 @@ fun TopSearchBar(
 
     val focusManager = LocalFocusManager.current
 
-    val unfocusedContainerColor = MaterialTheme.colorScheme.secondaryContainer
+    val unfocusedContainerColor = MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.5f)
     val unfocusedContentColor = MaterialTheme.colorScheme.onSecondaryContainer
     val focusedContainerColor = MaterialTheme.colorScheme.surfaceContainer
     val focusedContentColor = MaterialTheme.colorScheme.onSurface
