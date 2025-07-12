@@ -18,16 +18,12 @@ class MyPornClub(override val id: SearchProviderId) : SearchProvider {
 
     override suspend fun search(query: String, context: SearchContext): List<Torrent> {
         val formattedQuery = query.trim().replace("\\s+".toRegex(), "-")
-        val url =
-            "$BASE_URL/s/$formattedQuery/seeders" //TODO: Suffix can be used for sorting: /seeders, /latest, /hits, /views
-        val html = try {
-            context.httpClient.get(url)
-        } catch (_: Exception) {
-            return emptyList()
-        }
+        // TODO: Suffix can be used for sorting: /seeders, /latest, /hits, /views
+        val url = "$BASE_URL/s/$formattedQuery/seeders"
+        val responseHtml = context.httpClient.get(url)
 
         return withContext(Dispatchers.Default) {
-            parseSearchResults(html, context)
+            parseSearchResults(responseHtml, context)
         }
     }
 
@@ -48,10 +44,18 @@ class MyPornClub(override val id: SearchProviderId) : SearchProvider {
         val infoHash = extractInfoHash(descriptionPageUrl, context) ?: return null
 
         val size = row.select("div.torrent_element_info span").getOrNull(3)?.text().orEmpty()
-        val seeds =
-            row.select("div.torrent_element_info span").getOrNull(9)?.text()?.toUIntOrNull() ?: 0u
-        val peers =
-            row.select("div.torrent_element_info span").getOrNull(11)?.text()?.toUIntOrNull() ?: 0u
+        val seeds = row
+            .select("div.torrent_element_info span")
+            .getOrNull(9)
+            ?.text()
+            ?.toUIntOrNull()
+            ?: 0u
+        val peers = row
+            .select("div.torrent_element_info span")
+            .getOrNull(11)
+            ?.text()
+            ?.toUIntOrNull()
+            ?: 0u
 
         val uploadDate = row.select("div.torrent_element_info span").getOrNull(1)?.text().orEmpty()
 
@@ -75,17 +79,13 @@ class MyPornClub(override val id: SearchProviderId) : SearchProvider {
         descriptionPageUrl: String,
         context: SearchContext,
     ): String? {
-        return try {
-            val html = context.httpClient.get(descriptionPageUrl)
-            val infoDiv = Jsoup.parse(html).selectFirst("div.torrent_info_div > div") ?: return null
+        val html = context.httpClient.get(descriptionPageUrl)
+        val infoDiv = Jsoup.parse(html).selectFirst("div.torrent_info_div > div") ?: return null
 
-            // Example: [hash_info]:9b3efb2a550d42aff3e8ab1bb415e05535e440a9
-            val text = infoDiv.ownText().trim()
+        // Example: [hash_info]:9b3efb2a550d42aff3e8ab1bb415e05535e440a9
+        val text = infoDiv.ownText().trim()
 
-            HASH_REGEX.find(text)?.groupValues?.getOrNull(1)
-        } catch (_: Exception) {
-            null
-        }
+        return HASH_REGEX.find(text)?.groupValues?.getOrNull(1)
     }
 
     private companion object {
