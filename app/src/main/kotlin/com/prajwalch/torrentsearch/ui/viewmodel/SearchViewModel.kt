@@ -28,6 +28,11 @@ data class SearchScreenUIState(
     val results: List<Torrent> = emptyList(),
 )
 
+private data class SearchSettings(
+    val enableNSFWSearch: Boolean = false,
+    val searchProviders: Set<SearchProviderId> = emptySet(),
+)
+
 /** Drives the search logic. */
 class SearchViewModel(
     private val settingsRepository: SettingsRepository,
