@@ -44,7 +44,7 @@ class SettingsRepository(private val dataStore: DataStore<Preferences>) {
     }
 
     val searchProviders: Flow<Set<String>> = dataStore.data.map { preferences ->
-        preferences[SEARCH_PROVIDERS] ?: SearchProviders.ids()
+        preferences[SEARCH_PROVIDERS] ?: SearchProviders.enabledIds()
     }
 
     suspend fun updateEnableDynamicTheme(enabled: Boolean) {

@@ -4,28 +4,33 @@ import com.prajwalch.torrentsearch.data.SearchProvider
 import com.prajwalch.torrentsearch.data.SearchProviderId
 
 object SearchProviders {
-    private val allProviders = setOf(
-        Eztv(id = "1"),
-        NyaaSi(id = "2"),
-        ThePirateBay(id = "3"),
-        TheRarBg(id = "4"),
-        TorrentsCsv(id = "5"),
-        Yts(id = "6"),
-        AnimeTosho(id = "7"),
-        LimeTorrents(id = "8"),
-        MyPornClub(id = "9"),
-        Knaben(id = "10"),
+    private val enabledByDefault = setOf(
+        Eztv(id = "p1"),
+        Knaben(id = "p2"),
+        NyaaSi(id = "p3"),
+        TorrentsCsv(id = "p4"),
+        Yts(id = "p5"),
     )
 
+    private val disabledByDefault = setOf(
+        AnimeTosho(id = "p6"),
+        LimeTorrents(id = "p7"),
+        MyPornClub(id = "p8"),
+        ThePirateBay(id = "p9"),
+        TheRarBg(id = "p10"),
+    )
+
+    private val all = enabledByDefault.plus(disabledByDefault).sortedBy { it.name }
+
     fun get(ids: Set<SearchProviderId>): List<SearchProvider> {
-        return allProviders.filter { ids.contains(it.id) }
+        return all.filter { ids.contains(it.id) }
+    }
+
+    fun enabledIds(): Set<SearchProviderId> {
+        return enabledByDefault.map { it.id }.toSet()
     }
 
     fun namesWithId(): List<Pair<SearchProviderId, String>> {
-        return allProviders.map { Pair(it.id, it.name) }
-    }
-
-    fun ids(): Set<SearchProviderId> {
-        return allProviders.map { it.id }.toSet()
+        return all.map { Pair(it.id, it.name) }
     }
 }
