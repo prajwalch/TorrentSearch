@@ -13,7 +13,6 @@ import com.prajwalch.torrentsearch.providers.SearchProviders
 
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -41,7 +40,8 @@ class SearchViewModel(
     private val mUiState = MutableStateFlow(SearchScreenUIState())
     val uiState = mUiState.asStateFlow()
 
-    private var enabledSearchProviders: Set<SearchProviderId> = emptySet()
+    private var currentSearchSettings = SearchSettings()
+    private var currentSearchResults = emptyList<Torrent>()
 
     init {
         observeSettingsChange()
@@ -59,11 +59,14 @@ class SearchViewModel(
 
     /** Performs a search. */
     fun performSearch() = viewModelScope.launch {
+        // Prevent unnecessary processing.
         if (mUiState.value.query.isEmpty()) {
             return@launch
         }
 
         updateUIState { it.copy(isLoading = true) }
+        // Clear previous search results.
+        currentSearchResults = emptyList()
 
         if (!torrentsRepository.isInternetAvailable()) {
             updateUIState {
@@ -76,18 +79,24 @@ class SearchViewModel(
             return@launch
         }
 
-        val searchProviders = SearchProviders.get(enabledSearchProviders)
+        // Perform the search with enabled providers.
+        val searchProviders = SearchProviders.get(currentSearchSettings.searchProviders)
         val result = torrentsRepository.search(
             query = mUiState.value.query,
             category = mUiState.value.selectedCategory,
             providers = searchProviders,
         )
+
+        // Save the results.
+        currentSearchResults = result.torrents.orEmpty()
+
+        // Update the UI with current search results only after filtering them.
         updateUIState {
             it.copy(
                 isLoading = false,
                 isInternetError = result.isNetworkError,
-                resultsNotFound = result.torrents?.isEmpty() ?: false,
-                results = result.torrents.orEmpty(),
+                resultsNotFound = currentSearchResults.isEmpty(),
+                results = filterCurrentSearchResults(),
             )
         }
     }
@@ -98,41 +107,61 @@ class SearchViewModel(
             settingsRepository.enableNSFWSearch,
             settingsRepository.searchProviders,
             ::SearchSettings
-        ).collectLatest(::updateStateOnSettingsChange)
+        ).collect { searchSettings ->
+            // Save the changed settings.
+            currentSearchSettings = searchSettings
+            updateUiStateOnSettingsChange()
+        }
     }
 
-    /** Updates the state based on the given settings. */
-    private fun updateStateOnSettingsChange(searchSettings: SearchSettings) {
-        val (enableNSFWSearch, searchProviders) = searchSettings
-        val currentUiState = mUiState.value
-
-        // Update the enabled search providers.
-        enabledSearchProviders = searchProviders
-
-        val categories = Category.entries.filter { enableNSFWSearch || !it.isNSFW }
-        val category = if (!enableNSFWSearch && currentUiState.selectedCategory.isNSFW) {
-            Category.All
-        } else {
-            currentUiState.selectedCategory
-        }
-
-        val results = currentUiState
-            .results
-            .filter { torrent -> searchProviders.contains(torrent.providerId) }
-            .filter { torrent ->
-                // Torrent with no category is also NSFW.
-                val categoryIsNullOrNSFW = torrent.category?.isNSFW ?: true
-                enableNSFWSearch || !categoryIsNullOrNSFW
-            }
+    /** Updates the UI state based on the current settings. */
+    private fun updateUiStateOnSettingsChange() {
+        val (categories, selectedCategory) = filterCategories()
+        val filteredSearchResults = filterCurrentSearchResults()
 
         updateUIState { uIState ->
             uIState.copy(
                 categories = categories,
-                selectedCategory = category,
-                results = results
+                selectedCategory = selectedCategory,
+                results = filteredSearchResults
             )
         }
     }
+
+    /**
+     * Filters and returns the selectable categories as well as the selected
+     * category based on the current search settings.
+     */
+    private fun filterCategories(): Pair<List<Category>, Category> {
+        val enableNSFWSearch = currentSearchSettings.enableNSFWSearch
+        val currentlySelectedCategory = mUiState.value.selectedCategory
+
+        val categories = Category.entries.filter { enableNSFWSearch || !it.isNSFW }
+        val selectedCategory = if (!enableNSFWSearch && currentlySelectedCategory.isNSFW) {
+            Category.All
+        } else {
+            currentlySelectedCategory
+        }
+
+        return Pair(categories, selectedCategory)
+    }
+
+    /**
+     * Filters and returns the current search results based on the current
+     * search settings.
+     */
+    private fun filterCurrentSearchResults(): List<Torrent> {
+        return currentSearchResults
+            .filter { torrent ->
+                currentSearchSettings.searchProviders.contains(torrent.providerId)
+            }
+            .filter { torrent ->
+                // Torrent with no category is also NSFW.
+                val categoryIsNullOrNSFW = torrent.category?.isNSFW ?: true
+                currentSearchSettings.enableNSFWSearch || !categoryIsNullOrNSFW
+            }
+    }
+
 
     /** Updates the current ui states. */
     private inline fun updateUIState(update: (SearchScreenUIState) -> SearchScreenUIState) {
