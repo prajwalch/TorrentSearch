@@ -43,6 +43,7 @@ fun CategoryChipsRow(
                 modifier = Modifier.animateItem(),
                 label = category.toString(),
                 selected = selectedCategory == category,
+                isNSFW = category.isNSFW,
                 onClick = { onSelect(category) },
             )
         }
@@ -55,14 +56,30 @@ private fun CategoryChip(
     label: String,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
+    isNSFW: Boolean = false,
 ) {
     val leadingIconSize = FilterChipDefaults.IconSize
     val border = FilterChipDefaults
         .filterChipBorder(
             enabled = true,
             selected = selected,
-            borderColor = MaterialTheme.colorScheme.outlineVariant,
+            borderColor = if (isNSFW) {
+                MaterialTheme.colorScheme.error.copy(alpha = 0.5f)
+            } else {
+                MaterialTheme.colorScheme.outlineVariant
+            },
         )
+
+    val colors = if (isNSFW) {
+        FilterChipDefaults.filterChipColors(
+            labelColor = MaterialTheme.colorScheme.error,
+            selectedContainerColor = MaterialTheme.colorScheme.error,
+            selectedLabelColor = MaterialTheme.colorScheme.onError,
+            selectedLeadingIconColor = MaterialTheme.colorScheme.onError,
+        )
+    } else {
+        FilterChipDefaults.filterChipColors()
+    }
 
     FilterChip(
         modifier = modifier,
@@ -76,6 +93,7 @@ private fun CategoryChip(
                 contentDescription = stringResource(R.string.desc_selected_category),
             )
         },
-        border = border
+        border = border,
+        colors = colors,
     )
 }
