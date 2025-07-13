@@ -5,6 +5,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.BottomSheetDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
@@ -50,43 +51,56 @@ fun TorrentActionsBottomSheet(
         scrimColor = scrimColor,
     ) {
         Text(
-            modifier = Modifier.Companion.padding(horizontal = 16.dp),
+            modifier = Modifier.padding(horizontal = 16.dp),
             text = title,
             style = MaterialTheme.typography.bodyLarge,
         )
-        Spacer(Modifier.Companion.height(8.dp))
+        Spacer(Modifier.height(8.dp))
         HorizontalDivider()
-        Spacer(Modifier.Companion.height(8.dp))
-        DownloadAction {
-            onDownloadTorrent()
-            onDismissRequest()
-        }
-        CopyMagnetLinkAction {
-            onCopyMagnetLink()
-            onDismissRequest()
-        }
-        ShareMagnetLinkAction {
-            onShareMagnetLink()
-            onDismissRequest()
-        }
+        Spacer(Modifier.height(8.dp))
+        LazyColumn {
+            item {
+                DownloadAction {
+                    onDownloadTorrent()
+                    onDismissRequest()
+                }
+            }
+            item {
+                ShareMagnetLinkAction {
+                    onShareMagnetLink()
+                    onDismissRequest()
+                }
+            }
+            item {
+                CopyMagnetLinkAction {
+                    onCopyMagnetLink()
+                    onDismissRequest()
+                }
+            }
 
-        if (hasDescriptionPage) {
-            HorizontalDivider()
-            OpenDescriptionPageAction {
-                onOpenDescriptionPage()
-                onDismissRequest()
-            }
-            CopyDescriptionPageUrlAction {
-                onCopyDescriptionPageUrl()
-                onDismissRequest()
-            }
-            ShareDescriptionPageUrlAction {
-                onShareDescriptionPageUrl()
-                onDismissRequest()
+            if (hasDescriptionPage) {
+                item {
+                    HorizontalDivider()
+                    OpenDescriptionPageAction {
+                        onOpenDescriptionPage()
+                        onDismissRequest()
+                    }
+                }
+                item {
+                    CopyDescriptionPageUrlAction {
+                        onCopyDescriptionPageUrl()
+                        onDismissRequest()
+                    }
+                }
+                item {
+                    ShareDescriptionPageUrlAction {
+                        onShareDescriptionPageUrl()
+                        onDismissRequest()
+                    }
+                    Spacer(Modifier.height(8.dp))
+                }
             }
         }
-
-        Spacer(Modifier.Companion.height(8.dp))
     }
 }
 
