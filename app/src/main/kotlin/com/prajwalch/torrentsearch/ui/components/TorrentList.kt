@@ -4,6 +4,7 @@ import androidx.annotation.DrawableRes
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -21,6 +22,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 
 import com.prajwalch.torrentsearch.R
@@ -86,10 +88,17 @@ private fun TorrentListItemOverlineContent(
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        TorrentProviderNameAndUploadDate(
-            provider = provider,
-            uploadDate = uploadDate,
-        )
+        Column(verticalArrangement = Arrangement.Center) {
+            TorrentProviderNameAndUploadDate(
+                provider = provider,
+                uploadDate = uploadDate,
+            )
+
+            val categoryIsNSFWOrNull = category?.isNSFW ?: true
+            if (categoryIsNSFWOrNull) {
+                NSFWTag()
+            }
+        }
         category?.let { Text(text = it.toString()) }
     }
 }
@@ -115,6 +124,16 @@ private fun TorrentProviderNameAndUploadDate(
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
     }
+}
+
+@Composable
+private fun NSFWTag(modifier: Modifier = Modifier) {
+    Text(
+        modifier = modifier,
+        text = "NSFW",
+        color = MaterialTheme.colorScheme.error,
+        fontWeight = FontWeight.Black,
+    )
 }
 
 @Composable
