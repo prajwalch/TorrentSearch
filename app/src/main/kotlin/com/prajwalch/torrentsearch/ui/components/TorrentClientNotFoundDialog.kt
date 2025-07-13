@@ -1,36 +1,96 @@
 package com.prajwalch.torrentsearch.ui.components
 
-import androidx.compose.foundation.layout.Arrangement
+import androidx.annotation.StringRes
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.text.InlineTextContent
-import androidx.compose.foundation.text.appendInlineContent
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.AlertDialogDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.ListItem
+import androidx.compose.material3.ListItemDefaults
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.AnnotatedString
-import androidx.compose.ui.text.LinkAnnotation
-import androidx.compose.ui.text.Placeholder
-import androidx.compose.ui.text.PlaceholderVerticalAlign
-import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.TextLinkStyles
-import androidx.compose.ui.text.buildAnnotatedString
-import androidx.compose.ui.text.withLink
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.DialogProperties
 import com.prajwalch.torrentsearch.R
+
+private val recommendedClients = listOf(
+    TorrentClient(
+        name = R.string.libretorrent,
+        url = createPlayStoreUrl(packageId = "org.proninyaroslav.libretorrent"),
+        source = R.string.source_playstore,
+    ),
+    TorrentClient(
+        name = R.string.libretorrent,
+        url = createFDroidUrl(packageId = "org.proninyaroslav.libretorrent"),
+        source = R.string.source_fdroid,
+    ),
+)
+
+private val otherClients = listOf(
+    // Aria2App.
+    TorrentClient(
+        name = R.string.aria2,
+        url = createFDroidUrl(packageId = "com.gianlu.aria2app"),
+        source = R.string.source_fdroid
+    ),
+    // Gopeed.
+    TorrentClient(
+        name = R.string.gopeed,
+        url = createGithubReleaseUrl(username = "GopeedLab", repo = "gopeed"),
+        source = R.string.source_github,
+    ),
+    // PikaTorrent.
+    TorrentClient(
+        name = R.string.pikatorrent,
+        url = createPlayStoreUrl(packageId = "com.pikatorrent.PikaTorrent"),
+        source = R.string.source_playstore,
+    ),
+    TorrentClient(
+        name = R.string.pikatorrent,
+        url = createGithubReleaseUrl(username = "G-Ray", repo = "pikatorrent"),
+        source = R.string.source_github,
+    ),
+    // TorrServe.
+    TorrentClient(
+        name = R.string.torrserve,
+        url = createFDroidUrl(packageId = "ru.yourok.torrserve"),
+        source = R.string.source_fdroid,
+    ),
+)
+
+private data class TorrentClient(
+    /* Name of the client. */
+    @param:StringRes
+    val name: Int,
+    /** Where to get it. */
+    val url: String,
+    @param:StringRes
+    /** Where it is available. */
+    val source: Int,
+)
 
 @Composable
 fun TorrentClientNotFoundDialog(onConfirmation: () -> Unit, modifier: Modifier = Modifier) {
     AlertDialog(
-        modifier = modifier,
+        modifier = modifier.fillMaxWidth(0.9f),
         icon = { DialogLeadingIcon() },
         title = { DialogTitle() },
         text = { DialogContent() },
@@ -40,6 +100,10 @@ fun TorrentClientNotFoundDialog(onConfirmation: () -> Unit, modifier: Modifier =
                 Text(stringResource(R.string.button_done))
             }
         },
+        properties = DialogProperties(
+            usePlatformDefaultWidth = false,
+            decorFitsSystemWindows = false
+        )
     )
 }
 
@@ -62,146 +126,132 @@ private fun DialogTitle(modifier: Modifier = Modifier) {
 
 @Composable
 private fun DialogContent(modifier: Modifier = Modifier) {
-    Column(
-        modifier = modifier,
-        verticalArrangement = Arrangement.spacedBy(8.dp),
-    ) {
+    Column(modifier = modifier) {
         Text(stringResource(R.string.torrent_client_not_found_main_content))
-        ClientList()
+        TorrentClientList()
     }
 }
 
 @Composable
-private fun ClientList(modifier: Modifier = Modifier) {
-    // Stackoverflow help:
-    // https://stackoverflow.com/questions/67605986/add-icon-at-last-word-of-text-in-jetpack-compose
+private fun TorrentClientList() {
+    val listContainerColor = MaterialTheme.colorScheme.secondaryContainer
+    val listContentColor = MaterialTheme.colorScheme.onSecondaryContainer
 
-    // 1. Create links and then create text content.
-    val links = listOf(
-        // (link, label)
-        //
-        // LibreTorrent.
-        Pair(
-            buildPlayStoreLink(packageId = "org.proninyaroslav.libretorrent"),
-            stringResource(R.string.libretorrent_client_link_label, "PlayStore"),
-        ),
-        Pair(
-            buildFDroidLink(packageId = "org.proninyaroslav.libretorrent"),
-            stringResource(R.string.libretorrent_client_link_label, "F-Droid"),
-        ),
-        // Aria2App.
-        Pair(
-            buildFDroidLink(packageId = "com.gianlu.aria2app"),
-            stringResource(R.string.aria2_client_link_label),
-        ),
-        // PikaTorrent.
-        Pair(
-            buildPlayStoreLink(packageId = "com.pikatorrent.PikaTorrent"),
-            stringResource(R.string.pikatorrent_client_link_label, "PlayStore"),
-        ),
-        Pair(
-            buildGithubReleaseLink(username = "G-Ray", repo = "pikatorrent"),
-            stringResource(R.string.pikatorrent_client_link_label, "Github"),
-        ),
-        // Gopeed.
-        Pair(
-            buildGithubReleaseLink(username = "GopeedLab", repo = "gopeed"),
-            stringResource(R.string.gopeed_client_link_label),
-        ),
-        // TorrServe.
-        Pair(
-            buildFDroidLink(packageId = "ru.yourok.torrserve"),
-            stringResource(R.string.torrserve_client_link_label),
-        ),
-    )
-    // <url>[placeholder]
-    val linkIndicatorPlaceholder = "link_indicator"
-    // Content which contains links and link indicator placeholder for each of them.
-    //
-    // We need to replace the each placeholder with the actual icon.
-    // <url>[placeholder] -> <url>[actual icon]
-    val content = buildLinkList(
-        links = links,
-        linkIndicatorPlaceholder = { linkIndicatorPlaceholder }
+    ListSectionTitle(title = stringResource(R.string.section_title_recommended_client))
+    TorrentClientLinkList(
+        clients = recommendedClients,
+        backgroundColor = listContainerColor,
+        contentColor = listContentColor,
     )
 
-    // 2. Define replacement content for link indicator.
-    val linkIndicatorSize = 12.sp
-    val linkIndicatorPlaceholderReplacement = InlineTextContent(
-        // Tells the sizing and layout of the placeholder in which the
-        // content will be placed.
-        placeholder = Placeholder(
-            width = linkIndicatorSize,
-            height = linkIndicatorSize,
-            placeholderVerticalAlign = PlaceholderVerticalAlign.Center
-        )
-    ) {
-        // Replacement content.
-        Icon(
-            painter = painterResource(R.drawable.ic_open_in_new),
-            contentDescription = null,
-        )
-    }
+    ListSectionTitle(title = stringResource(R.string.section_title_other_clients))
+    TorrentClientLinkList(
+        clients = otherClients,
+        backgroundColor = listContainerColor.copy(alpha = 0.5f),
+        contentColor = listContentColor,
+    )
+}
 
-    // 3. Give content and placeholder replacements to `Text`.
-    //
-    // List of (placeholder, replacement). Only one in our case.
-    //
-    // We need to pass all the placeholder and their replacement, present in
-    // the content to `Text` so that it can replace all of them.
-    val placeholderReplacements = mapOf(
-        Pair(
-            linkIndicatorPlaceholder,
-            linkIndicatorPlaceholderReplacement
-        )
+@Composable
+private fun ListSectionTitle(title: String, modifier: Modifier = Modifier) {
+    val color = AlertDialogDefaults.textContentColor.copy(alpha = 0.8f)
+
+    Text(
+        modifier = modifier.padding(vertical = 8.dp),
+        text = title,
+        color = color,
+    )
+}
+
+@Composable
+private fun TorrentClientLinkList(
+    clients: List<TorrentClient>,
+    backgroundColor: Color,
+    contentColor: Color,
+    modifier: Modifier = Modifier,
+) {
+
+    val firstItemCornerShape = MaterialTheme.shapes.medium.copy(
+        bottomStart = CornerSize(0.dp),
+        bottomEnd = CornerSize(0.dp),
+    )
+    val lastItemCornerShape = MaterialTheme.shapes.medium.copy(
+        topStart = CornerSize(0.dp),
+        topEnd = CornerSize(0.dp),
     )
 
-    Text(modifier = modifier, text = content, inlineContent = placeholderReplacements)
-}
-
-private fun buildFDroidLink(packageId: String): LinkAnnotation.Url {
-    val url = "https://f-droid.org/en/packages/$packageId"
-    return buildLink(url = url)
-}
-
-private fun buildGithubReleaseLink(username: String, repo: String): LinkAnnotation.Url {
-    val url = "https://github.com/$username/$repo/releases"
-    return buildLink(url = url)
-}
-
-private fun buildPlayStoreLink(packageId: String): LinkAnnotation.Url {
-    val url = "https://play.google.com/store/apps/details?id=$packageId"
-    return buildLink(url = url)
-}
-
-private fun buildLink(url: String): LinkAnnotation.Url {
-    val urlColor = Color(0xFF2196F3)
-    val urlStyle = TextLinkStyles(
-        style = SpanStyle(color = urlColor)
-    )
-
-    return LinkAnnotation.Url(url = url, styles = urlStyle)
-}
-
-private fun buildLinkList(
-    links: List<Pair<LinkAnnotation.Url, String>>,
-    linkIndicatorPlaceholder: () -> String,
-): AnnotatedString {
-    val bullet = "\u2022"
-
-    return buildAnnotatedString {
-        for ((link, label) in links) {
-            append(bullet)
-            withLink(link = link) {
-                append(text = label)
-                append(' ')
-                // Link indicator placeholder. We will replace it later.
-                appendInlineContent(
-                    id = linkIndicatorPlaceholder(),
-                    alternateText = "[link_indicator_icon]"
-                )
-            }
-            appendLine()
+    clients.forEachIndexed { index, client ->
+        val cornerShape = if (index == 0) {
+            firstItemCornerShape
+        } else if (clients.lastIndex == index) {
+            lastItemCornerShape
+        } else {
+            null
         }
+
+        TorrentClientLinkListItem(
+            modifier = modifier,
+            client = client,
+            backgroundColor = backgroundColor,
+            shape = cornerShape,
+            contentColor = contentColor,
+        )
     }
+}
+
+@Composable
+private fun TorrentClientLinkListItem(
+    client: TorrentClient,
+    backgroundColor: Color,
+    contentColor: Color,
+    modifier: Modifier = Modifier,
+    shape: Shape? = null,
+) {
+    val uriHandler = LocalUriHandler.current
+
+    val listItemColors = ListItemDefaults.colors(
+        containerColor = backgroundColor,
+        headlineColor = contentColor,
+        trailingIconColor = contentColor,
+    )
+
+    ListItem(
+        modifier = modifier
+            .fillMaxWidth()
+            .height(56.dp)
+            .clip(shape = shape ?: RectangleShape)
+            .clickable { uriHandler.openUri(client.url) },
+        headlineContent = {
+            Text(
+                text = stringResource(client.name),
+                style = MaterialTheme.typography.bodyMedium,
+            )
+        },
+        supportingContent = {
+            Text(
+                text = stringResource(client.source),
+                style = MaterialTheme.typography.bodySmall
+            )
+        },
+        trailingContent = {
+            Icon(
+                modifier = Modifier.size(18.dp),
+                painter = painterResource(R.drawable.ic_open_in_new),
+                contentDescription = null,
+            )
+        },
+        colors = listItemColors,
+    )
+}
+
+private fun createFDroidUrl(packageId: String): String {
+    return "https://f-droid.org/en/packages/$packageId"
+}
+
+private fun createGithubReleaseUrl(username: String, repo: String): String {
+    return "https://github.com/$username/$repo/releases"
+}
+
+private fun createPlayStoreUrl(packageId: String): String {
+    return "https://play.google.com/store/apps/details?id=$packageId"
 }
