@@ -22,8 +22,6 @@ import org.jsoup.nodes.Element
 class LimeTorrents(override val id: SearchProviderId) : SearchProvider {
     override val name = "LimeTorrents"
 
-    override val specializedCategory: Category = Category.All
-
     override suspend fun search(query: String, context: SearchContext): List<Torrent> {
         val categoryString = getCategoryString(context.category)
         val requestUrl = "$BASE_URL/search/$categoryString/$query/date/1/"

@@ -14,6 +14,7 @@ object SearchProviders {
         AnimeTosho(id = "7"),
         LimeTorrents(id = "8"),
         MyPornClub(id = "9"),
+        Knaben(id = "10"),
     )
 
     fun get(ids: Set<SearchProviderId>): List<SearchProvider> {
