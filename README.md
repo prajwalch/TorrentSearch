@@ -8,7 +8,7 @@
 
 # Torrent Search
 
-An Android app to search and download torrents from multiple providers.
+A modern Material 3 design Android app to search and download torrents from multiple providers.
 
 <br>
 <br>
@@ -22,9 +22,26 @@ An Android app to search and download torrents from multiple providers.
 
 ## Features
 
-- Search
-    - For tuning the search, different categories is provided.
-- Download (requires an external client)
+- Modern Material 3 design UI
+    - A clean, smooth, and responsive user interface, adapting to your device's wallpaper and theme settings.
+- Different category selections
+- Detailed view of search results:
+    - Provider name
+    - Upload date
+    - Category
+    - NSFW tag
+    - File size
+    - Seeders/Peers
+- Various torrent actions:
+    - Download (requires an external torrent client)
+        - If not found, shows a friendly dialog with different FOSS torrent clients to choose from.
+    - Copy/share magnet link
+    - Open torrent description page
+    - Copy/share torrent description page URL
+- Safe mode with an option to enable or disable NSFW search:
+    - Automatically hides NSFW categories
+    - Automatically hides NSFW torrents
+- Option to enable or disable individual providers
 
 ## Download
 
