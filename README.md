@@ -48,6 +48,7 @@ A modern Material 3 design Android app to search and download torrents from mult
 
 [<img src="https://github.com/machiav3lli/oandbackupx/blob/034b226cea5c1b30eb4f6a6f313e4dadcbb0ece4/badge_github.png" alt="Get it on GitHub" height="80">](https://github.com/prajwalch/TorrentSearch/releases/latest/)
 [<img src="https://gitlab.com/IzzyOnDroid/repo/-/raw/master/assets/IzzyOnDroid.png" height="80" alt="Get it on IzzyOnDroid">](https://apt.izzysoft.de/fdroid/index/apk/com.prajwalch.torrentsearch)
+[<img src="https://github.com/ImranR98/Obtainium/blob/main/assets/graphics/badge_obtainium.png" alt="Get it on Obtainium" height="55">](https://apps.obtainium.imranr.dev/redirect?r=obtainium://add/https://github.com/prajwalch/TorrentSearch/)
 
 The Nightly versions are also available under the artifact section of workflow run (You may require to logging in to Github). These are created for
 each commit/push done to the repository and can be used by anyone to test new features. Please note
