@@ -91,6 +91,7 @@ fun SearchScreen(
 
         TorrentActionsBottomSheet(
             title = torrent.name,
+            isNSFW = torrent.category?.isNSFW ?: true,
             onDismissRequest = { selectedTorrent = null },
             onDownloadTorrent = { onDownloadTorrent(torrent.magnetUri()) },
             onCopyMagnetLink = {

@@ -22,7 +22,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 
 import com.prajwalch.torrentsearch.R
@@ -127,16 +126,6 @@ private fun TorrentProviderNameAndUploadDate(
 }
 
 @Composable
-private fun NSFWTag(modifier: Modifier = Modifier) {
-    Text(
-        modifier = modifier,
-        text = "NSFW",
-        color = MaterialTheme.colorScheme.error,
-        fontWeight = FontWeight.Black,
-    )
-}
-
-@Composable
 private fun TorrentMetadataInfo(torrent: Torrent, modifier: Modifier = Modifier) {
     Row(
         modifier = modifier,
@@ -144,7 +133,7 @@ private fun TorrentMetadataInfo(torrent: Torrent, modifier: Modifier = Modifier)
         verticalAlignment = Alignment.CenterVertically,
     ) {
         TorrentMetaInfo(
-            text = torrent.size.toString(),
+            text = torrent.size,
             icon = R.drawable.ic_size_info,
         )
         TorrentMetaInfo(

@@ -37,6 +37,7 @@
     <string name="msg_no_results_found">No results found</string>
     <string name="msg_page_empty">Nothing here yet</string>
     <string name="msg_start_searching">Start searching to see results</string>
+    <string name="nsfw">NSFW</string>
 
     <!-- Torrent actions bottom sheet -->
     <string name="action_download">Download</string>

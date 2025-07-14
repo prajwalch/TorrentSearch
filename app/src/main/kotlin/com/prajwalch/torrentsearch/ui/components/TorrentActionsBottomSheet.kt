@@ -2,6 +2,8 @@ package com.prajwalch.torrentsearch.ui.components
 
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -29,6 +31,7 @@ import com.prajwalch.torrentsearch.R
 @Composable
 fun TorrentActionsBottomSheet(
     title: String,
+    isNSFW: Boolean,
     onDismissRequest: () -> Unit,
     onDownloadTorrent: () -> Unit,
     onCopyMagnetLink: () -> Unit,
@@ -50,11 +53,18 @@ fun TorrentActionsBottomSheet(
         sheetState = sheetState,
         scrimColor = scrimColor,
     ) {
-        Text(
+        Column(
             modifier = Modifier.padding(horizontal = 16.dp),
-            text = title,
-            style = MaterialTheme.typography.bodyLarge,
-        )
+            verticalArrangement = Arrangement.Center,
+        ) {
+            if (isNSFW) {
+                NSFWTag(style = MaterialTheme.typography.bodySmall)
+            }
+            Text(
+                text = title,
+                style = MaterialTheme.typography.bodyLarge,
+            )
+        }
         Spacer(Modifier.height(8.dp))
         HorizontalDivider()
         Spacer(Modifier.height(8.dp))
