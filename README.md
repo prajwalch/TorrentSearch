@@ -11,12 +11,13 @@
 A modern Material 3 design Android app to search and download torrents from multiple providers.
 
 <br>
-<br>
-
-<img width="20.5%" src="https://github.com/prajwalch/TorrentSearch/blob/main/fastlane/metadata/android/en-US/images/phoneScreenshots/dark_1.jpg" alt="search results for all category">
-<img width="20.5%" src="https://github.com/prajwalch/TorrentSearch/blob/main/fastlane/metadata/android/en-US/images/phoneScreenshots/dark_3.jpg" alt="client missing dialog with guides on it">  	
-<img width="20.5%" src="https://github.com/prajwalch/TorrentSearch/blob/main/fastlane/metadata/android/en-US/images/phoneScreenshots/light_2.jpg" alt="search results for books category">
-<img width="20.5%" src="https://github.com/prajwalch/TorrentSearch/blob/main/fastlane/metadata/android/en-US/images/phoneScreenshots/light_3.jpg" alt="client missing dialog with guides on it">
+<img width="25%" src="https://github.com/prajwalch/TorrentSearch/blob/main/fastlane/metadata/android/en-US/images/phoneScreenshots/dark_1.jpg" alt="search results for all category">
+<img width="25%" src="https://github.com/prajwalch/TorrentSearch/blob/main/fastlane/metadata/android/en-US/images/phoneScreenshots/dark_2.jpg" alt="torrents actions">  	
+<img width="25%" src="https://github.com/prajwalch/TorrentSearch/blob/main/fastlane/metadata/android/en-US/images/phoneScreenshots/dark_3.jpg" alt="torrent client not found dialog">  	
+<br/>
+<img width="25%" src="https://github.com/prajwalch/TorrentSearch/blob/main/fastlane/metadata/android/en-US/images/phoneScreenshots/light_1.jpg" alt="settings screen">
+<img width="25%" src="https://github.com/prajwalch/TorrentSearch/blob/main/fastlane/metadata/android/en-US/images/phoneScreenshots/light_2.jpg" alt="dark theme options">
+<img width="25%" src="https://github.com/prajwalch/TorrentSearch/blob/main/fastlane/metadata/android/en-US/images/phoneScreenshots/light_3.jpg" alt="enabled/disabled providers">
 
 </div>
 
