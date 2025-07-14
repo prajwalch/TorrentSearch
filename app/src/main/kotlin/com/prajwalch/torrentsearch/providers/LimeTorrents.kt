@@ -35,7 +35,7 @@ class LimeTorrents(override val id: SearchProviderId) : SearchProvider {
 
     /** Returns the category string used by it. */
     private fun getCategoryString(category: Category): String = when (category) {
-        Category.All, Category.Books, Category.Porn -> "all"
+        Category.All, Category.Books, Category.Porn, Category.Mobile -> "all"
         Category.Anime -> "anime"
         Category.Apps -> "applications"
         Category.Games -> "games"

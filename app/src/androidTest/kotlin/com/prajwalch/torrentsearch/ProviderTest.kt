@@ -27,10 +27,10 @@ class ProviderTest {
      */
     @Test
     fun searchReturnsRealTorrentsFromProvider() = runBlocking {
-        val searchQuery = "One Piece"
+        val searchQuery = "mod"
 
         val context = SearchContext(
-            category = Category.Books,
+            category = Category.Mobile,
             httpClient = HttpClient
         )
 

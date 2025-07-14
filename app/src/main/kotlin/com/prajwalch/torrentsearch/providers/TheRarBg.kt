@@ -65,7 +65,7 @@ class TheRarBg(override val id: SearchProviderId) : SearchProvider {
 
     /** Returns the compatible category string. */
     private fun getCategoryString(category: Category): String = when (category) {
-        Category.All -> ""
+        Category.All, Category.Mobile -> ""
         Category.Anime -> "Anime"
         Category.Apps -> "Apps"
         Category.Books -> "Books"
@@ -187,6 +187,7 @@ class TheRarBg(override val id: SearchProviderId) : SearchProvider {
         "Apps" -> Category.Apps
         "Books" -> Category.Books
         "Games" -> Category.Games
+        "Android" -> Category.Mobile
         "Movies" -> Category.Movies
         "Music" -> Category.Music
         "XXX" -> Category.Porn

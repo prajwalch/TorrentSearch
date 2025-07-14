@@ -46,6 +46,7 @@ class ThePirateBay(override val id: String) : SearchProvider {
         Category.Apps -> 300u
         Category.Books -> 601u
         Category.Games -> 400u
+        Category.Mobile -> 306u
         Category.Movies, Category.Series -> 200u
         Category.Music -> 101u
         Category.Porn -> 500u

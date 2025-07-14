@@ -52,6 +52,7 @@ enum class Category(val isNSFW: Boolean = false) {
     Apps,
     Books,
     Games,
+    Mobile,
     Movies,
     Music,
     Porn(isNSFW = true),

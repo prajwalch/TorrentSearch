@@ -120,6 +120,7 @@ class Knaben(override val id: SearchProviderId) : SearchProvider {
         Category.Porn -> listOf(5000000)
         Category.Anime -> listOf(6000000)
         Category.Games -> listOf(7000000)
+        Category.Mobile -> listOf(8000000)
         Category.Books -> listOf(9000000)
         Category.Other -> listOf(10000000)
     }
@@ -148,6 +149,7 @@ class Knaben(override val id: SearchProviderId) : SearchProvider {
      * - Porn        → 5000000
      * - Anime       → 6000000
      * - Games       → 7000000
+     * - Mobile       → 8000000
      * - Books       → 9000000
      * - Other       → 10000000
      *
@@ -176,6 +178,7 @@ class Knaben(override val id: SearchProviderId) : SearchProvider {
             in 5000000L..5999999L -> Category.Porn
             in 6000000L..6999999L -> Category.Anime
             in 7000000L..7999999L -> Category.Games
+            in 8000000L..8999999L -> Category.Mobile
             in 9000000L..9999999L -> Category.Books
             in 10000000L..10999999L -> Category.Other
             else -> Category.All
