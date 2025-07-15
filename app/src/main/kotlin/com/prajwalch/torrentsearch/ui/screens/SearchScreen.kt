@@ -17,7 +17,6 @@ import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.KeyboardArrowUp
 import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
@@ -52,7 +51,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-
 import com.prajwalch.torrentsearch.R
 import com.prajwalch.torrentsearch.models.Category
 import com.prajwalch.torrentsearch.models.MagnetUri
@@ -62,7 +60,6 @@ import com.prajwalch.torrentsearch.ui.components.TopSearchBar
 import com.prajwalch.torrentsearch.ui.components.TorrentActionsBottomSheet
 import com.prajwalch.torrentsearch.ui.components.TorrentList
 import com.prajwalch.torrentsearch.ui.viewmodel.SearchViewModel
-
 import kotlinx.coroutines.launch
 
 @Composable
@@ -225,8 +222,8 @@ private fun ScrollToUpFAB(visible: Boolean, onClick: () -> Unit, modifier: Modif
     AnimatedVisibility(modifier = modifier, visible = visible) {
         FloatingActionButton(onClick = onClick) {
             Icon(
-                imageVector = Icons.Outlined.KeyboardArrowUp,
-                contentDescription = "Scroll to top"
+                painter = painterResource(R.drawable.ic_arrow_up),
+                contentDescription = stringResource(R.string.button_scroll_to_top)
             )
         }
     }

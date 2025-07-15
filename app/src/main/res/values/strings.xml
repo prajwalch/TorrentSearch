@@ -38,6 +38,7 @@
     <string name="msg_page_empty">Nothing here yet</string>
     <string name="msg_start_searching">Start searching to see results</string>
     <string name="nsfw">NSFW</string>
+    <string name="button_scroll_to_top">Scroll to top</string>
 
     <!-- Torrent actions bottom sheet -->
     <string name="action_download">Download</string>
