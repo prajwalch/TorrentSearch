@@ -51,6 +51,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+
 import com.prajwalch.torrentsearch.R
 import com.prajwalch.torrentsearch.models.Category
 import com.prajwalch.torrentsearch.models.MagnetUri
@@ -60,6 +61,7 @@ import com.prajwalch.torrentsearch.ui.components.TopSearchBar
 import com.prajwalch.torrentsearch.ui.components.TorrentActionsBottomSheet
 import com.prajwalch.torrentsearch.ui.components.TorrentList
 import com.prajwalch.torrentsearch.ui.viewmodel.SearchViewModel
+
 import kotlinx.coroutines.launch
 
 @Composable
@@ -137,7 +139,7 @@ fun SearchScreen(
             )
         },
         floatingActionButton = {
-            ScrollToUpFAB(
+            ScrollToTopFAB(
                 visible = showScrollToUpButton,
                 onClick = {
                     coroutineScope.launch { lazyListState.animateScrollToItem(0) }
@@ -218,7 +220,7 @@ private fun SearchScreenTopBar(
 }
 
 @Composable
-private fun ScrollToUpFAB(visible: Boolean, onClick: () -> Unit, modifier: Modifier = Modifier) {
+private fun ScrollToTopFAB(visible: Boolean, onClick: () -> Unit, modifier: Modifier = Modifier) {
     AnimatedVisibility(modifier = modifier, visible = visible) {
         FloatingActionButton(onClick = onClick) {
             Icon(
