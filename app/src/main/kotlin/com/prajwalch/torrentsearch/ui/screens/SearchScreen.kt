@@ -1,6 +1,7 @@
 package com.prajwalch.torrentsearch.ui.screens
 
 import android.content.ClipData
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -12,12 +13,16 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.foundation.lazy.LazyListState
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.KeyboardArrowUp
 import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -29,6 +34,7 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -74,6 +80,11 @@ fun SearchScreen(
 
     val coroutineScope = rememberCoroutineScope()
     val snackbarHostState = remember { SnackbarHostState() }
+
+    val lazyListState = rememberLazyListState()
+    val showScrollToUpButton by remember {
+        derivedStateOf { lazyListState.firstVisibleItemIndex > 1 }
+    }
 
     val clipboard = LocalClipboard.current
     val focusManager = LocalFocusManager.current
@@ -127,12 +138,21 @@ fun SearchScreen(
                 onCategoryChange = viewModel::setCategory,
                 onSearch = viewModel::performSearch,
             )
+        },
+        floatingActionButton = {
+            ScrollToUpFAB(
+                visible = showScrollToUpButton,
+                onClick = {
+                    coroutineScope.launch { lazyListState.animateScrollToItem(0) }
+                },
+            )
         }
     ) { innerPadding ->
         SearchScreenContent(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding),
+            lazyListState = lazyListState,
             isLoading = uiState.isLoading,
             isInternetError = uiState.isInternetError,
             resultsNotFound = uiState.resultsNotFound,
@@ -201,6 +221,18 @@ private fun SearchScreenTopBar(
 }
 
 @Composable
+private fun ScrollToUpFAB(visible: Boolean, onClick: () -> Unit, modifier: Modifier = Modifier) {
+    AnimatedVisibility(modifier = modifier, visible = visible) {
+        FloatingActionButton(onClick = onClick) {
+            Icon(
+                imageVector = Icons.Outlined.KeyboardArrowUp,
+                contentDescription = "Scroll to top"
+            )
+        }
+    }
+}
+
+@Composable
 private fun SearchScreenContent(
     isLoading: Boolean,
     isInternetError: Boolean,
@@ -209,6 +241,7 @@ private fun SearchScreenContent(
     onRetry: () -> Unit,
     onTorrentSelect: (Torrent) -> Unit,
     modifier: Modifier = Modifier,
+    lazyListState: LazyListState,
 ) {
     Column(modifier = modifier, horizontalAlignment = Alignment.CenterHorizontally) {
         if (isLoading) {
@@ -232,7 +265,11 @@ private fun SearchScreenContent(
         }
 
         if (results.isNotEmpty()) {
-            TorrentList(torrents = results, onTorrentSelect = onTorrentSelect)
+            TorrentList(
+                torrents = results,
+                onTorrentSelect = onTorrentSelect,
+                lazyListState = lazyListState,
+            )
         }
     }
 }
