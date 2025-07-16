@@ -57,6 +57,19 @@ fun SearchSettings(viewModel: SettingsViewModel) {
         onClick = { viewModel.updateEnableNSFWSearch(!settings.enableNSFWSearch) }
     )
     SettingsItem(
+        leadingIconId = R.drawable.ic_visibility_off,
+        headline = stringResource(R.string.setting_hide_results_with_zero_seeders),
+        trailingContent = {
+            Switch(
+                checked = settings.hideResultsWithZeroSeeders,
+                onCheckedChange = { viewModel.updateHideResultsWithZeroSeeders(it) }
+            )
+        },
+        onClick = {
+            viewModel.updateHideResultsWithZeroSeeders(!settings.hideResultsWithZeroSeeders)
+        }
+    )
+    SettingsItem(
         leadingIconId = R.drawable.ic_graph,
         headline = stringResource(R.string.setting_search_providers),
         supportingContent = stringResource(

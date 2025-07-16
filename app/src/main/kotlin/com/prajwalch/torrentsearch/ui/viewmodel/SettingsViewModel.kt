@@ -21,6 +21,7 @@ data class AppearanceSettingsUiState(
 
 data class SearchSettingsUiState(
     val enableNSFWSearch: Boolean = false,
+    val hideResultsWithZeroSeeders: Boolean = false,
     val searchProviders1: List<SearchProviderUiState> = emptyList(),
     val totalSearchProviders: Int = SearchProviders.namesWithId().size,
     val enabledSearchProviders: Int = 0,
@@ -48,8 +49,9 @@ class SettingsViewModel(private val repository: SettingsRepository) : ViewModel(
 
     val searchSettings = combine(
         repository.enableNSFWSearch,
-        repository.searchProviders
-    ) { enableNSFWSearch, searchProviders ->
+        repository.hideResultsWithZeroSeeders,
+        repository.searchProviders,
+    ) { enableNSFWSearch, hideResultsWithZeroSeeders, searchProviders ->
         enabledSearchProviders = searchProviders
 
         SearchSettingsUiState(
@@ -57,6 +59,7 @@ class SettingsViewModel(private val repository: SettingsRepository) : ViewModel(
             searchProviders1 = createSearchProviderStates(),
             totalSearchProviders = allSearchProviders.size,
             enabledSearchProviders = enabledSearchProviders.size,
+            hideResultsWithZeroSeeders = hideResultsWithZeroSeeders,
         )
     }.stateIn(
         scope = viewModelScope,
@@ -86,13 +89,19 @@ class SettingsViewModel(private val repository: SettingsRepository) : ViewModel(
         viewModelScope.launch { repository.updateEnableNSFWSearch(enabled) }
     }
 
+    fun updateHideResultsWithZeroSeeders(enable: Boolean) {
+        viewModelScope.launch {
+            repository.updateHideResultsWithZeroSeeders(enable)
+        }
+    }
+
     fun enableSearchProvider(providerId: SearchProviderId, enable: Boolean) {
         val updatedSearchProviders = if (enable) {
             enabledSearchProviders + providerId
         } else {
             enabledSearchProviders - providerId
         }
-        
+
         viewModelScope.launch {
             repository.updateSearchProviders(providers = updatedSearchProviders)
         }

@@ -43,6 +43,10 @@ class SettingsRepository(private val dataStore: DataStore<Preferences>) {
         preferences[ENABLE_NSFW_SEARCH] ?: false
     }
 
+    val hideResultsWithZeroSeeders: Flow<Boolean> = dataStore.data.map { preferences ->
+        preferences[HIDE_RESULTS_WITH_ZERO_SEEDERS] ?: false
+    }
+
     val searchProviders: Flow<Set<String>> = dataStore.data.map { preferences ->
         preferences[SEARCH_PROVIDERS] ?: SearchProviders.enabledIds()
     }
@@ -65,6 +69,12 @@ class SettingsRepository(private val dataStore: DataStore<Preferences>) {
         }
     }
 
+    suspend fun updateHideResultsWithZeroSeeders(enable: Boolean) {
+        dataStore.edit { preferences ->
+            preferences[HIDE_RESULTS_WITH_ZERO_SEEDERS] = enable
+        }
+    }
+
     suspend fun updateSearchProviders(providers: Set<SearchProviderId>) {
         dataStore.edit { preferences ->
             preferences[SEARCH_PROVIDERS] = providers
@@ -75,6 +85,7 @@ class SettingsRepository(private val dataStore: DataStore<Preferences>) {
         val ENABLE_DYNAMIC_THEME = booleanPreferencesKey("enable_dynamic_theme")
         val DARK_THEME = intPreferencesKey("dark_theme")
         val ENABLE_NSFW_SEARCH = booleanPreferencesKey("enable_nsfw_search")
+        val HIDE_RESULTS_WITH_ZERO_SEEDERS = booleanPreferencesKey("hide_results_with_zero_seeders")
         val SEARCH_PROVIDERS = stringSetPreferencesKey("search_providers")
     }
 }

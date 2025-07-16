@@ -52,6 +52,7 @@ enum class SortOrder {
 
 private data class SearchSettings(
     val enableNSFWSearch: Boolean = false,
+    val hideResultsWithZeroSeeders: Boolean = false,
     val searchProviders: Set<SearchProviderId> = emptySet(),
 )
 
@@ -159,6 +160,7 @@ class SearchViewModel(
     private fun observeSettingsChange() = viewModelScope.launch {
         combine(
             settingsRepository.enableNSFWSearch,
+            settingsRepository.hideResultsWithZeroSeeders,
             settingsRepository.searchProviders,
             ::SearchSettings
         ).collect { searchSettings ->
@@ -229,6 +231,7 @@ class SearchViewModel(
         settings: SearchSettings,
     ): List<Torrent> {
         return results
+            .filter { torrent -> !settings.hideResultsWithZeroSeeders || torrent.seeds != 0u }
             .filter { torrent ->
                 settings.searchProviders.contains(torrent.providerId)
             }
