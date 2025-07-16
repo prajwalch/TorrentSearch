@@ -185,11 +185,11 @@ private fun TorrentMetadataInfo(torrent: Torrent, modifier: Modifier = Modifier)
             icon = R.drawable.ic_size_info,
         )
         TorrentMetaInfo(
-            text = "Seeds ${torrent.seeds}",
+            text = stringResource(R.string.seeders, torrent.seeders),
             icon = R.drawable.ic_seeders,
         )
         TorrentMetaInfo(
-            text = "Peers ${torrent.peers}",
+            text = stringResource(R.string.peers, torrent.peers),
             icon = R.drawable.ic_peers,
         )
     }

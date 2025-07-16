@@ -81,7 +81,7 @@ class ThePirateBay(override val id: String) : SearchProvider {
         val infoHash = torrentObject.getString("info_hash") ?: return null
         val sizeBytes = torrentObject.getString("size") ?: return null
         val size = prettyFileSize(bytes = sizeBytes)
-        val seeds = torrentObject.getString("seeders")?.toUIntOrNull() ?: return null
+        val seeders = torrentObject.getString("seeders")?.toUIntOrNull() ?: return null
         val peers = torrentObject.getString("leechers")?.toUIntOrNull() ?: return null
 
         val uploadDateEpochSeconds = torrentObject.getString("added")?.toLongOrNull() ?: return null
@@ -93,7 +93,7 @@ class ThePirateBay(override val id: String) : SearchProvider {
         return Torrent(
             name = name,
             size = size,
-            seeds = seeds,
+            seeders = seeders,
             peers = peers,
             providerId = id,
             providerName = this.name,

@@ -50,7 +50,7 @@ class AnimeTosho(override val id: SearchProviderId) : SearchProvider {
         val descriptionPageUrl = anchor.attr("href")
 
         val size = entryDiv.selectFirst("div.size")?.ownText() ?: return null
-        val (seeds, peers) = parseSeedsAndPeers(entryDiv)
+        val (seeders, peers) = parseSeedsAndPeers(entryDiv)
 
         val uploadDate = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             parseUploadDate(entryDiv) ?: return null
@@ -67,7 +67,7 @@ class AnimeTosho(override val id: SearchProviderId) : SearchProvider {
         return Torrent(
             name = name,
             size = size,
-            seeds = seeds,
+            seeders = seeders,
             peers = peers,
             providerId = id,
             providerName = this.name,

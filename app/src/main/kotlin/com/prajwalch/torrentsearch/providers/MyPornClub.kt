@@ -46,7 +46,7 @@ class MyPornClub(override val id: SearchProviderId) : SearchProvider {
         val infoHash = extractInfoHash(descriptionPageUrl, context) ?: return null
 
         val size = row.select("div.torrent_element_info span").getOrNull(3)?.text().orEmpty()
-        val seeds = row
+        val seeders = row
             .select("div.torrent_element_info span")
             .getOrNull(9)
             ?.text()
@@ -64,7 +64,7 @@ class MyPornClub(override val id: SearchProviderId) : SearchProvider {
         return Torrent(
             name = name,
             size = size,
-            seeds = seeds,
+            seeders = seeders,
             peers = peers,
             providerId = id,
             providerName = this.name,

@@ -165,7 +165,7 @@ class Yts(override val id: SearchProviderId) : SearchProvider {
         val infoHash = torrentObject.getString("hash") ?: return null
 
         val size = torrentObject.getString("size") ?: return null
-        val seeds = torrentObject.getUInt("seeds") ?: return null
+        val seeders = torrentObject.getUInt("seeds") ?: return null
         val peers = torrentObject.getUInt("peers") ?: return null
 
         val uploadDateEpochSeconds = torrentObject.getLong("date_uploaded_unix") ?: return null
@@ -174,7 +174,7 @@ class Yts(override val id: SearchProviderId) : SearchProvider {
         return Torrent(
             name = name,
             size = size,
-            seeds = seeds,
+            seeders = seeders,
             peers = peers,
             providerId = id,
             providerName = this.name,

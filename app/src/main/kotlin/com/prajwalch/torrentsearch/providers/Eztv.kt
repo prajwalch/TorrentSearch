@@ -102,7 +102,7 @@ class Eztv(override val id: String) : SearchProvider {
         //
         // Additional note: It uses ',' separator (e.g. 1,000).
         val seedsTd = tr.selectFirst("td:nth-child(6)") ?: return null
-        val seeds = seedsTd.selectFirst("font")?.ownText()?.filter { it != ',' } ?: "0"
+        val seeders = seedsTd.selectFirst("font")?.ownText()?.filter { it != ',' } ?: "0"
         // TODO: Peers is not present in the results page, we have to grab it
         //       from the details page. Let's do that in future.
         val peers = 0u
@@ -110,7 +110,7 @@ class Eztv(override val id: String) : SearchProvider {
         return Torrent(
             name = torrentName,
             size = size,
-            seeds = seeds.toUIntOrNull() ?: 0u,
+            seeders = seeders.toUIntOrNull() ?: 0u,
             peers = peers,
             providerId = id,
             providerName = name,

@@ -70,13 +70,13 @@ class NyaaSi(override val id: SearchProviderId) : SearchProvider {
             ?: return null
         val uploadDate = prettyDate(uploadDateEpochSeconds.toLong())
 
-        val seeds = tr.selectFirst("td:nth-child(6)")?.ownText() ?: return null
+        val seeders = tr.selectFirst("td:nth-child(6)")?.ownText() ?: return null
         val peers = tr.selectFirst("td:nth-child(7)")?.ownText() ?: return null
 
         return Torrent(
             name = name,
             size = size,
-            seeds = seeds.toUIntOrNull() ?: 0u,
+            seeders = seeders.toUIntOrNull() ?: 0u,
             peers = peers.toUIntOrNull() ?: 0u,
             providerId = id,
             providerName = this.name,

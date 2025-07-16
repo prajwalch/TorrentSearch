@@ -1,17 +1,22 @@
-package com.prajwalch.torrentsearch.providers
+package com.prajwalch.torrentsearch
 
 import com.prajwalch.torrentsearch.data.SearchContext
+import com.prajwalch.torrentsearch.data.SearchProvider
 import com.prajwalch.torrentsearch.models.Category
 import com.prajwalch.torrentsearch.models.Torrent
 import com.prajwalch.torrentsearch.network.HttpClient
+import com.prajwalch.torrentsearch.providers.Knaben
+
 import kotlinx.coroutines.runBlocking
-import org.junit.Assert.*
+
+import org.junit.Assert.assertNotNull
+import org.junit.Assert.assertTrue
 import org.junit.Test
 
 /**
  * ✅ Generic provider tests
  *
- * This test suite verifies that any [Provider] implementation can return
+ * This test suite verifies that any [SearchProvider] implementation can return
  * meaningful search results across a variety of queries and categories.
  */
 class ProviderTest {
@@ -46,7 +51,7 @@ class ProviderTest {
             ├── Name          : ${first.name}
             ├── Magnet Uri    : ${first.magnetUri()}
             ├── Size          : ${first.size}
-            ├── Seeds         : ${first.seeds}
+            ├── Seeders       : ${first.seeders}
             ├── Peers         : ${first.peers}
             ├── Upload Date   : ${first.uploadDate}
             ├── Category      : ${first.category}
@@ -94,7 +99,7 @@ class ProviderTest {
                 ├── Name          : ${first.name}
                 ├── Magnet Uri    : ${first.magnetUri()}
                 ├── Size          : ${first.size}
-                ├── Seeds         : ${first.seeds}
+                ├── Seeders       : ${first.seeders}
                 ├── Peers         : ${first.peers}
                 ├── Upload Date   : ${first.uploadDate}
                 ├── Category      : ${first.category}

@@ -12,8 +12,8 @@ data class Torrent(
     /** Torrent size (in pretty format). */
     val size: String,
     /** Number of seeders. */
-    val seeds: UInt,
-    /** Number of peers/leechers. */
+    val seeders: UInt,
+    /** Number of peers. */
     val peers: UInt,
     /** Id of the provider. */
     val providerId: SearchProviderId,

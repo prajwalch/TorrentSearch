@@ -69,14 +69,14 @@ class LimeTorrents(override val id: SearchProviderId) : SearchProvider {
         val infoHash = extractInfoHash(row) ?: return null
         val uploadDate = extractUploadDate(row)
         val size = row.selectFirst("td:nth-child(3)")?.text() ?: return null
-        val seeds = row.selectFirst(".tdseed")?.text()?.toUIntOrNull() ?: 0u
+        val seeders = row.selectFirst(".tdseed")?.text()?.toUIntOrNull() ?: 0u
         val peers = row.selectFirst(".tdleech")?.text()?.toUIntOrNull() ?: 0u
         val category = extractCategory(row)
 
         return Torrent(
             name = name,
             size = size,
-            seeds = seeds,
+            seeders = seeders,
             peers = peers,
             providerId = id,
             providerName = this.name,

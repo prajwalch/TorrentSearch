@@ -83,7 +83,7 @@ class Knaben(override val id: SearchProviderId) : SearchProvider {
         val sizeBytes = obj.getLong("bytes") ?: return null
         val size = prettyFileSize(sizeBytes.toFloat())
 
-        val seeds = obj.getUInt("seeders") ?: 0u
+        val seeders = obj.getUInt("seeders") ?: 0u
         val peers = obj.getUInt("peers") ?: 0u
         val uploadDateIso = obj.getString("date") ?: ""
         val uploadDate = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
@@ -97,7 +97,7 @@ class Knaben(override val id: SearchProviderId) : SearchProvider {
         return Torrent(
             name = name,
             size = size,
-            seeds = seeds,
+            seeders = seeders,
             peers = peers,
             providerId = this.id,
             providerName = this.name,

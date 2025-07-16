@@ -40,7 +40,6 @@
     <string name="msg_page_empty">Nothing here yet</string>
     <string name="msg_start_searching">Start searching to see results</string>
 
-
     <!-- Results toolbar -->
     <string name="hint_results_count">About %1$d results</string>
     <string name="button_open_sort_options">Open sort options</string>
@@ -48,6 +47,8 @@
 
     <string name="nsfw">NSFW</string>
     <string name="button_scroll_to_top">Scroll to top</string>
+    <string name="seeders">Seeders %1$s</string>
+    <string name="peers">Peers %1$s</string>
 
     <!-- Torrent actions bottom sheet -->
     <string name="action_download">Download</string>

@@ -60,7 +60,7 @@ class TorrentsCsv(override val id: SearchProviderId) : SearchProvider {
         val sizeBytes = torrentObject.getLong("size_bytes") ?: return null
         val size = prettyFileSize(bytes = sizeBytes.toFloat())
 
-        val seeds = torrentObject.getUInt("seeders") ?: return null
+        val seeders = torrentObject.getUInt("seeders") ?: return null
         val peers = torrentObject.getUInt("leechers") ?: return null
 
         val uploadDateEpochSeconds = torrentObject.getLong("created_unix") ?: return null
@@ -69,7 +69,7 @@ class TorrentsCsv(override val id: SearchProviderId) : SearchProvider {
         return Torrent(
             name = name,
             size = size,
-            seeds = seeds,
+            seeders = seeders,
             peers = peers,
             providerId = id,
             providerName = this.name,

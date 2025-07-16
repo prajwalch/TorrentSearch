@@ -30,7 +30,7 @@ private data class TableRowParsedResult(
      */
     val size: String,
     /** Number of seeders. */
-    val seeds: String,
+    val seeders: String,
     /** Number of peers. */
     val peers: String,
     /** Torrent upload date. */
@@ -113,14 +113,14 @@ class TheRarBg(override val id: SearchProviderId) : SearchProvider {
             ?.ownText()
             ?: return null
         val size = tr.selectFirst("td:nth-child(6)")?.ownText() ?: return null
-        val seeds = tr.selectFirst("td:nth-child(7)")?.ownText() ?: return null
+        val seeders = tr.selectFirst("td:nth-child(7)")?.ownText() ?: return null
         val peers = tr.selectFirst("td:nth-child(8)")?.ownText() ?: return null
 
         return TableRowParsedResult(
             name = torrentName,
             detailsPageUrl = "$BASE_URL$detailsPath",
             size = size,
-            seeds = seeds,
+            seeders = seeders,
             peers = peers,
             uploadDate = uploadDate,
             category = category,
@@ -161,7 +161,7 @@ class TheRarBg(override val id: SearchProviderId) : SearchProvider {
         return Torrent(
             name = parsedResult.name,
             size = parsedResult.size,
-            seeds = parsedResult.seeds.toUInt(),
+            seeders = parsedResult.seeders.toUInt(),
             peers = parsedResult.peers.toUInt(),
             providerId = id,
             providerName = name,

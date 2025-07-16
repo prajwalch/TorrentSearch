@@ -231,7 +231,7 @@ class SearchViewModel(
         settings: SearchSettings,
     ): List<Torrent> {
         return results
-            .filter { torrent -> !settings.hideResultsWithZeroSeeders || torrent.seeds != 0u }
+            .filter { torrent -> !settings.hideResultsWithZeroSeeders || torrent.seeders != 0u }
             .filter { torrent ->
                 settings.searchProviders.contains(torrent.providerId)
             }
@@ -250,7 +250,7 @@ class SearchViewModel(
     ): List<Torrent> {
         val sortedResults = when (key) {
             SortKey.Name -> results.sortedBy { it.name }
-            SortKey.Seeders -> results.sortedBy { it.seeds }
+            SortKey.Seeders -> results.sortedBy { it.seeders }
             SortKey.Peers -> results.sortedBy { it.peers }
             SortKey.FileSize -> results.sortedBy { prettySizeToBytes(it.size) }
             // FIXME: Sorting by date needs some fixes.
