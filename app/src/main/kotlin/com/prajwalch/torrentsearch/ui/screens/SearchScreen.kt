@@ -61,6 +61,8 @@ import com.prajwalch.torrentsearch.ui.components.TopSearchBar
 import com.prajwalch.torrentsearch.ui.components.TorrentActionsBottomSheet
 import com.prajwalch.torrentsearch.ui.components.TorrentList
 import com.prajwalch.torrentsearch.ui.viewmodel.SearchViewModel
+import com.prajwalch.torrentsearch.ui.viewmodel.SortKey
+import com.prajwalch.torrentsearch.ui.viewmodel.SortOrder
 
 import kotlinx.coroutines.launch
 
@@ -155,8 +157,11 @@ fun SearchScreen(
             isLoading = uiState.isLoading,
             isInternetError = uiState.isInternetError,
             resultsNotFound = uiState.resultsNotFound,
+            currentSortKey = uiState.currentSortKey,
+            currentSortOrder = uiState.currentSortOrder,
             results = uiState.results,
             onRetry = viewModel::performSearch,
+            onSortResults = viewModel::sort,
             onTorrentSelect = { selectedTorrent = it },
         )
     }
@@ -236,8 +241,11 @@ private fun SearchScreenContent(
     isLoading: Boolean,
     isInternetError: Boolean,
     resultsNotFound: Boolean,
+    currentSortKey: SortKey,
+    currentSortOrder: SortOrder,
     results: List<Torrent>,
     onRetry: () -> Unit,
+    onSortResults: (SortKey, SortOrder) -> Unit,
     onTorrentSelect: (Torrent) -> Unit,
     modifier: Modifier = Modifier,
     lazyListState: LazyListState,
@@ -265,7 +273,10 @@ private fun SearchScreenContent(
 
         if (results.isNotEmpty()) {
             TorrentList(
+                currentSortKey = currentSortKey,
+                currentSortOrder = currentSortOrder,
                 torrents = results,
+                onSortTorrents = onSortResults,
                 onTorrentSelect = onTorrentSelect,
                 lazyListState = lazyListState,
             )

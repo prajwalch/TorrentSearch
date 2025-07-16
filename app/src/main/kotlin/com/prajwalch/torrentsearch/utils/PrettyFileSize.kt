@@ -22,3 +22,17 @@ fun prettyFileSize(bytes: Float): String {
 fun prettyFileSize(bytes: String): String {
     return prettyFileSize(bytes = bytes.toFloat())
 }
+
+fun prettySizeToBytes(prettySize: String): Float {
+    val (value, unit) = prettySize.split(' ', limit = 2)
+    val valueFloat = value.toFloatOrNull() ?: return 0f
+
+    return when (unit) {
+        "PB", "PiB" -> valueFloat * PB
+        "TB", "TiB" -> valueFloat * TB
+        "GB", "GiB" -> valueFloat * GB
+        "MB", "MiB" -> valueFloat * MB
+        "KB", "KiB" -> valueFloat * KB
+        else -> 0f
+    }
+}

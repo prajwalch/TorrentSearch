@@ -33,7 +33,6 @@ class TorrentsRepository(private val httpClient: HttpClient) {
             val torrents = results
                 .mapNotNull { it as? HttpClientResponse.Ok }
                 .flatMap { it.result }
-                .sortedByDescending { it.seeds }
 
             TorrentsRepositoryResult(torrents = torrents)
         }
