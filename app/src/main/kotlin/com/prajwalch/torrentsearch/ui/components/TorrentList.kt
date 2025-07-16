@@ -8,27 +8,19 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -37,6 +29,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 
 import com.prajwalch.torrentsearch.R
@@ -55,7 +48,7 @@ fun TorrentList(
     modifier: Modifier = Modifier,
     lazyListState: LazyListState = rememberLazyListState(),
 ) {
-    var showSortMenu by remember(torrents) { mutableStateOf(false) }
+    var showSortOptions by remember(torrents) { mutableStateOf(false) }
 
     LazyColumn(
         modifier = modifier,
@@ -69,34 +62,23 @@ fun TorrentList(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween,
             ) {
-                // Number of results.
                 Text(
-                    text = "About ${torrents.size} results",
+                    text = stringResource(R.string.hint_results_count, torrents.size),
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     style = MaterialTheme.typography.bodyMedium,
                 )
-                // Sort button.
                 Box {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        SortKeyButton(
-                            currentKey = currentSortKey,
-                            onClick = { showSortMenu = !showSortMenu },
-                        )
-                        SortOrderButton(
-                            currentOrder = currentSortOrder,
-                            onClick = {
-                                onSortTorrents(
-                                    currentSortKey,
-                                    currentSortOrder.opposite()
-                                )
-                            }
-                        )
-                    }
-                    SortMenu(
-                        expanded = showSortMenu,
-                        currentKey = currentSortKey,
-                        onDismissRequest = { showSortMenu = false },
-                        onSort = { onSortTorrents(it, currentSortOrder) },
+                    SortButton(
+                        currentSortKey = currentSortKey,
+                        currentSortOrder = currentSortOrder,
+                        onClick = { showSortOptions = true },
+                        onSortOrderChange = { onSortTorrents(currentSortKey, it) },
+                    )
+                    SortOptionsMenu(
+                        expanded = showSortOptions,
+                        selectedKey = currentSortKey,
+                        onDismissRequest = { showSortOptions = false },
+                        onSortKeySelect = { onSortTorrents(it, currentSortOrder) },
                     )
                 }
             }
@@ -111,77 +93,6 @@ fun TorrentList(
                     .animateItem()
                     .clickable { onTorrentSelect(it) },
                 torrent = it,
-            )
-        }
-    }
-}
-
-@Composable
-private fun SortKeyButton(
-    currentKey: SortKey,
-    onClick: () -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    TextButton(modifier = modifier, onClick = onClick) {
-        Icon(
-            modifier = Modifier.size(ButtonDefaults.IconSize),
-            painter = painterResource(R.drawable.ic_sort),
-            contentDescription = "Sort results list",
-        )
-        Spacer(Modifier.width(8.dp))
-        Text(
-            text = currentKey.toString(),
-            style = MaterialTheme.typography.bodyMedium,
-        )
-    }
-}
-
-@Composable
-private fun SortOrderButton(
-    currentOrder: SortOrder,
-    onClick: () -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    val icon = when (currentOrder) {
-        SortOrder.Ascending -> R.drawable.ic_arrow_up
-        SortOrder.Descending -> R.drawable.ic_arrow_down
-    }
-
-    val iconSize = ButtonDefaults.IconSize
-
-    IconButton(modifier = modifier, onClick = onClick) {
-        Icon(
-            modifier = Modifier.size(iconSize),
-            painter = painterResource(icon),
-            contentDescription = "Change sort order",
-            tint = MaterialTheme.colorScheme.primary,
-        )
-    }
-}
-
-@Composable
-private fun SortMenu(
-    expanded: Boolean,
-    currentKey: SortKey,
-    onDismissRequest: () -> Unit,
-    onSort: (SortKey) -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    DropdownMenu(
-        modifier = modifier,
-        expanded = expanded,
-        onDismissRequest = onDismissRequest,
-    ) {
-        for (sortItem in SortKey.entries) {
-            DropdownMenuItem(
-                text = { Text(text = sortItem.toString()) },
-                onClick = { onSort(sortItem) },
-                leadingIcon = {
-                    RadioButton(
-                        selected = sortItem == currentKey,
-                        onClick = { onSort(sortItem) },
-                    )
-                }
             )
         }
     }
