@@ -12,6 +12,7 @@ import com.prajwalch.torrentsearch.models.Torrent
 import com.prajwalch.torrentsearch.providers.SearchProviders
 import com.prajwalch.torrentsearch.utils.prettySizeToBytes
 
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
@@ -66,6 +67,7 @@ class SearchViewModel(
 
     private var currentSearchSettings = SearchSettings()
     private var currentSearchResults = emptyList<Torrent>()
+    private var searchJob: Job? = null
 
     init {
         observeSettingsChange()
@@ -99,60 +101,67 @@ class SearchViewModel(
     }
 
     /** Performs a search. */
-    fun performSearch() = viewModelScope.launch {
-        // Prevent unnecessary processing.
-        if (mUiState.value.query.isEmpty()) {
-            return@launch
-        }
+    fun performSearch() {
+        // Cancel any on-going search.
+        //
+        // This help to prevent from any un-expected behaviour like when user
+        // quickly switch to another category when search is still happening.
+        searchJob?.cancel()
+        searchJob = viewModelScope.launch {
+            // Prevent unnecessary processing.
+            if (mUiState.value.query.isEmpty()) {
+                return@launch
+            }
 
-        updateUIState { it.copy(isLoading = true) }
-        // Clear previous search results.
-        currentSearchResults = emptyList()
+            updateUIState { it.copy(isLoading = true) }
+            // Clear previous search results.
+            currentSearchResults = emptyList()
 
-        if (!torrentsRepository.isInternetAvailable()) {
+            if (!torrentsRepository.isInternetAvailable()) {
+                updateUIState {
+                    it.copy(
+                        isLoading = false,
+                        isInternetError = true,
+                        resultsNotFound = false
+                    )
+                }
+                return@launch
+            }
+
+            // Perform the search with enabled providers.
+            val searchProviders = SearchProviders.get(currentSearchSettings.searchProviders)
+            val result = torrentsRepository.search(
+                query = mUiState.value.query,
+                category = mUiState.value.selectedCategory,
+                providers = searchProviders,
+            )
+
+            // Save the original results.
+            currentSearchResults = result.torrents.orEmpty()
+
+            // Filter them based on settings.
+            val filteredSearchResults = filterSearchResults(
+                results = currentSearchResults,
+                settings = currentSearchSettings
+            )
+            // Then sort the filtered results.
+            val sortedSearchResults = sortSearchResults(
+                results = filteredSearchResults,
+                key = DEFAULT_SORT_KEY,
+                order = DEFAULT_SORT_ORDER,
+            )
+
+            // And update the UI.
             updateUIState {
                 it.copy(
                     isLoading = false,
-                    isInternetError = true,
-                    resultsNotFound = false
+                    isInternetError = result.isNetworkError,
+                    resultsNotFound = currentSearchResults.isEmpty(),
+                    results = sortedSearchResults,
+                    currentSortKey = DEFAULT_SORT_KEY,
+                    currentSortOrder = DEFAULT_SORT_ORDER,
                 )
             }
-            return@launch
-        }
-
-        // Perform the search with enabled providers.
-        val searchProviders = SearchProviders.get(currentSearchSettings.searchProviders)
-        val result = torrentsRepository.search(
-            query = mUiState.value.query,
-            category = mUiState.value.selectedCategory,
-            providers = searchProviders,
-        )
-
-        // Save the original results.
-        currentSearchResults = result.torrents.orEmpty()
-
-        // Filter them based on settings.
-        val filteredSearchResults = filterSearchResults(
-            results = currentSearchResults,
-            settings = currentSearchSettings
-        )
-        // Then sort the filtered results.
-        val sortedSearchResults = sortSearchResults(
-            results = filteredSearchResults,
-            key = DEFAULT_SORT_KEY,
-            order = DEFAULT_SORT_ORDER,
-        )
-
-        // And update the UI.
-        updateUIState {
-            it.copy(
-                isLoading = false,
-                isInternetError = result.isNetworkError,
-                resultsNotFound = currentSearchResults.isEmpty(),
-                results = sortedSearchResults,
-                currentSortKey = DEFAULT_SORT_KEY,
-                currentSortOrder = DEFAULT_SORT_ORDER,
-            )
         }
     }
 
