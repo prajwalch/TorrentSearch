@@ -66,6 +66,7 @@ class MainActivity : ComponentActivity() {
             TorrentSearchTheme(
                 darkTheme = darkTheme,
                 dynamicColor = appearanceSettings.enableDynamicTheme,
+                pureBlack = appearanceSettings.pureBlack,
             ) {
                 TorrentSearchApp(
                     searchViewModel = searchViewModel,

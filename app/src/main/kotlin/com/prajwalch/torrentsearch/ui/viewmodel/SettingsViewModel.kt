@@ -17,6 +17,7 @@ import kotlinx.coroutines.launch
 data class AppearanceSettingsUiState(
     val enableDynamicTheme: Boolean = true,
     val darkTheme: DarkTheme = DarkTheme.FollowSystem,
+    val pureBlack: Boolean = false,
 )
 
 data class SearchSettingsUiState(
@@ -40,6 +41,7 @@ class SettingsViewModel(private val repository: SettingsRepository) : ViewModel(
     val appearanceSettings = combine(
         repository.enableDynamicTheme,
         repository.darkTheme,
+        repository.pureBlack,
         ::AppearanceSettingsUiState
     ).stateIn(
         scope = viewModelScope,
@@ -83,6 +85,10 @@ class SettingsViewModel(private val repository: SettingsRepository) : ViewModel(
 
     fun updateDarkTheme(darkTheme: DarkTheme) {
         viewModelScope.launch { repository.updateDarkTheme(darkTheme) }
+    }
+
+    fun updatePureBlack(enable: Boolean) {
+        viewModelScope.launch { repository.updatePureBlack(enable) }
     }
 
     fun updateEnableNSFWSearch(enabled: Boolean) {

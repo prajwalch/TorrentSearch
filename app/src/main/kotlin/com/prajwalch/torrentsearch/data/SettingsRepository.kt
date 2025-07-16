@@ -39,6 +39,10 @@ class SettingsRepository(private val dataStore: DataStore<Preferences>) {
         preferences[DARK_THEME]?.let(DarkTheme::fromInt) ?: DarkTheme.FollowSystem
     }
 
+    val pureBlack: Flow<Boolean> = dataStore.data.map { preferences ->
+        preferences[PURE_BLACK] ?: false
+    }
+
     val enableNSFWSearch: Flow<Boolean> = dataStore.data.map { preferences ->
         preferences[ENABLE_NSFW_SEARCH] ?: false
     }
@@ -63,6 +67,12 @@ class SettingsRepository(private val dataStore: DataStore<Preferences>) {
         }
     }
 
+    suspend fun updatePureBlack(enable: Boolean) {
+        dataStore.edit { preferences ->
+            preferences[PURE_BLACK] = enable
+        }
+    }
+
     suspend fun updateEnableNSFWSearch(enabled: Boolean) {
         dataStore.edit { preferences ->
             preferences[ENABLE_NSFW_SEARCH] = enabled
@@ -84,6 +94,7 @@ class SettingsRepository(private val dataStore: DataStore<Preferences>) {
     private companion object PreferencesKeys {
         val ENABLE_DYNAMIC_THEME = booleanPreferencesKey("enable_dynamic_theme")
         val DARK_THEME = intPreferencesKey("dark_theme")
+        val PURE_BLACK = booleanPreferencesKey("pure_black")
         val ENABLE_NSFW_SEARCH = booleanPreferencesKey("enable_nsfw_search")
         val HIDE_RESULTS_WITH_ZERO_SEEDERS = booleanPreferencesKey("hide_results_with_zero_seeders")
         val SEARCH_PROVIDERS = stringSetPreferencesKey("search_providers")

@@ -70,6 +70,7 @@
     <string name="settings_section_appearance">Appearance</string>
     <string name="setting_enable_dynamic_theme">Enable dynamic theme</string>
     <string name="setting_dark_theme">Dark theme</string>
+    <string name="setting_pure_black">Pure black</string>
 
     <!-- Search section -->
     <string name="settings_section_search">Search</string>

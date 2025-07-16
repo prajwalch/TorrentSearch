@@ -1,6 +1,10 @@
 package com.prajwalch.torrentsearch.ui.screens.settings
 
 import androidx.annotation.StringRes
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.Switch
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -67,4 +71,29 @@ fun AppearanceSettings(viewModel: SettingsViewModel) {
             )
         }
     )
+
+    val showPureBackSetting = when (settings.darkTheme) {
+        DarkTheme.On -> true
+        DarkTheme.Off -> false
+        DarkTheme.FollowSystem -> isSystemInDarkTheme()
+    }
+
+    AnimatedVisibility(
+        visible = showPureBackSetting,
+        enter = fadeIn(),
+        exit = fadeOut(),
+    ) {
+        SettingsItem(
+            leadingIconId = R.drawable.ic_contrast,
+            headline = stringResource(R.string.setting_pure_black),
+            trailingContent = {
+                Switch(checked = settings.pureBlack, onCheckedChange = {
+                    viewModel.updatePureBlack(it)
+                })
+            },
+            onClick = {
+                viewModel.updatePureBlack(!settings.pureBlack)
+            }
+        )
+    }
 }
