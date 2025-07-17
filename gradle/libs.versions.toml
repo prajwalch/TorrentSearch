@@ -1,6 +1,7 @@
 [versions]
 activityCompose = "1.10.1"
 agp = "8.11.1"
+composeBom = "2025.07.00"
 coreKtx = "1.16.0"
 datastorePreferences = "1.1.7"
 espressoCore = "3.6.1"
@@ -9,13 +10,13 @@ junit = "4.13.2"
 junitVersion = "1.2.1"
 kotlin = "2.2.0"
 kotlinxSerializationJson = "1.9.0"
-ktor = "3.2.1"
-lifecycleRuntimeKtx = "2.9.1"
-navigationCompose = "2.9.1"
+ktor = "3.2.2"
+lifecycleRuntimeKtx = "2.9.2"
+navigationCompose = "2.9.2"
 
 [libraries]
 androidx-activity-compose = { group = "androidx.activity", name = "activity-compose", version.ref = "activityCompose" }
-androidx-compose-bom = { group = "androidx.compose", name = "compose-bom", version = "2025.06.01" }
+androidx-compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "composeBom" }
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 androidx-datastore-preferences = { group = "androidx.datastore", name = "datastore-preferences", version.ref = "datastorePreferences" }
 androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
