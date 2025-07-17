@@ -25,7 +25,7 @@ import com.prajwalch.torrentsearch.models.Category
 fun CategoryChipsRow(
     categories: List<Category>,
     selectedCategory: Category,
-    onSelect: (Category) -> Unit,
+    onCategorySelect: (Category) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     LazyRow(
@@ -43,7 +43,7 @@ fun CategoryChipsRow(
                 modifier = Modifier.animateItem(),
                 label = category.toString(),
                 selected = selectedCategory == category,
-                onClick = { onSelect(category) },
+                onClick = { onCategorySelect(category) },
             )
         }
     }
@@ -52,8 +52,8 @@ fun CategoryChipsRow(
 @Composable
 private fun CategoryChip(
     selected: Boolean,
-    label: String,
     onClick: () -> Unit,
+    label: String,
     modifier: Modifier = Modifier,
 ) {
     val leadingIconSize = FilterChipDefaults.IconSize

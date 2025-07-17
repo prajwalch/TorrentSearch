@@ -219,7 +219,7 @@ private fun SearchScreenTopBar(
         CategoryChipsRow(
             selectedCategory = selectedCategory,
             categories = categories,
-            onSelect = { newCategory ->
+            onCategorySelect = { newCategory ->
                 if (selectedCategory != newCategory) {
                     onCategoryChange(newCategory)
                     onSearch()
