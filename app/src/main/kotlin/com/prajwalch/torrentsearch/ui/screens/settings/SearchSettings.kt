@@ -5,6 +5,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.ListItem
+import androidx.compose.material3.ListItemColors
 import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
@@ -32,93 +33,69 @@ fun SearchSettings(viewModel: SettingsViewModel) {
     var showListDialog by remember { mutableStateOf(false) }
 
     if (showListDialog) {
-        SearchProvidersListDialog(
-            searchProviders = settings.searchProviders1,
+        SettingsDialog(
+            title = R.string.setting_search_providers,
             onDismissRequest = { showListDialog = false },
-            onCheckedChange = { providerId, enable ->
-                viewModel.enableSearchProvider(
-                    providerId = providerId,
-                    enable = enable
-                )
-            }
-        )
+        ) {
+            SearchProvidersList(
+                searchProviders = settings.searchProviders1,
+                onProviderCheckedChange = viewModel::enableSearchProvider,
+            )
+        }
     }
 
-    SettingsSectionTitle(stringResource(R.string.settings_section_search))
+    SettingsSectionTitle(title = stringResource(R.string.settings_section_search))
     SettingsItem(
         leadingIconId = R.drawable.ic_18_up_rating,
         headline = stringResource(R.string.setting_enable_nsfw_search),
+        onClick = { viewModel.updateEnableNSFWSearch(!settings.enableNSFWSearch) },
         trailingContent = {
             Switch(
                 checked = settings.enableNSFWSearch,
-                onCheckedChange = { viewModel.updateEnableNSFWSearch(it) }
+                onCheckedChange = { viewModel.updateEnableNSFWSearch(it) },
             )
         },
-        onClick = { viewModel.updateEnableNSFWSearch(!settings.enableNSFWSearch) }
     )
     SettingsItem(
         leadingIconId = R.drawable.ic_visibility_off,
         headline = stringResource(R.string.setting_hide_results_with_zero_seeders),
+        onClick = {
+            viewModel.updateHideResultsWithZeroSeeders(!settings.hideResultsWithZeroSeeders)
+        },
         trailingContent = {
             Switch(
                 checked = settings.hideResultsWithZeroSeeders,
-                onCheckedChange = { viewModel.updateHideResultsWithZeroSeeders(it) }
+                onCheckedChange = { viewModel.updateHideResultsWithZeroSeeders(it) },
             )
         },
-        onClick = {
-            viewModel.updateHideResultsWithZeroSeeders(!settings.hideResultsWithZeroSeeders)
-        }
     )
     SettingsItem(
         leadingIconId = R.drawable.ic_graph,
         headline = stringResource(R.string.setting_search_providers),
+        onClick = { showListDialog = true },
         supportingContent = stringResource(
             R.string.x_of_x_enabled,
             settings.enabledSearchProviders,
             settings.totalSearchProviders
         ),
-        onClick = {
-            showListDialog = true
-        }
-    )
-}
-
-@Composable
-private fun SearchProvidersListDialog(
-    searchProviders: List<SearchProviderUiState>,
-    onDismissRequest: () -> Unit,
-    onCheckedChange: (SearchProviderId, Boolean) -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    SettingsDialog(
-        modifier = modifier,
-        title = R.string.setting_search_providers,
-        onDismissRequest = onDismissRequest,
-        content = {
-            SearchProvidersList(
-                searchProviders = searchProviders,
-                onCheckedChange = onCheckedChange,
-            )
-        }
     )
 }
 
 @Composable
 private fun SearchProvidersList(
     searchProviders: List<SearchProviderUiState>,
-    onCheckedChange: (SearchProviderId, Boolean) -> Unit,
+    onProviderCheckedChange: (SearchProviderId, Boolean) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-
     LazyColumn(modifier = modifier) {
         items(
             items = searchProviders,
             key = { it.id },
         ) { searchProvider ->
             SearchProvidersListItem(
-                enabled = searchProvider.enabled,
+                checked = searchProvider.enabled,
+                onCheckedChange = { onProviderCheckedChange(searchProvider.id, it) },
                 name = searchProvider.name,
-                onCheckedChange = { onCheckedChange(searchProvider.id, it) }
             )
         }
     }
@@ -126,20 +103,20 @@ private fun SearchProvidersList(
 
 @Composable
 private fun SearchProvidersListItem(
-    enabled: Boolean,
-    name: String,
+    checked: Boolean,
     onCheckedChange: (Boolean) -> Unit,
+    name: String,
     modifier: Modifier = Modifier,
+    colors: ListItemColors = ListItemDefaults.colors(
+        containerColor = Color.Unspecified
+    ),
 ) {
-    val colors = ListItemDefaults.colors(containerColor = Color.Unspecified)
-
     ListItem(
-        modifier = modifier.clickable(onClick = { onCheckedChange(!enabled) }),
+        modifier = Modifier
+            .clickable(onClick = { onCheckedChange(!checked) })
+            .then(modifier),
         leadingContent = {
-            Checkbox(
-                checked = enabled,
-                onCheckedChange = onCheckedChange,
-            )
+            Checkbox(checked = checked, onCheckedChange = onCheckedChange)
         },
         headlineContent = { Text(text = name) },
         colors = colors,

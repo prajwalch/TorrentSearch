@@ -25,9 +25,9 @@ import com.prajwalch.torrentsearch.ui.viewmodel.SettingsViewModel
 data class SettingsOptionMenuEvent(
     @param:StringRes
     val title: Int,
-    val selectedOption: Int,
     val options: List<String>,
-    val onSelected: (Int) -> Unit,
+    val selectedOption: Int,
+    val onOptionSelect: (Int) -> Unit,
 )
 
 @Composable
@@ -38,9 +38,9 @@ fun AppearanceSettings(viewModel: SettingsViewModel) {
     optionMenuEvent?.let { event ->
         SettingsOptionMenu(
             title = event.title,
-            selectedOption = event.selectedOption,
             options = event.options,
-            onSelected = event.onSelected,
+            selectedOption = event.selectedOption,
+            onOptionSelect = event.onOptionSelect,
             onDismissRequest = { optionMenuEvent = null },
         )
     }
@@ -49,27 +49,28 @@ fun AppearanceSettings(viewModel: SettingsViewModel) {
     SettingsItem(
         leadingIconId = R.drawable.ic_palette,
         headline = stringResource(R.string.setting_enable_dynamic_theme),
-        trailingContent = {
-            Switch(checked = settings.enableDynamicTheme, onCheckedChange = {
-                viewModel.updateEnableDynamicTheme(it)
-            })
-        },
         onClick = {
             viewModel.updateEnableDynamicTheme(!settings.enableDynamicTheme)
-        }
+        },
+        trailingContent = {
+            Switch(
+                checked = settings.enableDynamicTheme,
+                onCheckedChange = { viewModel.updateEnableDynamicTheme(it) },
+            )
+        },
     )
     SettingsItem(
         leadingIconId = R.drawable.ic_dark_mode,
         headline = stringResource(R.string.setting_dark_theme),
-        supportingContent = settings.darkTheme.toString(),
         onClick = {
             optionMenuEvent = SettingsOptionMenuEvent(
                 title = R.string.setting_dark_theme,
-                selectedOption = settings.darkTheme.ordinal,
                 options = DarkTheme.entries.map { it.toString() },
-                onSelected = { viewModel.updateDarkTheme(DarkTheme.fromInt(it)) }
+                selectedOption = settings.darkTheme.ordinal,
+                onOptionSelect = { viewModel.updateDarkTheme(DarkTheme.fromInt(it)) },
             )
-        }
+        },
+        supportingContent = settings.darkTheme.toString(),
     )
 
     val showPureBackSetting = when (settings.darkTheme) {
@@ -86,14 +87,15 @@ fun AppearanceSettings(viewModel: SettingsViewModel) {
         SettingsItem(
             leadingIconId = R.drawable.ic_contrast,
             headline = stringResource(R.string.setting_pure_black),
-            trailingContent = {
-                Switch(checked = settings.pureBlack, onCheckedChange = {
-                    viewModel.updatePureBlack(it)
-                })
-            },
             onClick = {
                 viewModel.updatePureBlack(!settings.pureBlack)
-            }
+            },
+            trailingContent = {
+                Switch(
+                    checked = settings.pureBlack,
+                    onCheckedChange = { viewModel.updatePureBlack(it) },
+                )
+            },
         )
     }
 }

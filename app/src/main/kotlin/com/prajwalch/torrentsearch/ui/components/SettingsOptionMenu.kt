@@ -18,39 +18,38 @@ import androidx.compose.ui.graphics.Color
 fun SettingsOptionMenu(
     @StringRes
     title: Int,
-    selectedOption: Int,
     options: List<String>,
-    onSelected: (Int) -> Unit,
+    selectedOption: Int,
+    onOptionSelect: (Int) -> Unit,
     onDismissRequest: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     SettingsDialog(
         modifier = modifier,
-        onDismissRequest = onDismissRequest,
         title = title,
-        content = {
-            SettingsOptionMenuItems(
-                selectedItem = selectedOption,
-                items = options,
-                onSelect = onSelected,
-            )
-        }
-    )
+        onDismissRequest = onDismissRequest,
+    ) {
+        SettingsOptionMenuItems(
+            items = options,
+            selectedItem = selectedOption,
+            onItemSelect = onOptionSelect,
+        )
+    }
 }
 
 @Composable
 private fun SettingsOptionMenuItems(
-    selectedItem: Int,
     items: List<String>,
-    onSelect: (Int) -> Unit,
+    selectedItem: Int,
+    onItemSelect: (Int) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     LazyColumn(modifier = modifier) {
         itemsIndexed(items) { index, item ->
             SettingsOptionMenuItem(
                 selected = index == selectedItem,
+                onSelect = { onItemSelect(index) },
                 item = item,
-                onClick = { onSelect(index) }
             )
         }
     }
@@ -59,8 +58,8 @@ private fun SettingsOptionMenuItems(
 @Composable
 private fun SettingsOptionMenuItem(
     selected: Boolean,
+    onSelect: () -> Unit,
     item: String,
-    onClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val listItemColors = ListItemDefaults.colors(containerColor = Color.Companion.Unspecified)
@@ -68,8 +67,8 @@ private fun SettingsOptionMenuItem(
     ListItem(
         modifier = modifier
             .clip(MaterialTheme.shapes.large)
-            .clickable(onClick = onClick),
-        leadingContent = { RadioButton(selected = selected, onClick = onClick) },
+            .clickable(onClick = onSelect),
+        leadingContent = { RadioButton(selected = selected, onClick = onSelect) },
         headlineContent = { Text(text = item) },
         colors = listItemColors,
     )

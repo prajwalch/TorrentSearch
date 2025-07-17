@@ -51,16 +51,16 @@ fun TorrentSearchApp(
             SearchScreen(
                 modifier = Modifier.fillMaxSize(),
                 viewModel = searchViewModel,
+                onDownloadTorrent = { isTorrentClientMissing = !onDownloadTorrent(it) },
+                onShareMagnetLink = onShareMagnetLink,
+                onOpenDescriptionPage = onOpenDescriptionPage,
+                onShareDescriptionPageUrl = onShareDescriptionPageUrl,
                 onNavigateToSettings = {
                     navController.navigate(Screens.SEARCH) {
                         launchSingleTop = true
                         restoreState = true
                     }
                 },
-                onDownloadTorrent = { isTorrentClientMissing = !onDownloadTorrent(it) },
-                onShareMagnetLink = onShareMagnetLink,
-                onOpenDescriptionPage = onOpenDescriptionPage,
-                onShareDescriptionPageUrl = onShareDescriptionPageUrl,
             )
         }
 

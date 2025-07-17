@@ -68,11 +68,11 @@ import kotlinx.coroutines.launch
 @Composable
 fun SearchScreen(
     viewModel: SearchViewModel,
-    onNavigateToSettings: () -> Unit,
     onDownloadTorrent: (MagnetUri) -> Unit,
     onShareMagnetLink: (MagnetUri) -> Unit,
     onOpenDescriptionPage: (String) -> Unit,
     onShareDescriptionPageUrl: (String) -> Unit,
+    onNavigateToSettings: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val uiState by viewModel.uiState.collectAsState()
@@ -131,14 +131,14 @@ fun SearchScreen(
             SearchScreenTopBar(
                 modifier = Modifier.fillMaxWidth(),
                 query = uiState.query,
-                histories = uiState.histories,
+                onQueryChange = viewModel::setQuery,
+                onSearch = viewModel::performSearch,
                 categories = uiState.categories,
                 selectedCategory = uiState.selectedCategory,
-                onNavigateToSettings = onNavigateToSettings,
-                onQueryChange = viewModel::setQuery,
                 onCategoryChange = viewModel::setCategory,
-                onSearch = viewModel::performSearch,
+                histories = uiState.histories,
                 onDeleteSearchHistory = viewModel::deleteSearchHistory,
+                onNavigateToSettings = onNavigateToSettings,
             )
         },
         floatingActionButton = {
@@ -154,16 +154,16 @@ fun SearchScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding),
-            lazyListState = lazyListState,
+            results = uiState.results,
+            resultsNotFound = uiState.resultsNotFound,
+            onResultSelect = { selectedTorrent = it },
             isLoading = uiState.isLoading,
             isInternetError = uiState.isInternetError,
-            resultsNotFound = uiState.resultsNotFound,
+            onRetry = viewModel::performSearch,
             currentSortKey = uiState.currentSortKey,
             currentSortOrder = uiState.currentSortOrder,
-            results = uiState.results,
-            onRetry = viewModel::performSearch,
             onSortResults = viewModel::sort,
-            onTorrentSelect = { selectedTorrent = it },
+            lazyListState = lazyListState,
         )
     }
 }
@@ -172,14 +172,14 @@ fun SearchScreen(
 @Composable
 private fun SearchScreenTopBar(
     query: String,
-    histories: List<SearchHistoryUiState>,
+    onQueryChange: (String) -> Unit,
+    onSearch: () -> Unit,
     categories: List<Category>,
     selectedCategory: Category,
-    onNavigateToSettings: () -> Unit,
-    onQueryChange: (String) -> Unit,
     onCategoryChange: (Category) -> Unit,
-    onSearch: () -> Unit,
+    histories: List<SearchHistoryUiState>,
     onDeleteSearchHistory: (SearchHistoryId) -> Unit,
+    onNavigateToSettings: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     var expanded by remember { mutableStateOf(false) }
@@ -192,20 +192,20 @@ private fun SearchScreenTopBar(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
     ) {
-        Spacer(Modifier.height(8.dp))
+        Spacer(modifier = Modifier.height(8.dp))
         TopSearchBar(
             query = query,
-            expanded = expanded,
             onQueryChange = onQueryChange,
             onSearch = {
                 expanded = false
                 onSearch()
             },
+            expanded = expanded,
             onExpandChange = { expanded = it },
             onNavigateToSettings = onNavigateToSettings,
         ) {
             SearchHistoryList(
-                items = histories,
+                histories = histories,
                 onSearchRequest = {
                     onQueryChange(it)
                     expanded = false
@@ -215,10 +215,10 @@ private fun SearchScreenTopBar(
                 onDeleteRequest = onDeleteSearchHistory,
             )
         }
-        Spacer(Modifier.height(8.dp))
+        Spacer(modifier = Modifier.height(8.dp))
         CategoryChipsRow(
-            selectedCategory = selectedCategory,
             categories = categories,
+            selectedCategory = selectedCategory,
             onCategorySelect = { newCategory ->
                 if (selectedCategory != newCategory) {
                     onCategoryChange(newCategory)
@@ -226,7 +226,7 @@ private fun SearchScreenTopBar(
                 }
             },
         )
-        Spacer(Modifier.height(8.dp))
+        Spacer(modifier = Modifier.height(8.dp))
         HorizontalDivider()
     }
 }
@@ -245,15 +245,15 @@ private fun ScrollToTopFAB(visible: Boolean, onClick: () -> Unit, modifier: Modi
 
 @Composable
 private fun SearchScreenContent(
+    results: List<Torrent>,
+    resultsNotFound: Boolean,
+    onResultSelect: (Torrent) -> Unit,
     isLoading: Boolean,
     isInternetError: Boolean,
-    resultsNotFound: Boolean,
+    onRetry: () -> Unit,
     currentSortKey: SortKey,
     currentSortOrder: SortOrder,
-    results: List<Torrent>,
-    onRetry: () -> Unit,
     onSortResults: (SortKey, SortOrder) -> Unit,
-    onTorrentSelect: (Torrent) -> Unit,
     modifier: Modifier = Modifier,
     lazyListState: LazyListState,
 ) {
@@ -270,7 +270,7 @@ private fun SearchScreenContent(
         }
 
         if (resultsNotFound) {
-            Spacer(Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(16.dp))
             ResultsNotFoundMessage()
         }
 
@@ -280,11 +280,11 @@ private fun SearchScreenContent(
 
         if (results.isNotEmpty()) {
             TorrentList(
+                torrents = results,
+                onTorrentSelect = onResultSelect,
                 currentSortKey = currentSortKey,
                 currentSortOrder = currentSortOrder,
-                torrents = results,
                 onSortTorrents = onSortResults,
-                onTorrentSelect = onTorrentSelect,
                 lazyListState = lazyListState,
             )
         }

@@ -13,6 +13,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
+import androidx.compose.material3.ListItemColors
 import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
@@ -65,49 +66,49 @@ fun TorrentActionsBottomSheet(
                 style = MaterialTheme.typography.bodyLarge,
             )
         }
-        Spacer(Modifier.height(8.dp))
+        Spacer(modifier = Modifier.height(8.dp))
         HorizontalDivider()
-        Spacer(Modifier.height(8.dp))
+        Spacer(modifier = Modifier.height(8.dp))
         LazyColumn {
             item {
-                DownloadAction {
+                DownloadAction(onClick = {
                     onDownloadTorrent()
                     onDismissRequest()
-                }
+                })
             }
             item {
-                ShareMagnetLinkAction {
+                ShareMagnetLinkAction(onClick = {
                     onShareMagnetLink()
                     onDismissRequest()
-                }
+                })
             }
             item {
-                CopyMagnetLinkAction {
+                CopyMagnetLinkAction(onClick = {
                     onCopyMagnetLink()
                     onDismissRequest()
-                }
+                })
             }
 
             if (hasDescriptionPage) {
                 item {
                     HorizontalDivider()
-                    OpenDescriptionPageAction {
+                    OpenDescriptionPageAction(onClick = {
                         onOpenDescriptionPage()
                         onDismissRequest()
-                    }
+                    })
                 }
                 item {
-                    CopyDescriptionPageUrlAction {
+                    CopyDescriptionPageUrlAction(onClick = {
                         onCopyDescriptionPageUrl()
                         onDismissRequest()
-                    }
+                    })
                 }
                 item {
-                    ShareDescriptionPageUrlAction {
+                    ShareDescriptionPageUrlAction(onClick = {
                         onShareDescriptionPageUrl()
                         onDismissRequest()
-                    }
-                    Spacer(Modifier.height(8.dp))
+                    })
+                    Spacer(modifier = Modifier.height(8.dp))
                 }
             }
         }
@@ -115,7 +116,7 @@ fun TorrentActionsBottomSheet(
 }
 
 @Composable
-private fun DownloadAction(modifier: Modifier = Modifier, onClick: () -> Unit) {
+private fun DownloadAction(onClick: () -> Unit, modifier: Modifier = Modifier) {
     Action(
         modifier = modifier,
         leadingIconId = R.drawable.ic_download,
@@ -125,7 +126,7 @@ private fun DownloadAction(modifier: Modifier = Modifier, onClick: () -> Unit) {
 }
 
 @Composable
-private fun CopyMagnetLinkAction(modifier: Modifier = Modifier, onClick: () -> Unit) {
+private fun CopyMagnetLinkAction(onClick: () -> Unit, modifier: Modifier = Modifier) {
     Action(
         modifier = modifier,
         leadingIconId = R.drawable.ic_copy,
@@ -135,7 +136,7 @@ private fun CopyMagnetLinkAction(modifier: Modifier = Modifier, onClick: () -> U
 }
 
 @Composable
-private fun ShareMagnetLinkAction(modifier: Modifier = Modifier, onClick: () -> Unit) {
+private fun ShareMagnetLinkAction(onClick: () -> Unit, modifier: Modifier = Modifier) {
     Action(
         modifier = modifier,
         leadingIconId = R.drawable.ic_share,
@@ -145,7 +146,7 @@ private fun ShareMagnetLinkAction(modifier: Modifier = Modifier, onClick: () -> 
 }
 
 @Composable
-private fun OpenDescriptionPageAction(modifier: Modifier = Modifier, onClick: () -> Unit) {
+private fun OpenDescriptionPageAction(onClick: () -> Unit, modifier: Modifier = Modifier) {
     Action(
         modifier = modifier,
         leadingIconId = R.drawable.ic_public,
@@ -155,7 +156,7 @@ private fun OpenDescriptionPageAction(modifier: Modifier = Modifier, onClick: ()
 }
 
 @Composable
-private fun CopyDescriptionPageUrlAction(modifier: Modifier = Modifier, onClick: () -> Unit) {
+private fun CopyDescriptionPageUrlAction(onClick: () -> Unit, modifier: Modifier = Modifier) {
     Action(
         modifier = modifier,
         leadingIconId = R.drawable.ic_copy,
@@ -165,7 +166,7 @@ private fun CopyDescriptionPageUrlAction(modifier: Modifier = Modifier, onClick:
 }
 
 @Composable
-private fun ShareDescriptionPageUrlAction(modifier: Modifier = Modifier, onClick: () -> Unit) {
+private fun ShareDescriptionPageUrlAction(onClick: () -> Unit, modifier: Modifier = Modifier) {
     Action(
         modifier = modifier,
         leadingIconId = R.drawable.ic_share,
@@ -178,14 +179,16 @@ private fun ShareDescriptionPageUrlAction(modifier: Modifier = Modifier, onClick
 private fun Action(
     @DrawableRes leadingIconId: Int,
     label: String,
-    modifier: Modifier = Modifier,
     onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    colors: ListItemColors = ListItemDefaults.colors(
+        containerColor = Color.Unspecified
+    ),
 ) {
     ListItem(
         modifier = Modifier
             .clickable(onClick = onClick)
             .then(modifier),
-        colors = ListItemDefaults.colors(containerColor = Color.Unspecified),
         leadingContent = {
             Icon(
                 painter = painterResource(leadingIconId),
@@ -193,5 +196,6 @@ private fun Action(
             )
         },
         headlineContent = { Text(text = label) },
+        colors = colors,
     )
 }

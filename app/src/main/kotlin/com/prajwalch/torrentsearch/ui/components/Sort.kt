@@ -16,8 +16,10 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+
 import com.prajwalch.torrentsearch.R
 import com.prajwalch.torrentsearch.ui.viewmodel.SortKey
 import com.prajwalch.torrentsearch.ui.viewmodel.SortOrder
@@ -25,8 +27,8 @@ import com.prajwalch.torrentsearch.ui.viewmodel.SortOrder
 @Composable
 fun SortButton(
     currentSortKey: SortKey,
-    currentSortOrder: SortOrder,
     onClick: () -> Unit,
+    currentSortOrder: SortOrder,
     onSortOrderChange: (SortOrder) -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -38,7 +40,7 @@ fun SortButton(
             currentKey = currentSortKey,
             onClick = onClick,
         )
-        SortOrderButton(
+        SortOrderIconButton(
             currentOrder = currentSortOrder,
             onClick = { onSortOrderChange(currentSortOrder.opposite()) }
         )
@@ -57,7 +59,7 @@ private fun SortKeyButton(
             painter = painterResource(R.drawable.ic_sort),
             contentDescription = stringResource(R.string.button_open_sort_options),
         )
-        Spacer(Modifier.width(ButtonDefaults.IconSpacing))
+        Spacer(modifier = Modifier.width(ButtonDefaults.IconSpacing))
         Text(
             text = currentKey.toString(),
             style = MaterialTheme.typography.bodyMedium,
@@ -66,10 +68,11 @@ private fun SortKeyButton(
 }
 
 @Composable
-private fun SortOrderButton(
+private fun SortOrderIconButton(
     currentOrder: SortOrder,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
+    tint: Color = MaterialTheme.colorScheme.primary,
 ) {
     val icon = when (currentOrder) {
         SortOrder.Ascending -> R.drawable.ic_arrow_up
@@ -84,7 +87,7 @@ private fun SortOrderButton(
                 R.string.button_change_sort_order,
                 currentOrder.opposite(),
             ),
-            tint = MaterialTheme.colorScheme.primary,
+            tint = tint,
         )
     }
 }
@@ -92,8 +95,8 @@ private fun SortOrderButton(
 @Composable
 fun SortOptionsMenu(
     expanded: Boolean,
-    selectedKey: SortKey,
     onDismissRequest: () -> Unit,
+    selectedKey: SortKey,
     onSortKeySelect: (SortKey) -> Unit,
     modifier: Modifier = Modifier,
 ) {

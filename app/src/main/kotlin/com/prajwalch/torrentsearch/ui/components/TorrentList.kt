@@ -40,11 +40,11 @@ import com.prajwalch.torrentsearch.ui.viewmodel.SortOrder
 
 @Composable
 fun TorrentList(
+    torrents: List<Torrent>,
+    onTorrentSelect: (Torrent) -> Unit,
     currentSortKey: SortKey,
     currentSortOrder: SortOrder,
-    torrents: List<Torrent>,
     onSortTorrents: (SortKey, SortOrder) -> Unit,
-    onTorrentSelect: (Torrent) -> Unit,
     modifier: Modifier = Modifier,
     lazyListState: LazyListState = rememberLazyListState(),
 ) {
@@ -70,14 +70,14 @@ fun TorrentList(
                 Box {
                     SortButton(
                         currentSortKey = currentSortKey,
-                        currentSortOrder = currentSortOrder,
                         onClick = { showSortOptions = true },
+                        currentSortOrder = currentSortOrder,
                         onSortOrderChange = { onSortTorrents(currentSortKey, it) },
                     )
                     SortOptionsMenu(
                         expanded = showSortOptions,
-                        selectedKey = currentSortKey,
                         onDismissRequest = { showSortOptions = false },
+                        selectedKey = currentSortKey,
                         onSortKeySelect = { onSortTorrents(it, currentSortOrder) },
                     )
                 }

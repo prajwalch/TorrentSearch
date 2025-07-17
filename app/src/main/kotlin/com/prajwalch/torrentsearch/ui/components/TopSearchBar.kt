@@ -36,9 +36,9 @@ import com.prajwalch.torrentsearch.R
 @Composable
 fun TopSearchBar(
     query: String,
-    expanded: Boolean,
     onQueryChange: (String) -> Unit,
     onSearch: () -> Unit,
+    expanded: Boolean,
     onExpandChange: (Boolean) -> Unit,
     onNavigateToSettings: () -> Unit,
     modifier: Modifier = Modifier,
@@ -64,9 +64,9 @@ fun TopSearchBar(
             inputField = {
                 SearchBarInputField(
                     query = query,
-                    expanded = expanded,
                     onQueryChange = onQueryChange,
                     onSearch = onSearch,
+                    expanded = expanded,
                     onExpandChange = onExpandChange,
                     onNavigateToSettings = onNavigateToSettings,
                 )
@@ -83,9 +83,9 @@ fun TopSearchBar(
 @Composable
 private fun SearchBarInputField(
     query: String,
-    expanded: Boolean,
     onQueryChange: (String) -> Unit,
     onSearch: () -> Unit,
+    expanded: Boolean,
     onExpandChange: (Boolean) -> Unit,
     onNavigateToSettings: () -> Unit,
     modifier: Modifier = Modifier,
@@ -129,8 +129,8 @@ private fun SearchBarInputField(
         trailingIcon = {
             TrailingIcon(
                 isQueryEmpty = query.isEmpty(),
-                onNavigateToSettings = onNavigateToSettings,
                 onClearQuery = { onQueryChange("") },
+                onNavigateToSettings = onNavigateToSettings,
             )
         },
         interactionSource = interactionSource,
@@ -162,8 +162,8 @@ private fun LeadingIcon(isFocused: Boolean, onBack: () -> Unit, modifier: Modifi
 @Composable
 private fun TrailingIcon(
     isQueryEmpty: Boolean,
-    onNavigateToSettings: () -> Unit,
     onClearQuery: () -> Unit,
+    onNavigateToSettings: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Row(modifier = modifier, verticalAlignment = Alignment.CenterVertically) {

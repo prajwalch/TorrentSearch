@@ -29,6 +29,8 @@
     <string name="desc_clear_search_query">Clear search query</string>
     <string name="desc_selected_category">Selected category</string>
     <string name="button_go_to_settings_screen">Go to settings screen</string>
+    <string name="button_delete_search_history">Delete search history</string>
+    <string name="button_select_search_history">Select search history</string>
 
     <!-- No internet connection error -->
     <string name="msg_no_internet_connection">No internet connection</string>

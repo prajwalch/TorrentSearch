@@ -14,8 +14,8 @@ fun SettingsDialog(
     @StringRes
     title: Int,
     onDismissRequest: () -> Unit,
-    content: @Composable () -> Unit,
     modifier: Modifier = Modifier,
+    content: @Composable () -> Unit,
 ) {
     AlertDialog(
         modifier = modifier,

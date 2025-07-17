@@ -14,13 +14,15 @@ fun SettingsItem(
     @DrawableRes
     leadingIconId: Int,
     headline: String,
+    onClick: () -> Unit,
     modifier: Modifier = Modifier,
     supportingContent: String? = null,
     trailingContent: @Composable (() -> Unit)? = null,
-    onClick: () -> Unit,
 ) {
     ListItem(
-        modifier = modifier.clickable(onClick = onClick),
+        modifier = Modifier
+            .clickable(onClick = onClick)
+            .then(modifier),
         leadingContent = {
             Icon(
                 painter = painterResource(leadingIconId),

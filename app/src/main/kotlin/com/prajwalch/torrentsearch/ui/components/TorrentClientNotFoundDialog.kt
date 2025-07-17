@@ -88,22 +88,26 @@ private data class TorrentClient(
 )
 
 @Composable
-fun TorrentClientNotFoundDialog(onConfirmation: () -> Unit, modifier: Modifier = Modifier) {
+fun TorrentClientNotFoundDialog(
+    onConfirmation: () -> Unit,
+    modifier: Modifier = Modifier,
+    properties: DialogProperties = DialogProperties(
+        usePlatformDefaultWidth = false,
+        decorFitsSystemWindows = false,
+    ),
+) {
     AlertDialog(
         modifier = modifier.fillMaxWidth(0.9f),
-        icon = { DialogLeadingIcon() },
-        title = { DialogTitle() },
-        text = { DialogContent() },
         onDismissRequest = onConfirmation,
         confirmButton = {
             TextButton(onClick = onConfirmation) {
                 Text(stringResource(R.string.button_done))
             }
         },
-        properties = DialogProperties(
-            usePlatformDefaultWidth = false,
-            decorFitsSystemWindows = false
-        )
+        icon = { DialogLeadingIcon() },
+        title = { DialogTitle() },
+        text = { DialogContent() },
+        properties = properties,
     )
 }
 
