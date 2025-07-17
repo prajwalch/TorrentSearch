@@ -53,6 +53,7 @@ import com.prajwalch.torrentsearch.models.Category
 import com.prajwalch.torrentsearch.models.MagnetUri
 import com.prajwalch.torrentsearch.models.Torrent
 import com.prajwalch.torrentsearch.ui.components.CategoryChipsRow
+import com.prajwalch.torrentsearch.ui.components.SearchHistoryList
 import com.prajwalch.torrentsearch.ui.components.TopSearchBar
 import com.prajwalch.torrentsearch.ui.components.TorrentActionsBottomSheet
 import com.prajwalch.torrentsearch.ui.components.TorrentList
@@ -129,12 +130,12 @@ fun SearchScreen(
         topBar = {
             SearchScreenTopBar(
                 modifier = Modifier.fillMaxWidth(),
-                searchQuery = uiState.query,
-                searchHistories = uiState.histories,
+                query = uiState.query,
+                histories = uiState.histories,
                 categories = uiState.categories,
                 selectedCategory = uiState.selectedCategory,
                 onNavigateToSettings = onNavigateToSettings,
-                onSearchQueryChange = viewModel::setQuery,
+                onQueryChange = viewModel::setQuery,
                 onCategoryChange = viewModel::setCategory,
                 onSearch = viewModel::performSearch,
                 onDeleteSearchHistory = viewModel::deleteSearchHistory,
@@ -170,17 +171,18 @@ fun SearchScreen(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun SearchScreenTopBar(
-    searchQuery: String,
-    searchHistories: List<SearchHistoryUiState>,
+    query: String,
+    histories: List<SearchHistoryUiState>,
     categories: List<Category>,
     selectedCategory: Category,
     onNavigateToSettings: () -> Unit,
-    onSearchQueryChange: (String) -> Unit,
+    onQueryChange: (String) -> Unit,
     onCategoryChange: (Category) -> Unit,
     onSearch: () -> Unit,
     onDeleteSearchHistory: (SearchHistoryId) -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    var expanded by remember { mutableStateOf(false) }
     val windowInsets = TopAppBarDefaults.windowInsets
 
     Column(
@@ -192,13 +194,27 @@ private fun SearchScreenTopBar(
     ) {
         Spacer(Modifier.height(8.dp))
         TopSearchBar(
-            query = searchQuery,
-            searchHistories = searchHistories,
-            onQueryChange = onSearchQueryChange,
-            onSearch = onSearch,
+            query = query,
+            expanded = expanded,
+            onQueryChange = onQueryChange,
+            onSearch = {
+                expanded = false
+                onSearch()
+            },
+            onExpandChange = { expanded = it },
             onNavigateToSettings = onNavigateToSettings,
-            onDeleteSearchHistory = onDeleteSearchHistory,
-        )
+        ) {
+            SearchHistoryList(
+                items = histories,
+                onSearchRequest = {
+                    onQueryChange(it)
+                    expanded = false
+                    onSearch()
+                },
+                onQueryChangeRequest = onQueryChange,
+                onDeleteRequest = onDeleteSearchHistory,
+            )
+        }
         Spacer(Modifier.height(8.dp))
         CategoryChipsRow(
             selectedCategory = selectedCategory,

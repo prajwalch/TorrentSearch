@@ -3,13 +3,11 @@ package com.prajwalch.torrentsearch.ui.components
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateColorAsState
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsFocusedAsState
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.ArrowBack
 import androidx.compose.material.icons.filled.Clear
@@ -18,42 +16,34 @@ import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SearchBar
 import androidx.compose.material3.SearchBarDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalFocusManager
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.isTraversalGroup
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.traversalIndex
-
 import com.prajwalch.torrentsearch.R
-import com.prajwalch.torrentsearch.ui.viewmodel.SearchHistoryId
-import com.prajwalch.torrentsearch.ui.viewmodel.SearchHistoryUiState
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TopSearchBar(
     query: String,
-    searchHistories: List<SearchHistoryUiState>,
+    expanded: Boolean,
     onQueryChange: (String) -> Unit,
     onSearch: () -> Unit,
+    onExpandChange: (Boolean) -> Unit,
     onNavigateToSettings: () -> Unit,
-    onDeleteSearchHistory: (SearchHistoryId) -> Unit,
     modifier: Modifier = Modifier,
+    content: @Composable (ColumnScope.() -> Unit),
 ) {
-    var expanded by remember { mutableStateOf(false) }
-
     val unfocusedContainerColor = MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.5f)
     val focusedContainerColor = MaterialTheme.colorScheme.surface
 
@@ -76,29 +66,16 @@ fun TopSearchBar(
                     query = query,
                     expanded = expanded,
                     onQueryChange = onQueryChange,
-                    onSearch = {
-                        expanded = false
-                        onSearch()
-                    },
-                    onExpandChange = { expanded = it },
+                    onSearch = onSearch,
+                    onExpandChange = onExpandChange,
                     onNavigateToSettings = onNavigateToSettings,
                 )
             },
             expanded = expanded,
-            onExpandedChange = { expanded = it },
+            onExpandedChange = onExpandChange,
             colors = SearchBarDefaults.colors(containerColor = containerColor),
-        ) {
-            SearchHistoryList(
-                items = searchHistories,
-                onSelectHistory = {
-                    onQueryChange(it.query)
-                    expanded = false
-                    onSearch()
-                },
-                onInsertHistory = { onQueryChange(it.query) },
-                onDeleteHistory = { onDeleteSearchHistory(it) },
-            )
-        }
+            content = content,
+        )
     }
 }
 
@@ -210,7 +187,6 @@ private fun SettingsIconButton(
     }
 }
 
-
 @Composable
 private fun ClearQueryIconButton(onClick: () -> Unit, modifier: Modifier = Modifier) {
     IconButton(onClick = onClick, modifier = modifier) {
@@ -219,64 +195,4 @@ private fun ClearQueryIconButton(onClick: () -> Unit, modifier: Modifier = Modif
             contentDescription = stringResource(R.string.desc_clear_search_query)
         )
     }
-}
-
-@Composable
-private fun SearchHistoryList(
-    items: List<SearchHistoryUiState>,
-    onSelectHistory: (SearchHistoryUiState) -> Unit,
-    onInsertHistory: (SearchHistoryUiState) -> Unit,
-    onDeleteHistory: (SearchHistoryId) -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    LazyColumn(modifier = modifier) {
-        items(items = items, key = { it.id }) {
-            SearchHistoryListItem(
-                modifier = Modifier.animateItem(),
-                query = it.query,
-                onClick = { onSelectHistory(it) },
-                onInsert = { onInsertHistory(it) },
-                onDelete = { onDeleteHistory(it.id) },
-            )
-        }
-    }
-}
-
-
-@Composable
-private fun SearchHistoryListItem(
-    query: String,
-    onClick: () -> Unit,
-    onInsert: () -> Unit,
-    onDelete: () -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    ListItem(
-        modifier = modifier.clickable(onClick = onClick),
-        leadingContent = {
-            IconButton(onClick = onClick) {
-                Icon(
-                    painter = painterResource(R.drawable.ic_history),
-                    contentDescription = null,
-                )
-            }
-        },
-        headlineContent = { Text(text = query) },
-        trailingContent = {
-            Row {
-                IconButton(onClick = onInsert) {
-                    Icon(
-                        painter = painterResource(R.drawable.ic_arrow_insert),
-                        contentDescription = null,
-                    )
-                }
-                IconButton(onClick = onDelete) {
-                    Icon(
-                        painter = painterResource(R.drawable.ic_close),
-                        contentDescription = null,
-                    )
-                }
-            }
-        }
-    )
 }
