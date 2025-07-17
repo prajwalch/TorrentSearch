@@ -56,6 +56,7 @@ import com.prajwalch.torrentsearch.ui.components.CategoryChipsRow
 import com.prajwalch.torrentsearch.ui.components.TopSearchBar
 import com.prajwalch.torrentsearch.ui.components.TorrentActionsBottomSheet
 import com.prajwalch.torrentsearch.ui.components.TorrentList
+import com.prajwalch.torrentsearch.ui.viewmodel.SearchHistoryId
 import com.prajwalch.torrentsearch.ui.viewmodel.SearchHistoryUiState
 import com.prajwalch.torrentsearch.ui.viewmodel.SearchViewModel
 import com.prajwalch.torrentsearch.ui.viewmodel.SortKey
@@ -129,7 +130,7 @@ fun SearchScreen(
             SearchScreenTopBar(
                 modifier = Modifier.fillMaxWidth(),
                 searchQuery = uiState.query,
-                searchHistories = uiState.searchHistories,
+                searchHistories = uiState.histories,
                 categories = uiState.categories,
                 selectedCategory = uiState.selectedCategory,
                 onNavigateToSettings = onNavigateToSettings,
@@ -177,7 +178,7 @@ private fun SearchScreenTopBar(
     onSearchQueryChange: (String) -> Unit,
     onCategoryChange: (Category) -> Unit,
     onSearch: () -> Unit,
-    onDeleteSearchHistory: (SearchHistoryUiState) -> Unit,
+    onDeleteSearchHistory: (SearchHistoryId) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val windowInsets = TopAppBarDefaults.windowInsets

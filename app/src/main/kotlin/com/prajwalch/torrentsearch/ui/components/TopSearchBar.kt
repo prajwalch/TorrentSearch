@@ -38,6 +38,7 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.traversalIndex
 
 import com.prajwalch.torrentsearch.R
+import com.prajwalch.torrentsearch.ui.viewmodel.SearchHistoryId
 import com.prajwalch.torrentsearch.ui.viewmodel.SearchHistoryUiState
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -48,7 +49,7 @@ fun TopSearchBar(
     onQueryChange: (String) -> Unit,
     onSearch: () -> Unit,
     onNavigateToSettings: () -> Unit,
-    onDeleteSearchHistory: (SearchHistoryUiState) -> Unit,
+    onDeleteSearchHistory: (SearchHistoryId) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     var expanded by remember { mutableStateOf(false) }
@@ -225,7 +226,7 @@ private fun SearchHistoryList(
     items: List<SearchHistoryUiState>,
     onSelectHistory: (SearchHistoryUiState) -> Unit,
     onInsertHistory: (SearchHistoryUiState) -> Unit,
-    onDeleteHistory: (SearchHistoryUiState) -> Unit,
+    onDeleteHistory: (SearchHistoryId) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     LazyColumn(modifier = modifier) {
@@ -235,7 +236,7 @@ private fun SearchHistoryList(
                 query = it.query,
                 onClick = { onSelectHistory(it) },
                 onInsert = { onInsertHistory(it) },
-                onDelete = { onDeleteHistory(it) },
+                onDelete = { onDeleteHistory(it.id) },
             )
         }
     }

@@ -22,9 +22,11 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
+typealias SearchHistoryId = Long
+
 data class SearchScreenUIState(
     val query: String = "",
-    val searchHistories: List<SearchHistoryUiState> = emptyList(),
+    val histories: List<SearchHistoryUiState> = emptyList(),
     val categories: List<Category> = Category.entries,
     val selectedCategory: Category = Category.All,
     val isLoading: Boolean = false,
@@ -36,7 +38,7 @@ data class SearchScreenUIState(
 )
 
 data class SearchHistoryUiState(
-    val id: Long,
+    val id: SearchHistoryId,
     val query: String,
 )
 
@@ -89,10 +91,16 @@ class SearchViewModel(
         mUiState.update { it.copy(query = query) }
     }
 
-    /** Deletes the given search history. */
-    fun deleteSearchHistory(searchHistory: SearchHistoryUiState) {
+    /** Deletes the search history associated with given id. */
+    fun deleteSearchHistory(id: SearchHistoryId) {
         viewModelScope.launch {
-            searchHistoryRepository.remove(searchHistory = searchHistory.toEntity())
+            val searchHistory = mUiState.value.histories.find { it.id == id }
+
+            searchHistory?.let { searchHistoryUiState ->
+                searchHistoryRepository.remove(
+                    searchHistory = searchHistoryUiState.toEntity()
+                )
+            }
         }
     }
 
@@ -305,7 +313,7 @@ class SearchViewModel(
                 .all()
                 .map { searchHistories -> searchHistories.toUiStates() }
                 .collect { searchHistoryUiStates ->
-                    updateUIState { it.copy(searchHistories = searchHistoryUiStates) }
+                    updateUIState { it.copy(histories = searchHistoryUiStates) }
                 }
         }
     }
