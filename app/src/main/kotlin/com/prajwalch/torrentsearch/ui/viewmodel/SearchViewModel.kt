@@ -4,9 +4,11 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 
+import com.prajwalch.torrentsearch.data.SearchHistoryRepository
 import com.prajwalch.torrentsearch.data.SearchProviderId
 import com.prajwalch.torrentsearch.data.SettingsRepository
 import com.prajwalch.torrentsearch.data.TorrentsRepository
+import com.prajwalch.torrentsearch.database.entities.SearchHistory
 import com.prajwalch.torrentsearch.models.Category
 import com.prajwalch.torrentsearch.models.Torrent
 import com.prajwalch.torrentsearch.providers.SearchProviders
@@ -16,11 +18,13 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 data class SearchScreenUIState(
     val query: String = "",
+    val searchHistories: List<SearchHistoryUiState> = emptyList(),
     val categories: List<Category> = Category.entries,
     val selectedCategory: Category = Category.All,
     val isLoading: Boolean = false,
@@ -29,6 +33,11 @@ data class SearchScreenUIState(
     val currentSortKey: SortKey = SortKey.Seeders,
     val currentSortOrder: SortOrder = SortOrder.Descending,
     val results: List<Torrent> = emptyList(),
+)
+
+data class SearchHistoryUiState(
+    val id: Long,
+    val query: String,
 )
 
 enum class SortKey {
@@ -60,6 +69,7 @@ private data class SearchSettings(
 /** Drives the search logic. */
 class SearchViewModel(
     private val settingsRepository: SettingsRepository,
+    private val searchHistoryRepository: SearchHistoryRepository,
     private val torrentsRepository: TorrentsRepository,
 ) : ViewModel() {
     private val mUiState = MutableStateFlow(SearchScreenUIState())
@@ -71,11 +81,19 @@ class SearchViewModel(
 
     init {
         observeSettingsChange()
+        updateUiStateOnSearchHistoryChange()
     }
 
     /** Changes the current query with the given query. */
     fun setQuery(query: String) {
         mUiState.update { it.copy(query = query) }
+    }
+
+    /** Deletes the given search history. */
+    fun deleteSearchHistory(searchHistory: SearchHistoryUiState) {
+        viewModelScope.launch {
+            searchHistoryRepository.remove(searchHistory = searchHistory.toEntity())
+        }
     }
 
     /** Changes the current category. */
@@ -104,7 +122,7 @@ class SearchViewModel(
     fun performSearch() {
         // Cancel any on-going search.
         //
-        // This help to prevent from any un-expected behaviour like when user
+        // This helps to prevent from any un-expected behaviour like when user
         // quickly switch to another category when search is still happening.
         searchJob?.cancel()
         searchJob = viewModelScope.launch {
@@ -114,6 +132,17 @@ class SearchViewModel(
             }
 
             updateUIState { it.copy(isLoading = true) }
+            // Save current query.
+            //
+            // Trim the query before saving, this helps to prevent from
+            // inserting same query (one without the leading/trailing whitespace
+            // and the other with whitespace).
+            //
+            // We can't trim from the `setQuery` function simply because doing so
+            // won't allow the user to insert a whitespace at all.
+            searchHistoryRepository.add(
+                searchHistory = SearchHistory(query = mUiState.value.query.trim())
+            )
             // Clear previous search results.
             currentSearchResults = emptyList()
 
@@ -269,6 +298,18 @@ class SearchViewModel(
         return if (order == SortOrder.Ascending) sortedResults else sortedResults.reversed()
     }
 
+    /** Updates the UI state when search history changes. */
+    private fun updateUiStateOnSearchHistoryChange() {
+        viewModelScope.launch {
+            searchHistoryRepository
+                .all()
+                .map { searchHistories -> searchHistories.toUiStates() }
+                .collect { searchHistoryUiStates ->
+                    updateUIState { it.copy(searchHistories = searchHistoryUiStates) }
+                }
+        }
+    }
+
     /** Updates the current ui states. */
     private inline fun updateUIState(update: (SearchScreenUIState) -> SearchScreenUIState) {
         mUiState.update(function = update)
@@ -282,6 +323,7 @@ class SearchViewModel(
 
 class SearchViewModelFactory(
     private val settingsRepository: SettingsRepository,
+    private val searchHistoryRepository: SearchHistoryRepository,
     private val torrentsRepository: TorrentsRepository,
 ) : ViewModelProvider.Factory {
     @Suppress("UNCHECKED_CAST")
@@ -289,6 +331,7 @@ class SearchViewModelFactory(
         if (modelClass.isAssignableFrom(SearchViewModel::class.java)) {
             return SearchViewModel(
                 settingsRepository = settingsRepository,
+                searchHistoryRepository = searchHistoryRepository,
                 torrentsRepository = torrentsRepository,
             ) as T
         }
@@ -296,3 +339,12 @@ class SearchViewModelFactory(
         throw IllegalArgumentException("Unknown ViewModel class")
     }
 }
+
+/** Converts list of search history entity to list of UI states. */
+private fun List<SearchHistory>.toUiStates() = map { it.toUiState() }
+
+/** Converts search history entity to UI state. */
+private fun SearchHistory.toUiState() = SearchHistoryUiState(id = id, query = query)
+
+/** Converts search history UI state to entity. */
+private fun SearchHistoryUiState.toEntity() = SearchHistory(id = id, query = query)

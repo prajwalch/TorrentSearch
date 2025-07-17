@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
+
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -16,9 +17,13 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.preferencesDataStore
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+
 import com.prajwalch.torrentsearch.data.DarkTheme
+import com.prajwalch.torrentsearch.data.SearchHistoryRepository
 import com.prajwalch.torrentsearch.data.SettingsRepository
 import com.prajwalch.torrentsearch.data.TorrentsRepository
+import com.prajwalch.torrentsearch.database.InternalDatabase
+import com.prajwalch.torrentsearch.database.TorrentSearchDatabase
 import com.prajwalch.torrentsearch.models.MagnetUri
 import com.prajwalch.torrentsearch.network.HttpClient
 import com.prajwalch.torrentsearch.ui.TorrentSearchApp
@@ -33,8 +38,16 @@ private val Context.settingsDataStore: DataStore<Preferences> by preferencesData
 )
 
 class MainActivity : ComponentActivity() {
+    private val database: TorrentSearchDatabase by lazy {
+        TorrentSearchDatabase(InternalDatabase.getInstance(this))
+    }
+
     private val settingsRepository: SettingsRepository by lazy {
         SettingsRepository(dataStore = settingsDataStore)
+    }
+
+    private val searchHistoryRepository by lazy {
+        SearchHistoryRepository(database = database)
     }
 
     private val searchViewModel: SearchViewModel by viewModels {
@@ -42,6 +55,7 @@ class MainActivity : ComponentActivity() {
 
         SearchViewModelFactory(
             settingsRepository = settingsRepository,
+            searchHistoryRepository = searchHistoryRepository,
             torrentsRepository = torrentsRepository,
         )
     }
@@ -78,6 +92,11 @@ class MainActivity : ComponentActivity() {
                 )
             }
         }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        database.close()
     }
 
     /**

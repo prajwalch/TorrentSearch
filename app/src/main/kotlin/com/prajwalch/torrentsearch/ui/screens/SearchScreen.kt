@@ -1,11 +1,11 @@
 package com.prajwalch.torrentsearch.ui.screens
 
 import android.content.ClipData
+
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -15,16 +15,12 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
@@ -60,6 +56,7 @@ import com.prajwalch.torrentsearch.ui.components.CategoryChipsRow
 import com.prajwalch.torrentsearch.ui.components.TopSearchBar
 import com.prajwalch.torrentsearch.ui.components.TorrentActionsBottomSheet
 import com.prajwalch.torrentsearch.ui.components.TorrentList
+import com.prajwalch.torrentsearch.ui.viewmodel.SearchHistoryUiState
 import com.prajwalch.torrentsearch.ui.viewmodel.SearchViewModel
 import com.prajwalch.torrentsearch.ui.viewmodel.SortKey
 import com.prajwalch.torrentsearch.ui.viewmodel.SortOrder
@@ -132,12 +129,14 @@ fun SearchScreen(
             SearchScreenTopBar(
                 modifier = Modifier.fillMaxWidth(),
                 searchQuery = uiState.query,
+                searchHistories = uiState.searchHistories,
                 categories = uiState.categories,
                 selectedCategory = uiState.selectedCategory,
                 onNavigateToSettings = onNavigateToSettings,
                 onSearchQueryChange = viewModel::setQuery,
                 onCategoryChange = viewModel::setCategory,
                 onSearch = viewModel::performSearch,
+                onDeleteSearchHistory = viewModel::deleteSearchHistory,
             )
         },
         floatingActionButton = {
@@ -171,12 +170,14 @@ fun SearchScreen(
 @Composable
 private fun SearchScreenTopBar(
     searchQuery: String,
+    searchHistories: List<SearchHistoryUiState>,
     categories: List<Category>,
     selectedCategory: Category,
     onNavigateToSettings: () -> Unit,
     onSearchQueryChange: (String) -> Unit,
     onCategoryChange: (Category) -> Unit,
     onSearch: () -> Unit,
+    onDeleteSearchHistory: (SearchHistoryUiState) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val windowInsets = TopAppBarDefaults.windowInsets
@@ -185,29 +186,18 @@ private fun SearchScreenTopBar(
         modifier = Modifier
             .windowInsetsPadding(windowInsets)
             .then(modifier),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center,
     ) {
         Spacer(Modifier.height(8.dp))
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp),
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            TopSearchBar(
-                modifier = Modifier.weight(1f),
-                query = searchQuery,
-                onQueryChange = onSearchQueryChange,
-                onSearch = onSearch,
-                shape = RoundedCornerShape(percent = 100),
-            )
-            IconButton(onClick = onNavigateToSettings) {
-                Icon(
-                    imageVector = Icons.Outlined.Settings,
-                    contentDescription = stringResource(R.string.button_go_to_settings_screen),
-                )
-            }
-        }
+        TopSearchBar(
+            query = searchQuery,
+            searchHistories = searchHistories,
+            onQueryChange = onSearchQueryChange,
+            onSearch = onSearch,
+            onNavigateToSettings = onNavigateToSettings,
+            onDeleteSearchHistory = onDeleteSearchHistory,
+        )
         Spacer(Modifier.height(8.dp))
         CategoryChipsRow(
             selectedCategory = selectedCategory,
