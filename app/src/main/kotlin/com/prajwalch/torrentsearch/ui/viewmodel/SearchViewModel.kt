@@ -4,7 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 
-import com.prajwalch.torrentsearch.data.SearchHistoryRepository
+import com.prajwalch.torrentsearch.data.SearchHistoriesRepository
 import com.prajwalch.torrentsearch.data.SearchProviderId
 import com.prajwalch.torrentsearch.data.SettingsRepository
 import com.prajwalch.torrentsearch.data.TorrentsRepository
@@ -88,7 +88,7 @@ private data class SearchSettings(
 /** Drives the search logic. */
 class SearchViewModel(
     private val settingsRepository: SettingsRepository,
-    private val searchHistoriesRepository: SearchHistoryRepository,
+    private val searchHistoriesRepository: SearchHistoriesRepository,
     private val torrentsRepository: TorrentsRepository,
 ) : ViewModel() {
     /**
@@ -326,7 +326,7 @@ class SearchViewModel(
         /** Provides a factory function for [SearchViewModel]. */
         fun provideFactory(
             settingsRepository: SettingsRepository,
-            searchHistoriesRepository: SearchHistoryRepository,
+            searchHistoriesRepository: SearchHistoriesRepository,
             torrentsRepository: TorrentsRepository,
         ): ViewModelProvider.Factory = object : ViewModelProvider.Factory {
             @Suppress("UNCHECKED_CAST")

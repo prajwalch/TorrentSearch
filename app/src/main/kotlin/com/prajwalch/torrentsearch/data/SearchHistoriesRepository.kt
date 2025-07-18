@@ -5,7 +5,7 @@ import com.prajwalch.torrentsearch.database.entities.SearchHistory
 
 import kotlinx.coroutines.flow.Flow
 
-class SearchHistoryRepository(private val database: TorrentSearchDatabase) {
+class SearchHistoriesRepository(private val database: TorrentSearchDatabase) {
     /** Returns the list of saved search history. */
     fun all(): Flow<List<SearchHistory>> {
         return database.searchHistories()
