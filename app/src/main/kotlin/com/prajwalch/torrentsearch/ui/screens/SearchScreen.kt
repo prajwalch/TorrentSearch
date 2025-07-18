@@ -157,13 +157,13 @@ fun SearchScreen(
             results = uiState.results,
             resultsNotFound = uiState.resultsNotFound,
             onResultSelect = { selectedTorrent = it },
+            lazyListState = lazyListState,
             isLoading = uiState.isLoading,
             isInternetError = uiState.isInternetError,
             onRetry = viewModel::performSearch,
             currentSortKey = uiState.currentSortKey,
             currentSortOrder = uiState.currentSortOrder,
             onSortResults = viewModel::sort,
-            lazyListState = lazyListState,
         )
     }
 }
@@ -248,6 +248,7 @@ private fun SearchScreenContent(
     results: List<Torrent>,
     resultsNotFound: Boolean,
     onResultSelect: (Torrent) -> Unit,
+    lazyListState: LazyListState,
     isLoading: Boolean,
     isInternetError: Boolean,
     onRetry: () -> Unit,
@@ -255,7 +256,6 @@ private fun SearchScreenContent(
     currentSortOrder: SortOrder,
     onSortResults: (SortKey, SortOrder) -> Unit,
     modifier: Modifier = Modifier,
-    lazyListState: LazyListState,
 ) {
     Column(modifier = modifier, horizontalAlignment = Alignment.CenterHorizontally) {
         if (isLoading) {
@@ -309,7 +309,7 @@ private fun NoInternetConnectionMessage(onRetry: () -> Unit, modifier: Modifier 
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Text(stringResource(R.string.msg_no_internet_connection), fontWeight = FontWeight.Bold)
-        Spacer(Modifier.height(10.dp))
+        Spacer(modifier = Modifier.height(10.dp))
         Button(onClick = onRetry) { Text(stringResource(R.string.button_retry)) }
     }
 }
@@ -326,7 +326,7 @@ private fun ResultsNotFoundMessage(modifier: Modifier = Modifier) {
             painter = painterResource(R.drawable.ic_sad),
             contentDescription = null,
         )
-        Spacer(Modifier.height(8.dp))
+        Spacer(modifier = Modifier.height(8.dp))
         Text(
             text = stringResource(R.string.msg_no_results_found),
             fontWeight = FontWeight.Bold,
@@ -338,25 +338,25 @@ private fun ResultsNotFoundMessage(modifier: Modifier = Modifier) {
 private fun EmptySearchPlaceholder(modifier: Modifier = Modifier) {
     Box(
         modifier = modifier,
-        contentAlignment = Alignment.Center
+        contentAlignment = Alignment.Center,
     ) {
         Column(
+            modifier = Modifier
+                .padding(horizontal = 32.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(8.dp),
-            modifier = Modifier
-                .padding(horizontal = 32.dp)
         ) {
             Text(
+                modifier = Modifier.fillMaxWidth(),
                 text = stringResource(R.string.msg_page_empty),
                 fontWeight = FontWeight.SemiBold,
                 textAlign = TextAlign.Center,
-                modifier = Modifier.fillMaxWidth()
             )
             Text(
+                modifier = Modifier.fillMaxWidth(),
                 text = stringResource(R.string.msg_start_searching),
                 fontWeight = FontWeight.Normal,
                 textAlign = TextAlign.Center,
-                modifier = Modifier.fillMaxWidth()
             )
         }
     }
