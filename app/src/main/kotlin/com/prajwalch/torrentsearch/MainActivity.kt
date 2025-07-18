@@ -30,7 +30,6 @@ import com.prajwalch.torrentsearch.ui.TorrentSearchApp
 import com.prajwalch.torrentsearch.ui.theme.TorrentSearchTheme
 import com.prajwalch.torrentsearch.ui.viewmodel.SearchViewModel
 import com.prajwalch.torrentsearch.ui.viewmodel.SettingsViewModel
-import com.prajwalch.torrentsearch.ui.viewmodel.SettingsViewModelFactory
 
 private val Context.settingsDataStore: DataStore<Preferences> by preferencesDataStore(
     name = "settings"
@@ -60,7 +59,7 @@ class MainActivity : ComponentActivity() {
     }
 
     private val settingsViewModel: SettingsViewModel by viewModels {
-        SettingsViewModelFactory(settingsRepository = settingsRepository)
+        SettingsViewModel.provideFactory(settingsRepository = settingsRepository)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -68,7 +67,7 @@ class MainActivity : ComponentActivity() {
 
         enableEdgeToEdge()
         setContent {
-            val appearanceSettings by settingsViewModel.appearanceSettings.collectAsStateWithLifecycle()
+            val appearanceSettings by settingsViewModel.appearanceSettingsUiState.collectAsStateWithLifecycle()
 
             val darkTheme = when (appearanceSettings.darkTheme) {
                 DarkTheme.On -> true

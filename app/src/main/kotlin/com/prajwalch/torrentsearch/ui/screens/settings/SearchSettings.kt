@@ -29,7 +29,7 @@ import com.prajwalch.torrentsearch.ui.viewmodel.SettingsViewModel
 
 @Composable
 fun SearchSettings(viewModel: SettingsViewModel) {
-    val settings by viewModel.searchSettings.collectAsState()
+    val settings by viewModel.searchSettingsUiState.collectAsState()
     var showListDialog by remember { mutableStateOf(false) }
 
     if (showListDialog) {
@@ -38,7 +38,7 @@ fun SearchSettings(viewModel: SettingsViewModel) {
             onDismissRequest = { showListDialog = false },
         ) {
             SearchProvidersList(
-                searchProviders = settings.searchProviders1,
+                searchProviders = settings.searchProviders,
                 onProviderCheckedChange = viewModel::enableSearchProvider,
             )
         }

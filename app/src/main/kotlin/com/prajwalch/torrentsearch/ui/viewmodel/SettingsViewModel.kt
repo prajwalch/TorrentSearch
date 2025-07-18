@@ -14,31 +14,47 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
+/** State for the appearance settings. */
 data class AppearanceSettingsUiState(
     val enableDynamicTheme: Boolean = true,
     val darkTheme: DarkTheme = DarkTheme.FollowSystem,
     val pureBlack: Boolean = false,
 )
 
+/** State for the search settings. */
 data class SearchSettingsUiState(
     val enableNSFWSearch: Boolean = false,
     val hideResultsWithZeroSeeders: Boolean = false,
-    val searchProviders1: List<SearchProviderUiState> = emptyList(),
+    val searchProviders: List<SearchProviderUiState> = emptyList(),
     val totalSearchProviders: Int = SearchProviders.namesWithId().size,
     val enabledSearchProviders: Int = 0,
 )
 
+/** State for the search providers list. */
 data class SearchProviderUiState(
     val id: SearchProviderId,
     val name: String,
     val enabled: Boolean,
 )
 
+/** ViewModel that handles the business logic of Settings screen. */
 class SettingsViewModel(private val repository: SettingsRepository) : ViewModel() {
+    /** All search providers (enabled + disabled). */
     private val allSearchProviders = SearchProviders.namesWithId()
+
+    /**
+     * Currently enabled search providers.
+     *
+     * Settings screen receives all the providers with enable/disable
+     * state instead of only enabled ones and reports state change event
+     * for only one at a time through [enableSearchProvider].
+     *
+     * Only then we will create a set of enabled providers and pass them to
+     * repository like how it expects.
+     */
     private var enabledSearchProviders: Set<SearchProviderId> = emptySet()
 
-    val appearanceSettings = combine(
+    val appearanceSettingsUiState = combine(
         repository.enableDynamicTheme,
         repository.darkTheme,
         repository.pureBlack,
@@ -49,7 +65,7 @@ class SettingsViewModel(private val repository: SettingsRepository) : ViewModel(
         initialValue = AppearanceSettingsUiState()
     )
 
-    val searchSettings = combine(
+    val searchSettingsUiState = combine(
         repository.enableNSFWSearch,
         repository.hideResultsWithZeroSeeders,
         repository.searchProviders,
@@ -58,10 +74,10 @@ class SettingsViewModel(private val repository: SettingsRepository) : ViewModel(
 
         SearchSettingsUiState(
             enableNSFWSearch = enableNSFWSearch,
-            searchProviders1 = createSearchProviderStates(),
+            hideResultsWithZeroSeeders = hideResultsWithZeroSeeders,
+            searchProviders = allSearchProvidersToUiStates(),
             totalSearchProviders = allSearchProviders.size,
             enabledSearchProviders = enabledSearchProviders.size,
-            hideResultsWithZeroSeeders = hideResultsWithZeroSeeders,
         )
     }.stateIn(
         scope = viewModelScope,
@@ -69,7 +85,8 @@ class SettingsViewModel(private val repository: SettingsRepository) : ViewModel(
         initialValue = SearchSettingsUiState()
     )
 
-    private fun createSearchProviderStates(): List<SearchProviderUiState> {
+    /** Converts list of search provider to list of UI states. */
+    private fun allSearchProvidersToUiStates(): List<SearchProviderUiState> {
         return allSearchProviders.map { (id, name) ->
             SearchProviderUiState(
                 id = id,
@@ -79,28 +96,34 @@ class SettingsViewModel(private val repository: SettingsRepository) : ViewModel(
         }
     }
 
-    fun updateEnableDynamicTheme(enabled: Boolean) {
-        viewModelScope.launch { repository.updateEnableDynamicTheme(enabled) }
+    /** Enables/disables dynamic theme. */
+    fun updateEnableDynamicTheme(enable: Boolean) {
+        viewModelScope.launch { repository.updateEnableDynamicTheme(enable) }
     }
 
+    /** Changes the dark theme mode. */
     fun updateDarkTheme(darkTheme: DarkTheme) {
         viewModelScope.launch { repository.updateDarkTheme(darkTheme) }
     }
 
+    /** Enables/disables pure black mode. */
     fun updatePureBlack(enable: Boolean) {
         viewModelScope.launch { repository.updatePureBlack(enable) }
     }
 
+    /** Enables/disables NSFW search. */
     fun updateEnableNSFWSearch(enabled: Boolean) {
         viewModelScope.launch { repository.updateEnableNSFWSearch(enabled) }
     }
 
+    /** Enables/disables an option to hide zero seeders. */
     fun updateHideResultsWithZeroSeeders(enable: Boolean) {
         viewModelScope.launch {
             repository.updateHideResultsWithZeroSeeders(enable)
         }
     }
 
+    /** Enables/disables search provider associated with given id. */
     fun enableSearchProvider(providerId: SearchProviderId, enable: Boolean) {
         val updatedSearchProviders = if (enable) {
             enabledSearchProviders + providerId
@@ -112,17 +135,16 @@ class SettingsViewModel(private val repository: SettingsRepository) : ViewModel(
             repository.updateSearchProviders(providers = updatedSearchProviders)
         }
     }
-}
 
-class SettingsViewModelFactory(private val settingsRepository: SettingsRepository) :
-    ViewModelProvider.Factory {
-
-    @Suppress("UNCHECKED_CAST")
-    override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        if (modelClass.isAssignableFrom(SettingsViewModel::class.java)) {
-            return SettingsViewModel(repository = settingsRepository) as T
+    companion object {
+        /** Provides a factor function for [SettingsViewModel]. */
+        fun provideFactory(settingsRepository: SettingsRepository): ViewModelProvider.Factory {
+            return object : ViewModelProvider.Factory {
+                @Suppress("UNCHECKED_CAST")
+                override fun <T : ViewModel> create(modelClass: Class<T>): T {
+                    return SettingsViewModel(repository = settingsRepository) as T
+                }
+            }
         }
-
-        throw IllegalArgumentException("Unknown ViewModel class")
     }
 }

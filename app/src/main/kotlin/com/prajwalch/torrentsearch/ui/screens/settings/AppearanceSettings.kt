@@ -32,7 +32,7 @@ data class SettingsOptionMenuEvent(
 
 @Composable
 fun AppearanceSettings(viewModel: SettingsViewModel) {
-    val settings by viewModel.appearanceSettings.collectAsState()
+    val settings by viewModel.appearanceSettingsUiState.collectAsState()
     var optionMenuEvent by remember(settings) { mutableStateOf<SettingsOptionMenuEvent?>(null) }
 
     optionMenuEvent?.let { event ->
