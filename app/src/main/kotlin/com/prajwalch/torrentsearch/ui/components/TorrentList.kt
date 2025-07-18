@@ -38,6 +38,9 @@ import com.prajwalch.torrentsearch.models.Torrent
 import com.prajwalch.torrentsearch.ui.viewmodel.SortKey
 import com.prajwalch.torrentsearch.ui.viewmodel.SortOrder
 
+import my.nanihadesuka.compose.LazyColumnScrollbar
+import my.nanihadesuka.compose.ScrollbarSettings
+
 @Composable
 fun TorrentList(
     torrents: List<Torrent>,
@@ -49,51 +52,62 @@ fun TorrentList(
     lazyListState: LazyListState = rememberLazyListState(),
 ) {
     var showSortOptions by remember(torrents) { mutableStateOf(false) }
+    val scrollbarUnselectedColor = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f)
+    val scrollbarSelectedColor = MaterialTheme.colorScheme.onSurfaceVariant
 
-    LazyColumn(
-        modifier = modifier,
+    LazyColumnScrollbar(
         state = lazyListState,
+        settings = ScrollbarSettings.Default.copy(
+            thumbUnselectedColor = scrollbarUnselectedColor,
+            thumbSelectedColor = scrollbarSelectedColor,
+            hideDelayMillis = 3000,
+        ),
     ) {
-        item {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween,
-            ) {
-                Text(
-                    text = stringResource(R.string.hint_results_count, torrents.size),
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    style = MaterialTheme.typography.bodyMedium,
-                )
-                Box {
-                    SortButton(
-                        currentSortKey = currentSortKey,
-                        onClick = { showSortOptions = true },
-                        currentSortOrder = currentSortOrder,
-                        onSortOrderChange = { onSortTorrents(currentSortKey, it) },
+        LazyColumn(
+            modifier = modifier,
+            state = lazyListState,
+        ) {
+            item {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                ) {
+                    Text(
+                        text = stringResource(R.string.hint_results_count, torrents.size),
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        style = MaterialTheme.typography.bodyMedium,
                     )
-                    SortOptionsMenu(
-                        expanded = showSortOptions,
-                        onDismissRequest = { showSortOptions = false },
-                        selectedKey = currentSortKey,
-                        onSortKeySelect = { onSortTorrents(it, currentSortOrder) },
-                    )
+                    Box {
+                        SortButton(
+                            currentSortKey = currentSortKey,
+                            onClick = { showSortOptions = true },
+                            currentSortOrder = currentSortOrder,
+                            onSortOrderChange = { onSortTorrents(currentSortKey, it) },
+                        )
+                        SortOptionsMenu(
+                            expanded = showSortOptions,
+                            onDismissRequest = { showSortOptions = false },
+                            selectedKey = currentSortKey,
+                            onSortKeySelect = { onSortTorrents(it, currentSortOrder) },
+                        )
+                    }
                 }
             }
-        }
-        items(
-            items = torrents,
-            key = { it.hashCode() },
-            contentType = { it.category },
-        ) {
-            TorrentListItem(
-                modifier = Modifier
-                    .animateItem()
-                    .clickable { onTorrentSelect(it) },
-                torrent = it,
-            )
+            items(
+                items = torrents,
+                key = { it.hashCode() },
+                contentType = { it.category },
+            ) {
+                TorrentListItem(
+                    modifier = Modifier
+                        .animateItem()
+                        .clickable { onTorrentSelect(it) },
+                    torrent = it,
+                )
+            }
         }
     }
 }

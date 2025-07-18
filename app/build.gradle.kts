@@ -81,6 +81,7 @@ dependencies {
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.ktor.client.core)
     implementation(libs.ktor.client.okhttp)
+    implementation(libs.lazycolumnscrollbar)
     implementation(platform(libs.androidx.compose.bom))
     ksp(libs.androidx.room.compiler)
 
