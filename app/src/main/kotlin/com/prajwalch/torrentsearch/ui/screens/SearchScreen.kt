@@ -131,11 +131,11 @@ fun SearchScreen(
             SearchScreenTopBar(
                 modifier = Modifier.fillMaxWidth(),
                 query = uiState.query,
-                onQueryChange = viewModel::setQuery,
+                onQueryChange = viewModel::changeQuery,
                 onSearch = viewModel::performSearch,
                 categories = uiState.categories,
                 selectedCategory = uiState.selectedCategory,
-                onCategoryChange = viewModel::setCategory,
+                onCategoryChange = viewModel::changeCategory,
                 histories = uiState.histories,
                 onDeleteSearchHistory = viewModel::deleteSearchHistory,
                 onNavigateToSettings = onNavigateToSettings,
@@ -163,7 +163,7 @@ fun SearchScreen(
             onRetry = viewModel::performSearch,
             currentSortKey = uiState.currentSortKey,
             currentSortOrder = uiState.currentSortOrder,
-            onSortResults = viewModel::sort,
+            onSortResults = viewModel::sortResults,
         )
     }
 }

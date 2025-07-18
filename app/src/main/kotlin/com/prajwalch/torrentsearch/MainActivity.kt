@@ -29,7 +29,6 @@ import com.prajwalch.torrentsearch.network.HttpClient
 import com.prajwalch.torrentsearch.ui.TorrentSearchApp
 import com.prajwalch.torrentsearch.ui.theme.TorrentSearchTheme
 import com.prajwalch.torrentsearch.ui.viewmodel.SearchViewModel
-import com.prajwalch.torrentsearch.ui.viewmodel.SearchViewModelFactory
 import com.prajwalch.torrentsearch.ui.viewmodel.SettingsViewModel
 import com.prajwalch.torrentsearch.ui.viewmodel.SettingsViewModelFactory
 
@@ -53,9 +52,9 @@ class MainActivity : ComponentActivity() {
     private val searchViewModel: SearchViewModel by viewModels {
         val torrentsRepository = TorrentsRepository(httpClient = HttpClient)
 
-        SearchViewModelFactory(
+        SearchViewModel.provideFactory(
             settingsRepository = settingsRepository,
-            searchHistoryRepository = searchHistoryRepository,
+            searchHistoriesRepository = searchHistoryRepository,
             torrentsRepository = torrentsRepository,
         )
     }
