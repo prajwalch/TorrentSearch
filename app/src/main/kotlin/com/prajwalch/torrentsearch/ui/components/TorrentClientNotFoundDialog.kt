@@ -4,7 +4,6 @@ import androidx.annotation.StringRes
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CornerSize
@@ -13,14 +12,12 @@ import androidx.compose.material.icons.filled.Info
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.AlertDialogDefaults
 import androidx.compose.material3.Icon
-import androidx.compose.material3.ListItem
 import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.Shape
@@ -219,12 +216,10 @@ private fun TorrentClientLinkListItem(
         trailingIconColor = contentColor,
     )
 
-    ListItem(
-        modifier = modifier
-            .fillMaxWidth()
-            .height(56.dp)
-            .clip(shape = shape ?: RectangleShape)
-            .clickable { uriHandler.openUri(client.url) },
+    DialogListItem(
+        modifier = Modifier
+            .clickable { uriHandler.openUri(client.url) }
+            .then(modifier),
         headlineContent = {
             Text(
                 text = stringResource(client.name),
@@ -245,6 +240,7 @@ private fun TorrentClientLinkListItem(
             )
         },
         colors = listItemColors,
+        shape = shape ?: RectangleShape,
     )
 }
 

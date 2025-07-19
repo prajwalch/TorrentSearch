@@ -1,101 +1,129 @@
 package com.prajwalch.torrentsearch.ui.screens.settings
 
-import androidx.annotation.StringRes
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Switch
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 
 import com.prajwalch.torrentsearch.R
 import com.prajwalch.torrentsearch.data.DarkTheme
+import com.prajwalch.torrentsearch.ui.components.DialogListItem
+import com.prajwalch.torrentsearch.ui.components.SettingsDialog
 import com.prajwalch.torrentsearch.ui.components.SettingsItem
-import com.prajwalch.torrentsearch.ui.components.SettingsOptionMenu
 import com.prajwalch.torrentsearch.ui.components.SettingsSectionTitle
-import com.prajwalch.torrentsearch.ui.viewmodel.SettingsViewModel
-
-
-data class SettingsOptionMenuEvent(
-    @param:StringRes
-    val title: Int,
-    val options: List<String>,
-    val selectedOption: Int,
-    val onOptionSelect: (Int) -> Unit,
-)
 
 @Composable
-fun AppearanceSettings(viewModel: SettingsViewModel) {
+fun AppearanceSettings(modifier: Modifier = Modifier) {
+    val viewModel = LocalSettingsViewModel.current
     val settings by viewModel.appearanceSettingsUiState.collectAsState()
-    var optionMenuEvent by remember(settings) { mutableStateOf<SettingsOptionMenuEvent?>(null) }
 
-    optionMenuEvent?.let { event ->
-        SettingsOptionMenu(
-            title = event.title,
-            options = event.options,
-            selectedOption = event.selectedOption,
-            onOptionSelect = event.onOptionSelect,
-            onDismissRequest = { optionMenuEvent = null },
+    var showDarkThemeDialog by remember(settings) { mutableStateOf(false) }
+
+    val isSystemInDarkTheme = isSystemInDarkTheme()
+    val showPureBlackSetting = remember(settings.darkTheme, isSystemInDarkTheme) {
+        when (settings.darkTheme) {
+            DarkTheme.On -> true
+            DarkTheme.Off -> false
+            DarkTheme.FollowSystem -> isSystemInDarkTheme
+        }
+    }
+
+    if (showDarkThemeDialog) {
+        DarkThemeOptionsDialog(
+            onDismissRequest = { showDarkThemeDialog = false },
+            selectedOption = settings.darkTheme,
+            onOptionSelect = { viewModel.updateDarkTheme(it) },
         )
     }
 
-    SettingsSectionTitle(title = stringResource(R.string.settings_section_appearance))
-    SettingsItem(
-        leadingIconId = R.drawable.ic_palette,
-        headline = stringResource(R.string.setting_enable_dynamic_theme),
-        onClick = {
-            viewModel.updateEnableDynamicTheme(!settings.enableDynamicTheme)
-        },
-        trailingContent = {
-            Switch(
-                checked = settings.enableDynamicTheme,
-                onCheckedChange = { viewModel.updateEnableDynamicTheme(it) },
-            )
-        },
-    )
-    SettingsItem(
-        leadingIconId = R.drawable.ic_dark_mode,
-        headline = stringResource(R.string.setting_dark_theme),
-        onClick = {
-            optionMenuEvent = SettingsOptionMenuEvent(
-                title = R.string.setting_dark_theme,
-                options = DarkTheme.entries.map { it.toString() },
-                selectedOption = settings.darkTheme.ordinal,
-                onOptionSelect = { viewModel.updateDarkTheme(DarkTheme.fromInt(it)) },
-            )
-        },
-        supportingContent = settings.darkTheme.toString(),
-    )
-
-    val showPureBackSetting = when (settings.darkTheme) {
-        DarkTheme.On -> true
-        DarkTheme.Off -> false
-        DarkTheme.FollowSystem -> isSystemInDarkTheme()
-    }
-
-    AnimatedVisibility(
-        visible = showPureBackSetting,
-        enter = fadeIn(),
-        exit = fadeOut(),
-    ) {
+    Column(modifier = modifier) {
+        SettingsSectionTitle(title = stringResource(R.string.settings_section_appearance))
         SettingsItem(
-            leadingIconId = R.drawable.ic_contrast,
-            headline = stringResource(R.string.setting_pure_black),
-            onClick = {
-                viewModel.updatePureBlack(!settings.pureBlack)
-            },
+            onClick = { viewModel.updateEnableDynamicTheme(!settings.enableDynamicTheme) },
+            leadingIconId = R.drawable.ic_palette,
+            headline = stringResource(R.string.setting_enable_dynamic_theme),
             trailingContent = {
                 Switch(
-                    checked = settings.pureBlack,
-                    onCheckedChange = { viewModel.updatePureBlack(it) },
+                    checked = settings.enableDynamicTheme,
+                    onCheckedChange = { viewModel.updateEnableDynamicTheme(it) },
                 )
             },
         )
+        SettingsItem(
+            onClick = { showDarkThemeDialog = true },
+            leadingIconId = R.drawable.ic_dark_mode,
+            headline = stringResource(R.string.setting_dark_theme),
+            supportingContent = settings.darkTheme.toString(),
+        )
+
+        AnimatedVisibility(visible = showPureBlackSetting) {
+            SettingsItem(
+                onClick = { viewModel.updatePureBlack(!settings.pureBlack) },
+                leadingIconId = R.drawable.ic_contrast,
+                headline = stringResource(R.string.setting_pure_black),
+                trailingContent = {
+                    Switch(
+                        checked = settings.pureBlack,
+                        onCheckedChange = { viewModel.updatePureBlack(it) },
+                    )
+                },
+            )
+        }
     }
+}
+
+@Composable
+private fun DarkThemeOptionsDialog(
+    onDismissRequest: () -> Unit,
+    selectedOption: DarkTheme,
+    onOptionSelect: (DarkTheme) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    SettingsDialog(
+        modifier = modifier,
+        onDismissRequest = onDismissRequest,
+        title = R.string.setting_dark_theme,
+    ) {
+        LazyColumn {
+            items(
+                items = DarkTheme.entries,
+                contentType = { it }
+            ) { darkThemeOpt ->
+                DarkThemeOptionItem(
+                    selected = darkThemeOpt == selectedOption,
+                    onClick = { onOptionSelect(darkThemeOpt) },
+                    name = darkThemeOpt.toString(),
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun DarkThemeOptionItem(
+    selected: Boolean,
+    onClick: () -> Unit,
+    name: String,
+    modifier: Modifier = Modifier,
+) {
+    DialogListItem(
+        modifier = Modifier
+            .clickable(onClick = onClick)
+            .then(modifier),
+        leadingContent = { RadioButton(selected = selected, onClick = onClick) },
+        headlineContent = { Text(text = name) },
+    )
 }

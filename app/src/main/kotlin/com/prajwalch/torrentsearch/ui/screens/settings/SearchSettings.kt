@@ -8,10 +8,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Checkbox
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.ListItem
-import androidx.compose.material3.ListItemColors
-import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Slider
@@ -27,33 +23,32 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 
 import com.prajwalch.torrentsearch.R
 import com.prajwalch.torrentsearch.data.MaxNumResults
 import com.prajwalch.torrentsearch.data.SearchProviderId
+import com.prajwalch.torrentsearch.ui.components.DialogListItem
 import com.prajwalch.torrentsearch.ui.components.SettingsDialog
 import com.prajwalch.torrentsearch.ui.components.SettingsItem
 import com.prajwalch.torrentsearch.ui.components.SettingsSectionTitle
 import com.prajwalch.torrentsearch.ui.viewmodel.SearchProviderUiState
-import com.prajwalch.torrentsearch.ui.viewmodel.SettingsViewModel
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SearchSettings(viewModel: SettingsViewModel) {
+fun SearchSettings(modifier: Modifier = Modifier) {
+    val viewModel = LocalSettingsViewModel.current
     val settings by viewModel.searchSettingsUiState.collectAsState()
 
-    var showListDialog by remember { mutableStateOf(false) }
+    var showProviderListDialog by remember { mutableStateOf(false) }
     var showMaxNumResultsDialog by remember { mutableStateOf(false) }
 
-    if (showListDialog) {
+    if (showProviderListDialog) {
         SettingsDialog(
+            onDismissRequest = { showProviderListDialog = false },
             title = R.string.setting_search_providers,
-            onDismissRequest = { showListDialog = false },
         ) {
-            SearchProvidersList(
+            SearchProviderList(
                 searchProviders = settings.searchProviders,
                 onProviderCheckedChange = viewModel::enableSearchProvider,
             )
@@ -72,55 +67,57 @@ fun SearchSettings(viewModel: SettingsViewModel) {
         )
     }
 
-    SettingsSectionTitle(title = stringResource(R.string.settings_section_search))
-    SettingsItem(
-        leadingIconId = R.drawable.ic_18_up_rating,
-        headline = stringResource(R.string.setting_enable_nsfw_search),
-        onClick = { viewModel.updateEnableNSFWSearch(!settings.enableNSFWSearch) },
-        trailingContent = {
-            Switch(
-                checked = settings.enableNSFWSearch,
-                onCheckedChange = { viewModel.updateEnableNSFWSearch(it) },
-            )
-        },
-    )
-    SettingsItem(
-        leadingIconId = R.drawable.ic_visibility_off,
-        headline = stringResource(R.string.setting_hide_results_with_zero_seeders),
-        onClick = {
-            viewModel.updateHideResultsWithZeroSeeders(!settings.hideResultsWithZeroSeeders)
-        },
-        trailingContent = {
-            Switch(
-                checked = settings.hideResultsWithZeroSeeders,
-                onCheckedChange = { viewModel.updateHideResultsWithZeroSeeders(it) },
-            )
-        },
-    )
-    SettingsItem(
-        leadingIconId = R.drawable.ic_graph,
-        headline = stringResource(R.string.setting_search_providers),
-        onClick = { showListDialog = true },
-        supportingContent = stringResource(
-            R.string.x_of_x_enabled,
-            settings.enabledSearchProviders,
-            settings.totalSearchProviders
-        ),
-    )
-    SettingsItem(
-        leadingIconId = R.drawable.ic_format_list_numbered,
-        headline = stringResource(R.string.setting_max_num_results),
-        onClick = { showMaxNumResultsDialog = true },
-        supportingContent = if (settings.maxNumResults.isUnlimited()) {
-            stringResource(R.string.unlimited)
-        } else {
-            settings.maxNumResults.n.toString()
-        },
-    )
+    Column(modifier = modifier) {
+        SettingsSectionTitle(title = stringResource(R.string.settings_section_search))
+        SettingsItem(
+            onClick = { viewModel.updateEnableNSFWSearch(!settings.enableNSFWSearch) },
+            leadingIconId = R.drawable.ic_18_up_rating,
+            headline = stringResource(R.string.setting_enable_nsfw_search),
+            trailingContent = {
+                Switch(
+                    checked = settings.enableNSFWSearch,
+                    onCheckedChange = { viewModel.updateEnableNSFWSearch(it) },
+                )
+            },
+        )
+        SettingsItem(
+            onClick = {
+                viewModel.updateHideResultsWithZeroSeeders(!settings.hideResultsWithZeroSeeders)
+            },
+            leadingIconId = R.drawable.ic_visibility_off,
+            headline = stringResource(R.string.setting_hide_results_with_zero_seeders),
+            trailingContent = {
+                Switch(
+                    checked = settings.hideResultsWithZeroSeeders,
+                    onCheckedChange = { viewModel.updateHideResultsWithZeroSeeders(it) },
+                )
+            },
+        )
+        SettingsItem(
+            onClick = { showProviderListDialog = true },
+            leadingIconId = R.drawable.ic_graph,
+            headline = stringResource(R.string.setting_search_providers),
+            supportingContent = stringResource(
+                R.string.x_of_x_enabled,
+                settings.enabledSearchProviders,
+                settings.totalSearchProviders
+            ),
+        )
+        SettingsItem(
+            onClick = { showMaxNumResultsDialog = true },
+            leadingIconId = R.drawable.ic_format_list_numbered,
+            headline = stringResource(R.string.setting_max_num_results),
+            supportingContent = if (settings.maxNumResults.isUnlimited()) {
+                stringResource(R.string.unlimited)
+            } else {
+                settings.maxNumResults.n.toString()
+            },
+        )
+    }
 }
 
 @Composable
-private fun SearchProvidersList(
+private fun SearchProviderList(
     searchProviders: List<SearchProviderUiState>,
     onProviderCheckedChange: (SearchProviderId, Boolean) -> Unit,
     modifier: Modifier = Modifier,
@@ -130,7 +127,7 @@ private fun SearchProvidersList(
             items = searchProviders,
             key = { it.id },
         ) { searchProvider ->
-            SearchProvidersListItem(
+            SearchProviderListItem(
                 checked = searchProvider.enabled,
                 onCheckedChange = { onProviderCheckedChange(searchProvider.id, it) },
                 name = searchProvider.name,
@@ -140,16 +137,13 @@ private fun SearchProvidersList(
 }
 
 @Composable
-private fun SearchProvidersListItem(
+private fun SearchProviderListItem(
     checked: Boolean,
     onCheckedChange: (Boolean) -> Unit,
     name: String,
     modifier: Modifier = Modifier,
-    colors: ListItemColors = ListItemDefaults.colors(
-        containerColor = Color.Unspecified
-    ),
 ) {
-    ListItem(
+    DialogListItem(
         modifier = Modifier
             .clickable(onClick = { onCheckedChange(!checked) })
             .then(modifier),
@@ -157,7 +151,6 @@ private fun SearchProvidersListItem(
             Checkbox(checked = checked, onCheckedChange = onCheckedChange)
         },
         headlineContent = { Text(text = name) },
-        colors = colors,
     )
 }
 
@@ -176,8 +169,9 @@ private fun MaxNumResultsDialog(
     }
 
     SettingsDialog(
-        title = R.string.setting_max_num_results,
+        modifier = modifier,
         onDismissRequest = onDismissRequest,
+        title = R.string.setting_max_num_results,
         confirmButton = {
             TextButton(onClick = {
                 onDismissRequest()
@@ -188,7 +182,6 @@ private fun MaxNumResultsDialog(
         }
     ) {
         Column(
-            modifier = modifier,
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center,
         ) {
@@ -199,9 +192,7 @@ private fun MaxNumResultsDialog(
             Spacer(modifier = Modifier.height(16.dp))
             Slider(
                 value = sliderValue,
-                onValueChange = { newValue ->
-                    sliderValue = (newValue / incrementBy) * incrementBy
-                },
+                onValueChange = { sliderValue = (it / incrementBy) * incrementBy },
                 valueRange = sliderRange,
                 steps = ((sliderRange.endInclusive - sliderRange.start) / incrementBy).toInt() - 1,
             )
