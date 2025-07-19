@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 
 import com.prajwalch.torrentsearch.data.DarkTheme
+import com.prajwalch.torrentsearch.data.MaxNumResults
 import com.prajwalch.torrentsearch.data.SearchProviderId
 import com.prajwalch.torrentsearch.data.SettingsRepository
 import com.prajwalch.torrentsearch.providers.SearchProviders
@@ -28,6 +29,7 @@ data class SearchSettingsUiState(
     val searchProviders: List<SearchProviderUiState> = emptyList(),
     val totalSearchProviders: Int = SearchProviders.namesWithId().size,
     val enabledSearchProviders: Int = 0,
+    val maxNumResults: MaxNumResults = MaxNumResults.Unlimited,
 )
 
 /** State for the search providers list. */
@@ -69,7 +71,8 @@ class SettingsViewModel(private val repository: SettingsRepository) : ViewModel(
         repository.enableNSFWSearch,
         repository.hideResultsWithZeroSeeders,
         repository.searchProviders,
-    ) { enableNSFWSearch, hideResultsWithZeroSeeders, searchProviders ->
+        repository.maxNumResults,
+    ) { enableNSFWSearch, hideResultsWithZeroSeeders, searchProviders, maxNumResults ->
         enabledSearchProviders = searchProviders
 
         SearchSettingsUiState(
@@ -78,6 +81,7 @@ class SettingsViewModel(private val repository: SettingsRepository) : ViewModel(
             searchProviders = allSearchProvidersToUiStates(),
             totalSearchProviders = allSearchProviders.size,
             enabledSearchProviders = enabledSearchProviders.size,
+            maxNumResults = maxNumResults,
         )
     }.stateIn(
         scope = viewModelScope,
@@ -134,6 +138,11 @@ class SettingsViewModel(private val repository: SettingsRepository) : ViewModel(
         viewModelScope.launch {
             repository.updateSearchProviders(providers = updatedSearchProviders)
         }
+    }
+
+    /** Updates the maximum number of results. */
+    fun updateMaxNumResults(maxNumResults: MaxNumResults) {
+        viewModelScope.launch { repository.updateMaxNumResults(maxNumResults) }
     }
 
     companion object {

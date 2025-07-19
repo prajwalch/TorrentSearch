@@ -80,6 +80,9 @@
     <string name="setting_hide_results_with_zero_seeders">Hide results with zero seeders</string>
     <string name="setting_search_providers">Search providers</string>
     <string name="x_of_x_enabled">%1$d of %2$d enabled</string>
+    <string name="setting_max_num_results">Maximum number of results</string>
+    <string name="max_n_results">%1$d results</string>
+    <string name="unlimited">Unlimited</string>
 
     <!-- Settings dialog -->
     <string name="settings_dialog_button_cancel">Cancel</string>

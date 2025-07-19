@@ -3,6 +3,7 @@ package com.prajwalch.torrentsearch.ui.components
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
@@ -22,6 +23,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.DialogProperties
 import com.prajwalch.torrentsearch.R
 
 @Composable
@@ -50,7 +52,7 @@ fun SettingsItem(
     trailingContent: @Composable (() -> Unit)? = null,
 ) {
     ListItem(
-        modifier = Modifier.Companion
+        modifier = Modifier
             .clickable(onClick = onClick)
             .then(modifier),
         leadingContent = {
@@ -70,20 +72,27 @@ fun SettingsDialog(
     @StringRes
     title: Int,
     onDismissRequest: () -> Unit,
-    modifier: Modifier = Modifier.Companion,
+    modifier: Modifier = Modifier,
+    confirmButton: @Composable (() -> Unit)? = null,
     content: @Composable () -> Unit,
 ) {
     AlertDialog(
-        modifier = modifier,
+        modifier = Modifier
+            .fillMaxWidth(0.9f)
+            .then(modifier),
         onDismissRequest = onDismissRequest,
         dismissButton = {
             TextButton(onClick = onDismissRequest) {
                 Text(stringResource(R.string.settings_dialog_button_cancel))
             }
         },
-        confirmButton = {},
+        confirmButton = confirmButton ?: {},
         title = { Text(text = stringResource(title)) },
         text = content,
+        properties = DialogProperties(
+            usePlatformDefaultWidth = false,
+            decorFitsSystemWindows = false,
+        )
     )
 }
 

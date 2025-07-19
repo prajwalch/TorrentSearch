@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 
+import com.prajwalch.torrentsearch.data.MaxNumResults
 import com.prajwalch.torrentsearch.data.SearchHistoriesRepository
 import com.prajwalch.torrentsearch.data.SearchProviderId
 import com.prajwalch.torrentsearch.data.SettingsRepository
@@ -83,6 +84,7 @@ private data class SearchSettings(
     val enableNSFWSearch: Boolean = false,
     val hideResultsWithZeroSeeders: Boolean = false,
     val searchProviders: Set<SearchProviderId> = emptySet(),
+    val maxNumResults: MaxNumResults = MaxNumResults.Unlimited,
 )
 
 /** Drives the search logic. */
@@ -141,6 +143,7 @@ class SearchViewModel(
             settingsRepository.enableNSFWSearch,
             settingsRepository.hideResultsWithZeroSeeders,
             settingsRepository.searchProviders,
+            settingsRepository.maxNumResults,
             ::SearchSettings
         ).collect { searchSettings ->
             // Save the changed settings.
@@ -310,14 +313,21 @@ class SearchViewModel(
     private fun filterSearchResults(
         results: List<Torrent>,
         settings: SearchSettings,
-    ): List<Torrent> = results
-        .filter { torrent -> !settings.hideResultsWithZeroSeeders || torrent.seeders != 0u }
-        .filter { torrent -> settings.searchProviders.contains(torrent.providerId) }
-        .filter { torrent ->
-            // Torrent with no category is also NSFW.
-            val categoryIsNullOrNSFW = torrent.category?.isNSFW ?: true
-            settings.enableNSFWSearch || !categoryIsNullOrNSFW
+    ): List<Torrent> {
+        val results = results
+            .filter { torrent -> !settings.hideResultsWithZeroSeeders || torrent.seeders != 0u }
+            .filter { torrent -> settings.searchProviders.contains(torrent.providerId) }
+            .filter { torrent ->
+                // Torrent with no category is also NSFW.
+                val categoryIsNullOrNSFW = torrent.category?.isNSFW ?: true
+                settings.enableNSFWSearch || !categoryIsNullOrNSFW
+            }
+
+        return when {
+            settings.maxNumResults.isUnlimited() -> results
+            else -> results.take(settings.maxNumResults.n)
         }
+    }
 
     companion object {
         private val DEFAULT_SORT_KEY = SortKey.Seeders

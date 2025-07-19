@@ -30,6 +30,16 @@ enum class DarkTheme {
     }
 }
 
+data class MaxNumResults(val n: Int) {
+    fun isUnlimited() = n == UNLIMITED_N
+
+    companion object {
+        private const val UNLIMITED_N = -1
+
+        val Unlimited = MaxNumResults(n = UNLIMITED_N)
+    }
+}
+
 class SettingsRepository(private val dataStore: DataStore<Preferences>) {
     val enableDynamicTheme: Flow<Boolean> = dataStore.data.map { preferences ->
         preferences[ENABLE_DYNAMIC_THEME] ?: true
@@ -53,6 +63,10 @@ class SettingsRepository(private val dataStore: DataStore<Preferences>) {
 
     val searchProviders: Flow<Set<String>> = dataStore.data.map { preferences ->
         preferences[SEARCH_PROVIDERS] ?: SearchProviders.enabledIds()
+    }
+
+    val maxNumResults: Flow<MaxNumResults> = dataStore.data.map { preferences ->
+        preferences[MAX_NUM_RESULTS]?.let(::MaxNumResults) ?: MaxNumResults.Unlimited
     }
 
     suspend fun updateEnableDynamicTheme(enabled: Boolean) {
@@ -91,6 +105,16 @@ class SettingsRepository(private val dataStore: DataStore<Preferences>) {
         }
     }
 
+    suspend fun updateMaxNumResults(maxNumResults: MaxNumResults) {
+        dataStore.edit { preferences ->
+            if (maxNumResults.isUnlimited()) {
+                preferences.remove(MAX_NUM_RESULTS)
+            } else {
+                preferences[MAX_NUM_RESULTS] = maxNumResults.n
+            }
+        }
+    }
+
     private companion object PreferencesKeys {
         val ENABLE_DYNAMIC_THEME = booleanPreferencesKey("enable_dynamic_theme")
         val DARK_THEME = intPreferencesKey("dark_theme")
@@ -98,5 +122,6 @@ class SettingsRepository(private val dataStore: DataStore<Preferences>) {
         val ENABLE_NSFW_SEARCH = booleanPreferencesKey("enable_nsfw_search")
         val HIDE_RESULTS_WITH_ZERO_SEEDERS = booleanPreferencesKey("hide_results_with_zero_seeders")
         val SEARCH_PROVIDERS = stringSetPreferencesKey("search_providers")
+        val MAX_NUM_RESULTS = intPreferencesKey("max_num_results")
     }
 }
