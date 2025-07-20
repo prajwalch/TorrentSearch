@@ -5,6 +5,7 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.intPreferencesKey
+import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.core.stringSetPreferencesKey
 
 import com.prajwalch.torrentsearch.providers.SearchProviders
@@ -15,19 +16,9 @@ import kotlinx.coroutines.flow.map
 enum class DarkTheme {
     On,
     Off,
-    FollowSystem;
-
-    override fun toString(): String = when (this) {
-        On -> "On"
-        Off -> "Off"
-        FollowSystem -> "Follow System"
-    }
-
-    companion object {
-        fun fromInt(ordinal: Int): DarkTheme {
-            return entries.first { it.ordinal == ordinal }
-        }
-    }
+    FollowSystem {
+        override fun toString() = "Follow System"
+    };
 }
 
 data class MaxNumResults(val n: Int) {
@@ -46,7 +37,7 @@ class SettingsRepository(private val dataStore: DataStore<Preferences>) {
     }
 
     val darkTheme: Flow<DarkTheme> = dataStore.data.map { preferences ->
-        preferences[DARK_THEME]?.let(DarkTheme::fromInt) ?: DarkTheme.FollowSystem
+        preferences[DARK_THEME]?.let(DarkTheme::valueOf) ?: DarkTheme.FollowSystem
     }
 
     val pureBlack: Flow<Boolean> = dataStore.data.map { preferences ->
@@ -77,7 +68,7 @@ class SettingsRepository(private val dataStore: DataStore<Preferences>) {
 
     suspend fun updateDarkTheme(darkTheme: DarkTheme) {
         dataStore.edit { preferences ->
-            preferences[DARK_THEME] = darkTheme.ordinal
+            preferences[DARK_THEME] = darkTheme.name
         }
     }
 
@@ -118,7 +109,7 @@ class SettingsRepository(private val dataStore: DataStore<Preferences>) {
     private companion object PreferencesKeys {
         // Appearance keys.
         val ENABLE_DYNAMIC_THEME = booleanPreferencesKey("enable_dynamic_theme")
-        val DARK_THEME = intPreferencesKey("dark_theme")
+        val DARK_THEME = stringPreferencesKey("dark_theme")
         val PURE_BLACK = booleanPreferencesKey("pure_black")
 
         // General keys.
