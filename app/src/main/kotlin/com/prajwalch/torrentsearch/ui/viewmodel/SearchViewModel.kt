@@ -17,9 +17,12 @@ import com.prajwalch.torrentsearch.utils.prettySizeToBytes
 
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
@@ -105,20 +108,29 @@ class SearchViewModel(
     val uiState = _uiState.asStateFlow()
 
     /**
+     * Current search settings.
+     *
+     * [observeSettings] observes it and automatically updates the UI.
+     */
+    private val settings = combine(
+        settingsRepository.enableNSFWMode,
+        settingsRepository.hideResultsWithZeroSeeders,
+        settingsRepository.searchProviders,
+        settingsRepository.maxNumResults,
+        ::SearchSettings
+    ).stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.Eagerly,
+        initialValue = SearchSettings(),
+    )
+
+    /**
      * Current on-going search.
      *
      * Before performing a new search, on-going search must be canceled
      * even if it is not completed.
      */
     private var searchJob: Job? = null
-
-    /**
-     * Current search settings.
-     *
-     * Automatically updated through [observeSettings] when settings
-     * changes.
-     */
-    private var settings = SearchSettings()
 
     /**
      * Unfiltered search results.
@@ -137,18 +149,10 @@ class SearchViewModel(
         observeSearchHistories()
     }
 
-    /** Observes the settings change and automatically updates the state. */
+    /** Observes the settings and automatically updates the UI state. */
     private fun observeSettings() = viewModelScope.launch {
-        combine(
-            settingsRepository.enableNSFWMode,
-            settingsRepository.hideResultsWithZeroSeeders,
-            settingsRepository.searchProviders,
-            settingsRepository.maxNumResults,
-            ::SearchSettings
-        ).collect { searchSettings ->
-            // Save the changed settings.
-            settings = searchSettings
-            updateUiStateOnSettingsChange()
+        settings.collect { searchSettings ->
+            updateUiStateOnSettingsChange(settings = searchSettings)
         }
     }
 
@@ -156,6 +160,7 @@ class SearchViewModel(
     private fun observeSearchHistories() = viewModelScope.launch {
         searchHistoriesRepository
             .all()
+            .distinctUntilChanged()
             .map { searchHistories -> searchHistories.toUiStates() }
             .collect { searchHistoryUiStates ->
                 _uiState.update { it.copy(histories = searchHistoryUiStates) }
@@ -243,7 +248,7 @@ class SearchViewModel(
             }
 
             // Acquire the enabled providers.
-            val searchProviders = SearchProviders.get(settings.searchProviders)
+            val searchProviders = SearchProviders.get(settings.value.searchProviders)
             // Perform the search using them.
             val torrentsRepositoryResult = torrentsRepository.search(
                 query = _uiState.value.query,
@@ -257,7 +262,7 @@ class SearchViewModel(
             // Filter (based on settings) and sort them.
             val results = filterSearchResults(
                 results = searchResults,
-                settings = settings
+                settings = settings.value
             ).customSort(
                 key = DEFAULT_SORT_KEY,
                 order = DEFAULT_SORT_ORDER,
@@ -277,8 +282,8 @@ class SearchViewModel(
         }
     }
 
-    /** Updates the UI state based on the current settings. */
-    private fun updateUiStateOnSettingsChange() {
+    /** Updates the UI state based on the given settings. */
+    private fun updateUiStateOnSettingsChange(settings: SearchSettings) {
         // Filter selectable categories.
         val categories = Category.entries.filter { settings.enableNSFWMode || !it.isNSFW }
         // Change the currently selected category to 'All' only if needed.
