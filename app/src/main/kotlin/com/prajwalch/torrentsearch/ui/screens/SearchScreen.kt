@@ -3,6 +3,10 @@ package com.prajwalch.torrentsearch.ui.screens
 import android.content.ClipData
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -82,7 +86,7 @@ fun SearchScreen(
     val snackbarHostState = remember { SnackbarHostState() }
 
     val lazyListState = rememberLazyListState()
-    val showScrollToUpButton by remember {
+    val showScrollToTopButton by remember {
         derivedStateOf { lazyListState.firstVisibleItemIndex > 1 }
     }
 
@@ -143,7 +147,7 @@ fun SearchScreen(
         },
         floatingActionButton = {
             ScrollToTopFAB(
-                visible = showScrollToUpButton,
+                visible = showScrollToTopButton,
                 onClick = {
                     coroutineScope.launch { lazyListState.animateScrollToItem(0) }
                 },
@@ -233,7 +237,12 @@ private fun SearchScreenTopBar(
 
 @Composable
 private fun ScrollToTopFAB(visible: Boolean, onClick: () -> Unit, modifier: Modifier = Modifier) {
-    AnimatedVisibility(modifier = modifier, visible = visible) {
+    AnimatedVisibility(
+        modifier = modifier,
+        visible = visible,
+        enter = fadeIn() + slideInVertically { fullHeight -> fullHeight },
+        exit = fadeOut() + slideOutVertically { fullHeight -> fullHeight },
+    ) {
         FloatingActionButton(onClick = onClick) {
             Icon(
                 painter = painterResource(R.drawable.ic_arrow_up),
