@@ -74,11 +74,7 @@ fun TopSearchBar(
             expanded = expanded,
             onExpandedChange = onExpandChange,
             colors = SearchBarDefaults.colors(containerColor = containerColor),
-            content = {
-                AnimatedVisibility(visible = expanded) {
-                    content()
-                }
-            },
+            content = content,
         )
     }
 }
