@@ -12,6 +12,7 @@ import com.prajwalch.torrentsearch.providers.SearchProviders
 
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
@@ -22,9 +23,14 @@ data class AppearanceSettingsUiState(
     val pureBlack: Boolean = false,
 )
 
+/** State for the general settings. */
+data class GeneralSettingsUiState(
+    val enableNSFWMode: Boolean = false,
+)
+
 /** State for the search settings. */
 data class SearchSettingsUiState(
-    val enableNSFWSearch: Boolean = false,
+//    val enableNSFWSearch: Boolean = false,
     val hideResultsWithZeroSeeders: Boolean = false,
     val searchProviders: List<SearchProviderUiState> = emptyList(),
     val totalSearchProviders: Int = SearchProviders.namesWithId().size,
@@ -67,16 +73,23 @@ class SettingsViewModel(private val repository: SettingsRepository) : ViewModel(
         initialValue = AppearanceSettingsUiState()
     )
 
+    val generalSettingsUiState = repository
+        .enableNSFWMode
+        .map(::GeneralSettingsUiState)
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.Eagerly,
+            initialValue = GeneralSettingsUiState()
+        )
+
     val searchSettingsUiState = combine(
-        repository.enableNSFWSearch,
         repository.hideResultsWithZeroSeeders,
         repository.searchProviders,
         repository.maxNumResults,
-    ) { enableNSFWSearch, hideResultsWithZeroSeeders, searchProviders, maxNumResults ->
+    ) { hideResultsWithZeroSeeders, searchProviders, maxNumResults ->
         enabledSearchProviders = searchProviders
 
         SearchSettingsUiState(
-            enableNSFWSearch = enableNSFWSearch,
             hideResultsWithZeroSeeders = hideResultsWithZeroSeeders,
             searchProviders = allSearchProvidersToUiStates(),
             totalSearchProviders = allSearchProviders.size,
@@ -115,9 +128,9 @@ class SettingsViewModel(private val repository: SettingsRepository) : ViewModel(
         viewModelScope.launch { repository.updatePureBlack(enable) }
     }
 
-    /** Enables/disables NSFW search. */
-    fun updateEnableNSFWSearch(enabled: Boolean) {
-        viewModelScope.launch { repository.updateEnableNSFWSearch(enabled) }
+    /** Enables/disables NSFW mode. */
+    fun updateEnableNSFWMode(enabled: Boolean) {
+        viewModelScope.launch { repository.updateEnableNSFWMode(enabled) }
     }
 
     /** Enables/disables an option to hide zero seeders. */

@@ -10,13 +10,13 @@ import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 
 import com.prajwalch.torrentsearch.R
 import com.prajwalch.torrentsearch.data.DarkTheme
@@ -28,7 +28,7 @@ import com.prajwalch.torrentsearch.ui.components.SettingsSectionTitle
 @Composable
 fun AppearanceSettings(modifier: Modifier = Modifier) {
     val viewModel = LocalSettingsViewModel.current
-    val settings by viewModel.appearanceSettingsUiState.collectAsState()
+    val settings by viewModel.appearanceSettingsUiState.collectAsStateWithLifecycle()
 
     var showDarkThemeDialog by remember(settings) { mutableStateOf(false) }
 

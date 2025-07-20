@@ -16,6 +16,7 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+
 import com.prajwalch.torrentsearch.R
 import com.prajwalch.torrentsearch.ui.viewmodel.SettingsViewModel
 
@@ -41,6 +42,7 @@ fun SettingsScreen(
                 contentPadding = innerPadding,
             ) {
                 item { AppearanceSettings() }
+                item { GeneralSettings() }
                 item { SearchSettings() }
             }
         }

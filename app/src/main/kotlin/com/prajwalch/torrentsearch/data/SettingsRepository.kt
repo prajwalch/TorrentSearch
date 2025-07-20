@@ -53,8 +53,8 @@ class SettingsRepository(private val dataStore: DataStore<Preferences>) {
         preferences[PURE_BLACK] ?: false
     }
 
-    val enableNSFWSearch: Flow<Boolean> = dataStore.data.map { preferences ->
-        preferences[ENABLE_NSFW_SEARCH] ?: false
+    val enableNSFWMode: Flow<Boolean> = dataStore.data.map { preferences ->
+        preferences[ENABLE_NSFW_MODE] ?: false
     }
 
     val hideResultsWithZeroSeeders: Flow<Boolean> = dataStore.data.map { preferences ->
@@ -69,9 +69,9 @@ class SettingsRepository(private val dataStore: DataStore<Preferences>) {
         preferences[MAX_NUM_RESULTS]?.let(::MaxNumResults) ?: MaxNumResults.Unlimited
     }
 
-    suspend fun updateEnableDynamicTheme(enabled: Boolean) {
+    suspend fun updateEnableDynamicTheme(enable: Boolean) {
         dataStore.edit { preferences ->
-            preferences[ENABLE_DYNAMIC_THEME] = enabled
+            preferences[ENABLE_DYNAMIC_THEME] = enable
         }
     }
 
@@ -87,9 +87,9 @@ class SettingsRepository(private val dataStore: DataStore<Preferences>) {
         }
     }
 
-    suspend fun updateEnableNSFWSearch(enabled: Boolean) {
+    suspend fun updateEnableNSFWMode(enable: Boolean) {
         dataStore.edit { preferences ->
-            preferences[ENABLE_NSFW_SEARCH] = enabled
+            preferences[ENABLE_NSFW_MODE] = enable
         }
     }
 
@@ -116,10 +116,15 @@ class SettingsRepository(private val dataStore: DataStore<Preferences>) {
     }
 
     private companion object PreferencesKeys {
+        // Appearance keys.
         val ENABLE_DYNAMIC_THEME = booleanPreferencesKey("enable_dynamic_theme")
         val DARK_THEME = intPreferencesKey("dark_theme")
         val PURE_BLACK = booleanPreferencesKey("pure_black")
-        val ENABLE_NSFW_SEARCH = booleanPreferencesKey("enable_nsfw_search")
+
+        // General keys.
+        val ENABLE_NSFW_MODE = booleanPreferencesKey("enable_nsfw_mode")
+
+        // Search keys.
         val HIDE_RESULTS_WITH_ZERO_SEEDERS = booleanPreferencesKey("hide_results_with_zero_seeders")
         val SEARCH_PROVIDERS = stringSetPreferencesKey("search_providers")
         val MAX_NUM_RESULTS = intPreferencesKey("max_num_results")

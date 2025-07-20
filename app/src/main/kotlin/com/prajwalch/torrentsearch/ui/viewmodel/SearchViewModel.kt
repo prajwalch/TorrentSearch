@@ -79,9 +79,9 @@ enum class SortOrder {
     }
 }
 
-/** Used to store settings in a properly formatted way.*/
+/** Relevant settings for the Search screen. */
 private data class SearchSettings(
-    val enableNSFWSearch: Boolean = false,
+    val enableNSFWMode: Boolean = false,
     val hideResultsWithZeroSeeders: Boolean = false,
     val searchProviders: Set<SearchProviderId> = emptySet(),
     val maxNumResults: MaxNumResults = MaxNumResults.Unlimited,
@@ -140,7 +140,7 @@ class SearchViewModel(
     /** Observes the settings change and automatically updates the state. */
     private fun observeSettings() = viewModelScope.launch {
         combine(
-            settingsRepository.enableNSFWSearch,
+            settingsRepository.enableNSFWMode,
             settingsRepository.hideResultsWithZeroSeeders,
             settingsRepository.searchProviders,
             settingsRepository.maxNumResults,
@@ -280,10 +280,10 @@ class SearchViewModel(
     /** Updates the UI state based on the current settings. */
     private fun updateUiStateOnSettingsChange() {
         // Filter selectable categories.
-        val categories = Category.entries.filter { settings.enableNSFWSearch || !it.isNSFW }
+        val categories = Category.entries.filter { settings.enableNSFWMode || !it.isNSFW }
         // Change the currently selected category to 'All' only if needed.
         val currentlySelectedCategory = _uiState.value.selectedCategory
-        val selectedCategory = if (!settings.enableNSFWSearch && currentlySelectedCategory.isNSFW) {
+        val selectedCategory = if (!settings.enableNSFWMode && currentlySelectedCategory.isNSFW) {
             Category.All
         } else {
             currentlySelectedCategory
@@ -320,7 +320,7 @@ class SearchViewModel(
             .filter { torrent ->
                 // Torrent with no category is also NSFW.
                 val categoryIsNullOrNSFW = torrent.category?.isNSFW ?: true
-                settings.enableNSFWSearch || !categoryIsNullOrNSFW
+                settings.enableNSFWMode || !categoryIsNullOrNSFW
             }
 
         return when {

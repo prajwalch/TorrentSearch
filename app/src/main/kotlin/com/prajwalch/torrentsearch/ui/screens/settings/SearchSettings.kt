@@ -15,7 +15,6 @@ import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -25,6 +24,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 
 import com.prajwalch.torrentsearch.R
 import com.prajwalch.torrentsearch.data.MaxNumResults
@@ -38,7 +38,7 @@ import com.prajwalch.torrentsearch.ui.viewmodel.SearchProviderUiState
 @Composable
 fun SearchSettings(modifier: Modifier = Modifier) {
     val viewModel = LocalSettingsViewModel.current
-    val settings by viewModel.searchSettingsUiState.collectAsState()
+    val settings by viewModel.searchSettingsUiState.collectAsStateWithLifecycle()
 
     var showProviderListDialog by remember { mutableStateOf(false) }
     var showMaxNumResultsDialog by remember { mutableStateOf(false) }
@@ -69,17 +69,6 @@ fun SearchSettings(modifier: Modifier = Modifier) {
 
     Column(modifier = modifier) {
         SettingsSectionTitle(title = stringResource(R.string.settings_section_search))
-        SettingsItem(
-            onClick = { viewModel.updateEnableNSFWSearch(!settings.enableNSFWSearch) },
-            leadingIconId = R.drawable.ic_18_up_rating,
-            headline = stringResource(R.string.setting_enable_nsfw_search),
-            trailingContent = {
-                Switch(
-                    checked = settings.enableNSFWSearch,
-                    onCheckedChange = { viewModel.updateEnableNSFWSearch(it) },
-                )
-            },
-        )
         SettingsItem(
             onClick = {
                 viewModel.updateHideResultsWithZeroSeeders(!settings.hideResultsWithZeroSeeders)
