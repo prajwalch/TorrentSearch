@@ -44,6 +44,7 @@ fun SettingsScreen(
                 item { AppearanceSettings() }
                 item { GeneralSettings() }
                 item { SearchSettings() }
+                item { SearchHistorySettings() }
             }
         }
     }

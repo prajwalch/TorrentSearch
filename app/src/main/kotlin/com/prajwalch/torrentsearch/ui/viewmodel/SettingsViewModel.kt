@@ -36,6 +36,10 @@ data class SearchSettingsUiState(
     val totalSearchProviders: Int = SearchProviders.namesWithId().size,
     val enabledSearchProviders: Int = 0,
     val maxNumResults: MaxNumResults = MaxNumResults.Unlimited,
+)
+
+/** State for the search history settings. */
+data class SearchHistorySettingsUiState(
     val pauseSearchHistory: Boolean = true,
 )
 
@@ -90,8 +94,7 @@ class SettingsViewModel(
         settingsRepository.hideResultsWithZeroSeeders,
         settingsRepository.searchProviders,
         settingsRepository.maxNumResults,
-        settingsRepository.pauseSearchHistory,
-    ) { hideResultsWithZeroSeeders, searchProviders, maxNumResults, pauseSearchHistory ->
+    ) { hideResultsWithZeroSeeders, searchProviders, maxNumResults ->
         enabledSearchProviders = searchProviders
 
         SearchSettingsUiState(
@@ -100,13 +103,21 @@ class SettingsViewModel(
             totalSearchProviders = allSearchProviders.size,
             enabledSearchProviders = enabledSearchProviders.size,
             maxNumResults = maxNumResults,
-            pauseSearchHistory = pauseSearchHistory,
         )
     }.stateIn(
         scope = viewModelScope,
         started = SharingStarted.Eagerly,
         initialValue = SearchSettingsUiState()
     )
+
+    val searchHistorySettingsUiState = settingsRepository
+        .pauseSearchHistory
+        .map(::SearchHistorySettingsUiState)
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.Eagerly,
+            initialValue = SearchHistorySettingsUiState()
+        )
 
     /** Converts list of search provider to list of UI states. */
     private fun allSearchProvidersToUiStates(): List<SearchProviderUiState> {
