@@ -88,6 +88,7 @@ private data class SearchSettings(
     val hideResultsWithZeroSeeders: Boolean = false,
     val searchProviders: Set<SearchProviderId> = emptySet(),
     val maxNumResults: MaxNumResults = MaxNumResults.Unlimited,
+    val pauseSearchHistory: Boolean = false,
 )
 
 /** Drives the search logic. */
@@ -117,6 +118,7 @@ class SearchViewModel(
         settingsRepository.hideResultsWithZeroSeeders,
         settingsRepository.searchProviders,
         settingsRepository.maxNumResults,
+        settingsRepository.pauseSearchHistory,
         ::SearchSettings
     ).stateIn(
         scope = viewModelScope,
@@ -231,9 +233,11 @@ class SearchViewModel(
             //
             // We can't trim from the `setQuery` function simply because doing so
             // won't allow the user to insert a whitespace at all.
-            searchHistoriesRepository.add(
-                searchHistory = SearchHistory(query = _uiState.value.query.trim())
-            )
+            if (!settings.value.pauseSearchHistory) {
+                searchHistoriesRepository.add(
+                    searchHistory = SearchHistory(query = _uiState.value.query.trim())
+                )
+            }
 
             // Return as soon as we get the bad internet connection status.
             if (!torrentsRepository.isInternetAvailable()) {

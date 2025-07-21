@@ -80,6 +80,7 @@
     <string name="setting_max_num_results">Maximum number of results</string>
     <string name="max_n_results">%1$d results</string>
     <string name="unlimited">Unlimited</string>
+    <string name="setting_pause_search_history">Pause search history</string>
     <string name="setting_delete_search_history">Delete search history</string>
     <!-- Settings dialog -->
     <string name="settings_dialog_button_cancel">Cancel</string>

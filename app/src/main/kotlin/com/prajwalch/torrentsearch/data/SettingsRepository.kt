@@ -60,6 +60,10 @@ class SettingsRepository(private val dataStore: DataStore<Preferences>) {
         preferences[MAX_NUM_RESULTS]?.let(::MaxNumResults) ?: MaxNumResults.Unlimited
     }
 
+    val pauseSearchHistory: Flow<Boolean> = dataStore.data.map { preferences ->
+        preferences[PAUSE_SEARCH_HISTORY] ?: false
+    }
+
     suspend fun updateEnableDynamicTheme(enable: Boolean) {
         dataStore.edit { preferences ->
             preferences[ENABLE_DYNAMIC_THEME] = enable
@@ -106,6 +110,12 @@ class SettingsRepository(private val dataStore: DataStore<Preferences>) {
         }
     }
 
+    suspend fun updatePauseSearchHistory(pause: Boolean) {
+        dataStore.edit { preferences ->
+            preferences[PAUSE_SEARCH_HISTORY] = pause
+        }
+    }
+
     private companion object PreferencesKeys {
         // Appearance keys.
         val ENABLE_DYNAMIC_THEME = booleanPreferencesKey("enable_dynamic_theme")
@@ -119,5 +129,6 @@ class SettingsRepository(private val dataStore: DataStore<Preferences>) {
         val HIDE_RESULTS_WITH_ZERO_SEEDERS = booleanPreferencesKey("hide_results_with_zero_seeders")
         val SEARCH_PROVIDERS = stringSetPreferencesKey("search_providers")
         val MAX_NUM_RESULTS = intPreferencesKey("max_num_results")
+        val PAUSE_SEARCH_HISTORY = booleanPreferencesKey("enable_search_history")
     }
 }

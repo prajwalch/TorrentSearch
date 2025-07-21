@@ -31,12 +31,12 @@ data class GeneralSettingsUiState(
 
 /** State for the search settings. */
 data class SearchSettingsUiState(
-//    val enableNSFWSearch: Boolean = false,
     val hideResultsWithZeroSeeders: Boolean = false,
     val searchProviders: List<SearchProviderUiState> = emptyList(),
     val totalSearchProviders: Int = SearchProviders.namesWithId().size,
     val enabledSearchProviders: Int = 0,
     val maxNumResults: MaxNumResults = MaxNumResults.Unlimited,
+    val pauseSearchHistory: Boolean = true,
 )
 
 /** State for the search providers list. */
@@ -90,7 +90,8 @@ class SettingsViewModel(
         settingsRepository.hideResultsWithZeroSeeders,
         settingsRepository.searchProviders,
         settingsRepository.maxNumResults,
-    ) { hideResultsWithZeroSeeders, searchProviders, maxNumResults ->
+        settingsRepository.pauseSearchHistory,
+    ) { hideResultsWithZeroSeeders, searchProviders, maxNumResults, pauseSearchHistory ->
         enabledSearchProviders = searchProviders
 
         SearchSettingsUiState(
@@ -99,6 +100,7 @@ class SettingsViewModel(
             totalSearchProviders = allSearchProviders.size,
             enabledSearchProviders = enabledSearchProviders.size,
             maxNumResults = maxNumResults,
+            pauseSearchHistory = pauseSearchHistory,
         )
     }.stateIn(
         scope = viewModelScope,
@@ -160,6 +162,13 @@ class SettingsViewModel(
     /** Updates the maximum number of results. */
     fun updateMaxNumResults(maxNumResults: MaxNumResults) {
         viewModelScope.launch { settingsRepository.updateMaxNumResults(maxNumResults) }
+    }
+
+    /** Pauses/resumes search history. */
+    fun pauseSearchHistory(pause: Boolean) {
+        viewModelScope.launch {
+            settingsRepository.updatePauseSearchHistory(pause)
+        }
     }
 
     /** Deletes all search history. */

@@ -103,9 +103,20 @@ fun SearchSettings(modifier: Modifier = Modifier) {
             },
         )
         SettingsItem(
+            onClick = { viewModel.pauseSearchHistory(!settings.pauseSearchHistory) },
+            leadingIconId = R.drawable.ic_history_off,
+            headlineId = R.string.setting_pause_search_history,
+            trailingContent = {
+                Switch(
+                    checked = settings.pauseSearchHistory,
+                    onCheckedChange = { viewModel.pauseSearchHistory(it) },
+                )
+            },
+        )
+        SettingsItem(
             onClick = { viewModel.deleteSearchHistory() },
             leadingIconId = R.drawable.ic_delete_history,
-            headlineId = R.string.setting_delete_search_history
+            headlineId = R.string.setting_delete_search_history,
         )
     }
 }
