@@ -24,7 +24,7 @@ interface DatabaseDao {
     suspend fun delete(searchHistory: SearchHistory)
 
     @Query("DELETE from search_history")
-    suspend fun deleteAllSearchHistories()
+    suspend fun clearSearchHistory()
 
     // Bookmark/favourite operations.
     @Query("SELECT * FROM bookmarks ORDER by id DESC")

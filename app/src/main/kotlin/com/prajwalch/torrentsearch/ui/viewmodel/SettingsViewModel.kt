@@ -171,10 +171,10 @@ class SettingsViewModel(
         }
     }
 
-    /** Deletes all search history. */
-    fun deleteSearchHistory() {
+    /** Clears all search history. */
+    fun clearSearchHistory() {
         viewModelScope.launch {
-            searchHistoryRepository.deleteAll()
+            searchHistoryRepository.clearSearchHistory()
         }
     }
 
