@@ -23,4 +23,9 @@ class SearchHistoriesRepository(private val database: TorrentSearchDatabase) {
     suspend fun remove(searchHistory: SearchHistory) {
         database.delete(searchHistory)
     }
+
+    /** Deletes all search history. */
+    suspend fun deleteAll() {
+        database.deleteAllSearchHistories()
+    }
 }

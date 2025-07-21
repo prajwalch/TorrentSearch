@@ -102,6 +102,11 @@ fun SearchSettings(modifier: Modifier = Modifier) {
                 settings.maxNumResults.n.toString()
             },
         )
+        SettingsItem(
+            onClick = { viewModel.deleteSearchHistory() },
+            leadingIconId = R.drawable.ic_delete_history,
+            headlineId = R.string.setting_delete_search_history
+        )
     }
 }
 

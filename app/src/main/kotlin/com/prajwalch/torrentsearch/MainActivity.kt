@@ -67,7 +67,10 @@ class MainActivity : ComponentActivity() {
     }
 
     private val settingsViewModel: SettingsViewModel by viewModels {
-        SettingsViewModel.provideFactory(settingsRepository = settingsRepository)
+        SettingsViewModel.provideFactory(
+            settingsRepository = settingsRepository,
+            searchHistoryRepository = searchHistoryRepository,
+        )
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
