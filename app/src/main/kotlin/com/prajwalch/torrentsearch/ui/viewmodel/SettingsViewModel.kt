@@ -6,7 +6,7 @@ import androidx.lifecycle.viewModelScope
 
 import com.prajwalch.torrentsearch.data.DarkTheme
 import com.prajwalch.torrentsearch.data.MaxNumResults
-import com.prajwalch.torrentsearch.data.SearchHistoriesRepository
+import com.prajwalch.torrentsearch.data.SearchHistoryRepository
 import com.prajwalch.torrentsearch.data.SearchProviderId
 import com.prajwalch.torrentsearch.data.SettingsRepository
 import com.prajwalch.torrentsearch.providers.SearchProviders
@@ -53,7 +53,7 @@ data class SearchProviderUiState(
 /** ViewModel that handles the business logic of Settings screen. */
 class SettingsViewModel(
     private val settingsRepository: SettingsRepository,
-    private val searchHistoryRepository: SearchHistoriesRepository,
+    private val searchHistoryRepository: SearchHistoryRepository,
 ) : ViewModel() {
     /** All search providers (enabled + disabled). */
     private val allSearchProviders = SearchProviders.namesWithId()
@@ -185,7 +185,7 @@ class SettingsViewModel(
     /** Clears all search history. */
     fun clearSearchHistory() {
         viewModelScope.launch {
-            searchHistoryRepository.clearSearchHistory()
+            searchHistoryRepository.clearAll()
         }
     }
 
@@ -193,7 +193,7 @@ class SettingsViewModel(
         /** Provides a factor function for [SettingsViewModel]. */
         fun provideFactory(
             settingsRepository: SettingsRepository,
-            searchHistoryRepository: SearchHistoriesRepository,
+            searchHistoryRepository: SearchHistoryRepository,
         ): ViewModelProvider.Factory {
             return object : ViewModelProvider.Factory {
                 @Suppress("UNCHECKED_CAST")

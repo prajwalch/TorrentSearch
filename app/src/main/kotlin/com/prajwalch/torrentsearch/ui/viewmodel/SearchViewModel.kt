@@ -5,7 +5,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 
 import com.prajwalch.torrentsearch.data.MaxNumResults
-import com.prajwalch.torrentsearch.data.SearchHistoriesRepository
+import com.prajwalch.torrentsearch.data.SearchHistoryRepository
 import com.prajwalch.torrentsearch.data.SearchProviderId
 import com.prajwalch.torrentsearch.data.SettingsRepository
 import com.prajwalch.torrentsearch.data.TorrentsRepository
@@ -94,7 +94,7 @@ private data class SearchSettings(
 /** Drives the search logic. */
 class SearchViewModel(
     private val settingsRepository: SettingsRepository,
-    private val searchHistoriesRepository: SearchHistoriesRepository,
+    private val searchHistoryRepository: SearchHistoryRepository,
     private val torrentsRepository: TorrentsRepository,
 ) : ViewModel() {
     /**
@@ -160,8 +160,8 @@ class SearchViewModel(
 
     /** Observes search history changes and automatically updates the UI. */
     private fun observeSearchHistories() = viewModelScope.launch {
-        searchHistoriesRepository
-            .all()
+        searchHistoryRepository
+            .getAll()
             .distinctUntilChanged()
             .map { searchHistories -> searchHistories.toUiStates() }
             .collect { searchHistoryUiStates ->
@@ -185,7 +185,7 @@ class SearchViewModel(
             val searchHistory = _uiState.value.histories.find { it.id == id }
 
             searchHistory?.let { searchHistoryUiState ->
-                searchHistoriesRepository.remove(
+                searchHistoryRepository.remove(
                     searchHistory = searchHistoryUiState.toEntity()
                 )
             }
@@ -234,7 +234,7 @@ class SearchViewModel(
             // We can't trim from the `setQuery` function simply because doing so
             // won't allow the user to insert a whitespace at all.
             if (!settings.value.pauseSearchHistory) {
-                searchHistoriesRepository.add(
+                searchHistoryRepository.add(
                     searchHistory = SearchHistory(query = _uiState.value.query.trim())
                 )
             }
@@ -345,14 +345,14 @@ class SearchViewModel(
         /** Provides a factory function for [SearchViewModel]. */
         fun provideFactory(
             settingsRepository: SettingsRepository,
-            searchHistoriesRepository: SearchHistoriesRepository,
+            searchHistoryRepository: SearchHistoryRepository,
             torrentsRepository: TorrentsRepository,
         ): ViewModelProvider.Factory = object : ViewModelProvider.Factory {
             @Suppress("UNCHECKED_CAST")
             override fun <T : ViewModel> create(modelClass: Class<T>): T {
                 return SearchViewModel(
                     settingsRepository = settingsRepository,
-                    searchHistoriesRepository = searchHistoriesRepository,
+                    searchHistoryRepository = searchHistoryRepository,
                     torrentsRepository = torrentsRepository,
                 ) as T
             }
