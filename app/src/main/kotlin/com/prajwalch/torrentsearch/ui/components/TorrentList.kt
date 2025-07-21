@@ -18,6 +18,7 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -113,7 +114,7 @@ fun TorrentList(
 }
 
 @Composable
-private fun TorrentListItem(torrent: Torrent, modifier: Modifier = Modifier) {
+fun TorrentListItem(torrent: Torrent, modifier: Modifier = Modifier) {
     ListItem(
         modifier = modifier,
         overlineContent = {
@@ -127,7 +128,9 @@ private fun TorrentListItem(torrent: Torrent, modifier: Modifier = Modifier) {
         headlineContent = { Text(torrent.name) },
         supportingContent = {
             TorrentMetadataInfo(
-                torrent = torrent,
+                size = torrent.size,
+                seeders = torrent.seeders,
+                peers = torrent.peers,
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(top = 8.dp),
@@ -188,22 +191,27 @@ private fun TorrentProviderNameAndUploadDate(
 }
 
 @Composable
-private fun TorrentMetadataInfo(torrent: Torrent, modifier: Modifier = Modifier) {
+private fun TorrentMetadataInfo(
+    size: String,
+    seeders: UInt,
+    peers: UInt,
+    modifier: Modifier = Modifier,
+) {
     Row(
         modifier = modifier,
         horizontalArrangement = Arrangement.spacedBy(8.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         TorrentMetaInfo(
-            text = torrent.size,
+            text = size,
             icon = R.drawable.ic_size_info,
         )
         TorrentMetaInfo(
-            text = stringResource(R.string.seeders, torrent.seeders),
+            text = stringResource(R.string.seeders, seeders),
             icon = R.drawable.ic_seeders,
         )
         TorrentMetaInfo(
-            text = stringResource(R.string.peers, torrent.peers),
+            text = stringResource(R.string.peers, peers),
             icon = R.drawable.ic_peers,
         )
     }

@@ -33,6 +33,9 @@ import com.prajwalch.torrentsearch.R
 fun TorrentActionsBottomSheet(
     title: String,
     isNSFW: Boolean,
+    isBookmarked: Boolean,
+    onBookmark: () -> Unit,
+    onDeleteBookmark: () -> Unit,
     onDismissRequest: () -> Unit,
     onDownloadTorrent: () -> Unit,
     onCopyMagnetLink: () -> Unit,
@@ -71,6 +74,18 @@ fun TorrentActionsBottomSheet(
         Spacer(modifier = Modifier.height(8.dp))
         LazyColumn {
             item {
+                if (!isBookmarked) {
+                    BookmarkAction(onClick = {
+                        onBookmark()
+                        onDismissRequest()
+                    })
+                } else {
+                    DeleteBookmarkAction(onClick = {
+                        onDeleteBookmark()
+                        onDismissRequest()
+                    })
+                }
+
                 DownloadAction(onClick = {
                     onDownloadTorrent()
                     onDismissRequest()
@@ -171,6 +186,26 @@ private fun ShareDescriptionPageUrlAction(onClick: () -> Unit, modifier: Modifie
         modifier = modifier,
         leadingIconId = R.drawable.ic_share,
         label = stringResource(R.string.action_share_description_page_url),
+        onClick = onClick,
+    )
+}
+
+@Composable
+private fun BookmarkAction(onClick: () -> Unit, modifier: Modifier = Modifier) {
+    Action(
+        modifier = modifier,
+        leadingIconId = R.drawable.ic_star,
+        label = "Bookmark",
+        onClick = onClick,
+    )
+}
+
+@Composable
+private fun DeleteBookmarkAction(onClick: () -> Unit, modifier: Modifier = Modifier) {
+    Action(
+        modifier = modifier,
+        leadingIconId = R.drawable.ic_star_filled,
+        label = "Delete bookmark",
         onClick = onClick,
     )
 }

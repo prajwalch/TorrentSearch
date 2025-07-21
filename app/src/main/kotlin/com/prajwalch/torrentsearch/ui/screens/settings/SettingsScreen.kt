@@ -26,8 +26,8 @@ val LocalSettingsViewModel = compositionLocalOf<SettingsViewModel> {
 
 @Composable
 fun SettingsScreen(
-    viewModel: SettingsViewModel,
     onNavigateBack: () -> Unit,
+    viewModel: SettingsViewModel,
     modifier: Modifier = Modifier,
 ) {
     Scaffold(

@@ -7,6 +7,7 @@ typealias MagnetUri = String
 
 /** Metadata information of a torrent */
 data class Torrent(
+    val id: Long = 0,
     /** Name of the torrent. */
     val name: String,
     /** Torrent size (in pretty format). */
@@ -36,6 +37,8 @@ data class Torrent(
      * Either of them is required for download functionality but not both.
      */
     private val infoHashOrMagnetUri: InfoHashOrMagnetUri,
+    /** Is this torrent bookmarked?. */
+    val bookmarked: Boolean = false,
 ) {
     /** Returns the magnet URI of this torrent. */
     fun magnetUri(): MagnetUri = when (infoHashOrMagnetUri) {

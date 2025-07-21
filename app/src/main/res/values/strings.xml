@@ -9,13 +9,11 @@
     </string>
     <string name="section_title_recommended_client">Recommended client</string>
     <string name="section_title_other_clients">Other clients</string>
-
     <string name="libretorrent">LibreTorrent</string>
     <string name="aria2">Aria2App</string>
     <string name="gopeed">Gopeed</string>
     <string name="pikatorrent">PikaTorrent</string>
     <string name="torrserve">TorrServe</string>
-
     <string name="source_playstore">PlayStore</string>
     <string name="source_fdroid">F-Droid</string>
     <string name="source_github">Github</string>
@@ -28,30 +26,25 @@
     <string name="desc_unfocus_search_bar">Unfocus search bar and hide keyboard</string>
     <string name="desc_clear_search_query">Clear search query</string>
     <string name="desc_selected_category">Selected category</string>
+    <string name="button_go_to_bookmarks_screen">Go to bookmarks screen</string>
     <string name="button_go_to_settings_screen">Go to settings screen</string>
     <string name="button_delete_search_history">Delete search history</string>
     <string name="button_select_search_history">Select search history</string>
-
     <!-- No internet connection error -->
     <string name="msg_no_internet_connection">No internet connection</string>
     <string name="button_retry">Retry</string>
-
     <string name="msg_no_results_found">No results found</string>
-
     <!-- Empty search placeholder -->
     <string name="msg_page_empty">Nothing here yet</string>
     <string name="msg_start_searching">Start searching to see results</string>
-
     <!-- Results toolbar -->
     <string name="hint_results_count">About %1$d results</string>
     <string name="button_open_sort_options">Open sort options</string>
     <string name="button_change_sort_order">Change sort order to %s</string>
-
     <string name="nsfw">NSFW</string>
     <string name="button_scroll_to_top">Scroll to top</string>
     <string name="seeders">Seeders %1$s</string>
     <string name="peers">Peers %1$s</string>
-
     <!-- Torrent actions bottom sheet -->
     <string name="action_download">Download</string>
     <string name="action_copy_magnet_link">Copy magnet link</string>
@@ -63,11 +56,14 @@
     <string name="hint_description_page_url_copied">Url copied to clipboard!</string>
     <!-- Search Screen -->
 
+    <!-- Bookmarks Screen -->
+    <string name="bookmarks_screen_title">Bookmarks</string>
+    <!-- Bookmarks Screen -->
+
     <!-- Settings Screen -->
     <!-- Top app bar -->
     <string name="settings_screen_title">Settings</string>
     <string name="button_go_back_to_search_screen">Go back to search screen</string>
-
     <!-- Appearance section -->
     <string name="settings_section_appearance">Appearance</string>
     <string name="setting_enable_dynamic_theme">Enable dynamic theme</string>
@@ -84,7 +80,6 @@
     <string name="setting_max_num_results">Maximum number of results</string>
     <string name="max_n_results">%1$d results</string>
     <string name="unlimited">Unlimited</string>
-
     <!-- Settings dialog -->
     <string name="settings_dialog_button_cancel">Cancel</string>
     <!-- Settings Screen -->

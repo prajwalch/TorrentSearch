@@ -17,6 +17,7 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.preferencesDataStore
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.prajwalch.torrentsearch.data.BookmarksRepository
 
 import com.prajwalch.torrentsearch.data.DarkTheme
 import com.prajwalch.torrentsearch.data.SearchHistoriesRepository
@@ -28,6 +29,7 @@ import com.prajwalch.torrentsearch.models.MagnetUri
 import com.prajwalch.torrentsearch.network.HttpClient
 import com.prajwalch.torrentsearch.ui.TorrentSearchApp
 import com.prajwalch.torrentsearch.ui.theme.TorrentSearchTheme
+import com.prajwalch.torrentsearch.ui.viewmodel.BookmarksViewModel
 import com.prajwalch.torrentsearch.ui.viewmodel.SearchViewModel
 import com.prajwalch.torrentsearch.ui.viewmodel.SettingsViewModel
 
@@ -58,6 +60,12 @@ class MainActivity : ComponentActivity() {
         )
     }
 
+    private val bookmarksViewModel: BookmarksViewModel by viewModels {
+        BookmarksViewModel.provideFactory(
+            bookmarksRepository = BookmarksRepository(database = database)
+        )
+    }
+
     private val settingsViewModel: SettingsViewModel by viewModels {
         SettingsViewModel.provideFactory(settingsRepository = settingsRepository)
     }
@@ -82,6 +90,7 @@ class MainActivity : ComponentActivity() {
             ) {
                 TorrentSearchApp(
                     searchViewModel = searchViewModel,
+                    bookmarksViewModel = bookmarksViewModel,
                     settingsViewModel = settingsViewModel,
                     onDownloadTorrent = ::downloadTorrentViaClient,
                     onShareMagnetLink = ::shareMagnetLink,

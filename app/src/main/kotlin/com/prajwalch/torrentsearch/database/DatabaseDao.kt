@@ -6,6 +6,7 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 
+import com.prajwalch.torrentsearch.database.entities.BookmarkedTorrent
 import com.prajwalch.torrentsearch.database.entities.SearchHistory
 
 import kotlinx.coroutines.flow.Flow
@@ -23,4 +24,12 @@ interface DatabaseDao {
     suspend fun delete(searchHistory: SearchHistory)
 
     // Bookmark/favourite operations.
+    @Query("SELECT * FROM bookmarks ORDER by id DESC")
+    fun bookmarkedTorrents(): Flow<List<BookmarkedTorrent>>
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insert(bookmarkedTorrent: BookmarkedTorrent)
+
+    @Delete
+    suspend fun delete(bookmarkedTorrent: BookmarkedTorrent)
 }

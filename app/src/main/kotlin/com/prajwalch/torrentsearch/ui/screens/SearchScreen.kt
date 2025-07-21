@@ -1,7 +1,5 @@
 package com.prajwalch.torrentsearch.ui.screens
 
-import android.content.ClipData
-
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -41,9 +39,6 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.ClipEntry
-import androidx.compose.ui.platform.Clipboard
-import androidx.compose.ui.platform.LocalClipboard
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
@@ -54,12 +49,10 @@ import androidx.compose.ui.unit.dp
 
 import com.prajwalch.torrentsearch.R
 import com.prajwalch.torrentsearch.models.Category
-import com.prajwalch.torrentsearch.models.MagnetUri
 import com.prajwalch.torrentsearch.models.Torrent
 import com.prajwalch.torrentsearch.ui.components.CategoryChipsRow
 import com.prajwalch.torrentsearch.ui.components.SearchHistoryList
 import com.prajwalch.torrentsearch.ui.components.TopSearchBar
-import com.prajwalch.torrentsearch.ui.components.TorrentActionsBottomSheet
 import com.prajwalch.torrentsearch.ui.components.TorrentList
 import com.prajwalch.torrentsearch.ui.viewmodel.SearchHistoryId
 import com.prajwalch.torrentsearch.ui.viewmodel.SearchHistoryUiState
@@ -71,26 +64,22 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun SearchScreen(
-    viewModel: SearchViewModel,
-    onDownloadTorrent: (MagnetUri) -> Unit,
-    onShareMagnetLink: (MagnetUri) -> Unit,
-    onOpenDescriptionPage: (String) -> Unit,
-    onShareDescriptionPageUrl: (String) -> Unit,
+    onNavigateToBookmarks: () -> Unit,
     onNavigateToSettings: () -> Unit,
+    viewModel: SearchViewModel,
+    onTorrentSelect: (Torrent) -> Unit,
+    snackbarHostState: SnackbarHostState,
     modifier: Modifier = Modifier,
 ) {
     val uiState by viewModel.uiState.collectAsState()
-    var selectedTorrent by remember { mutableStateOf<Torrent?>(null) }
 
+    // Scroll to top button related.
     val coroutineScope = rememberCoroutineScope()
-    val snackbarHostState = remember { SnackbarHostState() }
-
     val lazyListState = rememberLazyListState()
     val showScrollToTopButton by remember {
         derivedStateOf { lazyListState.firstVisibleItemIndex > 1 }
     }
 
-    val clipboard = LocalClipboard.current
     val focusManager = LocalFocusManager.current
     val keyboardController = LocalSoftwareKeyboardController.current
 
@@ -99,37 +88,10 @@ fun SearchScreen(
         keyboardController?.hide()
     }
 
-    selectedTorrent?.let { torrent ->
-        val magnetLinkCopiedHint = stringResource(R.string.hint_magnet_link_copied)
-        val descriptionPageUrlCopiedHint = stringResource(R.string.hint_description_page_url_copied)
-        val hasDescriptionPage = torrent.descriptionPageUrl.isNotEmpty()
-
-        TorrentActionsBottomSheet(
-            title = torrent.name,
-            isNSFW = torrent.category?.isNSFW ?: true,
-            onDismissRequest = { selectedTorrent = null },
-            onDownloadTorrent = { onDownloadTorrent(torrent.magnetUri()) },
-            onCopyMagnetLink = {
-                coroutineScope.launch {
-                    clipboard.copyText(text = torrent.magnetUri())
-                    snackbarHostState.showSnackbar(magnetLinkCopiedHint)
-                }
-            },
-            onShareMagnetLink = { onShareMagnetLink(torrent.magnetUri()) },
-            onOpenDescriptionPage = { onOpenDescriptionPage(torrent.descriptionPageUrl) },
-            onCopyDescriptionPageUrl = {
-                coroutineScope.launch {
-                    clipboard.copyText(text = torrent.descriptionPageUrl)
-                    snackbarHostState.showSnackbar(descriptionPageUrlCopiedHint)
-                }
-            },
-            onShareDescriptionPageUrl = { onShareDescriptionPageUrl(torrent.descriptionPageUrl) },
-            hasDescriptionPage = hasDescriptionPage,
-        )
-    }
-
     Scaffold(
-        modifier = modifier.fillMaxSize(),
+        modifier = Modifier
+            .fillMaxSize()
+            .then(modifier),
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
         topBar = {
             SearchScreenTopBar(
@@ -142,6 +104,7 @@ fun SearchScreen(
                 onCategoryChange = viewModel::changeCategory,
                 histories = uiState.histories,
                 onDeleteSearchHistory = viewModel::deleteSearchHistory,
+                onNavigateToBookmarks = onNavigateToBookmarks,
                 onNavigateToSettings = onNavigateToSettings,
             )
         },
@@ -160,7 +123,7 @@ fun SearchScreen(
                 .padding(innerPadding),
             results = uiState.results,
             resultsNotFound = uiState.resultsNotFound,
-            onResultSelect = { selectedTorrent = it },
+            onResultSelect = onTorrentSelect,
             lazyListState = lazyListState,
             isLoading = uiState.isLoading,
             isInternetError = uiState.isInternetError,
@@ -183,6 +146,7 @@ private fun SearchScreenTopBar(
     onCategoryChange: (Category) -> Unit,
     histories: List<SearchHistoryUiState>,
     onDeleteSearchHistory: (SearchHistoryId) -> Unit,
+    onNavigateToBookmarks: () -> Unit,
     onNavigateToSettings: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -206,6 +170,7 @@ private fun SearchScreenTopBar(
             },
             expanded = expanded,
             onExpandChange = { expanded = it },
+            onNavigateToBookmarks = onNavigateToBookmarks,
             onNavigateToSettings = onNavigateToSettings,
         ) {
             SearchHistoryList(
@@ -369,17 +334,4 @@ private fun EmptySearchPlaceholder(modifier: Modifier = Modifier) {
             )
         }
     }
-}
-
-/** Copies the text into the clipboard. */
-private suspend fun Clipboard.copyText(text: String) {
-    val clipData = ClipData.newPlainText(
-        /* label = */
-        null,
-        /* text = */
-        text,
-    )
-    val clipEntry = ClipEntry(clipData = clipData)
-
-    this@copyText.setClipEntry(clipEntry = clipEntry)
 }

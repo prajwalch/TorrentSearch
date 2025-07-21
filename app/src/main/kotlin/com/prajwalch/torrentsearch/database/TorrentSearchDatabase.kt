@@ -5,6 +5,7 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import com.prajwalch.torrentsearch.database.entities.BookmarkedTorrent
 
 import com.prajwalch.torrentsearch.database.entities.SearchHistory
 
@@ -33,7 +34,14 @@ class TorrentSearchDatabase(private val internalDatabase: InternalDatabase) :
  * It is responsible for creating database and maintaining the single instance
  * therefore it shouldn't be used directly.
  */
-@Database(entities = [SearchHistory::class], version = 1, exportSchema = false)
+@Database(
+    entities = [
+        SearchHistory::class,
+        BookmarkedTorrent::class,
+    ],
+    version = 1,
+    exportSchema = true
+)
 abstract class InternalDatabase : RoomDatabase() {
     abstract fun databaseDao(): DatabaseDao
 
