@@ -23,14 +23,15 @@ import com.prajwalch.torrentsearch.R
 
 @Composable
 fun SettingsSectionTitle(
-    title: String,
+    @StringRes
+    titleId: Int,
     modifier: Modifier = Modifier,
     color: Color = MaterialTheme.colorScheme.primary,
     style: TextStyle = MaterialTheme.typography.titleSmall,
 ) {
     Text(
         modifier = modifier.padding(16.dp),
-        text = title,
+        text = stringResource(titleId),
         color = color,
         style = style,
     )
@@ -41,7 +42,8 @@ fun SettingsItem(
     onClick: () -> Unit,
     @DrawableRes
     leadingIconId: Int,
-    headline: String,
+    @StringRes
+    headlineId: Int,
     modifier: Modifier = Modifier,
     supportingContent: String? = null,
     trailingContent: @Composable (() -> Unit)? = null,
@@ -53,10 +55,10 @@ fun SettingsItem(
         leadingContent = {
             Icon(
                 painter = painterResource(leadingIconId),
-                contentDescription = headline,
+                contentDescription = stringResource(headlineId),
             )
         },
-        headlineContent = { Text(text = headline) },
+        headlineContent = { Text(text = stringResource(headlineId)) },
         supportingContent = supportingContent?.let { { Text(text = it) } },
         trailingContent = trailingContent,
     )
@@ -66,7 +68,7 @@ fun SettingsItem(
 fun SettingsDialog(
     onDismissRequest: () -> Unit,
     @StringRes
-    title: Int,
+    titleId: Int,
     modifier: Modifier = Modifier,
     confirmButton: @Composable (() -> Unit)? = null,
     content: @Composable () -> Unit,
@@ -82,7 +84,7 @@ fun SettingsDialog(
             }
         },
         confirmButton = confirmButton ?: {},
-        title = { Text(text = stringResource(title)) },
+        title = { Text(text = stringResource(titleId)) },
         text = content,
         properties = DialogProperties(
             usePlatformDefaultWidth = false,

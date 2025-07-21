@@ -46,7 +46,7 @@ fun SearchSettings(modifier: Modifier = Modifier) {
     if (showProviderListDialog) {
         SettingsDialog(
             onDismissRequest = { showProviderListDialog = false },
-            title = R.string.setting_search_providers,
+            titleId = R.string.setting_search_providers,
         ) {
             SearchProviderList(
                 searchProviders = settings.searchProviders,
@@ -68,13 +68,13 @@ fun SearchSettings(modifier: Modifier = Modifier) {
     }
 
     Column(modifier = modifier) {
-        SettingsSectionTitle(title = stringResource(R.string.settings_section_search))
+        SettingsSectionTitle(titleId = R.string.settings_section_search)
         SettingsItem(
             onClick = {
                 viewModel.updateHideResultsWithZeroSeeders(!settings.hideResultsWithZeroSeeders)
             },
             leadingIconId = R.drawable.ic_visibility_off,
-            headline = stringResource(R.string.setting_hide_results_with_zero_seeders),
+            headlineId = R.string.setting_hide_results_with_zero_seeders,
             trailingContent = {
                 Switch(
                     checked = settings.hideResultsWithZeroSeeders,
@@ -85,7 +85,7 @@ fun SearchSettings(modifier: Modifier = Modifier) {
         SettingsItem(
             onClick = { showProviderListDialog = true },
             leadingIconId = R.drawable.ic_graph,
-            headline = stringResource(R.string.setting_search_providers),
+            headlineId = R.string.setting_search_providers,
             supportingContent = stringResource(
                 R.string.x_of_x_enabled,
                 settings.enabledSearchProviders,
@@ -95,7 +95,7 @@ fun SearchSettings(modifier: Modifier = Modifier) {
         SettingsItem(
             onClick = { showMaxNumResultsDialog = true },
             leadingIconId = R.drawable.ic_format_list_numbered,
-            headline = stringResource(R.string.setting_max_num_results),
+            headlineId = R.string.setting_max_num_results,
             supportingContent = if (settings.maxNumResults.isUnlimited()) {
                 stringResource(R.string.unlimited)
             } else {
@@ -160,7 +160,7 @@ private fun MaxNumResultsDialog(
     SettingsDialog(
         modifier = modifier,
         onDismissRequest = onDismissRequest,
-        title = R.string.setting_max_num_results,
+        titleId = R.string.setting_max_num_results,
         confirmButton = {
             TextButton(onClick = {
                 onDismissRequest()

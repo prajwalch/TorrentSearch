@@ -5,7 +5,6 @@ import androidx.compose.material3.Switch
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 
 import com.prajwalch.torrentsearch.R
@@ -18,11 +17,11 @@ fun GeneralSettings(modifier: Modifier = Modifier) {
     val settings by viewModel.generalSettingsUiState.collectAsStateWithLifecycle()
 
     Column(modifier = modifier) {
-        SettingsSectionTitle(title = stringResource(R.string.settings_section_general))
+        SettingsSectionTitle(titleId = R.string.settings_section_general)
         SettingsItem(
             onClick = { viewModel.updateEnableNSFWMode(!settings.enableNSFWMode) },
             leadingIconId = R.drawable.ic_18_up_rating,
-            headline = stringResource(R.string.setting_enable_nsfw_mode),
+            headlineId = R.string.setting_enable_nsfw_mode,
             trailingContent = {
                 Switch(
                     checked = settings.enableNSFWMode,
