@@ -70,6 +70,16 @@ fun SearchSettings(modifier: Modifier = Modifier) {
     Column(modifier = modifier) {
         SettingsSectionTitle(titleId = R.string.settings_section_search)
         SettingsItem(
+            onClick = { showProviderListDialog = true },
+            leadingIconId = R.drawable.ic_graph,
+            headlineId = R.string.setting_search_providers,
+            supportingContent = stringResource(
+                R.string.x_of_x_enabled,
+                settings.enabledSearchProviders,
+                settings.totalSearchProviders
+            ),
+        )
+        SettingsItem(
             onClick = {
                 viewModel.updateHideResultsWithZeroSeeders(!settings.hideResultsWithZeroSeeders)
             },
@@ -81,16 +91,6 @@ fun SearchSettings(modifier: Modifier = Modifier) {
                     onCheckedChange = { viewModel.updateHideResultsWithZeroSeeders(it) },
                 )
             },
-        )
-        SettingsItem(
-            onClick = { showProviderListDialog = true },
-            leadingIconId = R.drawable.ic_graph,
-            headlineId = R.string.setting_search_providers,
-            supportingContent = stringResource(
-                R.string.x_of_x_enabled,
-                settings.enabledSearchProviders,
-                settings.totalSearchProviders
-            ),
         )
         SettingsItem(
             onClick = { showMaxNumResultsDialog = true },
