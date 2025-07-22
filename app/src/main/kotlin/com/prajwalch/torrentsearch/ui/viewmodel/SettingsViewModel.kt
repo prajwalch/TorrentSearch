@@ -9,6 +9,7 @@ import com.prajwalch.torrentsearch.data.MaxNumResults
 import com.prajwalch.torrentsearch.data.SearchHistoryRepository
 import com.prajwalch.torrentsearch.data.SearchProviderId
 import com.prajwalch.torrentsearch.data.SettingsRepository
+import com.prajwalch.torrentsearch.models.Category
 import com.prajwalch.torrentsearch.providers.SearchProviders
 
 import kotlinx.coroutines.flow.SharingStarted
@@ -26,6 +27,7 @@ data class AppearanceSettingsUiState(
 
 /** State for the general settings. */
 data class GeneralSettingsUiState(
+    val defaultCategory: Category = Category.All,
     val enableNSFWMode: Boolean = false,
 )
 
@@ -81,14 +83,15 @@ class SettingsViewModel(
         initialValue = AppearanceSettingsUiState()
     )
 
-    val generalSettingsUiState = settingsRepository
-        .enableNSFWMode
-        .map(::GeneralSettingsUiState)
-        .stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.Eagerly,
-            initialValue = GeneralSettingsUiState()
-        )
+    val generalSettingsUiState = combine(
+        settingsRepository.defaultCategory,
+        settingsRepository.enableNSFWMode,
+        ::GeneralSettingsUiState,
+    ).stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.Eagerly,
+        initialValue = GeneralSettingsUiState()
+    )
 
     val searchSettingsUiState = combine(
         settingsRepository.hideResultsWithZeroSeeders,
@@ -143,6 +146,11 @@ class SettingsViewModel(
     /** Enables/disables pure black mode. */
     fun updatePureBlack(enable: Boolean) {
         viewModelScope.launch { settingsRepository.updatePureBlack(enable) }
+    }
+
+    /** Changes the default category to given one. */
+    fun updateDefaultCategory(category: Category) {
+        viewModelScope.launch { settingsRepository.updateDefaultCategory(category) }
     }
 
     /** Enables/disables NSFW mode. */

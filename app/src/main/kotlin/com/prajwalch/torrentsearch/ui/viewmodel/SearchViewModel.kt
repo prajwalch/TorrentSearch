@@ -21,6 +21,7 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
@@ -147,8 +148,24 @@ class SearchViewModel(
     private var searchResults = emptyList<Torrent>()
 
     init {
+        loadDefaultCategory()
         observeSettings()
         observeSearchHistories()
+    }
+
+    /** Loads the default category and updates the UI state. */
+    private fun loadDefaultCategory() = viewModelScope.launch {
+        val enableNSFWMode = settings.value.enableNSFWMode
+        val defaultCategory = settingsRepository.defaultCategory.firstOrNull()
+
+        defaultCategory?.let { category ->
+            val selectedCategory = if (!enableNSFWMode && category.isNSFW) {
+                Category.All
+            } else {
+                category
+            }
+            _uiState.update { it.copy(selectedCategory = selectedCategory) }
+        }
     }
 
     /** Observes the settings and automatically updates the UI state. */

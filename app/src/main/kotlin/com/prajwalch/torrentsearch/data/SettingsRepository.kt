@@ -8,6 +8,7 @@ import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.core.stringSetPreferencesKey
 
+import com.prajwalch.torrentsearch.models.Category
 import com.prajwalch.torrentsearch.providers.SearchProviders
 
 import kotlinx.coroutines.flow.Flow
@@ -39,10 +40,17 @@ class SettingsRepository(private val dataStore: DataStore<Preferences>) {
         .getMapOrDefault(
             key = DARK_THEME,
             map = DarkTheme::valueOf,
-            default = DarkTheme.FollowSystem
+            default = DarkTheme.FollowSystem,
         )
 
     val pureBlack: Flow<Boolean> = dataStore.getOrDefault(key = PURE_BLACK, default = false)
+
+    val defaultCategory: Flow<Category> = dataStore
+        .getMapOrDefault(
+            key = DEFAULT_CATEGORY,
+            map = Category::valueOf,
+            default = Category.All,
+        )
 
     val enableNSFWMode: Flow<Boolean> = dataStore
         .getOrDefault(key = ENABLE_NSFW_MODE, default = false)
@@ -75,6 +83,10 @@ class SettingsRepository(private val dataStore: DataStore<Preferences>) {
         dataStore.setOrUpdate(key = PURE_BLACK, value = enable)
     }
 
+    suspend fun updateDefaultCategory(category: Category) {
+        dataStore.setOrUpdate(key = DEFAULT_CATEGORY, value = category.name)
+    }
+
     suspend fun updateEnableNSFWMode(enable: Boolean) {
         dataStore.setOrUpdate(key = ENABLE_NSFW_MODE, value = enable)
     }
@@ -102,6 +114,7 @@ class SettingsRepository(private val dataStore: DataStore<Preferences>) {
         val PURE_BLACK = booleanPreferencesKey("pure_black")
 
         // General keys.
+        val DEFAULT_CATEGORY = stringPreferencesKey("default_category")
         val ENABLE_NSFW_MODE = booleanPreferencesKey("enable_nsfw_mode")
 
         // Search keys.
