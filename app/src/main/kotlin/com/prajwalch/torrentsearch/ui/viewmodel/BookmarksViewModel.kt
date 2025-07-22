@@ -11,7 +11,7 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 class BookmarksViewModel(private val repository: BookmarksRepository) : ViewModel() {
-    val bookmarks: StateFlow<List<Torrent>> = repository.all().stateIn(
+    val bookmarks: StateFlow<List<Torrent>> = repository.observeAll().stateIn(
         scope = viewModelScope,
         started = SharingStarted.Eagerly,
         initialValue = emptyList()

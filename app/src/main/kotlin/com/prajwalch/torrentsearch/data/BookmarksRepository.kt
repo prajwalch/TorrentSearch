@@ -14,8 +14,10 @@ class BookmarksRepository(private val dao: BookmarkedTorrentDao) {
         dao.insert(bookmarkedTorrent = torrent.toEntity())
     }
 
-    fun all(): Flow<List<Torrent>> = dao.getAll().map { bookmarkedTorrents ->
-        bookmarkedTorrents.map { it.toModel() }
+    fun observeAll(): Flow<List<Torrent>> {
+        return dao.getAll().map { bookmarkedTorrents ->
+            bookmarkedTorrents.map { it.toModel() }
+        }
     }
 
     suspend fun delete(torrent: Torrent) {
