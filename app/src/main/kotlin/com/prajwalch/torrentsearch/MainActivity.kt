@@ -23,7 +23,6 @@ import com.prajwalch.torrentsearch.data.DarkTheme
 import com.prajwalch.torrentsearch.data.SearchHistoryRepository
 import com.prajwalch.torrentsearch.data.SettingsRepository
 import com.prajwalch.torrentsearch.data.TorrentsRepository
-import com.prajwalch.torrentsearch.database.InternalDatabase
 import com.prajwalch.torrentsearch.database.TorrentSearchDatabase
 import com.prajwalch.torrentsearch.models.MagnetUri
 import com.prajwalch.torrentsearch.network.HttpClient
@@ -39,7 +38,7 @@ private val Context.settingsDataStore: DataStore<Preferences> by preferencesData
 
 class MainActivity : ComponentActivity() {
     private val database: TorrentSearchDatabase by lazy {
-        TorrentSearchDatabase(InternalDatabase.getInstance(this))
+        TorrentSearchDatabase.getInstance(this)
     }
 
     private val settingsRepository: SettingsRepository by lazy {
@@ -47,7 +46,7 @@ class MainActivity : ComponentActivity() {
     }
 
     private val searchHistoryRepository by lazy {
-        SearchHistoryRepository(database = database)
+        SearchHistoryRepository(dao = database.searchHistoryDao())
     }
 
     private val searchViewModel: SearchViewModel by viewModels {
@@ -62,7 +61,7 @@ class MainActivity : ComponentActivity() {
 
     private val bookmarksViewModel: BookmarksViewModel by viewModels {
         BookmarksViewModel.provideFactory(
-            bookmarksRepository = BookmarksRepository(database = database)
+            bookmarksRepository = BookmarksRepository(dao = database.bookmarkedTorrentDao())
         )
     }
 

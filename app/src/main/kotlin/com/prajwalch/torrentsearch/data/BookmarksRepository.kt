@@ -1,24 +1,25 @@
 package com.prajwalch.torrentsearch.data
 
-import com.prajwalch.torrentsearch.database.TorrentSearchDatabase
+import com.prajwalch.torrentsearch.database.BookmarkedTorrentDao
 import com.prajwalch.torrentsearch.database.entities.BookmarkedTorrent
 import com.prajwalch.torrentsearch.models.Category
 import com.prajwalch.torrentsearch.models.InfoHashOrMagnetUri
 import com.prajwalch.torrentsearch.models.Torrent
+
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
-class BookmarksRepository(private val database: TorrentSearchDatabase) {
-    fun all(): Flow<List<Torrent>> = database.bookmarkedTorrents().map { bookmarkedTorrents ->
+class BookmarksRepository(private val dao: BookmarkedTorrentDao) {
+    suspend fun add(torrent: Torrent) {
+        dao.insert(bookmarkedTorrent = torrent.toEntity())
+    }
+
+    fun all(): Flow<List<Torrent>> = dao.getAll().map { bookmarkedTorrents ->
         bookmarkedTorrents.map { it.toModel() }
     }
 
-    suspend fun add(torrent: Torrent) {
-        database.insert(bookmarkedTorrent = torrent.toEntity())
-    }
-
     suspend fun delete(torrent: Torrent) {
-        database.delete(bookmarkedTorrent = torrent.toEntity())
+        dao.delete(bookmarkedTorrent = torrent.toEntity())
     }
 }
 
