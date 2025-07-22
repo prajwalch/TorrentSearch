@@ -32,88 +32,67 @@ data class MaxNumResults(val n: Int) {
 }
 
 class SettingsRepository(private val dataStore: DataStore<Preferences>) {
-    val enableDynamicTheme: Flow<Boolean> = dataStore.data.map { preferences ->
-        preferences[ENABLE_DYNAMIC_THEME] ?: true
-    }
+    val enableDynamicTheme: Flow<Boolean> = dataStore
+        .getOrDefault(key = ENABLE_DYNAMIC_THEME, default = true)
 
-    val darkTheme: Flow<DarkTheme> = dataStore.data.map { preferences ->
-        preferences[DARK_THEME]?.let(DarkTheme::valueOf) ?: DarkTheme.FollowSystem
-    }
+    val darkTheme: Flow<DarkTheme> = dataStore
+        .getMapOrDefault(
+            key = DARK_THEME,
+            map = DarkTheme::valueOf,
+            default = DarkTheme.FollowSystem
+        )
 
-    val pureBlack: Flow<Boolean> = dataStore.data.map { preferences ->
-        preferences[PURE_BLACK] ?: false
-    }
+    val pureBlack: Flow<Boolean> = dataStore.getOrDefault(key = PURE_BLACK, default = false)
 
-    val enableNSFWMode: Flow<Boolean> = dataStore.data.map { preferences ->
-        preferences[ENABLE_NSFW_MODE] ?: false
-    }
+    val enableNSFWMode: Flow<Boolean> = dataStore
+        .getOrDefault(key = ENABLE_NSFW_MODE, default = false)
 
-    val hideResultsWithZeroSeeders: Flow<Boolean> = dataStore.data.map { preferences ->
-        preferences[HIDE_RESULTS_WITH_ZERO_SEEDERS] ?: false
-    }
+    val hideResultsWithZeroSeeders: Flow<Boolean> = dataStore
+        .getOrDefault(key = HIDE_RESULTS_WITH_ZERO_SEEDERS, default = false)
 
-    val searchProviders: Flow<Set<String>> = dataStore.data.map { preferences ->
-        preferences[SEARCH_PROVIDERS] ?: SearchProviders.enabledIds()
-    }
+    val searchProviders: Flow<Set<String>> = dataStore
+        .getOrDefault(key = SEARCH_PROVIDERS, default = SearchProviders.enabledIds())
 
-    val maxNumResults: Flow<MaxNumResults> = dataStore.data.map { preferences ->
-        preferences[MAX_NUM_RESULTS]?.let(::MaxNumResults) ?: MaxNumResults.Unlimited
-    }
+    val maxNumResults: Flow<MaxNumResults> = dataStore
+        .getMapOrDefault(
+            key = MAX_NUM_RESULTS,
+            map = ::MaxNumResults,
+            default = MaxNumResults.Unlimited,
+        )
 
-    val pauseSearchHistory: Flow<Boolean> = dataStore.data.map { preferences ->
-        preferences[PAUSE_SEARCH_HISTORY] ?: false
-    }
+    val pauseSearchHistory: Flow<Boolean> = dataStore
+        .getOrDefault(key = PAUSE_SEARCH_HISTORY, default = false)
 
     suspend fun updateEnableDynamicTheme(enable: Boolean) {
-        dataStore.edit { preferences ->
-            preferences[ENABLE_DYNAMIC_THEME] = enable
-        }
+        dataStore.setOrUpdate(key = ENABLE_DYNAMIC_THEME, enable)
     }
 
     suspend fun updateDarkTheme(darkTheme: DarkTheme) {
-        dataStore.edit { preferences ->
-            preferences[DARK_THEME] = darkTheme.name
-        }
+        dataStore.setOrUpdate(key = DARK_THEME, value = darkTheme.name)
     }
 
     suspend fun updatePureBlack(enable: Boolean) {
-        dataStore.edit { preferences ->
-            preferences[PURE_BLACK] = enable
-        }
+        dataStore.setOrUpdate(key = PURE_BLACK, value = enable)
     }
 
     suspend fun updateEnableNSFWMode(enable: Boolean) {
-        dataStore.edit { preferences ->
-            preferences[ENABLE_NSFW_MODE] = enable
-        }
+        dataStore.setOrUpdate(key = ENABLE_NSFW_MODE, value = enable)
     }
 
     suspend fun updateHideResultsWithZeroSeeders(enable: Boolean) {
-        dataStore.edit { preferences ->
-            preferences[HIDE_RESULTS_WITH_ZERO_SEEDERS] = enable
-        }
+        dataStore.setOrUpdate(key = HIDE_RESULTS_WITH_ZERO_SEEDERS, value = enable)
     }
 
     suspend fun updateSearchProviders(providers: Set<SearchProviderId>) {
-        dataStore.edit { preferences ->
-            preferences[SEARCH_PROVIDERS] = providers
-        }
+        dataStore.setOrUpdate(key = SEARCH_PROVIDERS, value = providers)
     }
 
     suspend fun updateMaxNumResults(maxNumResults: MaxNumResults) {
-        dataStore.edit { preferences ->
-            if (maxNumResults.isUnlimited()) {
-                preferences.remove(MAX_NUM_RESULTS)
-            } else {
-                preferences[MAX_NUM_RESULTS] = maxNumResults.n
-            }
-        }
+        dataStore.setOrUpdate(key = MAX_NUM_RESULTS, value = maxNumResults.n)
     }
 
     suspend fun updatePauseSearchHistory(pause: Boolean) {
-        dataStore.edit { preferences ->
-            preferences[PAUSE_SEARCH_HISTORY] = pause
-        }
+        dataStore.setOrUpdate(key = PAUSE_SEARCH_HISTORY, value = pause)
     }
 
     private companion object PreferencesKeys {
@@ -129,6 +108,24 @@ class SettingsRepository(private val dataStore: DataStore<Preferences>) {
         val HIDE_RESULTS_WITH_ZERO_SEEDERS = booleanPreferencesKey("hide_results_with_zero_seeders")
         val SEARCH_PROVIDERS = stringSetPreferencesKey("search_providers")
         val MAX_NUM_RESULTS = intPreferencesKey("max_num_results")
-        val PAUSE_SEARCH_HISTORY = booleanPreferencesKey("enable_search_history")
+
+        // Search history.
+        val PAUSE_SEARCH_HISTORY = booleanPreferencesKey("pause_search_history")
     }
+}
+
+private fun <T> DataStore<Preferences>.getOrDefault(key: Preferences.Key<T>, default: T): Flow<T> {
+    return data.map { preferences -> preferences[key] ?: default }
+}
+
+private fun <T, U> DataStore<Preferences>.getMapOrDefault(
+    key: Preferences.Key<T>,
+    map: (T) -> U,
+    default: U,
+): Flow<U> {
+    return data.map { preferences -> preferences[key]?.let(map) ?: default }
+}
+
+private suspend fun <T> DataStore<Preferences>.setOrUpdate(key: Preferences.Key<T>, value: T) {
+    edit { preferences -> preferences[key] = value }
 }
