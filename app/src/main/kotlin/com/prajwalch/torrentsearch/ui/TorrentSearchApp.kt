@@ -1,8 +1,8 @@
 package com.prajwalch.torrentsearch.ui
 
 import android.content.ClipData
-import androidx.compose.animation.slideInHorizontally
-import androidx.compose.animation.slideOutHorizontally
+import androidx.compose.animation.AnimatedContentTransitionScope.SlideDirection
+import androidx.compose.animation.fadeIn
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -90,16 +90,12 @@ fun TorrentSearchApp(
         )
     }
 
-    NavHost(
-        navController = navController,
-        startDestination = Screens.SEARCH,
-        enterTransition = { slideInHorizontally { fullWidth -> fullWidth } },
-        exitTransition = { slideOutHorizontally { fullWidth -> fullWidth } },
-    ) {
+    NavHost(navController = navController, startDestination = Screens.SEARCH) {
         composable(
             route = Screens.SEARCH,
-            enterTransition = { slideInHorizontally { fullWidth -> -fullWidth } },
-            exitTransition = { slideOutHorizontally { fullWidth -> -fullWidth } }
+            enterTransition = { fadeIn() },
+            exitTransition = { slideOutOfContainer(SlideDirection.Start) },
+            popEnterTransition = { slideIntoContainer(SlideDirection.End) },
         ) {
             SearchScreen(
                 onNavigateToBookmarks = { navController.navigate(Screens.BOOKMARKS) },
@@ -110,16 +106,27 @@ fun TorrentSearchApp(
             )
         }
 
-        composable(route = Screens.BOOKMARKS) {
+        composable(
+            route = Screens.BOOKMARKS,
+            enterTransition = { slideIntoContainer(SlideDirection.Start) },
+            exitTransition = { slideOutOfContainer(SlideDirection.Start) },
+            popEnterTransition = { slideIntoContainer(SlideDirection.End) },
+            popExitTransition = { slideOutOfContainer(SlideDirection.End) },
+        ) {
             BookmarksScreen(
                 onNavigateBack = { navController.navigateUp() },
+                onNavigateToSettings = { navController.navigate(Screens.SETTINGS) },
                 viewModel = bookmarksViewModel,
                 onTorrentSelect = { selectedTorrent = it },
                 snackbarHostState = snackbarHostState,
             )
         }
 
-        composable(route = Screens.SETTINGS) {
+        composable(
+            route = Screens.SETTINGS,
+            enterTransition = { slideIntoContainer(SlideDirection.Start) },
+            popExitTransition = { slideOutOfContainer(SlideDirection.End) },
+        ) {
             SettingsScreen(
                 onNavigateBack = { navController.navigateUp() },
                 viewModel = settingsViewModel,
