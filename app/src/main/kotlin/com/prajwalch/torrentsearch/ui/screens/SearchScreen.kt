@@ -171,7 +171,7 @@ private fun SearchScreenTopBar(
             query = query,
             onQueryChange = onQueryChange,
             onSearch = {
-                expanded = false
+                expanded = query.isEmpty()
                 onSearch()
             },
             expanded = expanded,
@@ -199,7 +199,7 @@ private fun SearchScreenTopBar(
                 histories = histories,
                 onSearchRequest = {
                     onQueryChange(it)
-                    expanded = false
+                    expanded = query.isEmpty()
                     onSearch()
                 },
                 onQueryChangeRequest = onQueryChange,
