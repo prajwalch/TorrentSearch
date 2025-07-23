@@ -8,6 +8,7 @@ import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -16,14 +17,21 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -168,8 +176,24 @@ private fun SearchScreenTopBar(
             },
             expanded = expanded,
             onExpandChange = { expanded = it },
-            onNavigateToBookmarks = onNavigateToBookmarks,
-            onNavigateToSettings = onNavigateToSettings,
+            trailingIcon = {
+                var showMoreMenu by remember { mutableStateOf(false) }
+
+                Box {
+                    SearchBarTrailingIcon(
+                        isQueryEmpty = query.isEmpty(),
+                        onClearQuery = { onQueryChange("") },
+                        onMoreClick = { showMoreMenu = true },
+                    )
+                    MoreMenu(
+                        expanded = showMoreMenu,
+                        onDismissRequest = { showMoreMenu = false },
+                        onNavigateToBookmarks = onNavigateToBookmarks,
+                        onNavigateToSettings = onNavigateToSettings,
+                    )
+
+                }
+            },
         ) {
             SearchHistoryList(
                 histories = histories,
@@ -195,6 +219,84 @@ private fun SearchScreenTopBar(
         )
         Spacer(modifier = Modifier.height(8.dp))
         HorizontalDivider()
+    }
+}
+
+@Composable
+private fun SearchBarTrailingIcon(
+    isQueryEmpty: Boolean,
+    onClearQuery: () -> Unit,
+    onMoreClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Row(modifier = modifier, verticalAlignment = Alignment.CenterVertically) {
+        AnimatedVisibility(visible = !isQueryEmpty) {
+            ClearQueryIconButton(onClick = onClearQuery)
+        }
+        MoreIconButton(onClick = onMoreClick)
+    }
+}
+
+@Composable
+private fun ClearQueryIconButton(onClick: () -> Unit, modifier: Modifier = Modifier) {
+    IconButton(onClick = onClick, modifier = modifier) {
+        Icon(
+            Icons.Default.Clear,
+            contentDescription = stringResource(R.string.desc_clear_search_query)
+        )
+    }
+}
+
+@Composable
+private fun MoreIconButton(onClick: () -> Unit, modifier: Modifier = Modifier) {
+    IconButton(modifier = modifier, onClick = onClick) {
+        Icon(
+            painter = painterResource(R.drawable.ic_more_vertical),
+            contentDescription = stringResource(R.string.button_go_to_settings_screen),
+        )
+    }
+}
+
+@Composable
+private fun MoreMenu(
+    expanded: Boolean,
+    onDismissRequest: () -> Unit,
+    onNavigateToBookmarks: () -> Unit,
+    onNavigateToSettings: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    DropdownMenu(
+        modifier = modifier,
+        expanded = expanded,
+        onDismissRequest = onDismissRequest,
+        shape = MaterialTheme.shapes.medium,
+    ) {
+        DropdownMenuItem(
+            onClick = {
+                onDismissRequest()
+                onNavigateToBookmarks()
+            },
+            leadingIcon = {
+                Icon(
+                    painter = painterResource(R.drawable.ic_star_filled),
+                    contentDescription = stringResource(R.string.button_go_to_bookmarks_screen),
+                )
+            },
+            text = { Text(text = stringResource(R.string.bookmarks_screen_title)) },
+        )
+        DropdownMenuItem(
+            onClick = {
+                onDismissRequest()
+                onNavigateToSettings()
+            },
+            leadingIcon = {
+                Icon(
+                    painter = painterResource(R.drawable.ic_settings),
+                    contentDescription = stringResource(R.string.button_go_to_settings_screen),
+                )
+            },
+            text = { Text(text = stringResource(R.string.settings_screen_title)) },
+        )
     }
 }
 
