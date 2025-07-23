@@ -8,6 +8,7 @@ import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -265,6 +266,8 @@ private fun MoreMenu(
     onNavigateToSettings: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    val contentPadding = PaddingValues(start = 12.dp, end = 16.dp)
+
     DropdownMenu(
         modifier = modifier,
         expanded = expanded,
@@ -283,6 +286,7 @@ private fun MoreMenu(
                 )
             },
             text = { Text(text = stringResource(R.string.bookmarks_screen_title)) },
+            contentPadding = contentPadding,
         )
         DropdownMenuItem(
             onClick = {
@@ -296,6 +300,7 @@ private fun MoreMenu(
                 )
             },
             text = { Text(text = stringResource(R.string.settings_screen_title)) },
+            contentPadding = contentPadding,
         )
     }
 }
