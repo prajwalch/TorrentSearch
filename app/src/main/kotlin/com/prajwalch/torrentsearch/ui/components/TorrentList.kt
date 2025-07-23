@@ -15,10 +15,8 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -29,8 +27,13 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 
 import com.prajwalch.torrentsearch.R
@@ -125,7 +128,12 @@ fun TorrentListItem(torrent: Torrent, modifier: Modifier = Modifier) {
                 category = torrent.category,
             )
         },
-        headlineContent = { Text(torrent.name) },
+        headlineContent = {
+            Text(
+                modifier = Modifier.padding(top = 4.dp),
+                text = torrent.name,
+            )
+        },
         supportingContent = {
             TorrentMetadataInfo(
                 size = torrent.size,
@@ -163,7 +171,12 @@ private fun TorrentListItemOverlineContent(
                 NSFWTag()
             }
         }
-        category?.let { Text(text = it.toString()) }
+        category?.let {
+            Text(
+                text = it.toString(),
+                color = MaterialTheme.colorScheme.secondary,
+            )
+        }
     }
 }
 
@@ -172,15 +185,17 @@ private fun TorrentProviderNameAndUploadDate(
     provider: String,
     uploadDate: String,
     modifier: Modifier = Modifier,
+    contentSpace: Dp = 4.dp,
 ) {
     Row(
         modifier = modifier,
-        horizontalArrangement = Arrangement.spacedBy(4.dp),
+        horizontalArrangement = Arrangement.spacedBy(space = contentSpace),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Text(
             text = provider,
             color = MaterialTheme.colorScheme.primary,
+            fontWeight = FontWeight.SemiBold,
         )
         Text("\u2022")
         Text(
@@ -196,56 +211,55 @@ private fun TorrentMetadataInfo(
     seeders: UInt,
     peers: UInt,
     modifier: Modifier = Modifier,
+    contentSpace: Dp = 8.dp,
 ) {
     Row(
         modifier = modifier,
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
+        horizontalArrangement = Arrangement.spacedBy(space = contentSpace),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         TorrentMetaInfo(
+            leadingIconId = R.drawable.ic_size_info,
             text = size,
-            icon = R.drawable.ic_size_info,
         )
         TorrentMetaInfo(
+            leadingIconId = R.drawable.ic_seeders,
             text = stringResource(R.string.seeders, seeders),
-            icon = R.drawable.ic_seeders,
         )
         TorrentMetaInfo(
+            leadingIconId = R.drawable.ic_peers,
             text = stringResource(R.string.peers, peers),
-            icon = R.drawable.ic_peers,
         )
     }
 }
 
 @Composable
 private fun TorrentMetaInfo(
+    @DrawableRes
+    leadingIconId: Int,
     text: String,
     modifier: Modifier = Modifier,
-    @DrawableRes
-    icon: Int? = null,
+    shape: Shape = MaterialTheme.shapes.extraLarge,
+    containerColor: Color = MaterialTheme.colorScheme.surfaceContainer,
+    contentPadding: PaddingValues = PaddingValues(
+        horizontal = 8.dp,
+        vertical = 4.dp,
+    ),
+    contentSpacing: Dp = 4.dp,
 ) {
-    val containerShape = RoundedCornerShape(percent = 100)
-    val containerBackgroundColor = MaterialTheme.colorScheme.surfaceContainer
-    val containerPaddingValues = PaddingValues(horizontal = 8.dp, vertical = 4.dp)
-
-    val contentSpacing = 4.dp
-    val iconSize = 16.dp
-    val textStyle = MaterialTheme.typography.labelLarge
-
     Row(
         modifier = modifier
-            .background(color = containerBackgroundColor, shape = containerShape)
-            .padding(containerPaddingValues),
+            .clip(shape)
+            .background(color = containerColor, shape = shape)
+            .padding(contentPadding),
         horizontalArrangement = Arrangement.spacedBy(space = contentSpacing),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        icon?.let {
-            Icon(
-                painter = painterResource(id = it),
-                contentDescription = null,
-                modifier = Modifier.size(size = iconSize),
-            )
-        }
-        Text(text = text, style = textStyle)
+        Icon(
+            modifier = Modifier.size(size = 16.dp),
+            painter = painterResource(id = leadingIconId),
+            contentDescription = null,
+        )
+        Text(text = text)
     }
 }
