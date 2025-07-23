@@ -56,12 +56,16 @@ fun TorrentList(
     lazyListState: LazyListState = rememberLazyListState(),
 ) {
     var showSortOptions by remember(torrents) { mutableStateOf(false) }
-    val scrollbarUnselectedColor = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f)
-    val scrollbarSelectedColor = MaterialTheme.colorScheme.onSurfaceVariant
+
+    val scrollbarUnselectedColor = MaterialTheme.colorScheme.primary
+    val scrollbarSelectedColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.5f)
 
     LazyColumnScrollbar(
         state = lazyListState,
         settings = ScrollbarSettings.Default.copy(
+            scrollbarPadding = 2.dp,
+            thumbThickness = 8.dp,
+            thumbMinLength = 0.07f,
             thumbUnselectedColor = scrollbarUnselectedColor,
             thumbSelectedColor = scrollbarSelectedColor,
             hideDelayMillis = 3000,
