@@ -16,6 +16,9 @@ interface BookmarkedTorrentDao {
     @Query("SELECT * FROM bookmarks ORDER by id DESC")
     fun getAll(): Flow<List<BookmarkedTorrent>>
 
+    @Query("SELECT * FROM bookmarks where name=:name")
+    suspend fun findByName(name: String): BookmarkedTorrent?
+
     @Delete
     suspend fun delete(bookmarkedTorrent: BookmarkedTorrent)
 }

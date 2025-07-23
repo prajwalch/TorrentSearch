@@ -18,7 +18,6 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.preferencesDataStore
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 
-import com.prajwalch.torrentsearch.data.BookmarksRepository
 import com.prajwalch.torrentsearch.data.DarkTheme
 import com.prajwalch.torrentsearch.data.SearchHistoryRepository
 import com.prajwalch.torrentsearch.data.SettingsRepository
@@ -49,9 +48,14 @@ class MainActivity : ComponentActivity() {
         SearchHistoryRepository(dao = database.searchHistoryDao())
     }
 
-    private val searchViewModel: SearchViewModel by viewModels {
-        val torrentsRepository = TorrentsRepository(httpClient = HttpClient)
+    private val torrentsRepository: TorrentsRepository by lazy {
+        TorrentsRepository(
+            httpClient = HttpClient,
+            bookmarkedTorrentDao = database.bookmarkedTorrentDao(),
+        )
+    }
 
+    private val searchViewModel: SearchViewModel by viewModels {
         SearchViewModel.provideFactory(
             settingsRepository = settingsRepository,
             searchHistoryRepository = searchHistoryRepository,
@@ -61,7 +65,7 @@ class MainActivity : ComponentActivity() {
 
     private val bookmarksViewModel: BookmarksViewModel by viewModels {
         BookmarksViewModel.provideFactory(
-            bookmarksRepository = BookmarksRepository(dao = database.bookmarkedTorrentDao())
+            torrentsRepository = torrentsRepository
         )
     }
 
