@@ -104,6 +104,7 @@ fun SortOptionsMenu(
         modifier = modifier,
         expanded = expanded,
         onDismissRequest = onDismissRequest,
+        shape = MaterialTheme.shapes.medium,
     ) {
         for (sortItem in SortKey.entries) {
             DropdownMenuItem(
