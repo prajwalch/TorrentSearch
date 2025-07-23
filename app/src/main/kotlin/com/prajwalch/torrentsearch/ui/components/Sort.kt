@@ -1,5 +1,6 @@
 package com.prajwalch.torrentsearch.ui.components
 
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.size
@@ -19,6 +20,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
 
 import com.prajwalch.torrentsearch.R
 import com.prajwalch.torrentsearch.ui.viewmodel.SortKey
@@ -110,12 +112,13 @@ fun SortOptionsMenu(
             DropdownMenuItem(
                 text = { Text(text = sortItem.toString()) },
                 onClick = { onSortKeySelect(sortItem) },
-                leadingIcon = {
+                trailingIcon = {
                     RadioButton(
                         selected = sortItem == selectedKey,
                         onClick = { onSortKeySelect(sortItem) },
                     )
-                }
+                },
+                contentPadding = PaddingValues(start = 16.dp, end = 4.dp),
             )
         }
     }
