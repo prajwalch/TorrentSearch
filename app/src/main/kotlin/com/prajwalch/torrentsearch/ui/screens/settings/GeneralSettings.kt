@@ -69,7 +69,7 @@ private fun CategoryListDialog(
     SettingsDialog(
         modifier = modifier,
         onDismissRequest = onDismissRequest,
-        titleId = R.string.setting_dark_theme,
+        titleId = R.string.setting_default_category,
     ) {
         LazyColumn {
             items(
