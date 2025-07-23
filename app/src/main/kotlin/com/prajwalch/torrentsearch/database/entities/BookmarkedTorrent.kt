@@ -1,9 +1,13 @@
 package com.prajwalch.torrentsearch.database.entities
 
 import androidx.room.Entity
+import androidx.room.Index
 import androidx.room.PrimaryKey
 
-@Entity(tableName = "bookmarks")
+@Entity(
+    tableName = "bookmarks",
+    indices = [Index("name", unique = true)],
+)
 data class BookmarkedTorrent(
     @PrimaryKey(autoGenerate = true)
     val id: Long = 0,
