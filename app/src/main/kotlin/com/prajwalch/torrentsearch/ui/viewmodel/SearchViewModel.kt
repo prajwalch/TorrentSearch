@@ -155,14 +155,11 @@ class SearchViewModel(
 
     /** Loads the default category and updates the UI state. */
     private fun loadDefaultCategory() = viewModelScope.launch {
-        val enableNSFWMode = settings.value.enableNSFWMode
-        val defaultCategory = settingsRepository.defaultCategory.firstOrNull()
-
-        defaultCategory?.let { category ->
-            val selectedCategory = if (!enableNSFWMode && category.isNSFW) {
-                Category.All
-            } else {
+        settingsRepository.defaultCategory.firstOrNull()?.let { category ->
+            val selectedCategory = if (_uiState.value.categories.contains(category)) {
                 category
+            } else {
+                Category.All
             }
             _uiState.update { it.copy(selectedCategory = selectedCategory) }
         }
@@ -309,10 +306,10 @@ class SearchViewModel(
         val categories = Category.entries.filter { settings.enableNSFWMode || !it.isNSFW }
         // Change the currently selected category to 'All' only if needed.
         val currentlySelectedCategory = _uiState.value.selectedCategory
-        val selectedCategory = if (!settings.enableNSFWMode && currentlySelectedCategory.isNSFW) {
-            Category.All
-        } else {
+        val selectedCategory = if (categories.contains(currentlySelectedCategory)) {
             currentlySelectedCategory
+        } else {
+            Category.All
         }
         // Filter and sort current results.
         val results = filterSearchResults(
