@@ -70,7 +70,9 @@ fun TorrentSearchApp(
             isBookmarked = torrent.bookmarked,
             onBookmark = { bookmarksViewModel.add(torrent) },
             onDeleteBookmark = { bookmarksViewModel.delete(torrent) },
-            onDownloadTorrent = { onDownloadTorrent(torrent.magnetUri()) },
+            onDownloadTorrent = {
+                isTorrentClientMissing = !onDownloadTorrent(torrent.magnetUri())
+            },
             onCopyMagnetLink = {
                 coroutineScope.launch {
                     clipboard.copyText(text = torrent.magnetUri())
