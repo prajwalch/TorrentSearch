@@ -292,7 +292,7 @@ class SearchViewModel(
                     results = results,
                     currentSortKey = DEFAULT_SORT_KEY,
                     currentSortOrder = DEFAULT_SORT_ORDER,
-                    resultsNotFound = searchResults.isEmpty(),
+                    resultsNotFound = results.isEmpty(),
                     isLoading = false,
                     isInternetError = torrentsRepositoryResult.isNetworkError,
                 )
@@ -325,6 +325,7 @@ class SearchViewModel(
                 categories = categories,
                 selectedCategory = selectedCategory,
                 results = results,
+                resultsNotFound = searchResults.isNotEmpty() && results.isEmpty(),
             )
         }
     }
