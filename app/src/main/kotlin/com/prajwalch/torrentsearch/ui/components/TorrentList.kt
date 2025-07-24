@@ -37,10 +37,10 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 
 import com.prajwalch.torrentsearch.R
+import com.prajwalch.torrentsearch.domain.SortCriteria
+import com.prajwalch.torrentsearch.domain.SortOrder
 import com.prajwalch.torrentsearch.models.Category
 import com.prajwalch.torrentsearch.models.Torrent
-import com.prajwalch.torrentsearch.ui.viewmodel.SortKey
-import com.prajwalch.torrentsearch.ui.viewmodel.SortOrder
 
 import my.nanihadesuka.compose.LazyColumnScrollbar
 import my.nanihadesuka.compose.ScrollbarSettings
@@ -49,11 +49,12 @@ import my.nanihadesuka.compose.ScrollbarSettings
 fun TorrentList(
     torrents: List<Torrent>,
     onTorrentSelect: (Torrent) -> Unit,
-    currentSortKey: SortKey,
+    currentSortCriteria: SortCriteria,
     currentSortOrder: SortOrder,
-    onSortTorrents: (SortKey, SortOrder) -> Unit,
+    onSortTorrents: (SortCriteria, SortOrder) -> Unit,
     modifier: Modifier = Modifier,
     lazyListState: LazyListState = rememberLazyListState(),
+    contentPadding: PaddingValues = PaddingValues(0.dp),
 ) {
     var showSortOptions by remember(torrents) { mutableStateOf(false) }
 
@@ -74,6 +75,7 @@ fun TorrentList(
         LazyColumn(
             modifier = modifier,
             state = lazyListState,
+            contentPadding = contentPadding,
         ) {
             item {
                 Row(
@@ -90,16 +92,16 @@ fun TorrentList(
                     )
                     Box {
                         SortButton(
-                            currentSortKey = currentSortKey,
                             onClick = { showSortOptions = true },
+                            currentSortCriteria = currentSortCriteria,
                             currentSortOrder = currentSortOrder,
-                            onSortOrderChange = { onSortTorrents(currentSortKey, it) },
+                            onSortOrderChange = { onSortTorrents(currentSortCriteria, it) },
                         )
                         SortOptionsMenu(
                             expanded = showSortOptions,
                             onDismissRequest = { showSortOptions = false },
-                            selectedKey = currentSortKey,
-                            onSortKeySelect = { onSortTorrents(it, currentSortOrder) },
+                            selectedSortCriteria = currentSortCriteria,
+                            onSortCriteriaChange = { onSortTorrents(it, currentSortOrder) },
                         )
                     }
                 }

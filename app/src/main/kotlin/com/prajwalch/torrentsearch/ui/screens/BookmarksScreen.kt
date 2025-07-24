@@ -1,12 +1,9 @@
 package com.prajwalch.torrentsearch.ui.screens
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.ArrowBack
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -29,7 +26,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 
 import com.prajwalch.torrentsearch.R
 import com.prajwalch.torrentsearch.models.Torrent
-import com.prajwalch.torrentsearch.ui.components.TorrentListItem
+import com.prajwalch.torrentsearch.ui.components.TorrentList
 import com.prajwalch.torrentsearch.ui.viewmodel.BookmarksViewModel
 
 @Composable
@@ -41,7 +38,7 @@ fun BookmarksScreen(
     snackbarHostState: SnackbarHostState,
     modifier: Modifier = Modifier,
 ) {
-    val bookmarkedTorrents by viewModel.bookmarks.collectAsStateWithLifecycle()
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
     Scaffold(
         modifier = Modifier
@@ -55,22 +52,18 @@ fun BookmarksScreen(
             )
         }
     ) { innerPadding ->
-        if (bookmarkedTorrents.isEmpty()) {
+        if (uiState.bookmarks.isEmpty()) {
             EmptyPlaceholder(modifier = Modifier.fillMaxSize())
         } else {
-            LazyColumn(
+            TorrentList(
                 modifier = Modifier.consumeWindowInsets(innerPadding),
+                torrents = uiState.bookmarks,
+                onTorrentSelect = onTorrentSelect,
+                currentSortCriteria = uiState.currentSortCriteria,
+                currentSortOrder = uiState.currentSortOrder,
+                onSortTorrents = viewModel::sortBookmarks,
                 contentPadding = innerPadding,
-            ) {
-                items(items = bookmarkedTorrents, key = { it.id }) { bookmarkedTorrent ->
-                    TorrentListItem(
-                        modifier = Modifier
-                            .animateItem()
-                            .clickable { onTorrentSelect(bookmarkedTorrent) },
-                        torrent = bookmarkedTorrent,
-                    )
-                }
-            }
+            )
         }
     }
 }

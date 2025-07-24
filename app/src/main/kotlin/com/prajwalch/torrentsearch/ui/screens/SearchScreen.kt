@@ -52,6 +52,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 
 import com.prajwalch.torrentsearch.R
+import com.prajwalch.torrentsearch.domain.SortCriteria
+import com.prajwalch.torrentsearch.domain.SortOrder
 import com.prajwalch.torrentsearch.models.Category
 import com.prajwalch.torrentsearch.models.Torrent
 import com.prajwalch.torrentsearch.ui.components.CategoryChipsRow
@@ -64,8 +66,6 @@ import com.prajwalch.torrentsearch.ui.components.TorrentList
 import com.prajwalch.torrentsearch.ui.viewmodel.SearchHistoryId
 import com.prajwalch.torrentsearch.ui.viewmodel.SearchHistoryUiState
 import com.prajwalch.torrentsearch.ui.viewmodel.SearchViewModel
-import com.prajwalch.torrentsearch.ui.viewmodel.SortKey
-import com.prajwalch.torrentsearch.ui.viewmodel.SortOrder
 
 import kotlinx.coroutines.launch
 
@@ -135,7 +135,7 @@ fun SearchScreen(
             isLoading = uiState.isLoading,
             isInternetError = uiState.isInternetError,
             onRetry = viewModel::performSearch,
-            currentSortKey = uiState.currentSortKey,
+            currentSortCriteria = uiState.currentSortCriteria,
             currentSortOrder = uiState.currentSortOrder,
             onSortResults = viewModel::sortResults,
         )
@@ -331,9 +331,9 @@ private fun SearchScreenContent(
     isLoading: Boolean,
     isInternetError: Boolean,
     onRetry: () -> Unit,
-    currentSortKey: SortKey,
+    currentSortCriteria: SortCriteria,
     currentSortOrder: SortOrder,
-    onSortResults: (SortKey, SortOrder) -> Unit,
+    onSortResults: (SortCriteria, SortOrder) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Column(modifier = modifier, horizontalAlignment = Alignment.CenterHorizontally) {
@@ -361,7 +361,7 @@ private fun SearchScreenContent(
             TorrentList(
                 torrents = results,
                 onTorrentSelect = onResultSelect,
-                currentSortKey = currentSortKey,
+                currentSortCriteria = currentSortCriteria,
                 currentSortOrder = currentSortOrder,
                 onSortTorrents = onSortResults,
                 lazyListState = lazyListState,

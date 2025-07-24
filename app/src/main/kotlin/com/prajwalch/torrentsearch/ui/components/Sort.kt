@@ -23,13 +23,13 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 
 import com.prajwalch.torrentsearch.R
-import com.prajwalch.torrentsearch.ui.viewmodel.SortKey
-import com.prajwalch.torrentsearch.ui.viewmodel.SortOrder
+import com.prajwalch.torrentsearch.domain.SortCriteria
+import com.prajwalch.torrentsearch.domain.SortOrder
 
 @Composable
 fun SortButton(
-    currentSortKey: SortKey,
     onClick: () -> Unit,
+    currentSortCriteria: SortCriteria,
     currentSortOrder: SortOrder,
     onSortOrderChange: (SortOrder) -> Unit,
     modifier: Modifier = Modifier,
@@ -38,21 +38,21 @@ fun SortButton(
         modifier = modifier,
         verticalAlignment = Alignment.Companion.CenterVertically,
     ) {
-        SortKeyButton(
-            currentKey = currentSortKey,
+        SortCriteriaButton(
             onClick = onClick,
+            currentCriteria = currentSortCriteria,
         )
         SortOrderIconButton(
+            onClick = { onSortOrderChange(currentSortOrder.opposite()) },
             currentOrder = currentSortOrder,
-            onClick = { onSortOrderChange(currentSortOrder.opposite()) }
         )
     }
 }
 
 @Composable
-private fun SortKeyButton(
-    currentKey: SortKey,
+private fun SortCriteriaButton(
     onClick: () -> Unit,
+    currentCriteria: SortCriteria,
     modifier: Modifier = Modifier,
 ) {
     TextButton(modifier = modifier, onClick = onClick) {
@@ -63,7 +63,7 @@ private fun SortKeyButton(
         )
         Spacer(modifier = Modifier.width(ButtonDefaults.IconSpacing))
         Text(
-            text = currentKey.toString(),
+            text = currentCriteria.toString(),
             style = MaterialTheme.typography.bodyMedium,
         )
     }
@@ -71,8 +71,8 @@ private fun SortKeyButton(
 
 @Composable
 private fun SortOrderIconButton(
-    currentOrder: SortOrder,
     onClick: () -> Unit,
+    currentOrder: SortOrder,
     modifier: Modifier = Modifier,
     tint: Color = MaterialTheme.colorScheme.primary,
 ) {
@@ -98,8 +98,8 @@ private fun SortOrderIconButton(
 fun SortOptionsMenu(
     expanded: Boolean,
     onDismissRequest: () -> Unit,
-    selectedKey: SortKey,
-    onSortKeySelect: (SortKey) -> Unit,
+    selectedSortCriteria: SortCriteria,
+    onSortCriteriaChange: (SortCriteria) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     DropdownMenu(
@@ -108,14 +108,14 @@ fun SortOptionsMenu(
         onDismissRequest = onDismissRequest,
         shape = MaterialTheme.shapes.medium,
     ) {
-        for (sortItem in SortKey.entries) {
+        for (sortItem in SortCriteria.entries) {
             DropdownMenuItem(
                 text = { Text(text = sortItem.toString()) },
-                onClick = { onSortKeySelect(sortItem) },
+                onClick = { onSortCriteriaChange(sortItem) },
                 trailingIcon = {
                     RadioButton(
-                        selected = sortItem == selectedKey,
-                        onClick = { onSortKeySelect(sortItem) },
+                        selected = sortItem == selectedSortCriteria,
+                        onClick = { onSortCriteriaChange(sortItem) },
                     )
                 },
                 contentPadding = PaddingValues(start = 16.dp, end = 4.dp),

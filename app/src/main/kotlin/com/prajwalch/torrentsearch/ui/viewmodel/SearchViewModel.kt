@@ -10,10 +10,12 @@ import com.prajwalch.torrentsearch.data.SearchProviderId
 import com.prajwalch.torrentsearch.data.SettingsRepository
 import com.prajwalch.torrentsearch.data.TorrentsRepository
 import com.prajwalch.torrentsearch.database.entities.SearchHistory
+import com.prajwalch.torrentsearch.domain.SortCriteria
+import com.prajwalch.torrentsearch.domain.SortOrder
+import com.prajwalch.torrentsearch.domain.SortTorrentsUseCase
 import com.prajwalch.torrentsearch.models.Category
 import com.prajwalch.torrentsearch.models.Torrent
 import com.prajwalch.torrentsearch.providers.SearchProviders
-import com.prajwalch.torrentsearch.utils.prettySizeToBytes
 
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -39,18 +41,15 @@ data class SearchUiState(
     val selectedCategory: Category = Category.All,
     // Content state.
     val results: List<Torrent> = emptyList(),
-    val currentSortKey: SortKey = SortKey.Seeders,
-    val currentSortOrder: SortOrder = SortOrder.Descending,
+    val currentSortCriteria: SortCriteria = SortCriteria.DEFAULT,
+    val currentSortOrder: SortOrder = SortOrder.DEFAULT,
     val resultsNotFound: Boolean = false,
     val isLoading: Boolean = false,
     val isInternetError: Boolean = false,
 )
 
 /** Convenient wrapper around the search history entity. */
-data class SearchHistoryUiState(
-    val id: SearchHistoryId,
-    val query: String,
-) {
+data class SearchHistoryUiState(val id: SearchHistoryId, val query: String) {
     /** Converts UI state into entity. */
     fun toEntity() = SearchHistory(id = id, query = query)
 
@@ -58,28 +57,6 @@ data class SearchHistoryUiState(
         /** Creates a new instance from the search history entity. */
         fun fromEntity(entity: SearchHistory) =
             SearchHistoryUiState(id = entity.id, query = entity.query)
-    }
-}
-
-/** Results sort criteria. */
-enum class SortKey {
-    Name,
-    Seeders,
-    Peers,
-    FileSize {
-        override fun toString() = "File Size"
-    },
-    Date,
-}
-
-/** Results sort order. */
-enum class SortOrder {
-    Ascending,
-    Descending;
-
-    fun opposite() = when (this) {
-        Ascending -> Descending
-        Descending -> Ascending
     }
 }
 
@@ -206,13 +183,13 @@ class SearchViewModel(
         }
     }
 
-    /** Sorts and updates the UI state according to given key and order. */
-    fun sortResults(key: SortKey, order: SortOrder) {
-        val sortedResults = _uiState.value.results.customSort(key = key, order = order)
+    /** Sorts and updates the UI state according to given criteria and order. */
+    fun sortResults(criteria: SortCriteria, order: SortOrder) {
+        val sortedResults = _uiState.value.results.customSort(criteria = criteria, order = order)
         _uiState.update {
             it.copy(
                 results = sortedResults,
-                currentSortKey = key,
+                currentSortCriteria = criteria,
                 currentSortOrder = order,
             )
         }
@@ -282,16 +259,16 @@ class SearchViewModel(
                 results = searchResults,
                 settings = settings.value
             ).customSort(
-                key = DEFAULT_SORT_KEY,
-                order = DEFAULT_SORT_ORDER,
+                criteria = SortCriteria.DEFAULT,
+                order = SortOrder.DEFAULT,
             )
 
             // And update the UI.
             _uiState.update {
                 it.copy(
                     results = results,
-                    currentSortKey = DEFAULT_SORT_KEY,
-                    currentSortOrder = DEFAULT_SORT_ORDER,
+                    currentSortCriteria = SortCriteria.DEFAULT,
+                    currentSortOrder = SortOrder.DEFAULT,
                     resultsNotFound = results.isEmpty(),
                     isLoading = false,
                     isInternetError = torrentsRepositoryResult.isNetworkError,
@@ -316,7 +293,7 @@ class SearchViewModel(
             results = searchResults,
             settings = settings,
         ).customSort(
-            key = _uiState.value.currentSortKey,
+            criteria = _uiState.value.currentSortCriteria,
             order = _uiState.value.currentSortOrder,
         )
 
@@ -354,9 +331,6 @@ class SearchViewModel(
     }
 
     companion object {
-        private val DEFAULT_SORT_KEY = SortKey.Seeders
-        private val DEFAULT_SORT_ORDER = SortOrder.Descending
-
         /** Provides a factory function for [SearchViewModel]. */
         fun provideFactory(
             settingsRepository: SettingsRepository,
@@ -378,16 +352,6 @@ class SearchViewModel(
 /** Converts list of search history entity to list of UI states. */
 private fun List<SearchHistory>.toUiStates() = map { SearchHistoryUiState.fromEntity(it) }
 
-/** Sorts the list based on the given key (criteria) and order. */
-private fun List<Torrent>.customSort(key: SortKey, order: SortOrder): List<Torrent> {
-    val sortedResults = when (key) {
-        SortKey.Name -> this.sortedBy { it.name }
-        SortKey.Seeders -> this.sortedBy { it.seeders }
-        SortKey.Peers -> this.sortedBy { it.peers }
-        SortKey.FileSize -> this.sortedBy { prettySizeToBytes(it.size) }
-        // FIXME: Sorting by date needs some fixes.
-        SortKey.Date -> this.sortedBy { it.uploadDate }
-    }
-
-    return if (order == SortOrder.Ascending) sortedResults else sortedResults.reversed()
-}
+/** Sorts the list based on the given criteria and order. */
+private fun List<Torrent>.customSort(criteria: SortCriteria, order: SortOrder) =
+    SortTorrentsUseCase(this, criteria, order)()

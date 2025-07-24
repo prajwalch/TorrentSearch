@@ -66,8 +66,8 @@ fun TorrentSearchApp(
         TorrentActionsBottomSheet(
             onDismissRequest = { selectedTorrent = null },
             title = torrent.name,
-            onBookmarkTorrent = { bookmarksViewModel.add(torrent) },
-            onDeleteBookmark = { bookmarksViewModel.delete(torrent) },
+            onBookmarkTorrent = { bookmarksViewModel.bookmarkTorrent(torrent) },
+            onDeleteBookmark = { bookmarksViewModel.deleteBookmarkedTorrent(torrent) },
             onDownloadTorrent = {
                 isTorrentClientMissing = !onDownloadTorrent(torrent.magnetUri())
             },
