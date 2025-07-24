@@ -3,6 +3,7 @@ package com.prajwalch.torrentsearch.ui.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+
 import com.prajwalch.torrentsearch.data.TorrentsRepository
 import com.prajwalch.torrentsearch.domain.SortCriteria
 import com.prajwalch.torrentsearch.domain.SortOrder
