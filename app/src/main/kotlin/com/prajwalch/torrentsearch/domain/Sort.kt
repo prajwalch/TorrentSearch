@@ -9,7 +9,7 @@ enum class SortCriteria {
     Seeders,
     Peers,
     FileSize {
-        override fun toString() = "File Size"
+        override fun toString() = "File size"
     },
     Date;
 
