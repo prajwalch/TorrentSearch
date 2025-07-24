@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.ArrowBack
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -15,7 +16,10 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
@@ -26,8 +30,10 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 
 import com.prajwalch.torrentsearch.R
 import com.prajwalch.torrentsearch.models.Torrent
+import com.prajwalch.torrentsearch.ui.components.ScrollToTopFAB
 import com.prajwalch.torrentsearch.ui.components.TorrentList
 import com.prajwalch.torrentsearch.ui.viewmodel.BookmarksViewModel
+import kotlinx.coroutines.launch
 
 @Composable
 fun BookmarksScreen(
@@ -40,6 +46,13 @@ fun BookmarksScreen(
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
+    // Scroll to top button related.
+    val coroutineScope = rememberCoroutineScope()
+    val lazyListState = rememberLazyListState()
+    val showScrollToTopButton by remember {
+        derivedStateOf { lazyListState.firstVisibleItemIndex > 1 }
+    }
+
     Scaffold(
         modifier = Modifier
             .fillMaxSize()
@@ -50,7 +63,15 @@ fun BookmarksScreen(
                 onNavigateBack = onNavigateBack,
                 onNavigateToSettings = onNavigateToSettings,
             )
-        }
+        },
+        floatingActionButton = {
+            ScrollToTopFAB(
+                visible = showScrollToTopButton,
+                onClick = {
+                    coroutineScope.launch { lazyListState.animateScrollToItem(0) }
+                },
+            )
+        },
     ) { innerPadding ->
         if (uiState.bookmarks.isEmpty()) {
             EmptyPlaceholder(modifier = Modifier.fillMaxSize())
@@ -63,6 +84,7 @@ fun BookmarksScreen(
                 currentSortOrder = uiState.currentSortOrder,
                 onSortTorrents = viewModel::sortBookmarks,
                 contentPadding = innerPadding,
+                lazyListState = lazyListState,
             )
         }
     }

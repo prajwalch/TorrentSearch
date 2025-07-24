@@ -1,10 +1,6 @@
 package com.prajwalch.torrentsearch.ui.screens
 
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.slideInVertically
-import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -24,7 +20,6 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -60,6 +55,7 @@ import com.prajwalch.torrentsearch.ui.components.CategoryChipsRow
 import com.prajwalch.torrentsearch.ui.components.EmptySearchPlaceholder
 import com.prajwalch.torrentsearch.ui.components.NoInternetConnectionMessage
 import com.prajwalch.torrentsearch.ui.components.ResultsNotFoundMessage
+import com.prajwalch.torrentsearch.ui.components.ScrollToTopFAB
 import com.prajwalch.torrentsearch.ui.components.SearchHistoryList
 import com.prajwalch.torrentsearch.ui.components.TopSearchBar
 import com.prajwalch.torrentsearch.ui.components.TorrentList
@@ -302,23 +298,6 @@ private fun MoreMenu(
             text = { Text(text = stringResource(R.string.settings_screen_title)) },
             contentPadding = contentPadding,
         )
-    }
-}
-
-@Composable
-private fun ScrollToTopFAB(visible: Boolean, onClick: () -> Unit, modifier: Modifier = Modifier) {
-    AnimatedVisibility(
-        modifier = modifier,
-        visible = visible,
-        enter = fadeIn() + slideInVertically { fullHeight -> fullHeight },
-        exit = fadeOut() + slideOutVertically { fullHeight -> fullHeight },
-    ) {
-        FloatingActionButton(onClick = onClick) {
-            Icon(
-                painter = painterResource(R.drawable.ic_arrow_up),
-                contentDescription = stringResource(R.string.button_scroll_to_top)
-            )
-        }
     }
 }
 
