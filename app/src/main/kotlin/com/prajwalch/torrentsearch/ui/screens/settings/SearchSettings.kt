@@ -71,7 +71,7 @@ fun SearchSettings(modifier: Modifier = Modifier) {
         SettingsSectionTitle(titleId = R.string.settings_section_search)
         SettingsItem(
             onClick = { showProviderListDialog = true },
-            leadingIconId = R.drawable.ic_graph,
+            leadingIconId = R.drawable.ic_travel_explore,
             headlineId = R.string.setting_search_providers,
             supportingContent = stringResource(
                 R.string.x_of_x_enabled,
