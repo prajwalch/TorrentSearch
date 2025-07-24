@@ -47,7 +47,9 @@
     <string name="seeders">Seeders %1$s</string>
     <string name="peers">Peers %1$s</string>
     <!-- Torrent actions bottom sheet -->
-    <string name="action_download">Download</string>
+    <string name="action_bookmark_torrent">Bookmark torrent</string>
+    <string name="action_delete_bookmark">Delete bookmark</string>
+    <string name="action_download_torrent">Download torrent</string>
     <string name="action_copy_magnet_link">Copy magnet link</string>
     <string name="action_share_magnet_link">Share magnet link</string>
     <string name="action_open_description_page">Open description page</string>

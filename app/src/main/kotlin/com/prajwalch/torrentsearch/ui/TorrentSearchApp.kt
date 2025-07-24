@@ -64,11 +64,9 @@ fun TorrentSearchApp(
         val hasDescriptionPage = torrent.descriptionPageUrl.isNotEmpty()
 
         TorrentActionsBottomSheet(
-            title = torrent.name,
-            isNSFW = torrent.category?.isNSFW ?: true,
             onDismissRequest = { selectedTorrent = null },
-            isBookmarked = torrent.bookmarked,
-            onBookmark = { bookmarksViewModel.add(torrent) },
+            title = torrent.name,
+            onBookmarkTorrent = { bookmarksViewModel.add(torrent) },
             onDeleteBookmark = { bookmarksViewModel.delete(torrent) },
             onDownloadTorrent = {
                 isTorrentClientMissing = !onDownloadTorrent(torrent.magnetUri())
@@ -88,6 +86,8 @@ fun TorrentSearchApp(
                 }
             },
             onShareDescriptionPageUrl = { onShareDescriptionPageUrl(torrent.descriptionPageUrl) },
+            isNSFW = torrent.category?.isNSFW ?: true,
+            isBookmarked = torrent.bookmarked,
             hasDescriptionPage = hasDescriptionPage,
         )
     }

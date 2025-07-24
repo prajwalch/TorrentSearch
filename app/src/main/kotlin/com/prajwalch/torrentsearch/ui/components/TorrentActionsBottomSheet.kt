@@ -31,18 +31,18 @@ import com.prajwalch.torrentsearch.R
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TorrentActionsBottomSheet(
-    title: String,
-    isNSFW: Boolean,
-    isBookmarked: Boolean,
-    onBookmark: () -> Unit,
-    onDeleteBookmark: () -> Unit,
     onDismissRequest: () -> Unit,
+    title: String,
+    onBookmarkTorrent: () -> Unit,
+    onDeleteBookmark: () -> Unit,
     onDownloadTorrent: () -> Unit,
     onCopyMagnetLink: () -> Unit,
     onShareMagnetLink: () -> Unit,
     onOpenDescriptionPage: () -> Unit,
     onCopyDescriptionPageUrl: () -> Unit,
     onShareDescriptionPageUrl: () -> Unit,
+    isNSFW: Boolean,
+    isBookmarked: Boolean,
     modifier: Modifier = Modifier,
     hasDescriptionPage: Boolean = true,
 ) {
@@ -75,8 +75,8 @@ fun TorrentActionsBottomSheet(
         LazyColumn {
             item {
                 if (!isBookmarked) {
-                    BookmarkAction(onClick = {
-                        onBookmark()
+                    BookmarkTorrentAction(onClick = {
+                        onBookmarkTorrent()
                         onDismissRequest()
                     })
                 } else {
@@ -86,7 +86,7 @@ fun TorrentActionsBottomSheet(
                     })
                 }
 
-                DownloadAction(onClick = {
+                DownloadTorrentAction(onClick = {
                     onDownloadTorrent()
                     onDismissRequest()
                 })
@@ -131,11 +131,31 @@ fun TorrentActionsBottomSheet(
 }
 
 @Composable
-private fun DownloadAction(onClick: () -> Unit, modifier: Modifier = Modifier) {
+private fun BookmarkTorrentAction(onClick: () -> Unit, modifier: Modifier = Modifier) {
+    Action(
+        modifier = modifier,
+        leadingIconId = R.drawable.ic_star,
+        label = stringResource(R.string.action_bookmark_torrent),
+        onClick = onClick,
+    )
+}
+
+@Composable
+private fun DeleteBookmarkAction(onClick: () -> Unit, modifier: Modifier = Modifier) {
+    Action(
+        modifier = modifier,
+        leadingIconId = R.drawable.ic_star_filled,
+        label = stringResource(R.string.action_delete_bookmark),
+        onClick = onClick,
+    )
+}
+
+@Composable
+private fun DownloadTorrentAction(onClick: () -> Unit, modifier: Modifier = Modifier) {
     Action(
         modifier = modifier,
         leadingIconId = R.drawable.ic_download,
-        label = stringResource(R.string.action_download),
+        label = stringResource(R.string.action_download_torrent),
         onClick = onClick,
     )
 }
@@ -186,26 +206,6 @@ private fun ShareDescriptionPageUrlAction(onClick: () -> Unit, modifier: Modifie
         modifier = modifier,
         leadingIconId = R.drawable.ic_share,
         label = stringResource(R.string.action_share_description_page_url),
-        onClick = onClick,
-    )
-}
-
-@Composable
-private fun BookmarkAction(onClick: () -> Unit, modifier: Modifier = Modifier) {
-    Action(
-        modifier = modifier,
-        leadingIconId = R.drawable.ic_star,
-        label = "Bookmark",
-        onClick = onClick,
-    )
-}
-
-@Composable
-private fun DeleteBookmarkAction(onClick: () -> Unit, modifier: Modifier = Modifier) {
-    Action(
-        modifier = modifier,
-        leadingIconId = R.drawable.ic_star_filled,
-        label = "Delete bookmark",
         onClick = onClick,
     )
 }
