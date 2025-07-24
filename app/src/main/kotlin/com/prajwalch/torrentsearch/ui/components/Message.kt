@@ -22,64 +22,64 @@ import androidx.compose.ui.unit.dp
 import com.prajwalch.torrentsearch.R
 
 @Composable
-fun NoInternetConnectionMessage(onRetry: () -> Unit, modifier: Modifier = Modifier.Companion) {
+fun NoInternetConnectionMessage(onRetry: () -> Unit, modifier: Modifier = Modifier) {
     Column(
         modifier = modifier,
         verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.Companion.CenterHorizontally,
+        horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Text(
             stringResource(R.string.msg_no_internet_connection),
-            fontWeight = FontWeight.Companion.Bold
+            fontWeight = FontWeight.Bold
         )
-        Spacer(modifier = Modifier.Companion.height(10.dp))
+        Spacer(modifier = Modifier.height(10.dp))
         Button(onClick = onRetry) { Text(stringResource(R.string.button_retry)) }
     }
 }
 
 @Composable
-fun ResultsNotFoundMessage(modifier: Modifier = Modifier.Companion) {
+fun ResultsNotFoundMessage(modifier: Modifier = Modifier) {
     Column(
         modifier = modifier,
-        horizontalAlignment = Alignment.Companion.CenterHorizontally,
+        horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
     ) {
         Icon(
-            modifier = Modifier.Companion.size(58.dp),
-            painter = painterResource(R.drawable.ic_sad),
+            modifier = Modifier.size(58.dp),
+            painter = painterResource(R.drawable.ic_results_not_found),
             contentDescription = null,
         )
-        Spacer(modifier = Modifier.Companion.height(8.dp))
+        Spacer(modifier = Modifier.height(8.dp))
         Text(
             text = stringResource(R.string.msg_no_results_found),
-            fontWeight = FontWeight.Companion.Bold,
+            fontWeight = FontWeight.Bold,
         )
     }
 }
 
 @Composable
-fun EmptySearchPlaceholder(modifier: Modifier = Modifier.Companion) {
+fun EmptySearchPlaceholder(modifier: Modifier = Modifier) {
     Box(
         modifier = modifier,
-        contentAlignment = Alignment.Companion.Center,
+        contentAlignment = Alignment.Center,
     ) {
         Column(
-            modifier = Modifier.Companion
+            modifier = Modifier
                 .padding(horizontal = 32.dp),
-            horizontalAlignment = Alignment.Companion.CenterHorizontally,
+            horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(8.dp),
         ) {
             Text(
-                modifier = Modifier.Companion.fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth(),
                 text = stringResource(R.string.msg_page_empty),
-                fontWeight = FontWeight.Companion.SemiBold,
-                textAlign = TextAlign.Companion.Center,
+                fontWeight = FontWeight.SemiBold,
+                textAlign = TextAlign.Center,
             )
             Text(
-                modifier = Modifier.Companion.fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth(),
                 text = stringResource(R.string.msg_start_searching),
-                fontWeight = FontWeight.Companion.Normal,
-                textAlign = TextAlign.Companion.Center,
+                fontWeight = FontWeight.Normal,
+                textAlign = TextAlign.Center,
             )
         }
     }
