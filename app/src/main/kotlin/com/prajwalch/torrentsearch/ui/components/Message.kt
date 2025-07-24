@@ -8,7 +8,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -29,11 +31,19 @@ fun NoInternetConnectionMessage(onRetry: () -> Unit, modifier: Modifier = Modifi
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Text(
-            stringResource(R.string.msg_no_internet_connection),
-            fontWeight = FontWeight.Bold
+            text = stringResource(R.string.msg_no_internet_connection),
+            fontWeight = FontWeight.Bold,
         )
         Spacer(modifier = Modifier.height(10.dp))
-        Button(onClick = onRetry) { Text(stringResource(R.string.button_retry)) }
+        Button(onClick = onRetry) {
+            Icon(
+                modifier = Modifier.size(ButtonDefaults.IconSize),
+                painter = painterResource(R.drawable.ic_refresh),
+                contentDescription = stringResource(R.string.desc_retry_connection),
+            )
+            Spacer(modifier = Modifier.width(ButtonDefaults.IconSpacing))
+            Text(text = stringResource(R.string.button_retry))
+        }
     }
 }
 
