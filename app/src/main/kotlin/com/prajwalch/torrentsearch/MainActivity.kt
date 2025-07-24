@@ -131,15 +131,8 @@ class MainActivity : ComponentActivity() {
 
     /** Starts the application chooser to share magnet uri with. */
     private fun shareMagnetLink(magnetUri: MagnetUri) {
-        val sendIntent = Intent().apply {
-            action = Intent.ACTION_SEND
-            putExtra(Intent.EXTRA_TEXT, magnetUri)
-            type = "text/plain"
-        }
-        val shareIntent = Intent.createChooser(sendIntent, null)
-
         try {
-            startActivity(shareIntent)
+            startTextShareIntent(magnetUri)
         } catch (_: ActivityNotFoundException) {
             Log.e(TAG, "Magnet uri share intent launch failed. (Activity not found)")
         }
@@ -158,18 +151,23 @@ class MainActivity : ComponentActivity() {
 
     /** Starts the application chooser to share url with. */
     private fun shareDescriptionPageUrl(url: String) {
-        val sendIntent = Intent().apply {
-            action = Intent.ACTION_SEND
-            putExtra(Intent.EXTRA_TEXT, url)
-            type = "text/html"
-        }
-        val shareIntent = Intent.createChooser(sendIntent, null)
-
         try {
-            startActivity(shareIntent)
+            startTextShareIntent(url)
         } catch (_: ActivityNotFoundException) {
             Log.e(TAG, "Description page URL share intent launch failed. (Activity not found)")
         }
+    }
+
+    /** Starts the application chooser to share the text with. */
+    private fun startTextShareIntent(text: String) {
+        val sendIntent = Intent().apply {
+            action = Intent.ACTION_SEND
+            type = "text/plain"
+
+            putExtra(Intent.EXTRA_TEXT, text)
+        }
+        val shareIntent = Intent.createChooser(sendIntent, null)
+        startActivity(shareIntent)
     }
 
     private companion object {
