@@ -10,6 +10,7 @@ import com.prajwalch.torrentsearch.data.SearchProviderId
 import com.prajwalch.torrentsearch.data.SettingsRepository
 import com.prajwalch.torrentsearch.data.TorrentsRepository
 import com.prajwalch.torrentsearch.database.entities.SearchHistory
+import com.prajwalch.torrentsearch.domain.FilterNSFWTorrentsUseCase
 import com.prajwalch.torrentsearch.domain.SortCriteria
 import com.prajwalch.torrentsearch.domain.SortOrder
 import com.prajwalch.torrentsearch.domain.SortTorrentsUseCase
@@ -315,14 +316,15 @@ class SearchViewModel(
         results: List<Torrent>,
         settings: SearchSettings,
     ): List<Torrent> {
-        val results = results
+        val generalFilteredResults = results
             .filter { torrent -> !settings.hideResultsWithZeroSeeders || torrent.seeders != 0u }
             .filter { torrent -> settings.searchProviders.contains(torrent.providerId) }
-            .filter { torrent ->
-                // Torrent with no category is also NSFW.
-                val categoryIsNullOrNSFW = torrent.category?.isNSFW ?: true
-                settings.enableNSFWMode || !categoryIsNullOrNSFW
-            }
+
+        val results = if (settings.enableNSFWMode) {
+            generalFilteredResults
+        } else {
+            FilterNSFWTorrentsUseCase(torrents = generalFilteredResults)()
+        }
 
         return when {
             settings.maxNumResults.isUnlimited() -> results

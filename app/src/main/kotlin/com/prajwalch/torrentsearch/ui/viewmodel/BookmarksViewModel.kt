@@ -3,8 +3,10 @@ package com.prajwalch.torrentsearch.ui.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import com.prajwalch.torrentsearch.data.SettingsRepository
 
 import com.prajwalch.torrentsearch.data.TorrentsRepository
+import com.prajwalch.torrentsearch.domain.FilterNSFWTorrentsUseCase
 import com.prajwalch.torrentsearch.domain.SortCriteria
 import com.prajwalch.torrentsearch.domain.SortOrder
 import com.prajwalch.torrentsearch.domain.SortTorrentsUseCase
@@ -14,6 +16,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -26,7 +29,10 @@ data class BookmarksUiState(
 )
 
 /** ViewModel that handles the business logic of Bookmarks screen. */
-class BookmarksViewModel(private val torrentsRepository: TorrentsRepository) : ViewModel() {
+class BookmarksViewModel(
+    private val settingsRepository: SettingsRepository,
+    private val torrentsRepository: TorrentsRepository,
+) : ViewModel() {
     /**
      * Current UI state.
      *
@@ -35,9 +41,25 @@ class BookmarksViewModel(private val torrentsRepository: TorrentsRepository) : V
     private val _uiState = MutableStateFlow(BookmarksUiState())
     val uiState = _uiState.asStateFlow()
 
+    /** Current NSFW mode setting. */
+    private val enableNSFWMode: StateFlow<Boolean> = settingsRepository
+        .enableNSFWMode
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.Eagerly,
+            initialValue = false,
+        )
+
     /** Current bookmarks acquired from the repository. */
     private val bookmarks: StateFlow<List<Torrent>> = torrentsRepository
         .bookmarkedTorrents
+        .map { bookmarks ->
+            SortTorrentsUseCase(
+                torrents = bookmarks,
+                criteria = _uiState.value.currentSortCriteria,
+                order = _uiState.value.currentSortOrder,
+            )()
+        }
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.Eagerly,
@@ -46,6 +68,7 @@ class BookmarksViewModel(private val torrentsRepository: TorrentsRepository) : V
 
     init {
         observeBookmarks()
+        observeNSFWModeSetting()
     }
 
     /**
@@ -54,13 +77,26 @@ class BookmarksViewModel(private val torrentsRepository: TorrentsRepository) : V
      */
     private fun observeBookmarks() = viewModelScope.launch {
         bookmarks.collect { bookmarks ->
-            val sortedBookmarks = SortTorrentsUseCase(
-                torrents = bookmarks,
-                criteria = _uiState.value.currentSortCriteria,
-                order = _uiState.value.currentSortOrder,
-            )()
+            val bookmarks = if (enableNSFWMode.value) {
+                bookmarks
+            } else {
+                FilterNSFWTorrentsUseCase(torrents = bookmarks)()
+            }
 
-            _uiState.update { it.copy(bookmarks = sortedBookmarks) }
+            _uiState.update { it.copy(bookmarks = bookmarks) }
+        }
+    }
+
+    /** Observes the NSFW settings and update the UI accordingly. */
+    private fun observeNSFWModeSetting() = viewModelScope.launch {
+        enableNSFWMode.collect { enableNSFWMode ->
+            val bookmarks = if (enableNSFWMode) {
+                bookmarks.value
+            } else {
+                FilterNSFWTorrentsUseCase(torrents = bookmarks.value)()
+            }
+
+            _uiState.update { it.copy(bookmarks = bookmarks) }
         }
     }
 
@@ -110,10 +146,16 @@ class BookmarksViewModel(private val torrentsRepository: TorrentsRepository) : V
     companion object {
         /** Provides a factory function for [BookmarksViewModel]. */
         @Suppress("UNCHECKED_CAST")
-        fun provideFactory(torrentsRepository: TorrentsRepository): ViewModelProvider.Factory {
+        fun provideFactory(
+            settingsRepository: SettingsRepository,
+            torrentsRepository: TorrentsRepository,
+        ): ViewModelProvider.Factory {
             return object : ViewModelProvider.Factory {
                 override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                    return BookmarksViewModel(torrentsRepository) as T
+                    return BookmarksViewModel(
+                        settingsRepository = settingsRepository,
+                        torrentsRepository = torrentsRepository,
+                    ) as T
                 }
             }
         }

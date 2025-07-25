@@ -65,6 +65,7 @@ class MainActivity : ComponentActivity() {
 
     private val bookmarksViewModel: BookmarksViewModel by viewModels {
         BookmarksViewModel.provideFactory(
+            settingsRepository = settingsRepository,
             torrentsRepository = torrentsRepository
         )
     }
