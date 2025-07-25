@@ -154,7 +154,7 @@ private fun SearchScreenTopBar(
     onNavigateToSettings: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    var expanded by remember { mutableStateOf(false) }
+    var searchBarExpanded by remember { mutableStateOf(false) }
     val windowInsets = TopAppBarDefaults.windowInsets
 
     Column(
@@ -169,11 +169,11 @@ private fun SearchScreenTopBar(
             query = query,
             onQueryChange = onQueryChange,
             onSearch = {
-                expanded = query.isEmpty()
+                searchBarExpanded = query.isEmpty()
                 onSearch()
             },
-            expanded = expanded,
-            onExpandChange = { expanded = it },
+            expanded = searchBarExpanded,
+            onExpandChange = { searchBarExpanded = it },
             trailingIcon = {
                 var showMoreMenu by remember { mutableStateOf(false) }
 
@@ -197,7 +197,7 @@ private fun SearchScreenTopBar(
                 histories = histories,
                 onSearchRequest = {
                     onQueryChange(it)
-                    expanded = false
+                    searchBarExpanded = false
                     onSearch()
                 },
                 onQueryChangeRequest = onQueryChange,
