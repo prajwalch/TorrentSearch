@@ -1,8 +1,8 @@
-<div align="center"
+<div align="center">
 
 ![ic_launcher](https://github.com/prajwalch/TorrentSearch/blob/main/fastlane/metadata/android/en-US/images/icon.png)
 
-[![Latest release](https://img.shields.io/github/v/release/prajwalch/TorrentSearch?style=for-the-badge)](https://github.com/prajwalch/TorrentSearch/releases) 
+[![Latest release](https://img.shields.io/github/v/release/prajwalch/TorrentSearch?style=for-the-badge)](https://github.com/prajwalch/TorrentSearch/releases)
 [![IzzyOnDroid version](https://img.shields.io/endpoint?url=https://apt.izzysoft.de/fdroid/api/v1/shield/com.prajwalch.torrentsearch&style=for-the-badge)](https://apt.izzysoft.de/fdroid/index/apk/com.prajwalch.torrentsearch)
 [![Downloads](https://img.shields.io/github/downloads/prajwalch/TorrentSearch/total?style=for-the-badge)](https://github.com/prajwalch/TorrentSearch/releases)
 
@@ -24,7 +24,8 @@ A modern Material 3 design Android app to search and download torrents from mult
 ## Features
 
 - Modern Material 3 design UI
-    - A clean, smooth, and responsive user interface, adapting to your device's wallpaper and theme settings.
+    - A clean, smooth, and responsive user interface, adapting to your device's wallpaper and theme
+      settings.
 - Different category selections
 - Detailed view of search results:
     - Provider name
@@ -34,12 +35,13 @@ A modern Material 3 design Android app to search and download torrents from mult
     - File size
     - Seeders/Peers
 - Various torrent actions:
+    - Bookmark
     - Download (requires an external torrent client)
         - If not found, shows a friendly dialog with different FOSS torrent clients to choose from.
     - Copy/share magnet link
     - Open torrent description page
     - Copy/share torrent description page URL
-- Safe mode with an option to enable or disable NSFW search:
+- Safe mode option:
     - Automatically hides NSFW categories
     - Automatically hides NSFW torrents
 - Option to enable or disable individual providers
@@ -50,7 +52,8 @@ A modern Material 3 design Android app to search and download torrents from mult
 [<img src="https://gitlab.com/IzzyOnDroid/repo/-/raw/master/assets/IzzyOnDroid.png" height="80" alt="Get it on IzzyOnDroid">](https://apt.izzysoft.de/fdroid/index/apk/com.prajwalch.torrentsearch)
 [<img src="https://github.com/ImranR98/Obtainium/blob/main/assets/graphics/badge_obtainium.png" alt="Get it on Obtainium" height="55">](https://apps.obtainium.imranr.dev/redirect?r=obtainium://add/https://github.com/prajwalch/TorrentSearch/)
 
-The Nightly versions are also available under the artifact section of workflow run (You may require to logging in to Github). These are created for
+The Nightly versions are also available under the artifact section of workflow run (You may require
+to logging in to Github). These are created for
 each commit/push done to the repository and can be used by anyone to test new features. Please note
 that Nightly builds can contain bugs and may not work properly.
 
