@@ -31,8 +31,10 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.prajwalch.torrentsearch.R
 import com.prajwalch.torrentsearch.models.Torrent
 import com.prajwalch.torrentsearch.ui.components.ScrollToTopFAB
+import com.prajwalch.torrentsearch.ui.components.SortButtonAndMenu
 import com.prajwalch.torrentsearch.ui.components.TorrentList
 import com.prajwalch.torrentsearch.ui.viewmodel.BookmarksViewModel
+
 import kotlinx.coroutines.launch
 
 @Composable
@@ -80,9 +82,13 @@ fun BookmarksScreen(
                 modifier = Modifier.consumeWindowInsets(innerPadding),
                 torrents = uiState.bookmarks,
                 onTorrentSelect = onTorrentSelect,
-                currentSortCriteria = uiState.currentSortCriteria,
-                currentSortOrder = uiState.currentSortOrder,
-                onSortTorrents = viewModel::sortBookmarks,
+                toolbarContent = {
+                    SortButtonAndMenu(
+                        currentSortCriteria = uiState.currentSortCriteria,
+                        currentSortOrder = uiState.currentSortOrder,
+                        onSortRequest = viewModel::sortBookmarks,
+                    )
+                },
                 contentPadding = innerPadding,
                 lazyListState = lazyListState,
             )

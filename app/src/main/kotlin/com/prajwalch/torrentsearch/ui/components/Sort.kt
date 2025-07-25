@@ -1,5 +1,6 @@
 package com.prajwalch.torrentsearch.ui.components
 
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -15,6 +16,10 @@ import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -25,6 +30,32 @@ import androidx.compose.ui.unit.dp
 import com.prajwalch.torrentsearch.R
 import com.prajwalch.torrentsearch.domain.SortCriteria
 import com.prajwalch.torrentsearch.domain.SortOrder
+
+@Composable
+fun SortButtonAndMenu(
+    currentSortCriteria: SortCriteria,
+    currentSortOrder: SortOrder,
+    onSortRequest: (SortCriteria, SortOrder) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    var showMenu by remember(currentSortCriteria) { mutableStateOf(false) }
+
+    Box(modifier = modifier) {
+        SortButton(
+            onClick = { showMenu = true },
+            currentSortCriteria = currentSortCriteria,
+            currentSortOrder = currentSortOrder,
+            onSortOrderChange = { onSortRequest(currentSortCriteria, it) },
+        )
+        SortOptionsMenu(
+            expanded = showMenu,
+            onDismissRequest = { showMenu = false },
+            selectedSortCriteria = currentSortCriteria,
+            onSortCriteriaChange = { onSortRequest(it, currentSortOrder) },
+        )
+    }
+}
+
 
 @Composable
 fun SortButton(

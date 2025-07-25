@@ -4,10 +4,10 @@ import androidx.annotation.DrawableRes
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -21,10 +21,6 @@ import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -37,8 +33,6 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 
 import com.prajwalch.torrentsearch.R
-import com.prajwalch.torrentsearch.domain.SortCriteria
-import com.prajwalch.torrentsearch.domain.SortOrder
 import com.prajwalch.torrentsearch.models.Category
 import com.prajwalch.torrentsearch.models.Torrent
 
@@ -49,15 +43,11 @@ import my.nanihadesuka.compose.ScrollbarSettings
 fun TorrentList(
     torrents: List<Torrent>,
     onTorrentSelect: (Torrent) -> Unit,
-    currentSortCriteria: SortCriteria,
-    currentSortOrder: SortOrder,
-    onSortTorrents: (SortCriteria, SortOrder) -> Unit,
     modifier: Modifier = Modifier,
+    toolbarContent: @Composable (RowScope.() -> Unit)? = null,
     lazyListState: LazyListState = rememberLazyListState(),
     contentPadding: PaddingValues = PaddingValues(0.dp),
 ) {
-    var showSortOptions by remember(torrents) { mutableStateOf(false) }
-
     val scrollbarUnselectedColor = MaterialTheme.colorScheme.primary
     val scrollbarSelectedColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.5f)
 
@@ -77,33 +67,14 @@ fun TorrentList(
             state = lazyListState,
             contentPadding = contentPadding,
         ) {
-            item {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                ) {
-                    Text(
-                        text = stringResource(R.string.hint_results_count, torrents.size),
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        style = MaterialTheme.typography.bodyMedium,
+            toolbarContent?.let { toolbar ->
+                item {
+                    TorrentListToolbar(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp),
+                        content = toolbar,
                     )
-                    Box {
-                        SortButton(
-                            onClick = { showSortOptions = true },
-                            currentSortCriteria = currentSortCriteria,
-                            currentSortOrder = currentSortOrder,
-                            onSortOrderChange = { onSortTorrents(currentSortCriteria, it) },
-                        )
-                        SortOptionsMenu(
-                            expanded = showSortOptions,
-                            onDismissRequest = { showSortOptions = false },
-                            selectedSortCriteria = currentSortCriteria,
-                            onSortCriteriaChange = { onSortTorrents(it, currentSortOrder) },
-                        )
-                    }
                 }
             }
             items(
@@ -120,6 +91,19 @@ fun TorrentList(
             }
         }
     }
+}
+
+@Composable
+private fun TorrentListToolbar(
+    modifier: Modifier = Modifier,
+    content: @Composable (RowScope.() -> Unit),
+) {
+    Row(
+        modifier = modifier,
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceBetween,
+        content = content,
+    )
 }
 
 @Composable
