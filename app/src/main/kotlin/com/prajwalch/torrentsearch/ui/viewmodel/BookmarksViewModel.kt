@@ -77,27 +77,34 @@ class BookmarksViewModel(
      */
     private fun observeBookmarks() = viewModelScope.launch {
         bookmarks.collect { bookmarks ->
-            val bookmarks = if (enableNSFWMode.value) {
-                bookmarks
-            } else {
-                FilterNSFWTorrentsUseCase(torrents = bookmarks)()
-            }
-
-            _uiState.update { it.copy(bookmarks = bookmarks) }
+            val nsfwFilteredBookmarks = filterNSFWBookmarks(
+                bookmarks = bookmarks,
+                isNSFWModeEnabled = enableNSFWMode.value,
+            )
+            _uiState.update { it.copy(bookmarks = nsfwFilteredBookmarks) }
         }
     }
 
     /** Observes the NSFW settings and update the UI accordingly. */
     private fun observeNSFWModeSetting() = viewModelScope.launch {
         enableNSFWMode.collect { enableNSFWMode ->
-            val bookmarks = if (enableNSFWMode) {
-                bookmarks.value
-            } else {
-                FilterNSFWTorrentsUseCase(torrents = bookmarks.value)()
-            }
+            val nsfwFilteredBookmarks = filterNSFWBookmarks(
+                bookmarks = bookmarks.value,
+                isNSFWModeEnabled = enableNSFWMode,
+            )
 
-            _uiState.update { it.copy(bookmarks = bookmarks) }
+            _uiState.update { it.copy(bookmarks = nsfwFilteredBookmarks) }
         }
+    }
+
+    /** Filters the NSFW bookmarks and returns a new list. */
+    private fun filterNSFWBookmarks(
+        bookmarks: List<Torrent>,
+        isNSFWModeEnabled: Boolean,
+    ): List<Torrent> = if (isNSFWModeEnabled) {
+        bookmarks
+    } else {
+        FilterNSFWTorrentsUseCase(torrents = bookmarks)()
     }
 
     /**
