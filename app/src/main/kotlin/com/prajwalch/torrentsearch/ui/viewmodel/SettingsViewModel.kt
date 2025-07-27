@@ -35,7 +35,7 @@ data class GeneralSettingsUiState(
 data class SearchSettingsUiState(
     val hideResultsWithZeroSeeders: Boolean = false,
     val searchProviders: List<SearchProviderUiState> = emptyList(),
-    val totalSearchProviders: Int = SearchProviders.namesWithId().size,
+    val totalSearchProviders: Int = SearchProviders.infos().size,
     val enabledSearchProviders: Int = 0,
     val maxNumResults: MaxNumResults = MaxNumResults.Unlimited,
 )
@@ -49,6 +49,7 @@ data class SearchHistorySettingsUiState(
 data class SearchProviderUiState(
     val id: SearchProviderId,
     val name: String,
+    val url: String,
     val enabled: Boolean,
 )
 
@@ -58,7 +59,7 @@ class SettingsViewModel(
     private val searchHistoryRepository: SearchHistoryRepository,
 ) : ViewModel() {
     /** All search providers (enabled + disabled). */
-    private val allSearchProviders = SearchProviders.namesWithId()
+    private val allSearchProviders = SearchProviders.infos()
 
     /**
      * Currently enabled search providers.
@@ -124,11 +125,12 @@ class SettingsViewModel(
 
     /** Converts list of search provider to list of UI states. */
     private fun allSearchProvidersToUiStates(): List<SearchProviderUiState> {
-        return allSearchProviders.map { (id, name) ->
+        return allSearchProviders.map { searchProviderInfo ->
             SearchProviderUiState(
-                id = id,
-                name = name,
-                enabled = enabledSearchProviders.contains(id)
+                id = searchProviderInfo.id,
+                name = searchProviderInfo.name,
+                url = searchProviderInfo.url.removePrefix("https://"),
+                enabled = enabledSearchProviders.contains(searchProviderInfo.id)
             )
         }
     }

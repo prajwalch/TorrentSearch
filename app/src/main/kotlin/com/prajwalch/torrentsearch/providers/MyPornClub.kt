@@ -10,15 +10,18 @@ import kotlinx.coroutines.withContext
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Element
 
-class MyPornClub(override val id: SearchProviderId) : SearchProvider {
-    override val name = "MyPornClub"
-
-    override val specializedCategory = Category.Porn
+class MyPornClub(val id: SearchProviderId) : SearchProvider {
+    override val info = SearchProviderInfo(
+        id = id,
+        name = "MyPornClub",
+        url = "https://myporn.club",
+        specializedCategory = Category.Porn,
+    )
 
     override suspend fun search(query: String, context: SearchContext): List<Torrent> {
         val formattedQuery = query.trim().replace("\\s+".toRegex(), "-")
         // TODO: Suffix can be used for sorting: /seeders, /latest, /hits, /views
-        val url = "$BASE_URL/s/$formattedQuery/seeders"
+        val url = "${info.url}/s/$formattedQuery/seeders"
         val responseHtml = context.httpClient.get(url)
 
         return withContext(Dispatchers.Default) {
@@ -38,7 +41,7 @@ class MyPornClub(override val id: SearchProviderId) : SearchProvider {
         val anchor = row.selectFirst("a[href^=\"/t/\"]") ?: return null
         val name = anchor.text().trim()
         val relativeDetailsUrl = anchor.attr("href")
-        val descriptionPageUrl = BASE_URL + relativeDetailsUrl
+        val descriptionPageUrl = info.url + relativeDetailsUrl
 
         val infoHash = extractInfoHash(descriptionPageUrl, context) ?: return null
 
@@ -63,10 +66,10 @@ class MyPornClub(override val id: SearchProviderId) : SearchProvider {
             size = size,
             seeders = seeders,
             peers = peers,
-            providerId = id,
-            providerName = this.name,
+            providerId = info.id,
+            providerName = info.name,
             uploadDate = uploadDate,
-            category = Category.Porn,
+            category = info.specializedCategory,
             descriptionPageUrl = descriptionPageUrl,
             infoHashOrMagnetUri = InfoHashOrMagnetUri.InfoHash(infoHash)
         )
@@ -88,7 +91,6 @@ class MyPornClub(override val id: SearchProviderId) : SearchProvider {
     }
 
     private companion object {
-        private const val BASE_URL = "https://myporn.club"
         private val HASH_REGEX = Regex("""\[hash_info]:(\w{32,40})""")
     }
 }

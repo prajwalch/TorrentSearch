@@ -14,12 +14,16 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.JsonObject
 
-class TorrentsCsv(override val id: SearchProviderId) : SearchProvider {
-    override val name: String = "TorrentsCsv"
+class TorrentsCsv(val id: SearchProviderId) : SearchProvider {
+    override val info = SearchProviderInfo(
+        id = id,
+        name = "TorrentsCSV",
+        url = "https://torrents-csv.com"
+    )
 
     override suspend fun search(query: String, context: SearchContext): List<Torrent> {
         val queryParams = "?q=$query"
-        val requestUrl = "$BASE_URL/service/search$queryParams"
+        val requestUrl = "${info.url}/service/search$queryParams"
 
         val responseJson = context.httpClient.getJson(url = requestUrl) ?: return emptyList()
 
@@ -68,15 +72,11 @@ class TorrentsCsv(override val id: SearchProviderId) : SearchProvider {
             size = size,
             seeders = seeders,
             peers = peers,
-            providerId = id,
-            providerName = this.name,
+            providerId = info.id,
+            providerName = info.name,
             uploadDate = uploadDate,
-            descriptionPageUrl = BASE_URL,
+            descriptionPageUrl = "",
             infoHashOrMagnetUri = InfoHashOrMagnetUri.InfoHash(infoHash),
         )
-    }
-
-    private companion object {
-        private const val BASE_URL = "https://torrents-csv.com"
     }
 }

@@ -16,12 +16,16 @@ import org.jsoup.nodes.Element
  * Extracts torrent results from the HTML search page.
  * This provider uses InfoHash, not Magnet URIs.
  */
-class LimeTorrents(override val id: SearchProviderId) : SearchProvider {
-    override val name = "LimeTorrents"
+class LimeTorrents(val id: SearchProviderId) : SearchProvider {
+    override val info = SearchProviderInfo(
+        id = id,
+        name = "LimeTorrents",
+        url = "https://limetorrents.lol"
+    )
 
     override suspend fun search(query: String, context: SearchContext): List<Torrent> {
         val categoryString = getCategoryString(context.category)
-        val requestUrl = "$BASE_URL/search/$categoryString/$query/date/1/"
+        val requestUrl = "${info.url}/search/$categoryString/$query/date/1/"
 
         val responseHtml = context.httpClient.get(url = requestUrl)
 
@@ -61,7 +65,7 @@ class LimeTorrents(override val id: SearchProviderId) : SearchProvider {
     private fun parseRow(row: Element): Torrent? {
         val nameAnchor = row.selectFirst("div.tt-name > a[href^=/]") ?: return null
         val name = nameAnchor.text()
-        val descriptionPageUrl = BASE_URL + nameAnchor.attr("href")
+        val descriptionPageUrl = info.url + nameAnchor.attr("href")
 
         val infoHash = extractInfoHash(row) ?: return null
         val uploadDate = extractUploadDate(row)
@@ -75,8 +79,8 @@ class LimeTorrents(override val id: SearchProviderId) : SearchProvider {
             size = size,
             seeders = seeders,
             peers = peers,
-            providerId = id,
-            providerName = this.name,
+            providerId = info.id,
+            providerName = info.name,
             uploadDate = uploadDate,
             category = category,
             descriptionPageUrl = descriptionPageUrl,
@@ -125,7 +129,6 @@ class LimeTorrents(override val id: SearchProviderId) : SearchProvider {
     }
 
     private companion object {
-        private const val BASE_URL = "https://www.limetorrents.lol"
         private val INFO_HASH_REGEX = Regex("""/torrent/([A-Fa-f0-9]{40})\.torrent""")
     }
 }

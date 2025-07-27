@@ -23,6 +23,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+
 import com.prajwalch.torrentsearch.R
 import com.prajwalch.torrentsearch.providers.SearchProviderId
 import com.prajwalch.torrentsearch.ui.viewmodel.SearchProviderUiState
@@ -85,9 +86,10 @@ private fun SearchProviderList(
     ) {
         items(items = searchProviders, key = { it.id }) { searchProvider ->
             SearchProviderListItem(
+                name = searchProvider.name,
+                url = searchProvider.url,
                 checked = searchProvider.enabled,
                 onCheckedChange = { onProviderCheckedChange(searchProvider.id, it) },
-                name = searchProvider.name
             )
         }
     }
@@ -95,9 +97,10 @@ private fun SearchProviderList(
 
 @Composable
 private fun SearchProviderListItem(
+    name: String,
+    url: String,
     checked: Boolean,
     onCheckedChange: (Boolean) -> Unit,
-    name: String,
     modifier: Modifier = Modifier,
 ) {
     ListItem(
@@ -105,6 +108,7 @@ private fun SearchProviderListItem(
             .clickable(role = Role.Switch, onClick = { onCheckedChange(!checked) })
             .then(modifier),
         headlineContent = { Text(text = name) },
+        supportingContent = { Text(text = url) },
         trailingContent = {
             Switch(checked = checked, onCheckedChange = onCheckedChange)
         },

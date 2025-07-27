@@ -12,19 +12,24 @@ typealias SearchProviderId = String
  * query, parsing the response and then returning structured result.
  */
 interface SearchProvider {
-    /** Provider id. */
-    val id: SearchProviderId
-
-    /** Name of the provider. */
-    val name: String
-
-    /** Category the provider is specialized for. */
-    val specializedCategory: Category
-        get() = Category.All
+    /** Search provider information. */
+    val info: SearchProviderInfo
 
     /** Performs a search and returns the results. */
     suspend fun search(query: String, context: SearchContext): List<Torrent>
 }
+
+/** Search provider information. */
+data class SearchProviderInfo(
+    /** Unique ID of the search provider. */
+    val id: SearchProviderId,
+    /** Name of the search provider. */
+    val name: String,
+    /** URL of the search provider. */
+    val url: String,
+    /** Category in which the provider specializes. */
+    val specializedCategory: Category = Category.All,
+)
 
 /** The search context. */
 data class SearchContext(

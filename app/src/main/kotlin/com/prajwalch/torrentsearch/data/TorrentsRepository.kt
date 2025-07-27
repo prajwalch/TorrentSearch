@@ -85,7 +85,7 @@ class TorrentsRepository(
         }
 
         return providers.filter {
-            (it.specializedCategory == Category.All) || (category == it.specializedCategory)
+            (it.info.specializedCategory == Category.All) || (category == it.info.specializedCategory)
         }
     }
 

@@ -10,13 +10,16 @@ import kotlinx.coroutines.withContext
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Element
 
-class Eztv(override val id: String) : SearchProvider {
-    override val name = "Eztv"
-
-    override val specializedCategory = Category.Series
+class Eztv(val id: String) : SearchProvider {
+    override val info = SearchProviderInfo(
+        id = id,
+        name = "Eztv",
+        url = "https://eztvx.to",
+        specializedCategory = Category.Series,
+    )
 
     override suspend fun search(query: String, context: SearchContext): List<Torrent> {
-        val requestUrl = "$BASE_URL/search/$query"
+        val requestUrl = "${info.url}/search/$query"
         // Without setting that cookie, it returns results without magnet links.
         val responseHtml = context.httpClient.get(
             url = requestUrl,
@@ -85,7 +88,7 @@ class Eztv(override val id: String) : SearchProvider {
         val torrentName = epInfoAnchorElement.ownText()
 
         val descriptionPagePath = epInfoAnchorElement.attr("href")
-        val descriptionPageUrl = "$BASE_URL$descriptionPagePath"
+        val descriptionPageUrl = "${info.url}$descriptionPagePath"
 
         val magnetUri = tr.selectFirst("a.magnet")?.attr("href") ?: return null
         val size = tr.selectFirst("td:nth-child(4)")?.ownText() ?: return null
@@ -110,16 +113,12 @@ class Eztv(override val id: String) : SearchProvider {
             size = size,
             seeders = seeders.toUIntOrNull() ?: 0u,
             peers = peers,
-            providerId = id,
-            providerName = name,
+            providerId = info.id,
+            providerName = info.name,
             uploadDate = uploadDate,
-            category = Category.Series,
+            category = info.specializedCategory,
             descriptionPageUrl = descriptionPageUrl,
             infoHashOrMagnetUri = InfoHashOrMagnetUri.MagnetUri(magnetUri),
         )
-    }
-
-    private companion object {
-        private const val BASE_URL = "https://eztvx.to"
     }
 }

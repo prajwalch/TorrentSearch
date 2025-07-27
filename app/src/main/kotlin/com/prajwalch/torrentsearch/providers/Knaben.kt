@@ -28,9 +28,12 @@ import java.util.Locale
  * Provider implementation using the official [Knaben API](https://knaben.org/api/v1).
  * Returns magnet-based torrents.
  */
-class Knaben(override val id: SearchProviderId) : SearchProvider {
-
-    override val name: String = "Knaben"
+class Knaben(val id: SearchProviderId) : SearchProvider {
+    override val info = SearchProviderInfo(
+        id = id,
+        name = "Knaben",
+        url = "https://knaben.org",
+    )
 
     override suspend fun search(query: String, context: SearchContext): List<Torrent> {
         val requestBody = buildRequestJson(query, context.category)
@@ -100,8 +103,8 @@ class Knaben(override val id: SearchProviderId) : SearchProvider {
             size = size,
             seeders = seeders,
             peers = peers,
-            providerId = this.id,
-            providerName = this.name,
+            providerId = info.id,
+            providerName = info.name,
             uploadDate = uploadDate,
             descriptionPageUrl = descriptionPageUrl,
             category = category,

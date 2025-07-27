@@ -15,10 +15,13 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.JsonObject
 
-class Yts(override val id: SearchProviderId) : SearchProvider {
-    override val name = "Yts"
-
-    override val specializedCategory = Category.Movies
+class Yts(val id: SearchProviderId) : SearchProvider {
+    override val info = SearchProviderInfo(
+        id = id,
+        name = "Yts",
+        url = "https://yts.mx",
+        specializedCategory = Category.Movies,
+    )
 
     override suspend fun search(query: String, context: SearchContext): List<Torrent> {
         return if (isQueryIMDBId(query)) {
@@ -48,7 +51,7 @@ class Yts(override val id: SearchProviderId) : SearchProvider {
     private suspend fun singleMovieLinks(imdbId: String, context: SearchContext): List<Torrent> {
         val path = "/api/v2/movie_details.json"
         val queryParams = "?imdb_id=$imdbId"
-        val requestUrl = "$BASE_URL$path$queryParams"
+        val requestUrl = "${info.url}$path$queryParams"
 
         val responseJson = context.httpClient.getJson(url = requestUrl) ?: return emptyList()
         val torrents = withContext(Dispatchers.Default) {
@@ -83,7 +86,7 @@ class Yts(override val id: SearchProviderId) : SearchProvider {
     private suspend fun multipleMovieLinks(query: String, context: SearchContext): List<Torrent> {
         val path = "/api/v2/list_movies.json"
         val queryParams = "?query_term=$query"
-        val requestUrl = "$BASE_URL$path$queryParams"
+        val requestUrl = "${info.url}$path$queryParams"
 
         val responseJson = context.httpClient.getJson(url = requestUrl) ?: return emptyList()
         val torrents = withContext(Dispatchers.Default) {
@@ -173,16 +176,12 @@ class Yts(override val id: SearchProviderId) : SearchProvider {
             size = size,
             seeders = seeders,
             peers = peers,
-            providerId = id,
-            providerName = this.name,
+            providerId = info.id,
+            providerName = info.name,
             uploadDate = uploadDate,
-            category = Category.Movies,
+            category = info.specializedCategory,
             descriptionPageUrl = descriptionPageUrl,
             infoHashOrMagnetUri = InfoHashOrMagnetUri.InfoHash(infoHash),
         )
-    }
-
-    private companion object {
-        private const val BASE_URL = "https://yts.mx"
     }
 }

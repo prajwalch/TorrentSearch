@@ -18,13 +18,16 @@ import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.util.Locale
 
-class AnimeTosho(override val id: SearchProviderId) : SearchProvider {
-    override val name: String = "AnimeTosho"
-
-    override val specializedCategory = Category.Anime
+class AnimeTosho(val id: SearchProviderId) : SearchProvider {
+    override val info = SearchProviderInfo(
+        id = id,
+        name = "AnimeTosho",
+        url = "https://animetosho.org",
+        specializedCategory = Category.Anime,
+    )
 
     override suspend fun search(query: String, context: SearchContext): List<Torrent> {
-        val requestUrl = "$BASE_URL/search?q=$query"
+        val requestUrl = "${info.url}/search?q=$query"
         val responseHtml = context.httpClient.get(url = requestUrl)
 
         return withContext(Dispatchers.Default) {
@@ -66,10 +69,10 @@ class AnimeTosho(override val id: SearchProviderId) : SearchProvider {
             size = size,
             seeders = seeders,
             peers = peers,
-            providerId = id,
-            providerName = this.name,
+            providerId = info.id,
+            providerName = info.name,
             uploadDate = uploadDate,
-            category = Category.Anime,
+            category = info.specializedCategory,
             descriptionPageUrl = descriptionPageUrl,
             infoHashOrMagnetUri = InfoHashOrMagnetUri.MagnetUri(magnetUri),
         )
@@ -127,7 +130,6 @@ class AnimeTosho(override val id: SearchProviderId) : SearchProvider {
     }
 
     private companion object {
-        private const val BASE_URL = "https://animetosho.org"
         private const val DATE_PREFIX = "Date/time submitted: "
         private val STATS_REGEX = """\[(\d+)↑/(\d+)↓]""".toRegex()
 

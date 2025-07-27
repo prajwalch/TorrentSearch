@@ -11,14 +11,17 @@ import kotlinx.coroutines.withContext
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Element
 
-class NyaaSi(override val id: SearchProviderId) : SearchProvider {
-    override val name = "Nyaa"
-
-    override val specializedCategory = Category.Anime
+class NyaaSi(val id: SearchProviderId) : SearchProvider {
+    override val info = SearchProviderInfo(
+        id = id,
+        name = "Nyaa",
+        url = "https://nyaa.si",
+        specializedCategory = Category.Anime,
+    )
 
     override suspend fun search(query: String, context: SearchContext): List<Torrent> {
         val queryParams = "?f=0&c=1_0&q=$query"
-        val requestUrl = "$BASE_URL/?$queryParams"
+        val requestUrl = "${info.url}/?$queryParams"
 
         val responseHtml = context.httpClient.get(url = requestUrl)
         val torrents = withContext(Dispatchers.Default) {
@@ -52,7 +55,7 @@ class NyaaSi(override val id: SearchProviderId) : SearchProvider {
         val name = anchorElement.ownText()
 
         val descriptionPagePath = anchorElement.attr("href")
-        val descriptionPageUrl = "$BASE_URL$descriptionPagePath"
+        val descriptionPageUrl = "${info.url}$descriptionPagePath"
 
         val magnetUri = tr
             .selectFirst("td:nth-child(3)")
@@ -75,16 +78,12 @@ class NyaaSi(override val id: SearchProviderId) : SearchProvider {
             size = size,
             seeders = seeders.toUIntOrNull() ?: 0u,
             peers = peers.toUIntOrNull() ?: 0u,
-            providerId = id,
-            providerName = this.name,
+            providerId = info.id,
+            providerName = info.name,
             uploadDate = uploadDate,
-            category = Category.Anime,
+            category = info.specializedCategory,
             descriptionPageUrl = descriptionPageUrl,
             infoHashOrMagnetUri = InfoHashOrMagnetUri.MagnetUri(magnetUri),
         )
-    }
-
-    private companion object {
-        private const val BASE_URL = "https://nyaa.si"
     }
 }

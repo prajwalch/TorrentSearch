@@ -13,8 +13,12 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.JsonObject
 
-class ThePirateBay(override val id: String) : SearchProvider {
-    override val name = "ThePirateBay"
+class ThePirateBay(val id: String) : SearchProvider {
+    override val info = SearchProviderInfo(
+        id = id,
+        name = "ThePirateBay",
+        url = "https://thepiratebay.org"
+    )
 
     override suspend fun search(query: String, context: SearchContext): List<Torrent> {
         val categoryIndex = categoryIndex(context.category)
@@ -74,7 +78,7 @@ class ThePirateBay(override val id: String) : SearchProvider {
         }
 
         val id = torrentObject.getString("id") ?: return null
-        val descriptionPageUrl = "$DESCRIPTION_URL?id=$id"
+        val descriptionPageUrl = "${info.url}/description.php?id=$id"
 
         val infoHash = torrentObject.getString("info_hash") ?: return null
         val sizeBytes = torrentObject.getString("size") ?: return null
@@ -93,8 +97,8 @@ class ThePirateBay(override val id: String) : SearchProvider {
             size = size,
             seeders = seeders,
             peers = peers,
-            providerId = id,
-            providerName = this.name,
+            providerId = info.id,
+            providerName = info.name,
             uploadDate = uploadDate,
             category = category,
             descriptionPageUrl = descriptionPageUrl,
@@ -127,6 +131,5 @@ class ThePirateBay(override val id: String) : SearchProvider {
 
     private companion object {
         private const val URL = "https://apibay.org/q.php"
-        private const val DESCRIPTION_URL = "https://thepiratebay.org/description.php"
     }
 }

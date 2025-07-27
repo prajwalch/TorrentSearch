@@ -36,11 +36,15 @@ private data class TableRowParsedResult(
     val category: String,
 )
 
-class TheRarBg(override val id: SearchProviderId) : SearchProvider {
-    override val name: String = "TheRarBg"
+class TheRarBg(val id: SearchProviderId) : SearchProvider {
+    override val info = SearchProviderInfo(
+        id = id,
+        name = "TheRarBg",
+        url = "https://therarbg.com"
+    )
 
     override suspend fun search(query: String, context: SearchContext): List<Torrent> {
-        var requestUrl = "$BASE_URL/get-posts/keywords:$query"
+        var requestUrl = "${info.url}/get-posts/keywords:$query"
 
         if (context.category != Category.All) {
             val category = getCategoryString(category = context.category)
@@ -115,7 +119,7 @@ class TheRarBg(override val id: SearchProviderId) : SearchProvider {
 
         return TableRowParsedResult(
             name = torrentName,
-            detailsPageUrl = "$BASE_URL$detailsPath",
+            detailsPageUrl = "${info.url}$detailsPath",
             size = size,
             seeders = seeders,
             peers = peers,
@@ -160,8 +164,8 @@ class TheRarBg(override val id: SearchProviderId) : SearchProvider {
             size = parsedResult.size,
             seeders = parsedResult.seeders.toUInt(),
             peers = parsedResult.peers.toUInt(),
-            providerId = id,
-            providerName = name,
+            providerId = info.id,
+            providerName = info.name,
             uploadDate = parsedResult.uploadDate,
             category = category,
             descriptionPageUrl = parsedResult.detailsPageUrl,
@@ -190,10 +194,5 @@ class TheRarBg(override val id: SearchProviderId) : SearchProvider {
         "Tv" -> Category.Series
         "Other" -> Category.Other
         else -> Category.Other
-    }
-
-
-    private companion object {
-        private const val BASE_URL = "https://therarbg.com"
     }
 }

@@ -17,17 +17,17 @@ object SearchProviders {
         TheRarBg(id = "p10"),
     )
 
-    private val all = enabledByDefault.plus(disabledByDefault).sortedBy { it.name }
+    private val all = enabledByDefault.plus(disabledByDefault).sortedBy { it.info.name }
 
     fun get(ids: Set<SearchProviderId>): List<SearchProvider> {
-        return all.filter { ids.contains(it.id) }
+        return all.filter { ids.contains(it.info.id) }
     }
 
     fun enabledIds(): Set<SearchProviderId> {
-        return enabledByDefault.map { it.id }.toSet()
+        return enabledByDefault.map { it.info.id }.toSet()
     }
 
-    fun namesWithId(): List<Pair<SearchProviderId, String>> {
-        return all.map { Pair(it.id, it.name) }
+    fun infos(): List<SearchProviderInfo> {
+        return all.map { it.info }
     }
 }
