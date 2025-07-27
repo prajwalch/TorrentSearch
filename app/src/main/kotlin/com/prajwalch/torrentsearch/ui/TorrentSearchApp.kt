@@ -26,7 +26,7 @@ import com.prajwalch.torrentsearch.ui.components.TorrentClientNotFoundDialog
 import com.prajwalch.torrentsearch.ui.screens.BookmarksScreen
 import com.prajwalch.torrentsearch.ui.screens.Screens
 import com.prajwalch.torrentsearch.ui.screens.SearchScreen
-import com.prajwalch.torrentsearch.ui.screens.settings.SettingsScreen
+import com.prajwalch.torrentsearch.ui.screens.settings.settingsNavigation
 import com.prajwalch.torrentsearch.ui.viewmodel.BookmarksViewModel
 import com.prajwalch.torrentsearch.ui.viewmodel.SearchViewModel
 import com.prajwalch.torrentsearch.ui.viewmodel.SettingsViewModel
@@ -101,7 +101,7 @@ fun TorrentSearchApp(
         ) {
             SearchScreen(
                 onNavigateToBookmarks = { navController.navigate(Screens.BOOKMARKS) },
-                onNavigateToSettings = { navController.navigate(Screens.SETTINGS) },
+                onNavigateToSettings = { navController.navigate(Screens.Settings.ROOT) },
                 viewModel = searchViewModel,
                 onTorrentSelect = { selectedTorrent = it },
                 snackbarHostState = snackbarHostState,
@@ -117,23 +117,14 @@ fun TorrentSearchApp(
         ) {
             BookmarksScreen(
                 onNavigateBack = { navController.navigateUp() },
-                onNavigateToSettings = { navController.navigate(Screens.SETTINGS) },
+                onNavigateToSettings = { navController.navigate(Screens.Settings.ROOT) },
                 viewModel = bookmarksViewModel,
                 onTorrentSelect = { selectedTorrent = it },
                 snackbarHostState = snackbarHostState,
             )
         }
 
-        composable(
-            route = Screens.SETTINGS,
-            enterTransition = { slideIntoContainer(SlideDirection.Start) },
-            popExitTransition = { slideOutOfContainer(SlideDirection.End) },
-        ) {
-            SettingsScreen(
-                onNavigateBack = { navController.navigateUp() },
-                viewModel = settingsViewModel,
-            )
-        }
+        settingsNavigation(navController = navController, settingsViewModel = settingsViewModel)
     }
 }
 

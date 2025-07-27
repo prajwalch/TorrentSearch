@@ -1,13 +1,10 @@
 package com.prajwalch.torrentsearch.ui.screens.settings
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.Checkbox
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Slider
@@ -22,38 +19,23 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 
 import com.prajwalch.torrentsearch.R
 import com.prajwalch.torrentsearch.data.MaxNumResults
-import com.prajwalch.torrentsearch.providers.SearchProviderId
-import com.prajwalch.torrentsearch.ui.components.DialogListItem
 import com.prajwalch.torrentsearch.ui.components.SettingsDialog
 import com.prajwalch.torrentsearch.ui.components.SettingsItem
 import com.prajwalch.torrentsearch.ui.components.SettingsSectionTitle
-import com.prajwalch.torrentsearch.ui.viewmodel.SearchProviderUiState
 
 @Composable
-fun SearchSettings(modifier: Modifier = Modifier) {
+fun SearchSettings(onNavigateToProvidersSetting: () -> Unit, modifier: Modifier = Modifier) {
     val viewModel = LocalSettingsViewModel.current
     val settings by viewModel.searchSettingsUiState.collectAsStateWithLifecycle()
 
-    var showProviderListDialog by remember { mutableStateOf(false) }
     var showMaxNumResultsDialog by remember { mutableStateOf(false) }
-
-    if (showProviderListDialog) {
-        SettingsDialog(
-            onDismissRequest = { showProviderListDialog = false },
-            titleId = R.string.setting_search_providers,
-        ) {
-            SearchProviderList(
-                searchProviders = settings.searchProviders,
-                onProviderCheckedChange = viewModel::enableSearchProvider,
-            )
-        }
-    }
 
     if (showMaxNumResultsDialog) {
         MaxNumResultsDialog(
@@ -70,7 +52,7 @@ fun SearchSettings(modifier: Modifier = Modifier) {
     Column(modifier = modifier) {
         SettingsSectionTitle(titleId = R.string.settings_section_search)
         SettingsItem(
-            onClick = { showProviderListDialog = true },
+            onClick = onNavigateToProvidersSetting,
             leadingIconId = R.drawable.ic_travel_explore,
             headlineId = R.string.setting_search_providers,
             supportingContent = stringResource(
@@ -78,6 +60,14 @@ fun SearchSettings(modifier: Modifier = Modifier) {
                 settings.enabledSearchProviders,
                 settings.totalSearchProviders
             ),
+            trailingContent = {
+                Icon(
+                    painter = painterResource(R.drawable.ic_arrow_forward),
+                    contentDescription = stringResource(
+                        R.string.button_go_to_search_providers_setting
+                    ),
+                )
+            },
         )
         SettingsItem(
             onClick = {
@@ -103,44 +93,6 @@ fun SearchSettings(modifier: Modifier = Modifier) {
             },
         )
     }
-}
-
-@Composable
-private fun SearchProviderList(
-    searchProviders: List<SearchProviderUiState>,
-    onProviderCheckedChange: (SearchProviderId, Boolean) -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    LazyColumn(modifier = modifier) {
-        items(
-            items = searchProviders,
-            key = { it.id },
-        ) { searchProvider ->
-            SearchProviderListItem(
-                checked = searchProvider.enabled,
-                onCheckedChange = { onProviderCheckedChange(searchProvider.id, it) },
-                name = searchProvider.name,
-            )
-        }
-    }
-}
-
-@Composable
-private fun SearchProviderListItem(
-    checked: Boolean,
-    onCheckedChange: (Boolean) -> Unit,
-    name: String,
-    modifier: Modifier = Modifier,
-) {
-    DialogListItem(
-        modifier = Modifier
-            .clickable(onClick = { onCheckedChange(!checked) })
-            .then(modifier),
-        leadingContent = {
-            Checkbox(checked = checked, onCheckedChange = onCheckedChange)
-        },
-        headlineContent = { Text(text = name) },
-    )
 }
 
 @Composable

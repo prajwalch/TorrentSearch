@@ -80,6 +80,7 @@
     <string name="settings_section_search">Search</string>
     <string name="setting_hide_results_with_zero_seeders">Hide results with zero seeders</string>
     <string name="setting_search_providers">Search providers</string>
+    <string name="button_go_to_search_providers_setting">Go to search providers setting</string>
     <string name="x_of_x_enabled">%1$d of %2$d enabled</string>
     <string name="setting_max_num_results">Maximum number of results</string>
     <string name="max_n_results">%1$d results</string>
