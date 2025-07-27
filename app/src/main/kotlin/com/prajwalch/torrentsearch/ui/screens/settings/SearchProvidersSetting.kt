@@ -102,7 +102,7 @@ private fun SearchProviderListItem(
 ) {
     ListItem(
         modifier = Modifier
-            .clickable(role = Role.Checkbox, onClick = { onCheckedChange(!checked) })
+            .clickable(role = Role.Switch, onClick = { onCheckedChange(!checked) })
             .then(modifier),
         headlineContent = { Text(text = name) },
         trailingContent = {
