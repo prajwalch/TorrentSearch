@@ -1,7 +1,5 @@
 package com.prajwalch.torrentsearch.ui.components
 
-import androidx.annotation.DrawableRes
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -10,23 +8,17 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Shape
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
@@ -208,48 +200,17 @@ private fun TorrentMetadataInfo(
         horizontalArrangement = Arrangement.spacedBy(space = contentSpace),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        TorrentMetaInfo(
+        ListItemLabel(
             leadingIconId = R.drawable.ic_size_info,
             text = size,
         )
-        TorrentMetaInfo(
+        ListItemLabel(
             leadingIconId = R.drawable.ic_seeders,
             text = stringResource(R.string.seeders, seeders),
         )
-        TorrentMetaInfo(
+        ListItemLabel(
             leadingIconId = R.drawable.ic_peers,
             text = stringResource(R.string.peers, peers),
         )
-    }
-}
-
-@Composable
-private fun TorrentMetaInfo(
-    @DrawableRes
-    leadingIconId: Int,
-    text: String,
-    modifier: Modifier = Modifier,
-    shape: Shape = MaterialTheme.shapes.extraLarge,
-    containerColor: Color = MaterialTheme.colorScheme.surfaceContainer,
-    contentPadding: PaddingValues = PaddingValues(
-        horizontal = 8.dp,
-        vertical = 4.dp,
-    ),
-    contentSpacing: Dp = 4.dp,
-) {
-    Row(
-        modifier = modifier
-            .clip(shape)
-            .background(color = containerColor, shape = shape)
-            .padding(contentPadding),
-        horizontalArrangement = Arrangement.spacedBy(space = contentSpacing),
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        Icon(
-            modifier = Modifier.size(size = 16.dp),
-            painter = painterResource(id = leadingIconId),
-            contentDescription = null,
-        )
-        Text(text = text)
     }
 }
