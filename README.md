@@ -8,7 +8,7 @@
 
 # Torrent Search
 
-A modern Material 3 design Android app to search and download torrents from multiple providers.
+A modern Material 3 designed Android app for searching and downloading torrents from multiple providers.
 
 <br>
 <img width="20%" src="https://github.com/prajwalch/TorrentSearch/blob/main/fastlane/metadata/android/en-US/images/phoneScreenshots/screenshot_1.jpg" alt="search results for all category">
