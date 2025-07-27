@@ -1,4 +1,4 @@
-package com.prajwalch.torrentsearch.data
+package com.prajwalch.torrentsearch.providers
 
 import com.prajwalch.torrentsearch.models.Category
 import com.prajwalch.torrentsearch.models.Torrent

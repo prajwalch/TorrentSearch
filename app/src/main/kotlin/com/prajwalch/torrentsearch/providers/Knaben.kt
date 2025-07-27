@@ -3,10 +3,11 @@ package com.prajwalch.torrentsearch.providers
 import android.os.Build
 import androidx.annotation.RequiresApi
 
-import com.prajwalch.torrentsearch.data.SearchContext
-import com.prajwalch.torrentsearch.data.SearchProvider
-import com.prajwalch.torrentsearch.data.SearchProviderId
-import com.prajwalch.torrentsearch.extensions.*
+import com.prajwalch.torrentsearch.extensions.asObject
+import com.prajwalch.torrentsearch.extensions.getArray
+import com.prajwalch.torrentsearch.extensions.getLong
+import com.prajwalch.torrentsearch.extensions.getString
+import com.prajwalch.torrentsearch.extensions.getUInt
 import com.prajwalch.torrentsearch.models.Category
 import com.prajwalch.torrentsearch.models.InfoHashOrMagnetUri
 import com.prajwalch.torrentsearch.models.Torrent

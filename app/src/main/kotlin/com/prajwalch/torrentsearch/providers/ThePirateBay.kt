@@ -1,7 +1,5 @@
 package com.prajwalch.torrentsearch.providers
 
-import com.prajwalch.torrentsearch.data.SearchContext
-import com.prajwalch.torrentsearch.data.SearchProvider
 import com.prajwalch.torrentsearch.extensions.asArray
 import com.prajwalch.torrentsearch.extensions.asObject
 import com.prajwalch.torrentsearch.extensions.getString

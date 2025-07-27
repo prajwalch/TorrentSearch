@@ -7,6 +7,8 @@ import com.prajwalch.torrentsearch.models.InfoHashOrMagnetUri
 import com.prajwalch.torrentsearch.models.Torrent
 import com.prajwalch.torrentsearch.network.HttpClient
 import com.prajwalch.torrentsearch.network.HttpClientResponse
+import com.prajwalch.torrentsearch.providers.SearchContext
+import com.prajwalch.torrentsearch.providers.SearchProvider
 
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
@@ -60,7 +62,7 @@ class TorrentsRepository(
                 .flatMap { httpClientOkResponse -> httpClientOkResponse.result }
                 .map { torrent ->
                     val bookmarkedInfo = bookmarkedTorrentDao.findByName(torrent.name)
-                    
+
                     bookmarkedInfo
                         ?.let { info -> torrent.copy(id = info.id, bookmarked = true) }
                         ?: torrent

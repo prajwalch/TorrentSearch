@@ -1,11 +1,11 @@
 package com.prajwalch.torrentsearch
 
-import com.prajwalch.torrentsearch.data.SearchContext
-import com.prajwalch.torrentsearch.data.SearchProvider
 import com.prajwalch.torrentsearch.models.Category
 import com.prajwalch.torrentsearch.models.Torrent
 import com.prajwalch.torrentsearch.network.HttpClient
 import com.prajwalch.torrentsearch.providers.Knaben
+import com.prajwalch.torrentsearch.providers.SearchContext
+import com.prajwalch.torrentsearch.providers.SearchProvider
 
 import kotlinx.coroutines.runBlocking
 

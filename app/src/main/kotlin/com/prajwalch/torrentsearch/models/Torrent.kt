@@ -1,6 +1,6 @@
 package com.prajwalch.torrentsearch.models
 
-import com.prajwalch.torrentsearch.data.SearchProviderId
+import com.prajwalch.torrentsearch.providers.SearchProviderId
 
 /** Represents a magnet URI. */
 typealias MagnetUri = String

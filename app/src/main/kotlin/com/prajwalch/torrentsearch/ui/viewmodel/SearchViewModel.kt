@@ -6,7 +6,6 @@ import androidx.lifecycle.viewModelScope
 
 import com.prajwalch.torrentsearch.data.MaxNumResults
 import com.prajwalch.torrentsearch.data.SearchHistoryRepository
-import com.prajwalch.torrentsearch.data.SearchProviderId
 import com.prajwalch.torrentsearch.data.SettingsRepository
 import com.prajwalch.torrentsearch.data.TorrentsRepository
 import com.prajwalch.torrentsearch.database.entities.SearchHistory
@@ -16,6 +15,7 @@ import com.prajwalch.torrentsearch.domain.SortOrder
 import com.prajwalch.torrentsearch.domain.SortTorrentsUseCase
 import com.prajwalch.torrentsearch.models.Category
 import com.prajwalch.torrentsearch.models.Torrent
+import com.prajwalch.torrentsearch.providers.SearchProviderId
 import com.prajwalch.torrentsearch.providers.SearchProviders
 
 import kotlinx.coroutines.Job

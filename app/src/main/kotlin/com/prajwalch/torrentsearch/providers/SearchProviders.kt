@@ -1,8 +1,5 @@
 package com.prajwalch.torrentsearch.providers
 
-import com.prajwalch.torrentsearch.data.SearchProvider
-import com.prajwalch.torrentsearch.data.SearchProviderId
-
 object SearchProviders {
     private val enabledByDefault = setOf(
         Eztv(id = "p1"),
