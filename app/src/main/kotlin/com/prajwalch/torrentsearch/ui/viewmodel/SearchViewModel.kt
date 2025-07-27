@@ -42,8 +42,8 @@ data class SearchUiState(
     val selectedCategory: Category = Category.All,
     // Content state.
     val results: List<Torrent> = emptyList(),
-    val currentSortCriteria: SortCriteria = SortCriteria.DEFAULT,
-    val currentSortOrder: SortOrder = SortOrder.DEFAULT,
+    val currentSortCriteria: SortCriteria = SortCriteria.Default,
+    val currentSortOrder: SortOrder = SortOrder.Default,
     val resultsNotFound: Boolean = false,
     val isLoading: Boolean = false,
     val isInternetError: Boolean = false,
@@ -260,16 +260,16 @@ class SearchViewModel(
                 results = searchResults,
                 settings = settings.value
             ).customSort(
-                criteria = SortCriteria.DEFAULT,
-                order = SortOrder.DEFAULT,
+                criteria = SortCriteria.Default,
+                order = SortOrder.Default,
             )
 
             // And update the UI.
             _uiState.update {
                 it.copy(
                     results = results,
-                    currentSortCriteria = SortCriteria.DEFAULT,
-                    currentSortOrder = SortOrder.DEFAULT,
+                    currentSortCriteria = SortCriteria.Default,
+                    currentSortOrder = SortOrder.Default,
                     resultsNotFound = results.isEmpty(),
                     isLoading = false,
                     isInternetError = torrentsRepositoryResult.isNetworkError,

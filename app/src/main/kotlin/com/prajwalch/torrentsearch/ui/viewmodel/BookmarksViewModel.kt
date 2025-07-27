@@ -24,8 +24,8 @@ import kotlinx.coroutines.launch
 /** UI state for the Bookmarks screen. */
 data class BookmarksUiState(
     val bookmarks: List<Torrent> = emptyList(),
-    val currentSortCriteria: SortCriteria = SortCriteria.DEFAULT,
-    val currentSortOrder: SortOrder = SortOrder.DEFAULT,
+    val currentSortCriteria: SortCriteria = SortCriteria.Default,
+    val currentSortOrder: SortOrder = SortOrder.Default,
 )
 
 /** ViewModel that handles the business logic of Bookmarks screen. */

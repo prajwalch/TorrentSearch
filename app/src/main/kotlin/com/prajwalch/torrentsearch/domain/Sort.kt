@@ -15,7 +15,7 @@ enum class SortCriteria {
 
     companion object {
         /** The default criteria. */
-        val DEFAULT = Seeders
+        val Default = Seeders
     }
 }
 
@@ -32,7 +32,7 @@ enum class SortOrder {
 
     companion object {
         /** The default sort order. */
-        val DEFAULT = Descending
+        val Default = Descending
     }
 }
 
