@@ -3,7 +3,6 @@ package com.prajwalch.torrentsearch.ui.components
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Icon
@@ -18,7 +17,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.window.DialogProperties
 import com.prajwalch.torrentsearch.R
 
 @Composable
@@ -74,9 +72,7 @@ fun SettingsDialog(
     content: @Composable () -> Unit,
 ) {
     AlertDialog(
-        modifier = Modifier
-            .fillMaxWidth(0.9f)
-            .then(modifier),
+        modifier = modifier,
         onDismissRequest = onDismissRequest,
         dismissButton = {
             TextButton(onClick = onDismissRequest) {
@@ -86,9 +82,5 @@ fun SettingsDialog(
         confirmButton = confirmButton ?: {},
         title = { Text(text = stringResource(titleId)) },
         text = content,
-        properties = DialogProperties(
-            usePlatformDefaultWidth = false,
-            decorFitsSystemWindows = false,
-        )
     )
 }
