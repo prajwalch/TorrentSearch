@@ -27,7 +27,7 @@ fun NavGraphBuilder.settingsNavigation(
                     navController.navigate(Screens.Settings.CATEGORY_LIST)
                 },
                 onNavigateToProvidersSetting = {
-                    navController.navigate(Screens.Settings.SEARCH_PROVIDERS)
+                    navController.navigate(Screens.Settings.SEARCH_PROVIDER_LIST)
                 },
                 viewModel = settingsViewModel,
             )
@@ -45,11 +45,11 @@ fun NavGraphBuilder.settingsNavigation(
         }
 
         composable(
-            route = Screens.Settings.SEARCH_PROVIDERS,
+            route = Screens.Settings.SEARCH_PROVIDER_LIST,
             enterTransition = { slideIntoContainer(SlideDirection.Start) },
             popExitTransition = { slideOutOfContainer(SlideDirection.End) },
         ) {
-            SearchProvidersSetting(
+            SearchProviderListScreen(
                 onNavigateBack = { navController.navigateUp() },
                 viewModel = settingsViewModel,
             )

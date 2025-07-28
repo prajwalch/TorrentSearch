@@ -8,6 +8,6 @@ object Screens {
         const val ROOT = "settings"
         const val MAIN = "settings/main"
         const val CATEGORY_LIST = "settings/category_list"
-        const val SEARCH_PROVIDERS = "settings/search_providers"
+        const val SEARCH_PROVIDER_LIST = "settings/search_provider_list"
     }
 }

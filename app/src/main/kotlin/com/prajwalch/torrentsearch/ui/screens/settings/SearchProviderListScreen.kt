@@ -33,7 +33,7 @@ import com.prajwalch.torrentsearch.ui.viewmodel.SearchProviderUiState
 import com.prajwalch.torrentsearch.ui.viewmodel.SettingsViewModel
 
 @Composable
-fun SearchProvidersSetting(
+fun SearchProviderListScreen(
     onNavigateBack: () -> Unit,
     viewModel: SettingsViewModel,
     modifier: Modifier = Modifier,
@@ -44,7 +44,7 @@ fun SearchProvidersSetting(
     Scaffold(
         modifier = modifier,
         topBar = {
-            SearchProvidersSettingTopBar(onNavigateBack = onNavigateBack)
+            SearchProviderListScreenTopBar(onNavigateBack = onNavigateBack)
         }
     ) { innerPadding ->
         SearchProviderList(
@@ -58,7 +58,7 @@ fun SearchProvidersSetting(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun SearchProvidersSettingTopBar(
+private fun SearchProviderListScreenTopBar(
     onNavigateBack: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
