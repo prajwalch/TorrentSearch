@@ -23,9 +23,23 @@ fun NavGraphBuilder.settingsNavigation(
         ) {
             SettingsScreen(
                 onNavigateBack = { navController.navigateUp() },
+                onNavigateToCategoryList = {
+                    navController.navigate(Screens.Settings.CATEGORY_LIST)
+                },
                 onNavigateToProvidersSetting = {
                     navController.navigate(Screens.Settings.SEARCH_PROVIDERS)
                 },
+                viewModel = settingsViewModel,
+            )
+        }
+
+        composable(
+            route = Screens.Settings.CATEGORY_LIST,
+            enterTransition = { slideIntoContainer(SlideDirection.Start) },
+            popExitTransition = { slideOutOfContainer(SlideDirection.End) },
+        ) {
+            CategoryListScreen(
+                onNavigateBack = { navController.navigateUp() },
                 viewModel = settingsViewModel,
             )
         }

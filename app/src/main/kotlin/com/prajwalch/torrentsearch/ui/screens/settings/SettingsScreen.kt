@@ -28,6 +28,7 @@ val LocalSettingsViewModel = compositionLocalOf<SettingsViewModel> {
 @Composable
 fun SettingsScreen(
     onNavigateBack: () -> Unit,
+    onNavigateToCategoryList: () -> Unit,
     onNavigateToProvidersSetting: () -> Unit,
     viewModel: SettingsViewModel,
     modifier: Modifier = Modifier,
@@ -47,7 +48,7 @@ fun SettingsScreen(
                 contentPadding = innerPadding,
             ) {
                 item { AppearanceSettings() }
-                item { GeneralSettings() }
+                item { GeneralSettings(onNavigateToCategoryList = onNavigateToCategoryList) }
                 item { SearchSettings(onNavigateToProvidersSetting = onNavigateToProvidersSetting) }
                 item { SearchHistorySettings(snackbarHostState = snackbarHostState) }
             }

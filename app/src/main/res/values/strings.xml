@@ -75,6 +75,7 @@
     <!-- General section -->
     <string name="settings_section_general">General</string>
     <string name="setting_default_category">Default category</string>
+    <string name="button_go_to_category_list_screen">Go to category list screen</string>
     <string name="setting_enable_nsfw_mode">Enable NSFW mode</string>
     <!-- Search section -->
     <string name="settings_section_search">Search</string>
