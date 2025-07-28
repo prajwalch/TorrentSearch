@@ -50,6 +50,7 @@ data class SearchProviderUiState(
     val id: SearchProviderId,
     val name: String,
     val url: String,
+    val specializedCategory: Category,
     val enabled: Boolean,
 )
 
@@ -130,6 +131,7 @@ class SettingsViewModel(
                 id = searchProviderInfo.id,
                 name = searchProviderInfo.name,
                 url = searchProviderInfo.url.removePrefix("https://"),
+                specializedCategory = searchProviderInfo.specializedCategory,
                 enabled = enabledSearchProviders.contains(searchProviderInfo.id)
             )
         }

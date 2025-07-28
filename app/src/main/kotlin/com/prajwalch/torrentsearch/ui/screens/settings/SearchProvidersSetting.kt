@@ -2,6 +2,7 @@ package com.prajwalch.torrentsearch.ui.screens.settings
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -17,6 +18,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -25,6 +27,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 
 import com.prajwalch.torrentsearch.R
+import com.prajwalch.torrentsearch.models.Category
 import com.prajwalch.torrentsearch.providers.SearchProviderId
 import com.prajwalch.torrentsearch.ui.viewmodel.SearchProviderUiState
 import com.prajwalch.torrentsearch.ui.viewmodel.SettingsViewModel
@@ -88,6 +91,7 @@ private fun SearchProviderList(
             SearchProviderListItem(
                 name = searchProvider.name,
                 url = searchProvider.url,
+                specializedCategory = searchProvider.specializedCategory,
                 checked = searchProvider.enabled,
                 onCheckedChange = { onProviderCheckedChange(searchProvider.id, it) },
             )
@@ -99,18 +103,40 @@ private fun SearchProviderList(
 private fun SearchProviderListItem(
     name: String,
     url: String,
+    specializedCategory: Category,
     checked: Boolean,
     onCheckedChange: (Boolean) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     ListItem(
         modifier = Modifier
-            .clickable(role = Role.Switch, onClick = { onCheckedChange(!checked) })
+            .clickable(
+                role = Role.Switch,
+                onClick = { onCheckedChange(!checked) },
+            )
             .then(modifier),
         headlineContent = { Text(text = name) },
-        supportingContent = { Text(text = url) },
+        supportingContent = {
+            SearchProviderListItemSupportingContent(
+                url = url,
+                specializedCategory = specializedCategory,
+            )
+        },
         trailingContent = {
             Switch(checked = checked, onCheckedChange = onCheckedChange)
         },
     )
+}
+
+@Composable
+private fun SearchProviderListItemSupportingContent(
+    url: String,
+    specializedCategory: Category,
+    modifier: Modifier = Modifier,
+) {
+    Row(modifier = modifier, verticalAlignment = Alignment.CenterVertically) {
+        Text(text = url)
+        Text(text = "\u2022")
+        Text(text = specializedCategory.name.lowercase())
+    }
 }
