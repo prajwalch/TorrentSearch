@@ -51,82 +51,93 @@ fun TorrentActionsBottomSheet(
     // Make the background slightly darker.
     val scrimColor = BottomSheetDefaults.ScrimColor.copy(alpha = 0.5f)
 
+    fun actionWithDismiss(action: () -> Unit) = {
+        action()
+        onDismissRequest()
+    }
+
     ModalBottomSheet(
         modifier = modifier,
         onDismissRequest = onDismissRequest,
         sheetState = sheetState,
         scrimColor = scrimColor,
     ) {
-        Column(
+        TorrentActionsBottomSheetHeader(
             modifier = Modifier.padding(horizontal = 16.dp),
-            verticalArrangement = Arrangement.Center,
-        ) {
-            if (isNSFW) {
-                NSFWTag(style = MaterialTheme.typography.bodySmall)
-            }
-            Text(
-                text = title,
-                style = MaterialTheme.typography.bodyLarge,
-            )
-        }
-        Spacer(modifier = Modifier.height(8.dp))
-        HorizontalDivider()
-        Spacer(modifier = Modifier.height(8.dp))
+            title = title,
+            isNSFW = isNSFW,
+        )
+
         LazyColumn {
             item {
-                if (!isBookmarked) {
-                    BookmarkTorrentAction(onClick = {
-                        onBookmarkTorrent()
-                        onDismissRequest()
-                    })
-                } else {
-                    DeleteBookmarkAction(onClick = {
-                        onDeleteBookmark()
-                        onDismissRequest()
-                    })
-                }
-
-                DownloadTorrentAction(onClick = {
-                    onDownloadTorrent()
-                    onDismissRequest()
-                })
+                BookmarkAction(
+                    isBookmarked = isBookmarked,
+                    onBookmarkTorrent = actionWithDismiss(onBookmarkTorrent),
+                    onDeleteBookmark = actionWithDismiss(onDeleteBookmark),
+                )
             }
-            item {
-                ShareMagnetLinkAction(onClick = {
-                    onShareMagnetLink()
-                    onDismissRequest()
-                })
-            }
-            item {
-                CopyMagnetLinkAction(onClick = {
-                    onCopyMagnetLink()
-                    onDismissRequest()
-                })
-            }
+            item { DownloadTorrentAction(onClick = actionWithDismiss(onDownloadTorrent)) }
+            item { ShareMagnetLinkAction(onClick = actionWithDismiss(onShareMagnetLink)) }
+            item { CopyMagnetLinkAction(onClick = actionWithDismiss(onCopyMagnetLink)) }
+            item { Spacer(modifier = Modifier.height(8.dp)) }
 
             if (hasDescriptionPage) {
+                item { HorizontalDivider() }
+                item { Spacer(modifier = Modifier.height(8.dp)) }
                 item {
-                    HorizontalDivider()
-                    OpenDescriptionPageAction(onClick = {
-                        onOpenDescriptionPage()
-                        onDismissRequest()
-                    })
+                    OpenDescriptionPageAction(
+                        onClick = actionWithDismiss(onOpenDescriptionPage)
+                    )
                 }
                 item {
-                    CopyDescriptionPageUrlAction(onClick = {
-                        onCopyDescriptionPageUrl()
-                        onDismissRequest()
-                    })
+                    CopyDescriptionPageUrlAction(
+                        onClick = actionWithDismiss(onCopyDescriptionPageUrl)
+                    )
                 }
                 item {
-                    ShareDescriptionPageUrlAction(onClick = {
-                        onShareDescriptionPageUrl()
-                        onDismissRequest()
-                    })
-                    Spacer(modifier = Modifier.height(8.dp))
+                    ShareDescriptionPageUrlAction(
+                        onClick = actionWithDismiss(onShareDescriptionPageUrl)
+                    )
                 }
+                item { Spacer(modifier = Modifier.height(8.dp)) }
             }
         }
+    }
+}
+
+@Composable
+private fun TorrentActionsBottomSheetHeader(
+    title: String,
+    isNSFW: Boolean,
+    modifier: Modifier = Modifier,
+) {
+    Column(
+        modifier = modifier,
+        verticalArrangement = Arrangement.Center,
+    ) {
+        if (isNSFW) {
+            NSFWTag(style = MaterialTheme.typography.bodySmall)
+        }
+        Text(
+            text = title,
+            style = MaterialTheme.typography.bodyLarge,
+        )
+    }
+    Spacer(modifier = Modifier.height(8.dp))
+    HorizontalDivider()
+    Spacer(modifier = Modifier.height(8.dp))
+}
+
+@Composable
+private fun BookmarkAction(
+    isBookmarked: Boolean,
+    onBookmarkTorrent: () -> Unit,
+    onDeleteBookmark: () -> Unit,
+) {
+    if (!isBookmarked) {
+        BookmarkTorrentAction(onClick = onBookmarkTorrent)
+    } else {
+        DeleteBookmarkAction(onClick = onDeleteBookmark)
     }
 }
 
