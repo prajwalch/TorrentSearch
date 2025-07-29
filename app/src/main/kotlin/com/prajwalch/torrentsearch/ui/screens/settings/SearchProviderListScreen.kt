@@ -1,6 +1,7 @@
 package com.prajwalch.torrentsearch.ui.screens.settings
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.consumeWindowInsets
@@ -117,7 +118,7 @@ private fun SearchProviderListItem(
             .then(modifier),
         headlineContent = { Text(text = name) },
         supportingContent = {
-            SearchProviderListItemSupportingContent(
+            SearchProviderMetadata(
                 url = url,
                 specializedCategory = specializedCategory,
             )
@@ -129,12 +130,16 @@ private fun SearchProviderListItem(
 }
 
 @Composable
-private fun SearchProviderListItemSupportingContent(
+private fun SearchProviderMetadata(
     url: String,
     specializedCategory: Category,
     modifier: Modifier = Modifier,
 ) {
-    Row(modifier = modifier, verticalAlignment = Alignment.CenterVertically) {
+    Row(
+        modifier = modifier,
+        horizontalArrangement = Arrangement.spacedBy(4.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
         Text(text = url)
         Text(text = "\u2022")
         Text(text = specializedCategory.name.lowercase())
