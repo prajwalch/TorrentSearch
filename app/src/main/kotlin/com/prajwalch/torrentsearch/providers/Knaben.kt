@@ -33,6 +33,7 @@ class Knaben(val id: SearchProviderId) : SearchProvider {
         id = id,
         name = "Knaben",
         url = "https://knaben.org",
+        safetyStatus = SearchProviderSafetyStatus.Safe,
     )
 
     override suspend fun search(query: String, context: SearchContext): List<Torrent> {

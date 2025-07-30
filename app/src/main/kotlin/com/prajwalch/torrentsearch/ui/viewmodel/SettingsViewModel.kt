@@ -10,6 +10,7 @@ import com.prajwalch.torrentsearch.data.SearchHistoryRepository
 import com.prajwalch.torrentsearch.data.SettingsRepository
 import com.prajwalch.torrentsearch.models.Category
 import com.prajwalch.torrentsearch.providers.SearchProviderId
+import com.prajwalch.torrentsearch.providers.SearchProviderSafetyStatus
 import com.prajwalch.torrentsearch.providers.SearchProviders
 
 import kotlinx.coroutines.flow.SharingStarted
@@ -51,6 +52,7 @@ data class SearchProviderUiState(
     val name: String,
     val url: String,
     val specializedCategory: Category,
+    val safetyStatus: SearchProviderSafetyStatus,
     val enabled: Boolean,
 )
 
@@ -132,6 +134,7 @@ class SettingsViewModel(
                 name = searchProviderInfo.name,
                 url = searchProviderInfo.url.removePrefix("https://"),
                 specializedCategory = searchProviderInfo.specializedCategory,
+                safetyStatus = searchProviderInfo.safetyStatus,
                 enabled = enabledSearchProviders.contains(searchProviderInfo.id)
             )
         }

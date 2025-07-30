@@ -16,6 +16,7 @@ class Eztv(val id: String) : SearchProvider {
         name = "Eztv",
         url = "https://eztvx.to",
         specializedCategory = Category.Series,
+        safetyStatus = SearchProviderSafetyStatus.Safe,
     )
 
     override suspend fun search(query: String, context: SearchContext): List<Torrent> {

@@ -40,7 +40,10 @@ class TheRarBg(val id: SearchProviderId) : SearchProvider {
     override val info = SearchProviderInfo(
         id = id,
         name = "TheRarBg",
-        url = "https://therarbg.com"
+        url = "https://therarbg.com",
+        safetyStatus = SearchProviderSafetyStatus.Unsafe(
+            reason = "Crafted with cunning intent to ensnare unsuspecting users through deliberate deception."
+        )
     )
 
     override suspend fun search(query: String, context: SearchContext): List<Torrent> {

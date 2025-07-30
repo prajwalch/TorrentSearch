@@ -21,6 +21,7 @@ class Yts(val id: SearchProviderId) : SearchProvider {
         name = "Yts",
         url = "https://yts.mx",
         specializedCategory = Category.Movies,
+        safetyStatus = SearchProviderSafetyStatus.Safe,
     )
 
     override suspend fun search(query: String, context: SearchContext): List<Torrent> {

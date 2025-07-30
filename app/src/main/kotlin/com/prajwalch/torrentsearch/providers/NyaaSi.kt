@@ -17,6 +17,7 @@ class NyaaSi(val id: SearchProviderId) : SearchProvider {
         name = "Nyaa",
         url = "https://nyaa.si",
         specializedCategory = Category.Anime,
+        safetyStatus = SearchProviderSafetyStatus.Safe,
     )
 
     override suspend fun search(query: String, context: SearchContext): List<Torrent> {

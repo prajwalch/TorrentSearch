@@ -2,15 +2,23 @@ package com.prajwalch.torrentsearch.ui.screens.settings
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.consumeWindowInsets
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Warning
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Badge
+import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.ListItem
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
@@ -18,7 +26,9 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
@@ -30,6 +40,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.prajwalch.torrentsearch.R
 import com.prajwalch.torrentsearch.models.Category
 import com.prajwalch.torrentsearch.providers.SearchProviderId
+import com.prajwalch.torrentsearch.providers.SearchProviderSafetyStatus
 import com.prajwalch.torrentsearch.ui.viewmodel.SearchProviderUiState
 import com.prajwalch.torrentsearch.ui.viewmodel.SettingsViewModel
 
@@ -84,6 +95,18 @@ private fun SearchProviderList(
     modifier: Modifier = Modifier,
     contentPadding: PaddingValues = PaddingValues(0.dp),
 ) {
+    var showUnsafeDetailsDialog by remember { mutableStateOf<SearchProviderUiState?>(null) }
+
+    showUnsafeDetailsDialog?.let { searchProviderInfo ->
+        SearchProviderUnsafeDetailsDialog(
+            onDismissRequest = { showUnsafeDetailsDialog = null },
+            providerName = searchProviderInfo.name,
+            url = searchProviderInfo.url,
+            // FIXME: This is poisonous code.
+            unsafeReason = (searchProviderInfo.safetyStatus as SearchProviderSafetyStatus.Unsafe).reason,
+        )
+    }
+
     LazyColumn(
         modifier = modifier,
         contentPadding = contentPadding,
@@ -93,6 +116,8 @@ private fun SearchProviderList(
                 name = searchProvider.name,
                 url = searchProvider.url,
                 specializedCategory = searchProvider.specializedCategory,
+                safetyStatus = searchProvider.safetyStatus,
+                onShowUnsafeReason = { showUnsafeDetailsDialog = searchProvider },
                 checked = searchProvider.enabled,
                 onCheckedChange = { onProviderCheckedChange(searchProvider.id, it) },
             )
@@ -101,10 +126,47 @@ private fun SearchProviderList(
 }
 
 @Composable
+private fun SearchProviderUnsafeDetailsDialog(
+    onDismissRequest: () -> Unit,
+    providerName: String,
+    url: String,
+    unsafeReason: String,
+    modifier: Modifier = Modifier,
+) {
+    AlertDialog(
+        modifier = modifier,
+        onDismissRequest = onDismissRequest,
+        confirmButton = {},
+        icon = {
+            Icon(
+                imageVector = Icons.Outlined.Warning,
+                contentDescription = null,
+            )
+        },
+        title = {
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center,
+            ) {
+                Text(text = providerName)
+                Text(
+                    text = url,
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            }
+        },
+        text = { Text(text = unsafeReason) },
+    )
+}
+
+@Composable
 private fun SearchProviderListItem(
     name: String,
     url: String,
     specializedCategory: Category,
+    safetyStatus: SearchProviderSafetyStatus,
+    onShowUnsafeReason: () -> Unit,
     checked: Boolean,
     onCheckedChange: (Boolean) -> Unit,
     modifier: Modifier = Modifier,
@@ -116,7 +178,13 @@ private fun SearchProviderListItem(
                 onClick = { onCheckedChange(!checked) },
             )
             .then(modifier),
-        headlineContent = { Text(text = name) },
+        headlineContent = {
+            SearchProviderName(
+                name = name,
+                safetyStatus = safetyStatus,
+                onShowUnsafeReason = onShowUnsafeReason,
+            )
+        },
         supportingContent = {
             SearchProviderMetadata(
                 url = url,
@@ -127,6 +195,37 @@ private fun SearchProviderListItem(
             Switch(checked = checked, onCheckedChange = onCheckedChange)
         },
     )
+}
+
+@Composable
+private fun SearchProviderName(
+    name: String,
+    safetyStatus: SearchProviderSafetyStatus,
+    onShowUnsafeReason: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    BadgedBox(
+        modifier = modifier,
+        badge = {
+            if (safetyStatus is SearchProviderSafetyStatus.Unsafe) {
+                UnsafeBadge(onClick = onShowUnsafeReason)
+            }
+        },
+    ) {
+        Text(text = name)
+    }
+}
+
+@Composable
+private fun UnsafeBadge(onClick: () -> Unit, modifier: Modifier = Modifier) {
+    Badge(
+        modifier = Modifier
+            .padding(horizontal = 16.dp)
+            .clickable(onClick = onClick)
+            .then(modifier),
+    ) {
+        Text(text = stringResource(R.string.badge_unsafe))
+    }
 }
 
 @Composable

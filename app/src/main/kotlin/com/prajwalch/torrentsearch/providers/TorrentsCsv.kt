@@ -18,7 +18,8 @@ class TorrentsCsv(val id: SearchProviderId) : SearchProvider {
     override val info = SearchProviderInfo(
         id = id,
         name = "TorrentsCSV",
-        url = "https://torrents-csv.com"
+        url = "https://torrents-csv.com",
+        safetyStatus = SearchProviderSafetyStatus.Safe,
     )
 
     override suspend fun search(query: String, context: SearchContext): List<Torrent> {

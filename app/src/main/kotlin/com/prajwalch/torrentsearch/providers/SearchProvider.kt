@@ -29,7 +29,18 @@ data class SearchProviderInfo(
     val url: String,
     /** Category in which the provider specializes. */
     val specializedCategory: Category = Category.All,
+    /** Safety status of the search provider */
+    val safetyStatus: SearchProviderSafetyStatus,
 )
+
+/** How safe is the search provider?. */
+sealed class SearchProviderSafetyStatus {
+    /** Search provider is safe to use. */
+    object Safe : SearchProviderSafetyStatus()
+
+    /** Search provider is not safe and requires special care to use it. */
+    data class Unsafe(val reason: String) : SearchProviderSafetyStatus()
+}
 
 /** The search context. */
 data class SearchContext(

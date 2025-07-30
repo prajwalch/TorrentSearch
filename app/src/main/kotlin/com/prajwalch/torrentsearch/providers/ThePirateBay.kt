@@ -17,7 +17,10 @@ class ThePirateBay(val id: String) : SearchProvider {
     override val info = SearchProviderInfo(
         id = id,
         name = "ThePirateBay",
-        url = "https://thepiratebay.org"
+        url = "https://thepiratebay.org",
+        safetyStatus = SearchProviderSafetyStatus.Unsafe(
+            reason = "Terrible regulation, and the calculated injection of insidious malware."
+        )
     )
 
     override suspend fun search(query: String, context: SearchContext): List<Torrent> {

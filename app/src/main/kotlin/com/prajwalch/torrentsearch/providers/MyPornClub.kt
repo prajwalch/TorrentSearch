@@ -16,6 +16,7 @@ class MyPornClub(val id: SearchProviderId) : SearchProvider {
         name = "MyPornClub",
         url = "https://myporn.club",
         specializedCategory = Category.Porn,
+        safetyStatus = SearchProviderSafetyStatus.Safe,
     )
 
     override suspend fun search(query: String, context: SearchContext): List<Torrent> {

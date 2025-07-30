@@ -20,7 +20,8 @@ class LimeTorrents(val id: SearchProviderId) : SearchProvider {
     override val info = SearchProviderInfo(
         id = id,
         name = "LimeTorrents",
-        url = "https://limetorrents.lol"
+        url = "https://limetorrents.lol",
+        safetyStatus = SearchProviderSafetyStatus.Safe,
     )
 
     override suspend fun search(query: String, context: SearchContext): List<Torrent> {
