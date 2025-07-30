@@ -18,6 +18,7 @@ object SearchProviders {
         MyPornClub(id = "p8"),
         ThePirateBay(id = "p9"),
         TheRarBg(id = "p10"),
+        UIndex(id = "uindex"),
     )
 
     /** List of all providers. */
