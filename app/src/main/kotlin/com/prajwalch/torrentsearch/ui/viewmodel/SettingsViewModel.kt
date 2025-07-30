@@ -74,7 +74,13 @@ class SettingsViewModel(
      * Only then we will create a set of enabled providers and pass them to
      * repository like how it expects.
      */
-    private var enabledSearchProviders: Set<SearchProviderId> = emptySet()
+    private var enabledSearchProviders = settingsRepository
+        .searchProviders
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.Eagerly,
+            initialValue = emptySet(),
+        )
 
     val appearanceSettingsUiState = combine(
         settingsRepository.enableDynamicTheme,
@@ -99,16 +105,13 @@ class SettingsViewModel(
 
     val searchSettingsUiState = combine(
         settingsRepository.hideResultsWithZeroSeeders,
-        settingsRepository.searchProviders,
         settingsRepository.maxNumResults,
-    ) { hideResultsWithZeroSeeders, searchProviders, maxNumResults ->
-        enabledSearchProviders = searchProviders
-
+    ) { hideResultsWithZeroSeeders, maxNumResults ->
         SearchSettingsUiState(
             hideResultsWithZeroSeeders = hideResultsWithZeroSeeders,
             searchProviders = allSearchProvidersToUiStates(),
             totalSearchProviders = allSearchProviders.size,
-            enabledSearchProviders = enabledSearchProviders.size,
+            enabledSearchProviders = enabledSearchProviders.value.size,
             maxNumResults = maxNumResults,
         )
     }.stateIn(
@@ -135,7 +138,7 @@ class SettingsViewModel(
                 url = searchProviderInfo.url.removePrefix("https://"),
                 specializedCategory = searchProviderInfo.specializedCategory,
                 safetyStatus = searchProviderInfo.safetyStatus,
-                enabled = enabledSearchProviders.contains(searchProviderInfo.id)
+                enabled = enabledSearchProviders.value.contains(searchProviderInfo.id)
             )
         }
     }
@@ -162,7 +165,27 @@ class SettingsViewModel(
 
     /** Enables/disables NSFW mode. */
     fun updateEnableNSFWMode(enabled: Boolean) {
-        viewModelScope.launch { settingsRepository.updateEnableNSFWMode(enabled) }
+        viewModelScope.launch {
+            settingsRepository.updateEnableNSFWMode(enabled)
+            if (!enabled) disableRestrictedSearchProviders()
+        }
+    }
+
+    /** Disables NSFW and Unsafe search providers which are currently enabled. */
+    private suspend fun disableRestrictedSearchProviders() {
+        val newEnabledSearchProviders = allSearchProviders
+            .filter { enabledSearchProviders.value.contains(it.id) }
+            .filter { !it.specializedCategory.isNSFW && !it.safetyStatus.isUnsafe() }
+            .map { it.id }
+            .toSet()
+
+        if (newEnabledSearchProviders.isEmpty()) {
+            return
+        }
+
+        if (newEnabledSearchProviders != enabledSearchProviders.value) {
+            settingsRepository.updateSearchProviders(newEnabledSearchProviders.toSet())
+        }
     }
 
     /** Enables/disables an option to hide zero seeders. */
@@ -175,9 +198,9 @@ class SettingsViewModel(
     /** Enables/disables search provider associated with given id. */
     fun enableSearchProvider(providerId: SearchProviderId, enable: Boolean) {
         val updatedSearchProviders = if (enable) {
-            enabledSearchProviders + providerId
+            enabledSearchProviders.value + providerId
         } else {
-            enabledSearchProviders - providerId
+            enabledSearchProviders.value - providerId
         }
 
         viewModelScope.launch {

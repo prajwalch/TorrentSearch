@@ -40,6 +40,9 @@ sealed class SearchProviderSafetyStatus {
 
     /** Search provider is not safe and requires special care to use it. */
     data class Unsafe(val reason: String) : SearchProviderSafetyStatus()
+
+    /** Returns `true` if the status is [SearchProviderSafetyStatus.Unsafe]. */
+    fun isUnsafe(): Boolean = this is Unsafe
 }
 
 /** The search context. */
