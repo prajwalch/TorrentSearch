@@ -21,7 +21,9 @@ class LimeTorrents(val id: SearchProviderId) : SearchProvider {
         id = id,
         name = "LimeTorrents",
         url = "https://limetorrents.lol",
-        safetyStatus = SearchProviderSafetyStatus.Safe,
+        safetyStatus = SearchProviderSafetyStatus.Unsafe(
+            reason = "Doesn't respect category selection at all."
+        ),
     )
 
     override suspend fun search(query: String, context: SearchContext): List<Torrent> {
