@@ -148,11 +148,14 @@ private fun SearchProviderUnsafeDetailsDialog(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center,
             ) {
-                Text(text = providerName)
+                Text(
+                    text = providerName,
+                    style = MaterialTheme.typography.titleMedium,
+                )
                 Text(
                     text = url,
-                    style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    style = MaterialTheme.typography.bodyMedium,
                 )
             }
         },
@@ -207,7 +210,7 @@ private fun SearchProviderName(
     BadgedBox(
         modifier = modifier,
         badge = {
-            if (safetyStatus is SearchProviderSafetyStatus.Unsafe) {
+            if (safetyStatus.isUnsafe()) {
                 UnsafeBadge(onClick = onShowUnsafeReason)
             }
         },
