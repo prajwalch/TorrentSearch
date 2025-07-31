@@ -317,44 +317,41 @@ private fun SearchScreenContent(
     modifier: Modifier = Modifier,
 ) {
     Column(modifier = modifier, horizontalAlignment = Alignment.CenterHorizontally) {
-        if (isLoading) {
-            LoadingIndicator(modifier = Modifier.fillMaxSize())
-        }
+        when {
+            isLoading -> LoadingIndicator(modifier = Modifier.fillMaxSize())
+            isInternetError -> {
+                NoInternetConnectionMessage(
+                    modifier = Modifier.fillMaxSize(),
+                    onRetry = onRetry,
+                )
+            }
 
-        if (isInternetError) {
-            NoInternetConnectionMessage(
-                modifier = Modifier.fillMaxSize(),
-                onRetry = onRetry,
-            )
-        }
+            resultsNotFound -> {
+                Spacer(modifier = Modifier.height(16.dp))
+                ResultsNotFoundMessage(modifier = Modifier.fillMaxWidth())
+            }
 
-        if (resultsNotFound) {
-            Spacer(modifier = Modifier.height(16.dp))
-            ResultsNotFoundMessage()
-        }
+            results.isNotEmpty() -> {
+                TorrentList(
+                    torrents = results,
+                    onTorrentSelect = onResultSelect,
+                    toolbarContent = {
+                        Text(
+                            text = stringResource(R.string.hint_results_count, results.size),
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            style = MaterialTheme.typography.bodyMedium,
+                        )
+                        SortButtonAndMenu(
+                            currentSortCriteria = currentSortCriteria,
+                            currentSortOrder = currentSortOrder,
+                            onSortRequest = onSortResults,
+                        )
+                    },
+                    lazyListState = lazyListState,
+                )
+            }
 
-        if (!resultsNotFound && results.isEmpty()) {
-            EmptySearchPlaceholder(modifier = Modifier.fillMaxSize())
-        }
-
-        if (results.isNotEmpty()) {
-            TorrentList(
-                torrents = results,
-                onTorrentSelect = onResultSelect,
-                toolbarContent = {
-                    Text(
-                        text = stringResource(R.string.hint_results_count, results.size),
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        style = MaterialTheme.typography.bodyMedium,
-                    )
-                    SortButtonAndMenu(
-                        currentSortCriteria = currentSortCriteria,
-                        currentSortOrder = currentSortOrder,
-                        onSortRequest = onSortResults,
-                    )
-                },
-                lazyListState = lazyListState,
-            )
+            else -> EmptySearchPlaceholder(modifier = Modifier.fillMaxSize())
         }
     }
 }
