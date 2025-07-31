@@ -38,7 +38,7 @@ fun NavGraphBuilder.settingsNavigation(
             enterTransition = { slideIntoContainer(SlideDirection.Start) },
             popExitTransition = { slideOutOfContainer(SlideDirection.End) },
         ) {
-            CategoryListScreen(
+            DefaultCategoryScreen(
                 onNavigateBack = { navController.navigateUp() },
                 viewModel = settingsViewModel,
             )
@@ -49,7 +49,7 @@ fun NavGraphBuilder.settingsNavigation(
             enterTransition = { slideIntoContainer(SlideDirection.Start) },
             popExitTransition = { slideOutOfContainer(SlideDirection.End) },
         ) {
-            SearchProviderListScreen(
+            SearchProvidersScreen(
                 onNavigateBack = { navController.navigateUp() },
                 viewModel = settingsViewModel,
             )

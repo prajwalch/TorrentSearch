@@ -26,7 +26,7 @@ import com.prajwalch.torrentsearch.models.Category
 import com.prajwalch.torrentsearch.ui.viewmodel.SettingsViewModel
 
 @Composable
-fun CategoryListScreen(
+fun DefaultCategoryScreen(
     onNavigateBack: () -> Unit,
     viewModel: SettingsViewModel,
     modifier: Modifier = Modifier,
@@ -37,7 +37,7 @@ fun CategoryListScreen(
     Scaffold(
         modifier = modifier,
         topBar = {
-            CategoryListScreenTopBar(onNavigateBack = onNavigateBack)
+            DefaultCategoryScreenTopBar(onNavigateBack = onNavigateBack)
         }) { innerPadding ->
         LazyColumn(
             modifier = Modifier.consumeWindowInsets(innerPadding),
@@ -56,7 +56,7 @@ fun CategoryListScreen(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun CategoryListScreenTopBar(
+private fun DefaultCategoryScreenTopBar(
     onNavigateBack: () -> Unit,
     modifier: Modifier = Modifier,
 ) {

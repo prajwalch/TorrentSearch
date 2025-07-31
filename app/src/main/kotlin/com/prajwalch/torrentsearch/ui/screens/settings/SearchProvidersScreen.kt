@@ -45,7 +45,7 @@ import com.prajwalch.torrentsearch.ui.viewmodel.SearchProviderUiState
 import com.prajwalch.torrentsearch.ui.viewmodel.SettingsViewModel
 
 @Composable
-fun SearchProviderListScreen(
+fun SearchProvidersScreen(
     onNavigateBack: () -> Unit,
     viewModel: SettingsViewModel,
     modifier: Modifier = Modifier,
@@ -56,7 +56,7 @@ fun SearchProviderListScreen(
     Scaffold(
         modifier = modifier,
         topBar = {
-            SearchProviderListScreenTopBar(
+            SearchProvidersScreenTopBar(
                 onNavigateBack = onNavigateBack,
                 onEnableAllSearchProviders = viewModel::enableAllSearchProviders,
                 onDisableAllSearchProviders = viewModel::disableAllSearchProviders,
@@ -75,7 +75,7 @@ fun SearchProviderListScreen(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun SearchProviderListScreenTopBar(
+private fun SearchProvidersScreenTopBar(
     onNavigateBack: () -> Unit,
     onEnableAllSearchProviders: () -> Unit,
     onDisableAllSearchProviders: () -> Unit,
