@@ -80,7 +80,7 @@ fun SearchScreen(
     // Scroll to top button related.
     val coroutineScope = rememberCoroutineScope()
     val lazyListState = rememberLazyListState()
-    val showScrollToTopButton by remember {
+    val isFirstResultNotVisible by remember {
         derivedStateOf { lazyListState.firstVisibleItemIndex > 1 }
     }
 
@@ -114,7 +114,7 @@ fun SearchScreen(
         },
         floatingActionButton = {
             ScrollToTopFAB(
-                visible = showScrollToTopButton,
+                visible = isFirstResultNotVisible && !uiState.isLoading,
                 onClick = {
                     coroutineScope.launch { lazyListState.animateScrollToItem(0) }
                 },
