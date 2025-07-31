@@ -255,8 +255,17 @@ class SearchViewModel(
             // Save the original results.
             searchResults = torrentsRepositoryResult.torrents.orEmpty()
 
+            // Filter (based on settings) and sort them.
+            val results = filterSearchResults(
+                results = searchResults,
+                settings = settings.value
+            ).customSort(
+                criteria = SortCriteria.Default,
+                order = SortOrder.Default,
+            )
+
             // If the results are empty then report and return immediately.
-            if (searchResults.isEmpty()) {
+            if (results.isEmpty()) {
                 _uiState.update {
                     it.copy(
                         results = emptyList(),
@@ -267,15 +276,6 @@ class SearchViewModel(
                 }
                 return@launch
             }
-
-            // Filter (based on settings) and sort them.
-            val results = filterSearchResults(
-                results = searchResults,
-                settings = settings.value
-            ).customSort(
-                criteria = SortCriteria.Default,
-                order = SortOrder.Default,
-            )
 
             // And update the UI.
             _uiState.update {
