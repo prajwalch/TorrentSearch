@@ -56,7 +56,12 @@ fun SearchProviderListScreen(
     Scaffold(
         modifier = modifier,
         topBar = {
-            SearchProviderListScreenTopBar(onNavigateBack = onNavigateBack)
+            SearchProviderListScreenTopBar(
+                onNavigateBack = onNavigateBack,
+                onEnableAllSearchProviders = viewModel::enableAllSearchProviders,
+                onDisableAllSearchProviders = viewModel::disableAllSearchProviders,
+                onResetToDefault = viewModel::resetSearchProvidersToDefault,
+            )
         }
     ) { innerPadding ->
         SearchProviderList(
@@ -72,6 +77,9 @@ fun SearchProviderListScreen(
 @Composable
 private fun SearchProviderListScreenTopBar(
     onNavigateBack: () -> Unit,
+    onEnableAllSearchProviders: () -> Unit,
+    onDisableAllSearchProviders: () -> Unit,
+    onResetToDefault: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     TopAppBar(
@@ -82,6 +90,32 @@ private fun SearchProviderListScreenTopBar(
                 Icon(
                     painter = painterResource(R.drawable.ic_arrow_back),
                     contentDescription = stringResource(R.string.button_go_to_settings_screen),
+                )
+            }
+        },
+        actions = {
+            IconButton(onClick = onEnableAllSearchProviders) {
+                Icon(
+                    painter = painterResource(R.drawable.ic_select_all),
+                    contentDescription = stringResource(
+                        R.string.button_enable_all_search_providers,
+                    ),
+                )
+            }
+            IconButton(onClick = onDisableAllSearchProviders) {
+                Icon(
+                    painter = painterResource(R.drawable.ic_deselect_all),
+                    contentDescription = stringResource(
+                        R.string.button_disable_all_search_providers,
+                    ),
+                )
+            }
+            IconButton(onClick = onResetToDefault) {
+                Icon(
+                    painter = painterResource(R.drawable.ic_refresh),
+                    contentDescription = stringResource(
+                        R.string.button_reset_search_providers,
+                    ),
                 )
             }
         }

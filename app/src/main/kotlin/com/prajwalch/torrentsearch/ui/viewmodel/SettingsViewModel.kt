@@ -208,6 +208,28 @@ class SettingsViewModel(
         }
     }
 
+    /** Enables all search providers. */
+    fun enableAllSearchProviders() {
+        viewModelScope.launch {
+            val allSearchProvidersId = SearchProviders.infos().map { it.id }.toSet()
+            settingsRepository.updateSearchProviders(providers = allSearchProvidersId)
+        }
+    }
+
+    /** Disables all search providers. */
+    fun disableAllSearchProviders() {
+        viewModelScope.launch {
+            settingsRepository.updateSearchProviders(providers = emptySet())
+        }
+    }
+
+    /** Resets search providers to default. */
+    fun resetSearchProvidersToDefault() {
+        viewModelScope.launch {
+            settingsRepository.updateSearchProviders(providers = SearchProviders.enabledIds())
+        }
+    }
+
     /** Updates the maximum number of results. */
     fun updateMaxNumResults(maxNumResults: MaxNumResults) {
         viewModelScope.launch { settingsRepository.updateMaxNumResults(maxNumResults) }
