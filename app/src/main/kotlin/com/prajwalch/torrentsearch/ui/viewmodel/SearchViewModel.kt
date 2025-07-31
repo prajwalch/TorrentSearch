@@ -231,8 +231,17 @@ class SearchViewModel(
                 )
             }
 
+            // Acquire the enabled providers.
+            val searchProviders = SearchProviders.get(settings.value.searchProviders)
+            // Perform the search using them.
+            val torrentsRepositoryResult = torrentsRepository.search(
+                query = _uiState.value.query,
+                category = _uiState.value.selectedCategory,
+                providers = searchProviders,
+            )
+
             // Return as soon as we get the bad internet connection status.
-            if (!torrentsRepository.isInternetAvailable()) {
+            if (torrentsRepositoryResult.isNetworkError) {
                 _uiState.update {
                     it.copy(
                         resultsNotFound = false,
@@ -243,17 +252,21 @@ class SearchViewModel(
                 return@launch
             }
 
-            // Acquire the enabled providers.
-            val searchProviders = SearchProviders.get(settings.value.searchProviders)
-            // Perform the search using them.
-            val torrentsRepositoryResult = torrentsRepository.search(
-                query = _uiState.value.query,
-                category = _uiState.value.selectedCategory,
-                providers = searchProviders,
-            )
-
             // Save the original results.
             searchResults = torrentsRepositoryResult.torrents.orEmpty()
+
+            // If the results are empty then report and return immediately.
+            if (searchResults.isEmpty()) {
+                _uiState.update {
+                    it.copy(
+                        results = emptyList(),
+                        resultsNotFound = true,
+                        isLoading = false,
+                        isInternetError = false,
+                    )
+                }
+                return@launch
+            }
 
             // Filter (based on settings) and sort them.
             val results = filterSearchResults(
@@ -270,9 +283,9 @@ class SearchViewModel(
                     results = results,
                     currentSortCriteria = SortCriteria.Default,
                     currentSortOrder = SortOrder.Default,
-                    resultsNotFound = results.isEmpty(),
+                    resultsNotFound = false,
                     isLoading = false,
-                    isInternetError = torrentsRepositoryResult.isNetworkError,
+                    isInternetError = false,
                 )
             }
         }

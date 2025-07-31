@@ -12,7 +12,6 @@ import com.prajwalch.torrentsearch.providers.SearchProvider
 
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
-import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.supervisorScope
@@ -54,7 +53,7 @@ class TorrentsRepository(
 
             // Check for network error.
             if (results.all { it is HttpClientResponse.Error.NetworkError }) {
-                TorrentsRepositoryResult(isNetworkError = true)
+                return@supervisorScope TorrentsRepositoryResult(isNetworkError = true)
             }
 
             val torrents = results
@@ -88,9 +87,6 @@ class TorrentsRepository(
             (it.info.specializedCategory == Category.All) || (category == it.info.specializedCategory)
         }
     }
-
-    /** Returns `true` is the internet is available to perform a `search()`. */
-    suspend fun isInternetAvailable(): Boolean = coroutineScope { httpClient.isInternetAvailable() }
 }
 
 data class TorrentsRepositoryResult(

@@ -159,7 +159,7 @@ object HttpClient {
     suspend fun postJson(
         url: String,
         payload: JsonElement,
-        headers: Map<String, String> = emptyMap()
+        headers: Map<String, String> = emptyMap(),
     ): JsonElement? {
         val response = post(url = url, payload = payload, headers = headers)
         if (response.isEmpty()) {
@@ -181,19 +181,6 @@ object HttpClient {
         } catch (e: SerializationException) {
             Log.e(TAG, "Json parsing failed, ${e.message}")
             null
-        }
-    }
-
-    /**
-     * Returns `true` if the network is reachable, meaning if a successful
-     * request can be made.
-     */
-    suspend fun isInternetAvailable(): Boolean {
-        return try {
-            val response = innerClient.get("https://clients3.google.com/generate_204")
-            response.status.value == 204
-        } catch (_: Exception) {
-            false
         }
     }
 }
