@@ -69,8 +69,8 @@ class SettingsRepository(private val dataStore: DataStore<Preferences>) {
             default = MaxNumResults.Unlimited,
         )
 
-    val pauseSearchHistory: Flow<Boolean> = dataStore
-        .getOrDefault(key = PAUSE_SEARCH_HISTORY, default = false)
+    val saveSearchHistory: Flow<Boolean> = dataStore
+        .getOrDefault(key = SAVE_SEARCH_HISTORY, default = true)
 
     val showSearchHistory: Flow<Boolean> = dataStore
         .getOrDefault(key = SHOW_SEARCH_HISTORY, default = true)
@@ -107,8 +107,8 @@ class SettingsRepository(private val dataStore: DataStore<Preferences>) {
         dataStore.setOrUpdate(key = MAX_NUM_RESULTS, value = maxNumResults.n)
     }
 
-    suspend fun updatePauseSearchHistory(pause: Boolean) {
-        dataStore.setOrUpdate(key = PAUSE_SEARCH_HISTORY, value = pause)
+    suspend fun updateSaveSearchHistory(save: Boolean) {
+        dataStore.setOrUpdate(key = SAVE_SEARCH_HISTORY, value = save)
     }
 
     suspend fun updateShowSearchHistory(show: Boolean) {
@@ -131,7 +131,7 @@ class SettingsRepository(private val dataStore: DataStore<Preferences>) {
         val MAX_NUM_RESULTS = intPreferencesKey("max_num_results")
 
         // Search history.
-        val PAUSE_SEARCH_HISTORY = booleanPreferencesKey("pause_search_history")
+        val SAVE_SEARCH_HISTORY = booleanPreferencesKey("save_search_history")
         val SHOW_SEARCH_HISTORY = booleanPreferencesKey("show_search_history")
     }
 }

@@ -24,13 +24,13 @@ fun SearchHistorySettings(snackbarHostState: SnackbarHostState, modifier: Modifi
     Column(modifier = modifier) {
         SettingsSectionTitle(titleId = R.string.settings_section_search_history)
         SettingsItem(
-            onClick = { viewModel.pauseSearchHistory(!settings.pauseSearchHistory) },
-            leadingIconId = R.drawable.ic_history_off,
-            headlineId = R.string.setting_pause_search_history,
+            onClick = { viewModel.saveSearchHistory(!settings.saveSearchHistory) },
+            leadingIconId = R.drawable.ic_search_activity,
+            headlineId = R.string.setting_save_search_history,
             trailingContent = {
                 Switch(
-                    checked = settings.pauseSearchHistory,
-                    onCheckedChange = { viewModel.pauseSearchHistory(it) },
+                    checked = settings.saveSearchHistory,
+                    onCheckedChange = { viewModel.saveSearchHistory(it) },
                 )
             },
         )

@@ -65,7 +65,7 @@ private data class SearchSettings(
     val hideResultsWithZeroSeeders: Boolean = false,
     val searchProviders: Set<SearchProviderId> = emptySet(),
     val maxNumResults: MaxNumResults = MaxNumResults.Unlimited,
-    val pauseSearchHistory: Boolean = false,
+    val saveSearchHistory: Boolean = true,
 )
 
 /** Drives the search logic. */
@@ -95,7 +95,7 @@ class SearchViewModel(
         settingsRepository.hideResultsWithZeroSeeders,
         settingsRepository.searchProviders,
         settingsRepository.maxNumResults,
-        settingsRepository.pauseSearchHistory,
+        settingsRepository.saveSearchHistory,
         ::SearchSettings
     ).stateIn(
         scope = viewModelScope,
@@ -231,7 +231,7 @@ class SearchViewModel(
             //
             // We can't trim from the `setQuery` function simply because doing so
             // won't allow the user to insert a whitespace at all.
-            if (!settings.value.pauseSearchHistory) {
+            if (settings.value.saveSearchHistory) {
                 searchHistoryRepository.add(
                     searchHistory = SearchHistory(query = _uiState.value.query.trim())
                 )

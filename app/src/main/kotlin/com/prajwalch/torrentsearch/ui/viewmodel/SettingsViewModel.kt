@@ -42,7 +42,7 @@ data class SearchSettingsUiState(
 
 /** State for the search history settings. */
 data class SearchHistorySettingsUiState(
-    val pauseSearchHistory: Boolean = false,
+    val saveSearchHistory: Boolean = true,
     val showSearchHistory: Boolean = true,
 )
 
@@ -121,7 +121,7 @@ class SettingsViewModel(
     )
 
     val searchHistorySettingsUiState = combine(
-        settingsRepository.pauseSearchHistory,
+        settingsRepository.saveSearchHistory,
         settingsRepository.showSearchHistory,
         ::SearchHistorySettingsUiState,
     ).stateIn(
@@ -236,10 +236,10 @@ class SettingsViewModel(
         viewModelScope.launch { settingsRepository.updateMaxNumResults(maxNumResults) }
     }
 
-    /** Pauses/resumes search history. */
-    fun pauseSearchHistory(pause: Boolean) {
+    /** Saves/unsaves search history. */
+    fun saveSearchHistory(save: Boolean) {
         viewModelScope.launch {
-            settingsRepository.updatePauseSearchHistory(pause)
+            settingsRepository.updateSaveSearchHistory(save)
         }
     }
 
