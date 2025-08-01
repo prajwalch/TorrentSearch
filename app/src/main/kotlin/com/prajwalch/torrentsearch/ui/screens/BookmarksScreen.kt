@@ -1,5 +1,6 @@
 package com.prajwalch.torrentsearch.ui.screens
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
@@ -45,6 +46,9 @@ fun BookmarksScreen(
     modifier: Modifier = Modifier,
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val showDeleteAllAction by remember {
+        derivedStateOf { uiState.bookmarks.isNotEmpty() }
+    }
 
     // Scroll to top button related.
     val coroutineScope = rememberCoroutineScope()
@@ -63,6 +67,7 @@ fun BookmarksScreen(
                 onNavigateBack = onNavigateBack,
                 onDeleteAllBookmarks = viewModel::deleteAllBookmarks,
                 onNavigateToSettings = onNavigateToSettings,
+                showDeleteAllAction = showDeleteAllAction,
             )
         },
         floatingActionButton = {
@@ -101,6 +106,7 @@ private fun BookmarksScreenTopBar(
     onNavigateBack: () -> Unit,
     onDeleteAllBookmarks: () -> Unit,
     onNavigateToSettings: () -> Unit,
+    showDeleteAllAction: Boolean,
     modifier: Modifier = Modifier,
 ) {
     TopAppBar(
@@ -115,11 +121,13 @@ private fun BookmarksScreenTopBar(
             }
         },
         actions = {
-            IconButton(onClick = onDeleteAllBookmarks) {
-                Icon(
-                    painter = painterResource(R.drawable.ic_delete_forever),
-                    contentDescription = stringResource(R.string.button_delete_all_bookmarks),
-                )
+            AnimatedVisibility(visible = showDeleteAllAction) {
+                IconButton(onClick = onDeleteAllBookmarks) {
+                    Icon(
+                        painter = painterResource(R.drawable.ic_delete_forever),
+                        contentDescription = stringResource(R.string.button_delete_all_bookmarks),
+                    )
+                }
             }
             IconButton(onClick = onNavigateToSettings) {
                 Icon(
