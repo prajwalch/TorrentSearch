@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="Theme.TorrentSearch.Main" parent="android:Theme.Material.Light.NoActionBar" />
+
+    <style name="Theme.TorrentSearch" parent="Theme.SplashScreen">
+        <item name="postSplashScreenTheme">@style/Theme.TorrentSearch.Main</item>
+    </style>
+</resources>

@@ -3,6 +3,7 @@ activityCompose = "1.10.1"
 agp = "8.12.0"
 composeBom = "2025.07.00"
 coreKtx = "1.16.0"
+coreSplashscreen = "1.0.1"
 datastorePreferences = "1.1.7"
 espressoCore = "3.7.0"
 jsoup = "1.21.1"
@@ -21,6 +22,7 @@ room = "2.7.2"
 androidx-activity-compose = { group = "androidx.activity", name = "activity-compose", version.ref = "activityCompose" }
 androidx-compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "composeBom" }
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
+androidx-core-splashscreen = { group = "androidx.core", name = "core-splashscreen", version.ref = "coreSplashscreen" }
 androidx-datastore-preferences = { group = "androidx.datastore", name = "datastore-preferences", version.ref = "datastorePreferences" }
 androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
 androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
