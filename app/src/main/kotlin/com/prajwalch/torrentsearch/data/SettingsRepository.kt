@@ -72,6 +72,9 @@ class SettingsRepository(private val dataStore: DataStore<Preferences>) {
     val pauseSearchHistory: Flow<Boolean> = dataStore
         .getOrDefault(key = PAUSE_SEARCH_HISTORY, default = false)
 
+    val showSearchHistory: Flow<Boolean> = dataStore
+        .getOrDefault(key = SHOW_SEARCH_HISTORY, default = true)
+
     suspend fun updateEnableDynamicTheme(enable: Boolean) {
         dataStore.setOrUpdate(key = ENABLE_DYNAMIC_THEME, enable)
     }
@@ -108,6 +111,10 @@ class SettingsRepository(private val dataStore: DataStore<Preferences>) {
         dataStore.setOrUpdate(key = PAUSE_SEARCH_HISTORY, value = pause)
     }
 
+    suspend fun updateShowSearchHistory(show: Boolean) {
+        dataStore.setOrUpdate(key = SHOW_SEARCH_HISTORY, value = show)
+    }
+
     private companion object PreferencesKeys {
         // Appearance keys.
         val ENABLE_DYNAMIC_THEME = booleanPreferencesKey("enable_dynamic_theme")
@@ -125,6 +132,7 @@ class SettingsRepository(private val dataStore: DataStore<Preferences>) {
 
         // Search history.
         val PAUSE_SEARCH_HISTORY = booleanPreferencesKey("pause_search_history")
+        val SHOW_SEARCH_HISTORY = booleanPreferencesKey("show_search_history")
     }
 }
 

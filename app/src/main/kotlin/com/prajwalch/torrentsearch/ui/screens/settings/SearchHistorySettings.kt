@@ -34,6 +34,18 @@ fun SearchHistorySettings(snackbarHostState: SnackbarHostState, modifier: Modifi
                 )
             },
         )
+        SettingsItem(
+            onClick = { viewModel.showSearchHistory(!settings.showSearchHistory) },
+            leadingIconId = R.drawable.ic_history_toggle_off,
+            headlineId = R.string.setting_show_search_history,
+            supportingContent = stringResource(R.string.setting_show_search_history_desc),
+            trailingContent = {
+                Switch(
+                    checked = settings.showSearchHistory,
+                    onCheckedChange = { viewModel.showSearchHistory(it) },
+                )
+            },
+        )
 
         val searchHistoryClearedHint = stringResource(R.string.hint_search_history_cleared)
         SettingsItem(

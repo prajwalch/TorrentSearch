@@ -15,7 +15,6 @@ import com.prajwalch.torrentsearch.providers.SearchProviders
 
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
@@ -43,7 +42,8 @@ data class SearchSettingsUiState(
 
 /** State for the search history settings. */
 data class SearchHistorySettingsUiState(
-    val pauseSearchHistory: Boolean = true,
+    val pauseSearchHistory: Boolean = false,
+    val showSearchHistory: Boolean = true,
 )
 
 /** State for the search providers list. */
@@ -120,14 +120,15 @@ class SettingsViewModel(
         initialValue = SearchSettingsUiState()
     )
 
-    val searchHistorySettingsUiState = settingsRepository
-        .pauseSearchHistory
-        .map(::SearchHistorySettingsUiState)
-        .stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.Eagerly,
-            initialValue = SearchHistorySettingsUiState()
-        )
+    val searchHistorySettingsUiState = combine(
+        settingsRepository.pauseSearchHistory,
+        settingsRepository.showSearchHistory,
+        ::SearchHistorySettingsUiState,
+    ).stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.Eagerly,
+        initialValue = SearchHistorySettingsUiState()
+    )
 
     /** Converts list of search provider to list of UI states. */
     private fun allSearchProvidersToUiStates(): List<SearchProviderUiState> {
@@ -239,6 +240,13 @@ class SettingsViewModel(
     fun pauseSearchHistory(pause: Boolean) {
         viewModelScope.launch {
             settingsRepository.updatePauseSearchHistory(pause)
+        }
+    }
+
+    /** Shows/hides search history. */
+    fun showSearchHistory(show: Boolean) {
+        viewModelScope.launch {
+            settingsRepository.updateShowSearchHistory(show = show)
         }
     }
 

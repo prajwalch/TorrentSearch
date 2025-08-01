@@ -23,9 +23,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.firstOrNull
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -105,6 +103,18 @@ class SearchViewModel(
         initialValue = SearchSettings(),
     )
 
+    /** Saved search history. */
+    private val searchHistory = combine(
+        settingsRepository.showSearchHistory,
+        searchHistoryRepository.getAll(),
+    ) { showSearchHistory, searchHistory ->
+        if (showSearchHistory) searchHistory else emptyList()
+    }.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.Eagerly,
+        initialValue = emptyList(),
+    )
+
     /**
      * Current on-going search.
      *
@@ -128,7 +138,7 @@ class SearchViewModel(
     init {
         loadDefaultCategory()
         observeSettings()
-        observeSearchHistories()
+        observeSearchHistory()
     }
 
     /** Loads the default category and updates the UI state. */
@@ -151,14 +161,10 @@ class SearchViewModel(
     }
 
     /** Observes search history changes and automatically updates the UI. */
-    private fun observeSearchHistories() = viewModelScope.launch {
-        searchHistoryRepository
-            .getAll()
-            .distinctUntilChanged()
-            .map { searchHistories -> searchHistories.toUiStates() }
-            .collect { searchHistoryUiStates ->
-                _uiState.update { it.copy(histories = searchHistoryUiStates) }
-            }
+    private fun observeSearchHistory() = viewModelScope.launch {
+        searchHistory.collect { searchHistory ->
+            _uiState.update { it.copy(histories = searchHistory.toUiStates()) }
+        }
     }
 
     /** Changes the current query with the given query. */

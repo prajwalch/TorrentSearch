@@ -94,6 +94,8 @@
     <!-- Search history section -->
     <string name="settings_section_search_history">Search history</string>
     <string name="setting_pause_search_history">Pause search history</string>
+    <string name="setting_show_search_history">Show search history</string>
+    <string name="setting_show_search_history_desc">Show search history in search bar</string>
     <string name="setting_clear_search_history">Clear search history</string>
     <string name="hint_search_history_cleared">Search history cleared!</string>
     <!-- Settings dialog -->
