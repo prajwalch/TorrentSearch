@@ -21,4 +21,7 @@ interface BookmarkedTorrentDao {
 
     @Delete
     suspend fun delete(bookmarkedTorrent: BookmarkedTorrent)
+
+    @Query("DELETE from bookmarks")
+    suspend fun deleteAll()
 }

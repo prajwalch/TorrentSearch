@@ -37,6 +37,11 @@ class TorrentsRepository(
         bookmarkedTorrentDao.delete(bookmarkedTorrent = torrent.toEntity())
     }
 
+    /** Deletes all bookmarks. */
+    suspend fun deleteAllBookmarks() {
+        bookmarkedTorrentDao.deleteAll()
+    }
+
     /** Starts a search for the given query. */
     suspend fun search(
         query: String,

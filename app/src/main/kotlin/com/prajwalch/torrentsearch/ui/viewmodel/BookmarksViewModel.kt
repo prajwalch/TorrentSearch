@@ -133,6 +133,13 @@ class BookmarksViewModel(
         }
     }
 
+    /** Deletes all bookmarks. */
+    fun deleteAllBookmarks() {
+        viewModelScope.launch {
+            torrentsRepository.deleteAllBookmarks()
+        }
+    }
+
     /** Sorts the current bookmarks. */
     fun sortBookmarks(criteria: SortCriteria, order: SortOrder) {
         val sortedBookmarks = SortTorrentsUseCase(

@@ -61,6 +61,7 @@ fun BookmarksScreen(
         topBar = {
             BookmarksScreenTopBar(
                 onNavigateBack = onNavigateBack,
+                onDeleteAllBookmarks = viewModel::deleteAllBookmarks,
                 onNavigateToSettings = onNavigateToSettings,
             )
         },
@@ -98,6 +99,7 @@ fun BookmarksScreen(
 @Composable
 private fun BookmarksScreenTopBar(
     onNavigateBack: () -> Unit,
+    onDeleteAllBookmarks: () -> Unit,
     onNavigateToSettings: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -113,6 +115,12 @@ private fun BookmarksScreenTopBar(
             }
         },
         actions = {
+            IconButton(onClick = onDeleteAllBookmarks) {
+                Icon(
+                    painter = painterResource(R.drawable.ic_delete_forever),
+                    contentDescription = stringResource(R.string.button_delete_all_bookmarks),
+                )
+            }
             IconButton(onClick = onNavigateToSettings) {
                 Icon(
                     painter = painterResource(R.drawable.ic_settings),
