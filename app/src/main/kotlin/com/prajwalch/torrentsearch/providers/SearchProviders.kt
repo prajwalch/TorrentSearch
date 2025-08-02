@@ -6,7 +6,7 @@ object SearchProviders {
     private val ENABLED_BY_DEFAULT = setOf(
         Eztv(id = "p1"),
         Knaben(id = "p2"),
-        NyaaSi(id = "p3"),
+        Nyaa(id = "p3"),
         TorrentsCsv(id = "p4"),
         Yts(id = "p5"),
     )
