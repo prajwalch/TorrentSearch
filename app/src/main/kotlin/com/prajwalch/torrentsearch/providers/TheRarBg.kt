@@ -43,7 +43,8 @@ class TheRarBg : SearchProvider {
         url = "https://therarbg.com",
         safetyStatus = SearchProviderSafetyStatus.Unsafe(
             reason = "Crafted with cunning intent to ensnare unsuspecting users through deliberate deception."
-        )
+        ),
+        enabled = false,
     )
 
     override suspend fun search(query: String, context: SearchContext): List<Torrent> {

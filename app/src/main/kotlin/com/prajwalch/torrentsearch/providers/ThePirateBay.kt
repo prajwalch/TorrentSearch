@@ -20,7 +20,8 @@ class ThePirateBay : SearchProvider {
         url = "https://thepiratebay.org",
         safetyStatus = SearchProviderSafetyStatus.Unsafe(
             reason = "Terrible regulation, and the calculated injection of insidious malware."
-        )
+        ),
+        enabled = false,
     )
 
     override suspend fun search(query: String, context: SearchContext): List<Torrent> {

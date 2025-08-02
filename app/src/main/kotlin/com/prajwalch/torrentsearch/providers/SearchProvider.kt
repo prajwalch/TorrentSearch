@@ -31,6 +31,8 @@ data class SearchProviderInfo(
     val specializedCategory: Category = Category.All,
     /** Safety status of the search provider */
     val safetyStatus: SearchProviderSafetyStatus,
+    /** Default state of the provider. */
+    val enabled: Boolean,
 )
 
 /** How safe is the search provider?. */

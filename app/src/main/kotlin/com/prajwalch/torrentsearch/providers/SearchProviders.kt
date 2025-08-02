@@ -2,34 +2,31 @@ package com.prajwalch.torrentsearch.providers
 
 /** Search providers manager. */
 object SearchProviders {
-    /** List of providers which are enabled by default. */
-    private val ENABLED_BY_DEFAULT = setOf(
+    /**
+     * Search provider instances.
+     *
+     * Make sure they're sorted.
+     */
+    private val all = setOf(
+        AnimeTosho(),
         Eztv(),
         Knaben(),
-        Nyaa(),
-        TorrentsCsv(),
-        Yts(),
-    )
-
-    /** List of providers which are disabled by default. */
-    private val DISABLED_BY_DEFAULT = setOf(
-        AnimeTosho(),
         LimeTorrents(),
         MyPornClub(),
+        Nyaa(),
         ThePirateBay(),
         TheRarBg(),
+        TorrentsCsv(),
         UIndex(),
+        Yts(),
     )
-
-    /** List of all providers. */
-    private val ALL = ENABLED_BY_DEFAULT.plus(DISABLED_BY_DEFAULT).sortedBy { it.info.name }
 
     /**
      * Returns a list containing instance of search provider associated with
      * the given ids.
      */
     fun get(ids: Set<SearchProviderId>): List<SearchProvider> {
-        return ALL.filter { ids.contains(it.info.id) }
+        return all.filter { ids.contains(it.info.id) }
     }
 
     /**
@@ -37,11 +34,11 @@ object SearchProviders {
      * by default.
      */
     fun enabledIds(): Set<SearchProviderId> {
-        return ENABLED_BY_DEFAULT.map { it.info.id }.toSet()
+        return all.filter { it.info.enabled }.map { it.info.id }.toSet()
     }
 
     /** Returns a list containing info of all search providers. */
     fun infos(): List<SearchProviderInfo> {
-        return ALL.map { it.info }
+        return all.map { it.info }
     }
 }
