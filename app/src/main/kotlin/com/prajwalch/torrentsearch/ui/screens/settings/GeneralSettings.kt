@@ -15,14 +15,14 @@ import com.prajwalch.torrentsearch.ui.components.SettingsItem
 import com.prajwalch.torrentsearch.ui.components.SettingsSectionTitle
 
 @Composable
-fun GeneralSettings(onNavigateToCategoryList: () -> Unit, modifier: Modifier = Modifier) {
+fun GeneralSettings(onNavigateToDefaultCategory: () -> Unit, modifier: Modifier = Modifier) {
     val viewModel = LocalSettingsViewModel.current
     val settings by viewModel.generalSettingsUiState.collectAsStateWithLifecycle()
 
     Column(modifier = modifier) {
         SettingsSectionTitle(titleId = R.string.settings_section_general)
         SettingsItem(
-            onClick = onNavigateToCategoryList,
+            onClick = onNavigateToDefaultCategory,
             leadingIconId = R.drawable.ic_category_search,
             headlineId = R.string.setting_default_category,
             supportingContent = settings.defaultCategory.name,

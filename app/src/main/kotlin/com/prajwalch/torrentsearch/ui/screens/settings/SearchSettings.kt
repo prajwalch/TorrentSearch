@@ -31,7 +31,11 @@ import com.prajwalch.torrentsearch.ui.components.SettingsItem
 import com.prajwalch.torrentsearch.ui.components.SettingsSectionTitle
 
 @Composable
-fun SearchSettings(onNavigateToProvidersSetting: () -> Unit, modifier: Modifier = Modifier) {
+fun SearchSettings(
+    onNavigateToSearchProviders: () -> Unit,
+    onNavigateToDefaultSortOptions: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
     val viewModel = LocalSettingsViewModel.current
     val settings by viewModel.searchSettingsUiState.collectAsStateWithLifecycle()
 
@@ -52,7 +56,7 @@ fun SearchSettings(onNavigateToProvidersSetting: () -> Unit, modifier: Modifier 
     Column(modifier = modifier) {
         SettingsSectionTitle(titleId = R.string.settings_section_search)
         SettingsItem(
-            onClick = onNavigateToProvidersSetting,
+            onClick = onNavigateToSearchProviders,
             leadingIconId = R.drawable.ic_travel_explore,
             headlineId = R.string.setting_search_providers,
             supportingContent = stringResource(
@@ -65,6 +69,23 @@ fun SearchSettings(onNavigateToProvidersSetting: () -> Unit, modifier: Modifier 
                     painter = painterResource(R.drawable.ic_arrow_forward),
                     contentDescription = stringResource(
                         R.string.button_go_to_search_provider_list_screen
+                    ),
+                )
+            },
+        )
+
+        val defaultSortCriteria = settings.defaultSortOptions.sortCriteria
+        val defaultSortOrder = settings.defaultSortOptions.sortOrder
+        SettingsItem(
+            onClick = onNavigateToDefaultSortOptions,
+            leadingIconId = R.drawable.ic_sort,
+            headlineId = R.string.setting_default_sort_options,
+            supportingContent = "$defaultSortCriteria / $defaultSortOrder",
+            trailingContent = {
+                Icon(
+                    painter = painterResource(R.drawable.ic_arrow_forward),
+                    contentDescription = stringResource(
+                        R.string.button_go_to_default_sort_options_screen,
                     ),
                 )
             },

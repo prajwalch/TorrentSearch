@@ -260,14 +260,26 @@ class SearchViewModel(
 
             // Save the original results.
             searchResults = torrentsRepositoryResult.torrents.orEmpty()
+            // Is this the right way?
+            //
+            // combine() only supports up to 5 flows, so we can't collect
+            // and save these two like others.
+            val defaultSortCriteria = settingsRepository
+                .defaultSortCriteria
+                .firstOrNull()
+                ?: SortCriteria.Default
+            val defaultSortOrder = settingsRepository
+                .defaultSortOrder
+                .firstOrNull()
+                ?: SortOrder.Default
 
             // Filter (based on settings) and sort them.
             val results = filterSearchResults(
                 results = searchResults,
                 settings = settings.value
             ).customSort(
-                criteria = SortCriteria.Default,
-                order = SortOrder.Default,
+                criteria = defaultSortCriteria,
+                order = defaultSortOrder,
             )
 
             // If the results are empty then report and return immediately.
@@ -287,8 +299,8 @@ class SearchViewModel(
             _uiState.update {
                 it.copy(
                     results = results,
-                    currentSortCriteria = SortCriteria.Default,
-                    currentSortOrder = SortOrder.Default,
+                    currentSortCriteria = defaultSortCriteria,
+                    currentSortOrder = defaultSortOrder,
                     resultsNotFound = false,
                     isLoading = false,
                     isInternetError = false,

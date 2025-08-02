@@ -23,18 +23,21 @@ fun NavGraphBuilder.settingsNavigation(
         ) {
             SettingsScreen(
                 onNavigateBack = { navController.navigateUp() },
-                onNavigateToCategoryList = {
-                    navController.navigate(Screens.Settings.CATEGORY_LIST)
+                onNavigateToDefaultCategory = {
+                    navController.navigate(Screens.Settings.DEFAULT_CATEGORY)
                 },
-                onNavigateToProvidersSetting = {
-                    navController.navigate(Screens.Settings.SEARCH_PROVIDER_LIST)
+                onNavigateToSearchProviders = {
+                    navController.navigate(Screens.Settings.SEARCH_PROVIDERS)
+                },
+                onNavigateToDefaultSortOptions = {
+                    navController.navigate(Screens.Settings.DEFAULT_SORT_OPTIONS)
                 },
                 viewModel = settingsViewModel,
             )
         }
 
         composable(
-            route = Screens.Settings.CATEGORY_LIST,
+            route = Screens.Settings.DEFAULT_CATEGORY,
             enterTransition = { slideIntoContainer(SlideDirection.Start) },
             popExitTransition = { slideOutOfContainer(SlideDirection.End) },
         ) {
@@ -45,11 +48,22 @@ fun NavGraphBuilder.settingsNavigation(
         }
 
         composable(
-            route = Screens.Settings.SEARCH_PROVIDER_LIST,
+            route = Screens.Settings.SEARCH_PROVIDERS,
             enterTransition = { slideIntoContainer(SlideDirection.Start) },
             popExitTransition = { slideOutOfContainer(SlideDirection.End) },
         ) {
             SearchProvidersScreen(
+                onNavigateBack = { navController.navigateUp() },
+                viewModel = settingsViewModel,
+            )
+        }
+
+        composable(
+            route = Screens.Settings.DEFAULT_SORT_OPTIONS,
+            enterTransition = { slideIntoContainer(SlideDirection.Start) },
+            popExitTransition = { slideOutOfContainer(SlideDirection.End) },
+        ) {
+            DefaultSortOptionsScreen(
                 onNavigateBack = { navController.navigateUp() },
                 viewModel = settingsViewModel,
             )

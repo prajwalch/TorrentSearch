@@ -8,6 +8,8 @@ import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.core.stringSetPreferencesKey
 
+import com.prajwalch.torrentsearch.domain.SortCriteria
+import com.prajwalch.torrentsearch.domain.SortOrder
 import com.prajwalch.torrentsearch.models.Category
 import com.prajwalch.torrentsearch.providers.SearchProviderId
 import com.prajwalch.torrentsearch.providers.SearchProviders
@@ -56,11 +58,25 @@ class SettingsRepository(private val dataStore: DataStore<Preferences>) {
     val enableNSFWMode: Flow<Boolean> = dataStore
         .getOrDefault(key = ENABLE_NSFW_MODE, default = false)
 
-    val hideResultsWithZeroSeeders: Flow<Boolean> = dataStore
-        .getOrDefault(key = HIDE_RESULTS_WITH_ZERO_SEEDERS, default = false)
-
     val searchProviders: Flow<Set<String>> = dataStore
         .getOrDefault(key = SEARCH_PROVIDERS, default = SearchProviders.enabledIds())
+
+    val defaultSortCriteria: Flow<SortCriteria> = dataStore
+        .getMapOrDefault(
+            key = DEFAULT_SORT_CRITERIA,
+            map = SortCriteria::valueOf,
+            default = SortCriteria.Default,
+        )
+
+    val defaultSortOrder: Flow<SortOrder> = dataStore
+        .getMapOrDefault(
+            key = DEFAULT_SORT_ORDER,
+            map = SortOrder::valueOf,
+            default = SortOrder.Default,
+        )
+
+    val hideResultsWithZeroSeeders: Flow<Boolean> = dataStore
+        .getOrDefault(key = HIDE_RESULTS_WITH_ZERO_SEEDERS, default = false)
 
     val maxNumResults: Flow<MaxNumResults> = dataStore
         .getMapOrDefault(
@@ -95,12 +111,20 @@ class SettingsRepository(private val dataStore: DataStore<Preferences>) {
         dataStore.setOrUpdate(key = ENABLE_NSFW_MODE, value = enable)
     }
 
-    suspend fun updateHideResultsWithZeroSeeders(enable: Boolean) {
-        dataStore.setOrUpdate(key = HIDE_RESULTS_WITH_ZERO_SEEDERS, value = enable)
-    }
-
     suspend fun updateSearchProviders(providers: Set<SearchProviderId>) {
         dataStore.setOrUpdate(key = SEARCH_PROVIDERS, value = providers)
+    }
+
+    suspend fun updateDefaultSortCriteria(sortCriteria: SortCriteria) {
+        dataStore.setOrUpdate(key = DEFAULT_SORT_CRITERIA, value = sortCriteria.name)
+    }
+
+    suspend fun updateDefaultSortOrder(sortOrder: SortOrder) {
+        dataStore.setOrUpdate(key = DEFAULT_SORT_ORDER, value = sortOrder.name)
+    }
+
+    suspend fun updateHideResultsWithZeroSeeders(enable: Boolean) {
+        dataStore.setOrUpdate(key = HIDE_RESULTS_WITH_ZERO_SEEDERS, value = enable)
     }
 
     suspend fun updateMaxNumResults(maxNumResults: MaxNumResults) {
@@ -126,8 +150,10 @@ class SettingsRepository(private val dataStore: DataStore<Preferences>) {
         val ENABLE_NSFW_MODE = booleanPreferencesKey("enable_nsfw_mode")
 
         // Search keys.
-        val HIDE_RESULTS_WITH_ZERO_SEEDERS = booleanPreferencesKey("hide_results_with_zero_seeders")
         val SEARCH_PROVIDERS = stringSetPreferencesKey("search_providers")
+        val DEFAULT_SORT_CRITERIA = stringPreferencesKey("default_sort_criteria")
+        val DEFAULT_SORT_ORDER = stringPreferencesKey("default_sort_order")
+        val HIDE_RESULTS_WITH_ZERO_SEEDERS = booleanPreferencesKey("hide_results_with_zero_seeders")
         val MAX_NUM_RESULTS = intPreferencesKey("max_num_results")
 
         // Search history.

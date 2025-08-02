@@ -8,6 +8,8 @@ import com.prajwalch.torrentsearch.data.DarkTheme
 import com.prajwalch.torrentsearch.data.MaxNumResults
 import com.prajwalch.torrentsearch.data.SearchHistoryRepository
 import com.prajwalch.torrentsearch.data.SettingsRepository
+import com.prajwalch.torrentsearch.domain.SortCriteria
+import com.prajwalch.torrentsearch.domain.SortOrder
 import com.prajwalch.torrentsearch.models.Category
 import com.prajwalch.torrentsearch.providers.SearchProviderId
 import com.prajwalch.torrentsearch.providers.SearchProviderSafetyStatus
@@ -33,11 +35,17 @@ data class GeneralSettingsUiState(
 
 /** State for the search settings. */
 data class SearchSettingsUiState(
-    val hideResultsWithZeroSeeders: Boolean = false,
     val searchProviders: List<SearchProviderUiState> = emptyList(),
+    val defaultSortOptions: DefaultSortOptions = DefaultSortOptions(),
+    val hideResultsWithZeroSeeders: Boolean = false,
+    val maxNumResults: MaxNumResults = MaxNumResults.Unlimited,
     val totalSearchProviders: Int = SearchProviders.infos().size,
     val enabledSearchProviders: Int = 0,
-    val maxNumResults: MaxNumResults = MaxNumResults.Unlimited,
+)
+
+data class DefaultSortOptions(
+    val sortCriteria: SortCriteria = SortCriteria.Default,
+    val sortOrder: SortOrder = SortOrder.Default,
 )
 
 /** State for the search history settings. */
@@ -104,15 +112,21 @@ class SettingsViewModel(
     )
 
     val searchSettingsUiState = combine(
+        settingsRepository.defaultSortCriteria,
+        settingsRepository.defaultSortOrder,
         settingsRepository.hideResultsWithZeroSeeders,
         settingsRepository.maxNumResults,
-    ) { hideResultsWithZeroSeeders, maxNumResults ->
+    ) { defaultSortCriteria, defaultSortOrder, hideResultsWithZeroSeeders, maxNumResults ->
         SearchSettingsUiState(
-            hideResultsWithZeroSeeders = hideResultsWithZeroSeeders,
             searchProviders = allSearchProvidersToUiStates(),
+            defaultSortOptions = DefaultSortOptions(
+                sortCriteria = defaultSortCriteria,
+                sortOrder = defaultSortOrder,
+            ),
+            hideResultsWithZeroSeeders = hideResultsWithZeroSeeders,
+            maxNumResults = maxNumResults,
             totalSearchProviders = allSearchProviders.size,
             enabledSearchProviders = enabledSearchProviders.value.size,
-            maxNumResults = maxNumResults,
         )
     }.stateIn(
         scope = viewModelScope,
@@ -189,13 +203,6 @@ class SettingsViewModel(
         }
     }
 
-    /** Enables/disables an option to hide zero seeders. */
-    fun updateHideResultsWithZeroSeeders(enable: Boolean) {
-        viewModelScope.launch {
-            settingsRepository.updateHideResultsWithZeroSeeders(enable)
-        }
-    }
-
     /** Enables/disables search provider associated with given id. */
     fun enableSearchProvider(providerId: SearchProviderId, enable: Boolean) {
         val updatedSearchProviders = if (enable) {
@@ -228,6 +235,27 @@ class SettingsViewModel(
     fun resetSearchProvidersToDefault() {
         viewModelScope.launch {
             settingsRepository.updateSearchProviders(providers = SearchProviders.enabledIds())
+        }
+    }
+
+    /** Changes the default sort criteria. */
+    fun updateDefaultSortCriteria(sortCriteria: SortCriteria) {
+        viewModelScope.launch {
+            settingsRepository.updateDefaultSortCriteria(sortCriteria = sortCriteria)
+        }
+    }
+
+    /** Changes the default sort order. */
+    fun updateDefaultSortOrder(sortOrder: SortOrder) {
+        viewModelScope.launch {
+            settingsRepository.updateDefaultSortOrder(sortOrder = sortOrder)
+        }
+    }
+
+    /** Enables/disables an option to hide zero seeders. */
+    fun updateHideResultsWithZeroSeeders(enable: Boolean) {
+        viewModelScope.launch {
+            settingsRepository.updateHideResultsWithZeroSeeders(enable)
         }
     }
 
