@@ -13,9 +13,9 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.JsonObject
 
-class ThePirateBay(val id: String) : SearchProvider {
+class ThePirateBay : SearchProvider {
     override val info = SearchProviderInfo(
-        id = id,
+        id = "thepiratebay",
         name = "ThePirateBay",
         url = "https://thepiratebay.org",
         safetyStatus = SearchProviderSafetyStatus.Unsafe(

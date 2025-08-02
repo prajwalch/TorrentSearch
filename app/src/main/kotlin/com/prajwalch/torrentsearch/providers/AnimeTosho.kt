@@ -18,9 +18,9 @@ import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.util.Locale
 
-class AnimeTosho(val id: SearchProviderId) : SearchProvider {
+class AnimeTosho : SearchProvider {
     override val info = SearchProviderInfo(
-        id = id,
+        id = "animetosho",
         name = "AnimeTosho",
         url = "https://animetosho.org",
         specializedCategory = Category.Anime,

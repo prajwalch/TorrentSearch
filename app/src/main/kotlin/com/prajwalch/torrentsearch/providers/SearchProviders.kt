@@ -4,21 +4,21 @@ package com.prajwalch.torrentsearch.providers
 object SearchProviders {
     /** List of providers which are enabled by default. */
     private val ENABLED_BY_DEFAULT = setOf(
-        Eztv(id = "p1"),
-        Knaben(id = "p2"),
-        Nyaa(id = "p3"),
-        TorrentsCsv(id = "p4"),
-        Yts(id = "p5"),
+        Eztv(),
+        Knaben(),
+        Nyaa(),
+        TorrentsCsv(),
+        Yts(),
     )
 
     /** List of providers which are disabled by default. */
     private val DISABLED_BY_DEFAULT = setOf(
-        AnimeTosho(id = "p6"),
-        LimeTorrents(id = "p7"),
-        MyPornClub(id = "p8"),
-        ThePirateBay(id = "p9"),
-        TheRarBg(id = "p10"),
-        UIndex(id = "uindex"),
+        AnimeTosho(),
+        LimeTorrents(),
+        MyPornClub(),
+        ThePirateBay(),
+        TheRarBg(),
+        UIndex(),
     )
 
     /** List of all providers. */

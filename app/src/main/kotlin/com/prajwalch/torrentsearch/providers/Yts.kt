@@ -15,9 +15,9 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.JsonObject
 
-class Yts(val id: SearchProviderId) : SearchProvider {
+class Yts : SearchProvider {
     override val info = SearchProviderInfo(
-        id = id,
+        id = "ytsmx",
         name = "Yts",
         url = "https://yts.mx",
         specializedCategory = Category.Movies,

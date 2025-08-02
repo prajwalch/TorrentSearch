@@ -14,9 +14,9 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.JsonObject
 
-class TorrentsCsv(val id: SearchProviderId) : SearchProvider {
+class TorrentsCsv : SearchProvider {
     override val info = SearchProviderInfo(
-        id = id,
+        id = "torrentscsv",
         name = "TorrentsCSV",
         url = "https://torrents-csv.com",
         safetyStatus = SearchProviderSafetyStatus.Safe,

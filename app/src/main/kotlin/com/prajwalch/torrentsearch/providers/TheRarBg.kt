@@ -36,9 +36,9 @@ private data class TableRowParsedResult(
     val category: String,
 )
 
-class TheRarBg(val id: SearchProviderId) : SearchProvider {
+class TheRarBg : SearchProvider {
     override val info = SearchProviderInfo(
-        id = id,
+        id = "therarbag",
         name = "TheRarBg",
         url = "https://therarbg.com",
         safetyStatus = SearchProviderSafetyStatus.Unsafe(

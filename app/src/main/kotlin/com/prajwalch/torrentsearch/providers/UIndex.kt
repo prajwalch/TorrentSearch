@@ -10,9 +10,9 @@ import kotlinx.coroutines.withContext
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Element
 
-class UIndex(val id: SearchProviderId) : SearchProvider {
+class UIndex : SearchProvider {
     override val info = SearchProviderInfo(
-        id = id,
+        id = "uindex",
         name = "UIndex",
         url = "https://uindex.org",
         safetyStatus = SearchProviderSafetyStatus.Safe,

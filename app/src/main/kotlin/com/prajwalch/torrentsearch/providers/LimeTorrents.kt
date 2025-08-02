@@ -16,9 +16,9 @@ import org.jsoup.nodes.Element
  * Extracts torrent results from the HTML search page.
  * This provider uses InfoHash, not Magnet URIs.
  */
-class LimeTorrents(val id: SearchProviderId) : SearchProvider {
+class LimeTorrents : SearchProvider {
     override val info = SearchProviderInfo(
-        id = id,
+        id = "limetorrents",
         name = "LimeTorrents",
         url = "https://limetorrents.lol",
         safetyStatus = SearchProviderSafetyStatus.Unsafe(

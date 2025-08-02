@@ -10,9 +10,9 @@ import kotlinx.coroutines.withContext
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Element
 
-class MyPornClub(val id: SearchProviderId) : SearchProvider {
+class MyPornClub : SearchProvider {
     override val info = SearchProviderInfo(
-        id = id,
+        id = "mypornclub",
         name = "MyPornClub",
         url = "https://myporn.club",
         specializedCategory = Category.Porn,

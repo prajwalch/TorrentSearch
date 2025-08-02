@@ -11,9 +11,9 @@ import kotlinx.coroutines.withContext
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Element
 
-class Nyaa(val id: SearchProviderId) : SearchProvider {
+class Nyaa : SearchProvider {
     override val info = SearchProviderInfo(
-        id = id,
+        id = "nyaasi",
         name = "Nyaa",
         url = "https://nyaa.si",
         specializedCategory = Category.Anime,

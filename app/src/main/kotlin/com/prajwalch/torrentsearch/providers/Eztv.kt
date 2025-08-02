@@ -10,9 +10,9 @@ import kotlinx.coroutines.withContext
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Element
 
-class Eztv(val id: String) : SearchProvider {
+class Eztv : SearchProvider {
     override val info = SearchProviderInfo(
-        id = id,
+        id = "eztvx",
         name = "Eztv",
         url = "https://eztvx.to",
         specializedCategory = Category.Series,

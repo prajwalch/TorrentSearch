@@ -28,9 +28,9 @@ import java.util.Locale
  * Provider implementation using the official [Knaben API](https://knaben.org/api/v1).
  * Returns magnet-based torrents.
  */
-class Knaben(val id: SearchProviderId) : SearchProvider {
+class Knaben : SearchProvider {
     override val info = SearchProviderInfo(
-        id = id,
+        id = "knaben",
         name = "Knaben",
         url = "https://knaben.org",
         safetyStatus = SearchProviderSafetyStatus.Safe,
