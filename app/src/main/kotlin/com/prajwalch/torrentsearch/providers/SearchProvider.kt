@@ -4,9 +4,6 @@ import com.prajwalch.torrentsearch.models.Category
 import com.prajwalch.torrentsearch.models.Torrent
 import com.prajwalch.torrentsearch.network.HttpClient
 
-/** Unique identifier of the provider. */
-typealias SearchProviderId = String
-
 /**
  * A search provider is responsible for initiating the search for the given
  * query, parsing the response and then returning structured result.
@@ -28,12 +25,15 @@ data class SearchProviderInfo(
     /** URL of the search provider. */
     val url: String,
     /** Category in which the provider specializes. */
-    val specializedCategory: Category = Category.All,
+    val specializedCategory: Category,
     /** Safety status of the search provider */
     val safetyStatus: SearchProviderSafetyStatus,
     /** Default state of the provider. */
     val enabled: Boolean,
 )
+
+/** Unique identifier of the provider. */
+typealias SearchProviderId = String
 
 /** How safe is the search provider?. */
 sealed class SearchProviderSafetyStatus {

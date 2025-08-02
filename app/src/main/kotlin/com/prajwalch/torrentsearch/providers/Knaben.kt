@@ -33,6 +33,7 @@ class Knaben : SearchProvider {
         id = "knaben",
         name = "Knaben",
         url = "https://knaben.org",
+        specializedCategory = Category.All,
         safetyStatus = SearchProviderSafetyStatus.Safe,
         enabled = true,
     )

@@ -21,6 +21,7 @@ class LimeTorrents : SearchProvider {
         id = "limetorrents",
         name = "LimeTorrents",
         url = "https://limetorrents.lol",
+        specializedCategory = Category.All,
         safetyStatus = SearchProviderSafetyStatus.Unsafe(
             reason = "Doesn't respect category selection at all."
         ),

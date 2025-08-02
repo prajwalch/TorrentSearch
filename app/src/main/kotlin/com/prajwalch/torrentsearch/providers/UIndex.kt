@@ -15,6 +15,7 @@ class UIndex : SearchProvider {
         id = "uindex",
         name = "UIndex",
         url = "https://uindex.org",
+        specializedCategory = Category.All,
         safetyStatus = SearchProviderSafetyStatus.Safe,
         enabled = false,
     )
