@@ -48,11 +48,17 @@ class TorrentsRepository(
         category: Category,
         providers: List<SearchProvider>,
     ): TorrentsRepositoryResult {
+        val searchProviders = chooseSearchProviders(providers = providers, category = category)
+
+        if (searchProviders.isEmpty()) {
+            return TorrentsRepositoryResult()
+        }
+
         val query = query.replace(' ', '+').trim()
         val context = SearchContext(category = category, httpClient = httpClient)
 
         return supervisorScope {
-            val results = chooseSearchProviders(providers = providers, category = category)
+            val results = searchProviders
                 .map { async(Dispatchers.IO) { it.search(query = query, context = context) } }
                 .map { httpClient.withExceptionHandler { it.await() } }
 
