@@ -60,7 +60,7 @@ fun SearchProvidersScreen(
                 onNavigateBack = onNavigateBack,
                 onEnableAllSearchProviders = viewModel::enableAllSearchProviders,
                 onDisableAllSearchProviders = viewModel::disableAllSearchProviders,
-                onResetToDefault = viewModel::resetSearchProvidersToDefault,
+                onResetToDefault = viewModel::resetEnabledSearchProvidersToDefault,
             )
         }
     ) { innerPadding ->

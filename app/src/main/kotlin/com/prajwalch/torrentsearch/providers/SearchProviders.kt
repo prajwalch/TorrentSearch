@@ -21,24 +21,22 @@ object SearchProviders {
         Yts(),
     )
 
-    /**
-     * Returns a list containing instance of search provider associated with
-     * the given ids.
-     */
-    fun get(ids: Set<SearchProviderId>): List<SearchProvider> {
-        return all.filter { ids.contains(it.info.id) }
-    }
+    /** Returns a list containing the info of all search providers. */
+    fun allInfo(): List<SearchProviderInfo> = all.map { it.info }
+
+    /** Returns the count of search providers. */
+    fun count(): Int = all.size
 
     /**
-     * Returns a list containing the id of search providers which are enabled
+     * Returns a set containing the ID of search providers that are enabled
      * by default.
      */
-    fun enabledIds(): Set<SearchProviderId> {
-        return all.filter { it.info.enabled }.map { it.info.id }.toSet()
-    }
+    fun defaultEnabledIds(): Set<SearchProviderId> =
+        all.filter { it.info.enabled }.map { it.info.id }.toSet()
 
-    /** Returns a list containing info of all search providers. */
-    fun infos(): List<SearchProviderInfo> {
-        return all.map { it.info }
-    }
+    /**
+     * Returns a list of search providers matching the specified IDs.
+     */
+    fun findByIds(ids: Set<SearchProviderId>): List<SearchProvider> =
+        all.filter { it.info.id in ids }
 }

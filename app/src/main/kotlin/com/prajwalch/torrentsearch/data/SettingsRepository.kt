@@ -58,8 +58,11 @@ class SettingsRepository(private val dataStore: DataStore<Preferences>) {
     val enableNSFWMode: Flow<Boolean> = dataStore
         .getOrDefault(key = ENABLE_NSFW_MODE, default = false)
 
-    val searchProviders: Flow<Set<String>> = dataStore
-        .getOrDefault(key = SEARCH_PROVIDERS, default = SearchProviders.enabledIds())
+    val enabledSearchProvidersId: Flow<Set<SearchProviderId>> = dataStore
+        .getOrDefault(
+            key = ENABLED_SEARCH_PROVIDERS_ID,
+            default = SearchProviders.defaultEnabledIds(),
+        )
 
     val defaultSortCriteria: Flow<SortCriteria> = dataStore
         .getMapOrDefault(
@@ -111,8 +114,8 @@ class SettingsRepository(private val dataStore: DataStore<Preferences>) {
         dataStore.setOrUpdate(key = ENABLE_NSFW_MODE, value = enable)
     }
 
-    suspend fun updateSearchProviders(providers: Set<SearchProviderId>) {
-        dataStore.setOrUpdate(key = SEARCH_PROVIDERS, value = providers)
+    suspend fun updateEnabledSearchProvidersId(providersId: Set<SearchProviderId>) {
+        dataStore.setOrUpdate(key = ENABLED_SEARCH_PROVIDERS_ID, value = providersId)
     }
 
     suspend fun updateDefaultSortCriteria(sortCriteria: SortCriteria) {
@@ -150,7 +153,7 @@ class SettingsRepository(private val dataStore: DataStore<Preferences>) {
         val ENABLE_NSFW_MODE = booleanPreferencesKey("enable_nsfw_mode")
 
         // Search keys.
-        val SEARCH_PROVIDERS = stringSetPreferencesKey("search_providers")
+        val ENABLED_SEARCH_PROVIDERS_ID = stringSetPreferencesKey("enabled_search_providers_id")
         val DEFAULT_SORT_CRITERIA = stringPreferencesKey("default_sort_criteria")
         val DEFAULT_SORT_ORDER = stringPreferencesKey("default_sort_order")
         val HIDE_RESULTS_WITH_ZERO_SEEDERS = booleanPreferencesKey("hide_results_with_zero_seeders")

@@ -62,8 +62,8 @@ data class SearchHistoryUiState(val id: SearchHistoryId, val query: String) {
 /** Relevant settings for the Search screen. */
 private data class SearchSettings(
     val enableNSFWMode: Boolean = false,
+    val enabledSearchProvidersId: Set<SearchProviderId> = emptySet(),
     val hideResultsWithZeroSeeders: Boolean = false,
-    val searchProviders: Set<SearchProviderId> = emptySet(),
     val maxNumResults: MaxNumResults = MaxNumResults.Unlimited,
     val saveSearchHistory: Boolean = true,
 )
@@ -92,8 +92,8 @@ class SearchViewModel(
      */
     private val settings = combine(
         settingsRepository.enableNSFWMode,
+        settingsRepository.enabledSearchProvidersId,
         settingsRepository.hideResultsWithZeroSeeders,
-        settingsRepository.searchProviders,
         settingsRepository.maxNumResults,
         settingsRepository.saveSearchHistory,
         ::SearchSettings
@@ -192,7 +192,10 @@ class SearchViewModel(
 
     /** Sorts and updates the UI state according to given criteria and order. */
     fun sortResults(criteria: SortCriteria, order: SortOrder) {
-        val sortedResults = _uiState.value.results.customSort(criteria = criteria, order = order)
+        val sortedResults = _uiState.value.results.customSort(
+            criteria = criteria,
+            order = order,
+        )
         _uiState.update {
             it.copy(
                 results = sortedResults,
@@ -238,7 +241,9 @@ class SearchViewModel(
             }
 
             // Acquire the enabled providers.
-            val searchProviders = SearchProviders.get(settings.value.searchProviders)
+            val searchProviders = SearchProviders.findByIds(
+                ids = settings.value.enabledSearchProvidersId,
+            )
             // Perform the search using them.
             val torrentsRepositoryResult = torrentsRepository.search(
                 query = _uiState.value.query,
@@ -349,7 +354,7 @@ class SearchViewModel(
     ): List<Torrent> {
         val generalFilteredResults = results
             .filter { torrent -> !settings.hideResultsWithZeroSeeders || torrent.seeders != 0u }
-            .filter { torrent -> settings.searchProviders.contains(torrent.providerId) }
+            .filter { torrent -> settings.enabledSearchProvidersId.contains(torrent.providerId) }
 
         val results = if (settings.enableNSFWMode) {
             generalFilteredResults
