@@ -32,50 +32,34 @@ import com.prajwalch.torrentsearch.data.SortCriteria
 import com.prajwalch.torrentsearch.data.SortOrder
 
 @Composable
-fun SortButtonAndMenu(
+fun SortMenu(
     currentSortCriteria: SortCriteria,
     currentSortOrder: SortOrder,
     onSortRequest: (SortCriteria, SortOrder) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    var showMenu by remember(currentSortCriteria) { mutableStateOf(false) }
+    var showSortCriteriaDropdownMenu by remember(currentSortCriteria) {
+        mutableStateOf(false)
+    }
 
     Box(modifier = modifier) {
-        SortButton(
-            onClick = { showMenu = true },
-            currentSortCriteria = currentSortCriteria,
-            currentSortOrder = currentSortOrder,
-            onSortOrderChange = { onSortRequest(currentSortCriteria, it) },
-        )
-        SortOptionsMenu(
-            expanded = showMenu,
-            onDismissRequest = { showMenu = false },
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            SortCriteriaButton(
+                onClick = { showSortCriteriaDropdownMenu = true },
+                currentCriteria = currentSortCriteria,
+            )
+            SortOrderButton(
+                onClick = {
+                    onSortRequest(currentSortCriteria, currentSortOrder.opposite())
+                },
+                currentOrder = currentSortOrder,
+            )
+        }
+        SortCriteriaDropdownMenu(
+            expanded = showSortCriteriaDropdownMenu,
+            onDismissRequest = { showSortCriteriaDropdownMenu = false },
             selectedSortCriteria = currentSortCriteria,
             onSortCriteriaChange = { onSortRequest(it, currentSortOrder) },
-        )
-    }
-}
-
-
-@Composable
-fun SortButton(
-    onClick: () -> Unit,
-    currentSortCriteria: SortCriteria,
-    currentSortOrder: SortOrder,
-    onSortOrderChange: (SortOrder) -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    Row(
-        modifier = modifier,
-        verticalAlignment = Alignment.Companion.CenterVertically,
-    ) {
-        SortCriteriaButton(
-            onClick = onClick,
-            currentCriteria = currentSortCriteria,
-        )
-        SortOrderIconButton(
-            onClick = { onSortOrderChange(currentSortOrder.opposite()) },
-            currentOrder = currentSortOrder,
         )
     }
 }
@@ -101,7 +85,7 @@ private fun SortCriteriaButton(
 }
 
 @Composable
-private fun SortOrderIconButton(
+private fun SortOrderButton(
     onClick: () -> Unit,
     currentOrder: SortOrder,
     modifier: Modifier = Modifier,
@@ -126,7 +110,7 @@ private fun SortOrderIconButton(
 }
 
 @Composable
-fun SortOptionsMenu(
+private fun SortCriteriaDropdownMenu(
     expanded: Boolean,
     onDismissRequest: () -> Unit,
     selectedSortCriteria: SortCriteria,

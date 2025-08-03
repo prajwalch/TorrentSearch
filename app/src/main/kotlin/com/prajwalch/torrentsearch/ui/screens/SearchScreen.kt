@@ -57,7 +57,7 @@ import com.prajwalch.torrentsearch.ui.components.NoInternetConnectionMessage
 import com.prajwalch.torrentsearch.ui.components.ResultsNotFoundMessage
 import com.prajwalch.torrentsearch.ui.components.ScrollToTopFAB
 import com.prajwalch.torrentsearch.ui.components.SearchHistoryList
-import com.prajwalch.torrentsearch.ui.components.SortButtonAndMenu
+import com.prajwalch.torrentsearch.ui.components.SortMenu
 import com.prajwalch.torrentsearch.ui.components.TopSearchBar
 import com.prajwalch.torrentsearch.ui.components.TorrentList
 import com.prajwalch.torrentsearch.ui.viewmodel.SearchHistoryId
@@ -341,7 +341,7 @@ private fun SearchScreenContent(
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                             style = MaterialTheme.typography.bodyMedium,
                         )
-                        SortButtonAndMenu(
+                        SortMenu(
                             currentSortCriteria = currentSortCriteria,
                             currentSortOrder = currentSortOrder,
                             onSortRequest = onSortResults,
