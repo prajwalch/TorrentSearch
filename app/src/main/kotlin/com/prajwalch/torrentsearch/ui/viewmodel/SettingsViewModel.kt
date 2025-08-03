@@ -144,18 +144,17 @@ class SettingsViewModel(
     )
 
     /** Converts list of search providers info to list of UI states. */
-    private fun allSearchProvidersInfoToUiStates(): List<SearchProviderUiState> {
-        return allSearchProvidersInfo.map { info ->
+    private fun allSearchProvidersInfoToUiStates() =
+        allSearchProvidersInfo.map {
             SearchProviderUiState(
-                id = info.id,
-                name = info.name,
-                url = info.url.removePrefix("https://"),
-                specializedCategory = info.specializedCategory,
-                safetyStatus = info.safetyStatus,
-                enabled = enabledSearchProvidersId.value.contains(info.id)
+                id = it.id,
+                name = it.name,
+                url = it.url.removePrefix("https://"),
+                specializedCategory = it.specializedCategory,
+                safetyStatus = it.safetyStatus,
+                enabled = it.id in enabledSearchProvidersId.value
             )
         }
-    }
 
     /** Enables/disables dynamic theme. */
     fun enableDynamicTheme(enable: Boolean) {
@@ -196,7 +195,7 @@ class SettingsViewModel(
     /** Disables NSFW and Unsafe search providers which are currently enabled. */
     private suspend fun disableRestrictedSearchProviders() {
         val newEnabledSearchProvidersId = allSearchProvidersInfo
-            .filter { enabledSearchProvidersId.value.contains(it.id) }
+            .filter { it.id in enabledSearchProvidersId.value }
             .filter { !it.specializedCategory.isNSFW && !it.safetyStatus.isUnsafe() }
             .map { it.id }
             .toSet()
