@@ -1,6 +1,6 @@
 package com.prajwalch.torrentsearch.data
 
-import com.prajwalch.torrentsearch.database.BookmarkedTorrentDao
+import com.prajwalch.torrentsearch.database.dao.BookmarkedTorrentDao
 import com.prajwalch.torrentsearch.database.entities.BookmarkedTorrent
 import com.prajwalch.torrentsearch.models.Category
 import com.prajwalch.torrentsearch.models.InfoHashOrMagnetUri

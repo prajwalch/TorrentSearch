@@ -1,4 +1,4 @@
-package com.prajwalch.torrentsearch.database
+package com.prajwalch.torrentsearch.database.dao
 
 import androidx.room.Dao
 import androidx.room.Delete

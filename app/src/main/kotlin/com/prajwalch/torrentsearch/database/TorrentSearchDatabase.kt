@@ -5,8 +5,10 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
-import com.prajwalch.torrentsearch.database.entities.BookmarkedTorrent
 
+import com.prajwalch.torrentsearch.database.dao.BookmarkedTorrentDao
+import com.prajwalch.torrentsearch.database.dao.SearchHistoryDao
+import com.prajwalch.torrentsearch.database.entities.BookmarkedTorrent
 import com.prajwalch.torrentsearch.database.entities.SearchHistory
 
 /** Application database. */
