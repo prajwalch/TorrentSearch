@@ -144,7 +144,7 @@ class SearchViewModel(
     /** Loads the default category and updates the UI state. */
     private fun loadDefaultCategory() = viewModelScope.launch {
         settingsRepository.defaultCategory.firstOrNull()?.let { category ->
-            val selectedCategory = if (_uiState.value.categories.contains(category)) {
+            val selectedCategory = if (category in _uiState.value.categories) {
                 category
             } else {
                 Category.All
@@ -320,7 +320,7 @@ class SearchViewModel(
         val categories = Category.entries.filter { settings.enableNSFWMode || !it.isNSFW }
         // Change the currently selected category to 'All' only if needed.
         val currentlySelectedCategory = _uiState.value.selectedCategory
-        val selectedCategory = if (categories.contains(currentlySelectedCategory)) {
+        val selectedCategory = if (currentlySelectedCategory in categories) {
             currentlySelectedCategory
         } else {
             Category.All
@@ -354,8 +354,8 @@ class SearchViewModel(
     ): List<Torrent> {
         val filteredResults = results
             .filterNSFW(isNSFWModeEnabled = settings.enableNSFWMode)
-            .filter { torrent -> settings.enabledSearchProvidersId.contains(torrent.providerId) }
-            .filter { torrent -> !settings.hideResultsWithZeroSeeders || torrent.seeders != 0u }
+            .filter { it.providerId in settings.enabledSearchProvidersId }
+            .filter { !settings.hideResultsWithZeroSeeders || it.seeders != 0u }
 
         return when {
             settings.maxNumResults.isUnlimited() -> filteredResults
