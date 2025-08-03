@@ -158,30 +158,38 @@ class SettingsViewModel(
     }
 
     /** Enables/disables dynamic theme. */
-    fun updateEnableDynamicTheme(enable: Boolean) {
-        viewModelScope.launch { settingsRepository.updateEnableDynamicTheme(enable) }
+    fun enableDynamicTheme(enable: Boolean) {
+        viewModelScope.launch {
+            settingsRepository.updateEnableDynamicTheme(enable = enable)
+        }
     }
 
     /** Changes the dark theme mode. */
-    fun updateDarkTheme(darkTheme: DarkTheme) {
-        viewModelScope.launch { settingsRepository.updateDarkTheme(darkTheme) }
+    fun changeDarkTheme(darkTheme: DarkTheme) {
+        viewModelScope.launch {
+            settingsRepository.updateDarkTheme(darkTheme = darkTheme)
+        }
     }
 
     /** Enables/disables pure black mode. */
-    fun updatePureBlack(enable: Boolean) {
-        viewModelScope.launch { settingsRepository.updatePureBlack(enable) }
+    fun enablePureBlackTheme(enable: Boolean) {
+        viewModelScope.launch {
+            settingsRepository.updatePureBlack(enable = enable)
+        }
     }
 
     /** Changes the default category to given one. */
-    fun updateDefaultCategory(category: Category) {
-        viewModelScope.launch { settingsRepository.updateDefaultCategory(category) }
+    fun changeDefaultCategory(category: Category) {
+        viewModelScope.launch {
+            settingsRepository.updateDefaultCategory(category = category)
+        }
     }
 
     /** Enables/disables NSFW mode. */
-    fun updateEnableNSFWMode(enabled: Boolean) {
+    fun enableNSFWMode(enable: Boolean) {
         viewModelScope.launch {
-            settingsRepository.updateEnableNSFWMode(enabled)
-            if (!enabled) disableRestrictedSearchProviders()
+            settingsRepository.updateEnableNSFWMode(enable = enable)
+            if (!enable) disableRestrictedSearchProviders()
         }
     }
 
@@ -249,35 +257,37 @@ class SettingsViewModel(
     }
 
     /** Changes the default sort criteria. */
-    fun updateDefaultSortCriteria(sortCriteria: SortCriteria) {
+    fun changeDefaultSortCriteria(sortCriteria: SortCriteria) {
         viewModelScope.launch {
             settingsRepository.updateDefaultSortCriteria(sortCriteria = sortCriteria)
         }
     }
 
     /** Changes the default sort order. */
-    fun updateDefaultSortOrder(sortOrder: SortOrder) {
+    fun changeDefaultSortOrder(sortOrder: SortOrder) {
         viewModelScope.launch {
             settingsRepository.updateDefaultSortOrder(sortOrder = sortOrder)
         }
     }
 
     /** Enables/disables an option to hide zero seeders. */
-    fun updateHideResultsWithZeroSeeders(enable: Boolean) {
+    fun hideResultsWithZeroSeeders(yes: Boolean) {
         viewModelScope.launch {
-            settingsRepository.updateHideResultsWithZeroSeeders(enable)
+            settingsRepository.updateHideResultsWithZeroSeeders(enable = yes)
         }
     }
 
     /** Updates the maximum number of results. */
     fun updateMaxNumResults(maxNumResults: MaxNumResults) {
-        viewModelScope.launch { settingsRepository.updateMaxNumResults(maxNumResults) }
+        viewModelScope.launch {
+            settingsRepository.updateMaxNumResults(maxNumResults = maxNumResults)
+        }
     }
 
     /** Saves/unsaves search history. */
     fun saveSearchHistory(save: Boolean) {
         viewModelScope.launch {
-            settingsRepository.updateSaveSearchHistory(save)
+            settingsRepository.updateSaveSearchHistory(save = save)
         }
     }
 
@@ -296,7 +306,7 @@ class SettingsViewModel(
     }
 
     companion object {
-        /** Provides a factor function for [SettingsViewModel]. */
+        /** Provides a factory function for [SettingsViewModel]. */
         fun provideFactory(
             settingsRepository: SettingsRepository,
             searchHistoryRepository: SearchHistoryRepository,

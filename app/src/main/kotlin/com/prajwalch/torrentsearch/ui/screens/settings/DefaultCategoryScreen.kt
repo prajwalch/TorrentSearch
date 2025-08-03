@@ -45,7 +45,7 @@ fun DefaultCategoryScreen(
         ) {
             items(items = Category.entries, contentType = { it }) { category ->
                 CategoryListItem(
-                    onClick = { viewModel.updateDefaultCategory(category) },
+                    onClick = { viewModel.changeDefaultCategory(category) },
                     selected = category == defaultCategory,
                     name = category.name,
                 )

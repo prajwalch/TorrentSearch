@@ -92,14 +92,14 @@ fun SearchSettings(
         )
         SettingsItem(
             onClick = {
-                viewModel.updateHideResultsWithZeroSeeders(!settings.hideResultsWithZeroSeeders)
+                viewModel.hideResultsWithZeroSeeders(!settings.hideResultsWithZeroSeeders)
             },
             leadingIconId = R.drawable.ic_visibility_off,
             headlineId = R.string.setting_hide_results_with_zero_seeders,
             trailingContent = {
                 Switch(
                     checked = settings.hideResultsWithZeroSeeders,
-                    onCheckedChange = { viewModel.updateHideResultsWithZeroSeeders(it) },
+                    onCheckedChange = { viewModel.hideResultsWithZeroSeeders(it) },
                 )
             },
         )

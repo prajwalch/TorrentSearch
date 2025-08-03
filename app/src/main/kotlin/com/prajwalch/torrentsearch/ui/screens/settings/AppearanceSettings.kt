@@ -44,20 +44,20 @@ fun AppearanceSettings(modifier: Modifier = Modifier) {
         DarkThemeOptionsDialog(
             onDismissRequest = { showDarkThemeDialog = false },
             selectedOption = settings.darkTheme,
-            onOptionSelect = { viewModel.updateDarkTheme(it) },
+            onOptionSelect = { viewModel.changeDarkTheme(it) },
         )
     }
 
     Column(modifier = modifier) {
         SettingsSectionTitle(titleId = R.string.settings_section_appearance)
         SettingsItem(
-            onClick = { viewModel.updateEnableDynamicTheme(!settings.enableDynamicTheme) },
+            onClick = { viewModel.enableDynamicTheme(!settings.enableDynamicTheme) },
             leadingIconId = R.drawable.ic_palette,
             headlineId = R.string.setting_enable_dynamic_theme,
             trailingContent = {
                 Switch(
                     checked = settings.enableDynamicTheme,
-                    onCheckedChange = { viewModel.updateEnableDynamicTheme(it) },
+                    onCheckedChange = { viewModel.enableDynamicTheme(it) },
                 )
             },
         )
@@ -70,13 +70,13 @@ fun AppearanceSettings(modifier: Modifier = Modifier) {
 
         AnimatedVisibility(visible = showPureBlackSetting) {
             SettingsItem(
-                onClick = { viewModel.updatePureBlack(!settings.pureBlack) },
+                onClick = { viewModel.enablePureBlackTheme(!settings.pureBlack) },
                 leadingIconId = R.drawable.ic_contrast,
                 headlineId = R.string.setting_pure_black,
                 trailingContent = {
                     Switch(
                         checked = settings.pureBlack,
-                        onCheckedChange = { viewModel.updatePureBlack(it) },
+                        onCheckedChange = { viewModel.enablePureBlackTheme(it) },
                     )
                 },
             )

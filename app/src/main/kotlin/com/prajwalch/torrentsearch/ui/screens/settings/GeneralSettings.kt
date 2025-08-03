@@ -34,13 +34,13 @@ fun GeneralSettings(onNavigateToDefaultCategory: () -> Unit, modifier: Modifier 
             }
         )
         SettingsItem(
-            onClick = { viewModel.updateEnableNSFWMode(!settings.enableNSFWMode) },
+            onClick = { viewModel.enableNSFWMode(!settings.enableNSFWMode) },
             leadingIconId = R.drawable.ic_18_up_rating,
             headlineId = R.string.setting_enable_nsfw_mode,
             trailingContent = {
                 Switch(
                     checked = settings.enableNSFWMode,
-                    onCheckedChange = { viewModel.updateEnableNSFWMode(it) },
+                    onCheckedChange = { viewModel.enableNSFWMode(it) },
                 )
             },
         )
