@@ -35,8 +35,8 @@
     <string name="button_retry">Retry</string>
     <string name="desc_retry_connection">Retry connection</string>
     <string name="msg_no_results_found">No results found</string>
-    <!-- Empty search placeholder -->
-    <string name="msg_page_empty">Nothing here yet</string>
+    <!-- Empty placeholder -->
+    <string name="msg_nothing_here_yet">Nothing here yet</string>
     <string name="msg_start_searching">Start searching to see results</string>
     <!-- Results toolbar -->
     <string name="hint_results_count">About %1$d results</string>

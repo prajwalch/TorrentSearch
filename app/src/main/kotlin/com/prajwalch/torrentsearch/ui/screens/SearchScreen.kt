@@ -52,9 +52,9 @@ import com.prajwalch.torrentsearch.data.SortOrder
 import com.prajwalch.torrentsearch.models.Category
 import com.prajwalch.torrentsearch.models.Torrent
 import com.prajwalch.torrentsearch.ui.components.CategoryChipsRow
-import com.prajwalch.torrentsearch.ui.components.EmptySearchPlaceholder
-import com.prajwalch.torrentsearch.ui.components.NoInternetConnectionMessage
-import com.prajwalch.torrentsearch.ui.components.ResultsNotFoundMessage
+import com.prajwalch.torrentsearch.ui.components.EmptyPlaceholder
+import com.prajwalch.torrentsearch.ui.components.NoInternetConnection
+import com.prajwalch.torrentsearch.ui.components.ResultsNotFound
 import com.prajwalch.torrentsearch.ui.components.ScrollToTopFAB
 import com.prajwalch.torrentsearch.ui.components.SearchHistoryList
 import com.prajwalch.torrentsearch.ui.components.SortMenu
@@ -319,39 +319,40 @@ private fun SearchScreenContent(
     Column(modifier = modifier, horizontalAlignment = Alignment.CenterHorizontally) {
         when {
             isLoading -> LoadingIndicator(modifier = Modifier.fillMaxSize())
-            isInternetError -> {
-                NoInternetConnectionMessage(
-                    modifier = Modifier.fillMaxSize(),
-                    onRetry = onRetry,
-                )
-            }
+            
+            isInternetError -> NoInternetConnection(
+                modifier = Modifier.fillMaxSize(),
+                onRetry = onRetry,
+            )
 
             resultsNotFound -> {
                 Spacer(modifier = Modifier.height(16.dp))
-                ResultsNotFoundMessage(modifier = Modifier.fillMaxWidth())
+                ResultsNotFound(modifier = Modifier.fillMaxWidth())
             }
 
-            results.isNotEmpty() -> {
-                TorrentList(
-                    torrents = results,
-                    onTorrentSelect = onResultSelect,
-                    toolbarContent = {
-                        Text(
-                            text = stringResource(R.string.hint_results_count, results.size),
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                            style = MaterialTheme.typography.bodyMedium,
-                        )
-                        SortMenu(
-                            currentSortCriteria = currentSortCriteria,
-                            currentSortOrder = currentSortOrder,
-                            onSortRequest = onSortResults,
-                        )
-                    },
-                    lazyListState = lazyListState,
-                )
-            }
+            results.isNotEmpty() -> TorrentList(
+                torrents = results,
+                onTorrentSelect = onResultSelect,
+                toolbarContent = {
+                    Text(
+                        text = stringResource(R.string.hint_results_count, results.size),
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        style = MaterialTheme.typography.bodyMedium,
+                    )
+                    SortMenu(
+                        currentSortCriteria = currentSortCriteria,
+                        currentSortOrder = currentSortOrder,
+                        onSortRequest = onSortResults,
+                    )
+                },
+                lazyListState = lazyListState,
+            )
 
-            else -> EmptySearchPlaceholder(modifier = Modifier.fillMaxSize())
+            else -> EmptyPlaceholder(
+                modifier = Modifier.fillMaxSize(),
+                headlineId = R.string.msg_nothing_here_yet,
+                supportingTextId = R.string.msg_start_searching,
+            )
         }
     }
 }
