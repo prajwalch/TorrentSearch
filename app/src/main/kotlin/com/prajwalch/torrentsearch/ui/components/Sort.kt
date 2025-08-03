@@ -28,8 +28,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 
 import com.prajwalch.torrentsearch.R
-import com.prajwalch.torrentsearch.domain.SortCriteria
-import com.prajwalch.torrentsearch.domain.SortOrder
+import com.prajwalch.torrentsearch.data.SortCriteria
+import com.prajwalch.torrentsearch.data.SortOrder
 
 @Composable
 fun SortButtonAndMenu(

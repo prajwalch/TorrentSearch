@@ -40,12 +40,14 @@ data class Torrent(
     /** Is this torrent bookmarked?. */
     val bookmarked: Boolean = false,
 ) {
+    /** Returns `true` if this torrent is NSFW. */
+    fun isNSFW() = category?.isNSFW ?: true
+
     /** Returns the magnet URI of this torrent. */
     fun magnetUri(): MagnetUri = when (infoHashOrMagnetUri) {
         is InfoHashOrMagnetUri.InfoHash -> createMagnetUri(infoHashOrMagnetUri.hash)
         is InfoHashOrMagnetUri.MagnetUri -> infoHashOrMagnetUri.uri
     }
-
 }
 
 /** Search category. */

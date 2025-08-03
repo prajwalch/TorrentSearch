@@ -86,7 +86,7 @@ fun TorrentSearchApp(
                 }
             },
             onShareDescriptionPageUrl = { onShareDescriptionPageUrl(torrent.descriptionPageUrl) },
-            isNSFW = torrent.category?.isNSFW ?: true,
+            isNSFW = torrent.isNSFW(),
             isBookmarked = torrent.bookmarked,
             hasDescriptionPage = hasDescriptionPage,
         )

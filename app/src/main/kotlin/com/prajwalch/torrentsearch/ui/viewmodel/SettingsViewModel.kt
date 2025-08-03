@@ -8,8 +8,8 @@ import com.prajwalch.torrentsearch.data.DarkTheme
 import com.prajwalch.torrentsearch.data.MaxNumResults
 import com.prajwalch.torrentsearch.data.SearchHistoryRepository
 import com.prajwalch.torrentsearch.data.SettingsRepository
-import com.prajwalch.torrentsearch.domain.SortCriteria
-import com.prajwalch.torrentsearch.domain.SortOrder
+import com.prajwalch.torrentsearch.data.SortCriteria
+import com.prajwalch.torrentsearch.data.SortOrder
 import com.prajwalch.torrentsearch.models.Category
 import com.prajwalch.torrentsearch.providers.SearchProviderId
 import com.prajwalch.torrentsearch.providers.SearchProviderSafetyStatus

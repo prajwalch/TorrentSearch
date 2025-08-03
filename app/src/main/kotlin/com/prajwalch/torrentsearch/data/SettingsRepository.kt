@@ -8,32 +8,12 @@ import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.core.stringSetPreferencesKey
 
-import com.prajwalch.torrentsearch.domain.SortCriteria
-import com.prajwalch.torrentsearch.domain.SortOrder
 import com.prajwalch.torrentsearch.models.Category
 import com.prajwalch.torrentsearch.providers.SearchProviderId
 import com.prajwalch.torrentsearch.providers.SearchProviders
 
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
-
-enum class DarkTheme {
-    On,
-    Off,
-    FollowSystem {
-        override fun toString() = "Follow System"
-    };
-}
-
-data class MaxNumResults(val n: Int) {
-    fun isUnlimited() = n == UNLIMITED_N
-
-    companion object {
-        private const val UNLIMITED_N = -1
-
-        val Unlimited = MaxNumResults(n = UNLIMITED_N)
-    }
-}
 
 class SettingsRepository(private val dataStore: DataStore<Preferences>) {
     val enableDynamicTheme: Flow<Boolean> = dataStore
@@ -165,10 +145,15 @@ class SettingsRepository(private val dataStore: DataStore<Preferences>) {
     }
 }
 
+/** Returns a pre-saved preferences or `default` if it doesn't exist. */
 private fun <T> DataStore<Preferences>.getOrDefault(key: Preferences.Key<T>, default: T): Flow<T> {
     return data.map { preferences -> preferences[key] ?: default }
 }
 
+/**
+ * Returns a pre-saved preferences after applying a function or `default`
+ * if it doesn't exist.
+ */
 private fun <T, U> DataStore<Preferences>.getMapOrDefault(
     key: Preferences.Key<T>,
     map: (T) -> U,
@@ -177,6 +162,60 @@ private fun <T, U> DataStore<Preferences>.getMapOrDefault(
     return data.map { preferences -> preferences[key]?.let(map) ?: default }
 }
 
+/** Sets a preferences or updates if it already exists .*/
 private suspend fun <T> DataStore<Preferences>.setOrUpdate(key: Preferences.Key<T>, value: T) {
     edit { preferences -> preferences[key] = value }
+}
+
+/** Dark theme options. */
+enum class DarkTheme {
+    On,
+    Off,
+    FollowSystem {
+        override fun toString() = "Follow System"
+    };
+}
+
+/** Results sort criteria. */
+enum class SortCriteria {
+    Name,
+    Seeders,
+    Peers,
+    FileSize {
+        override fun toString() = "File size"
+    },
+    Date;
+
+    companion object {
+        /** The default criteria. */
+        val Default = Seeders
+    }
+}
+
+/** Results sort order. */
+enum class SortOrder {
+    Ascending,
+    Descending;
+
+    /** Returns the opposite order. */
+    fun opposite() = when (this) {
+        Ascending -> Descending
+        Descending -> Ascending
+    }
+
+    companion object {
+        /** The default sort order. */
+        val Default = Descending
+    }
+}
+
+/** Defines maximum number of results to be shown. */
+data class MaxNumResults(val n: Int) {
+    fun isUnlimited() = n == UNLIMITED_N
+
+    companion object {
+        private const val UNLIMITED_N = -1
+
+        val Unlimited = MaxNumResults(n = UNLIMITED_N)
+    }
 }

@@ -3,13 +3,13 @@ package com.prajwalch.torrentsearch.ui.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
-import com.prajwalch.torrentsearch.data.SettingsRepository
 
+import com.prajwalch.torrentsearch.data.SettingsRepository
+import com.prajwalch.torrentsearch.data.SortCriteria
+import com.prajwalch.torrentsearch.data.SortOrder
 import com.prajwalch.torrentsearch.data.TorrentsRepository
-import com.prajwalch.torrentsearch.domain.FilterNSFWTorrentsUseCase
-import com.prajwalch.torrentsearch.domain.SortCriteria
-import com.prajwalch.torrentsearch.domain.SortOrder
-import com.prajwalch.torrentsearch.domain.SortTorrentsUseCase
+import com.prajwalch.torrentsearch.extensions.customSort
+import com.prajwalch.torrentsearch.extensions.filterNSFW
 import com.prajwalch.torrentsearch.models.Torrent
 
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -54,11 +54,10 @@ class BookmarksViewModel(
     private val bookmarks: StateFlow<List<Torrent>> = torrentsRepository
         .bookmarkedTorrents
         .map { bookmarks ->
-            SortTorrentsUseCase(
-                torrents = bookmarks,
+            bookmarks.customSort(
                 criteria = _uiState.value.currentSortCriteria,
                 order = _uiState.value.currentSortOrder,
-            )()
+            )
         }
         .stateIn(
             scope = viewModelScope,
@@ -77,8 +76,7 @@ class BookmarksViewModel(
      */
     private fun observeBookmarks() = viewModelScope.launch {
         bookmarks.collect { bookmarks ->
-            val nsfwFilteredBookmarks = filterNSFWBookmarks(
-                bookmarks = bookmarks,
+            val nsfwFilteredBookmarks = bookmarks.filterNSFW(
                 isNSFWModeEnabled = enableNSFWMode.value,
             )
             _uiState.update { it.copy(bookmarks = nsfwFilteredBookmarks) }
@@ -88,23 +86,12 @@ class BookmarksViewModel(
     /** Observes the NSFW settings and update the UI accordingly. */
     private fun observeNSFWModeSetting() = viewModelScope.launch {
         enableNSFWMode.collect { enableNSFWMode ->
-            val nsfwFilteredBookmarks = filterNSFWBookmarks(
-                bookmarks = bookmarks.value,
+            val nsfwFilteredBookmarks = bookmarks.value.filterNSFW(
                 isNSFWModeEnabled = enableNSFWMode,
             )
 
             _uiState.update { it.copy(bookmarks = nsfwFilteredBookmarks) }
         }
-    }
-
-    /** Filters the NSFW bookmarks and returns a new list. */
-    private fun filterNSFWBookmarks(
-        bookmarks: List<Torrent>,
-        isNSFWModeEnabled: Boolean,
-    ): List<Torrent> = if (isNSFWModeEnabled) {
-        bookmarks
-    } else {
-        FilterNSFWTorrentsUseCase(torrents = bookmarks)()
     }
 
     /**
@@ -142,11 +129,10 @@ class BookmarksViewModel(
 
     /** Sorts the current bookmarks. */
     fun sortBookmarks(criteria: SortCriteria, order: SortOrder) {
-        val sortedBookmarks = SortTorrentsUseCase(
-            torrents = _uiState.value.bookmarks,
+        val sortedBookmarks = _uiState.value.bookmarks.customSort(
             criteria = criteria,
             order = order,
-        )()
+        )
 
         _uiState.update {
             it.copy(
