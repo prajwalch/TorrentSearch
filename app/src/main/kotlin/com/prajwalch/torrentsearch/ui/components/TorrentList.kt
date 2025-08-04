@@ -193,7 +193,7 @@ private fun TorrentMetadataInfo(
     seeders: UInt,
     peers: UInt,
     modifier: Modifier = Modifier,
-    contentSpace: Dp = 8.dp,
+    contentSpace: Dp = 4.dp,
 ) {
     Row(
         modifier = modifier,
