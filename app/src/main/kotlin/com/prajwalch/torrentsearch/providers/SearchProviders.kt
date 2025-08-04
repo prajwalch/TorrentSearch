@@ -14,6 +14,7 @@ object SearchProviders {
         LimeTorrents(),
         MyPornClub(),
         Nyaa(),
+        Sukebei(),
         ThePirateBay(),
         TheRarBg(),
         TorrentsCsv(),
