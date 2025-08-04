@@ -29,7 +29,7 @@ data class SearchProviderInfo(
     /** Safety status of the search provider */
     val safetyStatus: SearchProviderSafetyStatus,
     /** Default state of the provider. */
-    val enabled: Boolean,
+    val enabledByDefault: Boolean,
 )
 
 /** Unique identifier of the provider. */

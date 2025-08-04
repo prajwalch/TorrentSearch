@@ -25,7 +25,7 @@ class LimeTorrents : SearchProvider {
         safetyStatus = SearchProviderSafetyStatus.Unsafe(
             reason = "Doesn't respect category selection at all."
         ),
-        enabled = false,
+        enabledByDefault = false,
     )
 
     override suspend fun search(query: String, context: SearchContext): List<Torrent> {

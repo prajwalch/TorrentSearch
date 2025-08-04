@@ -45,7 +45,7 @@ class TheRarBg : SearchProvider {
         safetyStatus = SearchProviderSafetyStatus.Unsafe(
             reason = "Crafted with cunning intent to ensnare unsuspecting users through deliberate deception."
         ),
-        enabled = false,
+        enabledByDefault = false,
     )
 
     override suspend fun search(query: String, context: SearchContext): List<Torrent> {

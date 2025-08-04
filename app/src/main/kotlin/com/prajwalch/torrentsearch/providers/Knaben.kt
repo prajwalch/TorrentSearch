@@ -35,7 +35,7 @@ class Knaben : SearchProvider {
         url = "https://knaben.org",
         specializedCategory = Category.All,
         safetyStatus = SearchProviderSafetyStatus.Safe,
-        enabled = true,
+        enabledByDefault = true,
     )
 
     override suspend fun search(query: String, context: SearchContext): List<Torrent> {

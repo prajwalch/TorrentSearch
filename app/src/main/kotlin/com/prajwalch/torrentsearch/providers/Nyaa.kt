@@ -18,7 +18,7 @@ class Nyaa : SearchProvider {
         url = "https://nyaa.si",
         specializedCategory = Category.Anime,
         safetyStatus = SearchProviderSafetyStatus.Safe,
-        enabled = true,
+        enabledByDefault = true,
     )
 
     override suspend fun search(query: String, context: SearchContext): List<Torrent> {

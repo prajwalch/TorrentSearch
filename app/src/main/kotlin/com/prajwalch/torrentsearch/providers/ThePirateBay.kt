@@ -22,7 +22,7 @@ class ThePirateBay : SearchProvider {
         safetyStatus = SearchProviderSafetyStatus.Unsafe(
             reason = "Terrible regulation, and the calculated injection of insidious malware."
         ),
-        enabled = false,
+        enabledByDefault = false,
     )
 
     override suspend fun search(query: String, context: SearchContext): List<Torrent> {

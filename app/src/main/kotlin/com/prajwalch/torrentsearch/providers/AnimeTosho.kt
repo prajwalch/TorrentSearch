@@ -25,7 +25,7 @@ class AnimeTosho : SearchProvider {
         url = "https://animetosho.org",
         specializedCategory = Category.Anime,
         safetyStatus = SearchProviderSafetyStatus.Safe,
-        enabled = false,
+        enabledByDefault = false,
     )
 
     override suspend fun search(query: String, context: SearchContext): List<Torrent> {

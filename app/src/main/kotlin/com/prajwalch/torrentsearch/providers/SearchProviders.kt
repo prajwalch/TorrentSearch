@@ -33,7 +33,7 @@ object SearchProviders {
      * by default.
      */
     fun defaultEnabledIds(): Set<SearchProviderId> =
-        all.filter { it.info.enabled }.map { it.info.id }.toSet()
+        all.filter { it.info.enabledByDefault }.map { it.info.id }.toSet()
 
     /**
      * Returns a list of search providers matching the specified IDs.

@@ -17,7 +17,7 @@ class UIndex : SearchProvider {
         url = "https://uindex.org",
         specializedCategory = Category.All,
         safetyStatus = SearchProviderSafetyStatus.Safe,
-        enabled = false,
+        enabledByDefault = false,
     )
 
     override suspend fun search(query: String, context: SearchContext): List<Torrent> {

@@ -22,7 +22,7 @@ class TorrentsCsv : SearchProvider {
         url = "https://torrents-csv.com",
         specializedCategory = Category.All,
         safetyStatus = SearchProviderSafetyStatus.Safe,
-        enabled = true,
+        enabledByDefault = true,
     )
 
     override suspend fun search(query: String, context: SearchContext): List<Torrent> {
