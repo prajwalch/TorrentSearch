@@ -201,7 +201,7 @@ private fun TorrentMetadataInfo(
         verticalAlignment = Alignment.CenterVertically,
     ) {
         ListItemLabel(
-            leadingIconId = R.drawable.ic_size_info,
+            leadingIconId = R.drawable.ic_info,
             text = size,
         )
         ListItemLabel(

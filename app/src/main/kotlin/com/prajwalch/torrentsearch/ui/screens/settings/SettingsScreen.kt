@@ -57,6 +57,7 @@ fun SettingsScreen(
                     )
                 }
                 item { SearchHistorySettings(snackbarHostState = snackbarHostState) }
+                item { About() }
             }
         }
     }

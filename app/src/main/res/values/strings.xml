@@ -102,6 +102,11 @@
     <string name="setting_show_search_history_desc">Show search history in search bar</string>
     <string name="setting_clear_search_history">Clear search history</string>
     <string name="hint_search_history_cleared">Search history cleared!</string>
+    <!-- About -->
+    <string name="settings_section_about">About</string>
+    <string name="setting_version">Version</string>
+    <string name="setting_source_code">Source code</string>
+
     <!-- Settings dialog -->
     <string name="settings_dialog_button_cancel">Cancel</string>
     <!-- Settings Screen -->
