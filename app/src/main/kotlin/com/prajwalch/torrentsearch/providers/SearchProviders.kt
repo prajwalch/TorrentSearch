@@ -17,6 +17,7 @@ object SearchProviders {
         Sukebei(),
         ThePirateBay(),
         TheRarBg(),
+        TokyoToshokan(),
         TorrentsCsv(),
         UIndex(),
         Yts(),
