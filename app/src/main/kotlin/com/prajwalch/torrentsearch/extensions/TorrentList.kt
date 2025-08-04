@@ -23,12 +23,12 @@ fun List<Torrent>.customSort(criteria: SortCriteria, order: SortOrder): List<Tor
 }
 
 /**
- * Filters the NSFW torrents if the NSFW mode is enabled otherwise returns
+ * Filters the NSFW torrents if the NSFW mode is not enabled otherwise returns
  * as is.
  */
 fun List<Torrent>.filterNSFW(isNSFWModeEnabled: Boolean) =
     if (isNSFWModeEnabled) {
-        filter { !it.isNSFW() }
-    } else {
         this
+    } else {
+        filter { !it.isNSFW() }
     }
