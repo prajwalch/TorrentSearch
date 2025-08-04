@@ -13,7 +13,7 @@ class TokyoToshokan : SearchProvider {
     override val info = SearchProviderInfo(
         id = "tokyotoshokan",
         name = "TokyoToshokan",
-        url = "https://www.tokyotosho.info",
+        url = "https://tokyotosho.info",
         specializedCategory = Category.Anime,
         safetyStatus = SearchProviderSafetyStatus.Safe,
         enabledByDefault = true,
