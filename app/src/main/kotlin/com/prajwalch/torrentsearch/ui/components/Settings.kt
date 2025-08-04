@@ -21,8 +21,7 @@ import com.prajwalch.torrentsearch.R
 
 @Composable
 fun SettingsSectionTitle(
-    @StringRes
-    titleId: Int,
+    @StringRes titleId: Int,
     modifier: Modifier = Modifier,
     color: Color = MaterialTheme.colorScheme.primary,
     style: TextStyle = MaterialTheme.typography.titleSmall,
@@ -38,10 +37,8 @@ fun SettingsSectionTitle(
 @Composable
 fun SettingsItem(
     onClick: () -> Unit,
-    @DrawableRes
-    leadingIconId: Int,
-    @StringRes
-    headlineId: Int,
+    @DrawableRes leadingIconId: Int,
+    @StringRes headlineId: Int,
     modifier: Modifier = Modifier,
     supportingContent: String? = null,
     trailingContent: @Composable (() -> Unit)? = null,
@@ -65,8 +62,7 @@ fun SettingsItem(
 @Composable
 fun SettingsDialog(
     onDismissRequest: () -> Unit,
-    @StringRes
-    titleId: Int,
+    @StringRes titleId: Int,
     modifier: Modifier = Modifier,
     confirmButton: @Composable (() -> Unit)? = null,
     content: @Composable () -> Unit,

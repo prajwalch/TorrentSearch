@@ -42,8 +42,7 @@ object ListItemLabelDefaults {
 
 @Composable
 fun ListItemLabel(
-    @DrawableRes
-    leadingIconId: Int,
+    @DrawableRes leadingIconId: Int,
     text: String,
     modifier: Modifier = Modifier,
     shape: Shape = ListItemLabelDefaults.shape,
