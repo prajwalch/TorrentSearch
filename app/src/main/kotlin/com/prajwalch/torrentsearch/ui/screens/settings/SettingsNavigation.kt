@@ -7,11 +7,13 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navigation
 
 import com.prajwalch.torrentsearch.ui.screens.Screens
+import com.prajwalch.torrentsearch.ui.viewmodel.SearchProvidersViewModel
 import com.prajwalch.torrentsearch.ui.viewmodel.SettingsViewModel
 
 fun NavGraphBuilder.settingsNavigation(
     navController: NavHostController,
     settingsViewModel: SettingsViewModel,
+    searchProvidersViewModel: SearchProvidersViewModel,
 ) {
     navigation(startDestination = Screens.Settings.MAIN, route = Screens.Settings.ROOT) {
         composable(
@@ -54,7 +56,7 @@ fun NavGraphBuilder.settingsNavigation(
         ) {
             SearchProvidersScreen(
                 onNavigateBack = { navController.navigateUp() },
-                viewModel = settingsViewModel,
+                viewModel = searchProvidersViewModel,
             )
         }
 

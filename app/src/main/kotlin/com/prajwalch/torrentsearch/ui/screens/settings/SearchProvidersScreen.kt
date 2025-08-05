@@ -24,7 +24,6 @@ import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -42,16 +41,15 @@ import com.prajwalch.torrentsearch.models.Category
 import com.prajwalch.torrentsearch.providers.SearchProviderId
 import com.prajwalch.torrentsearch.providers.SearchProviderSafetyStatus
 import com.prajwalch.torrentsearch.ui.viewmodel.SearchProviderUiState
-import com.prajwalch.torrentsearch.ui.viewmodel.SettingsViewModel
+import com.prajwalch.torrentsearch.ui.viewmodel.SearchProvidersViewModel
 
 @Composable
 fun SearchProvidersScreen(
     onNavigateBack: () -> Unit,
-    viewModel: SettingsViewModel,
+    viewModel: SearchProvidersViewModel,
     modifier: Modifier = Modifier,
 ) {
-    val settings by viewModel.searchSettingsUiState.collectAsStateWithLifecycle()
-    val searchProvidersUiState by remember { derivedStateOf { settings.searchProviders } }
+    val searchProvidersUiState by viewModel.searchProvidersUiState.collectAsStateWithLifecycle()
 
     Scaffold(
         modifier = modifier,

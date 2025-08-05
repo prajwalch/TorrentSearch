@@ -28,6 +28,7 @@ import com.prajwalch.torrentsearch.ui.screens.Screens
 import com.prajwalch.torrentsearch.ui.screens.SearchScreen
 import com.prajwalch.torrentsearch.ui.screens.settings.settingsNavigation
 import com.prajwalch.torrentsearch.ui.viewmodel.BookmarksViewModel
+import com.prajwalch.torrentsearch.ui.viewmodel.SearchProvidersViewModel
 import com.prajwalch.torrentsearch.ui.viewmodel.SearchViewModel
 import com.prajwalch.torrentsearch.ui.viewmodel.SettingsViewModel
 
@@ -38,6 +39,7 @@ fun TorrentSearchApp(
     searchViewModel: SearchViewModel,
     bookmarksViewModel: BookmarksViewModel,
     settingsViewModel: SettingsViewModel,
+    searchProvidersViewModel: SearchProvidersViewModel,
     onDownloadTorrent: (MagnetUri) -> Boolean,
     onShareMagnetLink: (MagnetUri) -> Unit,
     onOpenDescriptionPage: (String) -> Unit,
@@ -124,7 +126,11 @@ fun TorrentSearchApp(
             )
         }
 
-        settingsNavigation(navController = navController, settingsViewModel = settingsViewModel)
+        settingsNavigation(
+            navController = navController,
+            settingsViewModel = settingsViewModel,
+            searchProvidersViewModel = searchProvidersViewModel,
+        )
     }
 }
 

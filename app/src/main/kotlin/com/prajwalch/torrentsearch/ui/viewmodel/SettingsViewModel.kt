@@ -11,12 +11,11 @@ import com.prajwalch.torrentsearch.data.SettingsRepository
 import com.prajwalch.torrentsearch.data.SortCriteria
 import com.prajwalch.torrentsearch.data.SortOrder
 import com.prajwalch.torrentsearch.models.Category
-import com.prajwalch.torrentsearch.providers.SearchProviderId
-import com.prajwalch.torrentsearch.providers.SearchProviderSafetyStatus
 import com.prajwalch.torrentsearch.providers.SearchProviders
 
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
@@ -35,12 +34,15 @@ data class GeneralSettingsUiState(
 
 /** State for the search settings. */
 data class SearchSettingsUiState(
-    val searchProviders: List<SearchProviderUiState> = emptyList(),
+    val searchProvidersStat: SearchProvidersStat = SearchProvidersStat(),
     val defaultSortOptions: DefaultSortOptions = DefaultSortOptions(),
     val hideResultsWithZeroSeeders: Boolean = false,
     val maxNumResults: MaxNumResults = MaxNumResults.Unlimited,
-    val totalSearchProviders: Int = SearchProviders.count(),
-    val enabledSearchProviders: Int = 0,
+)
+
+data class SearchProvidersStat(
+    val enabledSearchProvidersCount: Int = 0,
+    val totalSearchProvidersCount: Int = SearchProviders.count(),
 )
 
 data class DefaultSortOptions(
@@ -54,16 +56,6 @@ data class SearchHistorySettingsUiState(
     val showSearchHistory: Boolean = true,
 )
 
-/** State for the search providers list. */
-data class SearchProviderUiState(
-    val id: SearchProviderId,
-    val name: String,
-    val url: String,
-    val specializedCategory: Category,
-    val safetyStatus: SearchProviderSafetyStatus,
-    val enabled: Boolean,
-)
-
 /** ViewModel that handles the business logic of Settings screen. */
 class SettingsViewModel(
     private val settingsRepository: SettingsRepository,
@@ -72,17 +64,8 @@ class SettingsViewModel(
     /** Information of all search providers. */
     private val allSearchProvidersInfo = SearchProviders.allInfo()
 
-    /**
-     * Currently enabled search providers.
-     *
-     * Settings screen receives all the providers with enable/disable
-     * state instead of only enabled ones and reports state change event
-     * for only one at a time through [enableSearchProvider].
-     *
-     * Only then we will create a set of enabled providers and pass them to
-     * repository like how it expects.
-     */
-    private var enabledSearchProvidersId = settingsRepository
+    /** Currently enabled search providers. */
+    private val enabledSearchProvidersId = settingsRepository
         .enabledSearchProvidersId
         .stateIn(
             scope = viewModelScope,
@@ -111,23 +94,23 @@ class SettingsViewModel(
         initialValue = GeneralSettingsUiState()
     )
 
-    val searchSettingsUiState = combine(
+    private val searchProvidersStatFlow = settingsRepository
+        .enabledSearchProvidersId
+        .map { SearchProvidersStat(enabledSearchProvidersCount = it.size) }
+
+    private val defaultSortOptionsFlow = combine(
         settingsRepository.defaultSortCriteria,
         settingsRepository.defaultSortOrder,
+        ::DefaultSortOptions
+    )
+
+    val searchSettingsUiState = combine(
+        searchProvidersStatFlow,
+        defaultSortOptionsFlow,
         settingsRepository.hideResultsWithZeroSeeders,
         settingsRepository.maxNumResults,
-    ) { defaultSortCriteria, defaultSortOrder, hideResultsWithZeroSeeders, maxNumResults ->
-        SearchSettingsUiState(
-            searchProviders = allSearchProvidersInfoToUiStates(),
-            defaultSortOptions = DefaultSortOptions(
-                sortCriteria = defaultSortCriteria,
-                sortOrder = defaultSortOrder,
-            ),
-            hideResultsWithZeroSeeders = hideResultsWithZeroSeeders,
-            maxNumResults = maxNumResults,
-            enabledSearchProviders = enabledSearchProvidersId.value.size,
-        )
-    }.stateIn(
+        ::SearchSettingsUiState,
+    ).stateIn(
         scope = viewModelScope,
         started = SharingStarted.Eagerly,
         initialValue = SearchSettingsUiState()
@@ -142,19 +125,6 @@ class SettingsViewModel(
         started = SharingStarted.Eagerly,
         initialValue = SearchHistorySettingsUiState()
     )
-
-    /** Converts list of search providers info to list of UI states. */
-    private fun allSearchProvidersInfoToUiStates() =
-        allSearchProvidersInfo.map {
-            SearchProviderUiState(
-                id = it.id,
-                name = it.name,
-                url = it.url.removePrefix("https://"),
-                specializedCategory = it.specializedCategory,
-                safetyStatus = it.safetyStatus,
-                enabled = it.id in enabledSearchProvidersId.value
-            )
-        }
 
     /** Enables/disables dynamic theme. */
     fun enableDynamicTheme(enable: Boolean) {
@@ -207,50 +177,6 @@ class SettingsViewModel(
         if (newEnabledSearchProvidersId != enabledSearchProvidersId.value) {
             settingsRepository.updateEnabledSearchProvidersId(
                 providersId = newEnabledSearchProvidersId.toSet(),
-            )
-        }
-    }
-
-    /** Enables/disables search provider matching the specified ID. */
-    fun enableSearchProvider(providerId: SearchProviderId, enable: Boolean) {
-        val newEnabledSearchProvidersId = if (enable) {
-            enabledSearchProvidersId.value + providerId
-        } else {
-            enabledSearchProvidersId.value - providerId
-        }
-
-        viewModelScope.launch {
-            settingsRepository.updateEnabledSearchProvidersId(
-                providersId = newEnabledSearchProvidersId,
-            )
-        }
-    }
-
-    /** Enables all search providers. */
-    fun enableAllSearchProviders() {
-        val allSearchProvidersId = allSearchProvidersInfo.map { it.id }.toSet()
-
-        viewModelScope.launch {
-            settingsRepository.updateEnabledSearchProvidersId(
-                providersId = allSearchProvidersId,
-            )
-        }
-    }
-
-    /** Disables all search providers. */
-    fun disableAllSearchProviders() {
-        viewModelScope.launch {
-            settingsRepository.updateEnabledSearchProvidersId(
-                providersId = emptySet(),
-            )
-        }
-    }
-
-    /** Resets enabled search providers to default. */
-    fun resetEnabledSearchProvidersToDefault() {
-        viewModelScope.launch {
-            settingsRepository.updateEnabledSearchProvidersId(
-                providersId = SearchProviders.defaultEnabledIds(),
             )
         }
     }

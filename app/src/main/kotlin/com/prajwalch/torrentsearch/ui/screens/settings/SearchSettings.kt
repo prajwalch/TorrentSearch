@@ -61,8 +61,8 @@ fun SearchSettings(
             headlineId = R.string.setting_search_providers,
             supportingContent = stringResource(
                 R.string.x_of_x_enabled,
-                settings.enabledSearchProviders,
-                settings.totalSearchProviders
+                settings.searchProvidersStat.enabledSearchProvidersCount,
+                settings.searchProvidersStat.totalSearchProvidersCount
             ),
             trailingContent = {
                 Icon(

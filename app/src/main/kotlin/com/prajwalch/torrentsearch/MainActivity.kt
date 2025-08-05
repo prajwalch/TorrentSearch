@@ -30,6 +30,7 @@ import com.prajwalch.torrentsearch.network.HttpClient
 import com.prajwalch.torrentsearch.ui.TorrentSearchApp
 import com.prajwalch.torrentsearch.ui.theme.TorrentSearchTheme
 import com.prajwalch.torrentsearch.ui.viewmodel.BookmarksViewModel
+import com.prajwalch.torrentsearch.ui.viewmodel.SearchProvidersViewModel
 import com.prajwalch.torrentsearch.ui.viewmodel.SearchViewModel
 import com.prajwalch.torrentsearch.ui.viewmodel.SettingsViewModel
 
@@ -79,6 +80,10 @@ class MainActivity : ComponentActivity() {
         )
     }
 
+    private val searchProvidersViewModel: SearchProvidersViewModel by viewModels {
+        SearchProvidersViewModel.provideFactory(settingsRepository = settingsRepository)
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         installSplashScreen()
         super.onCreate(savedInstanceState)
@@ -105,6 +110,7 @@ class MainActivity : ComponentActivity() {
                     searchViewModel = searchViewModel,
                     bookmarksViewModel = bookmarksViewModel,
                     settingsViewModel = settingsViewModel,
+                    searchProvidersViewModel = searchProvidersViewModel,
                     onDownloadTorrent = ::downloadTorrentViaClient,
                     onShareMagnetLink = ::shareMagnetLink,
                     onOpenDescriptionPage = ::openDescriptionPage,
