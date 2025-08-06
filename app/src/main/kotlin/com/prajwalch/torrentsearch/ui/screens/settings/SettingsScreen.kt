@@ -49,10 +49,11 @@ fun SettingsScreen(
                 contentPadding = innerPadding,
             ) {
                 item { AppearanceSettings() }
-                item { GeneralSettings(onNavigateToDefaultCategory = onNavigateToDefaultCategory) }
+                item { GeneralSettings() }
                 item {
                     SearchSettings(
                         onNavigateToSearchProviders = onNavigateToSearchProviders,
+                        onNavigateToDefaultCategory = onNavigateToDefaultCategory,
                         onNavigateToDefaultSortOptions = onNavigateToDefaultSortOptions,
                     )
                 }

@@ -27,13 +27,13 @@ data class AppearanceSettingsUiState(
 
 /** State for the general settings. */
 data class GeneralSettingsUiState(
-    val defaultCategory: Category = Category.All,
     val enableNSFWMode: Boolean = false,
 )
 
 /** State for the search settings. */
 data class SearchSettingsUiState(
     val searchProvidersStat: SearchProvidersStat = SearchProvidersStat(),
+    val defaultCategory: Category = Category.All,
     val defaultSortOptions: DefaultSortOptions = DefaultSortOptions(),
     val hideResultsWithZeroSeeders: Boolean = false,
     val maxNumResults: MaxNumResults = MaxNumResults.Unlimited,
@@ -80,15 +80,14 @@ class SettingsViewModel(private val settingsRepository: SettingsRepository) : Vi
         initialValue = AppearanceSettingsUiState()
     )
 
-    val generalSettingsUiState = combine(
-        settingsRepository.defaultCategory,
-        settingsRepository.enableNSFWMode,
-        ::GeneralSettingsUiState,
-    ).stateIn(
-        scope = viewModelScope,
-        started = SharingStarted.Eagerly,
-        initialValue = GeneralSettingsUiState()
-    )
+    val generalSettingsUiState = settingsRepository
+        .enableNSFWMode
+        .map(::GeneralSettingsUiState)
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.Eagerly,
+            initialValue = GeneralSettingsUiState()
+        )
 
     private val searchProvidersStatFlow = settingsRepository
         .enabledSearchProvidersId
@@ -102,6 +101,7 @@ class SettingsViewModel(private val settingsRepository: SettingsRepository) : Vi
 
     val searchSettingsUiState = combine(
         searchProvidersStatFlow,
+        settingsRepository.defaultCategory,
         defaultSortOptionsFlow,
         settingsRepository.hideResultsWithZeroSeeders,
         settingsRepository.maxNumResults,

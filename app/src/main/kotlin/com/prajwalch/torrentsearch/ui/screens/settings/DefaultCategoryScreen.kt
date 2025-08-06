@@ -29,7 +29,7 @@ fun DefaultCategoryScreen(
     viewModel: SettingsViewModel,
     modifier: Modifier = Modifier,
 ) {
-    val settings by viewModel.generalSettingsUiState.collectAsStateWithLifecycle()
+    val settings by viewModel.searchSettingsUiState.collectAsStateWithLifecycle()
     val defaultCategory by remember { derivedStateOf { settings.defaultCategory } }
 
     Scaffold(

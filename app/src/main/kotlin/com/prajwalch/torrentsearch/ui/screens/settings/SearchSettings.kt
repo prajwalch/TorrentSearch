@@ -33,6 +33,7 @@ import com.prajwalch.torrentsearch.ui.components.SettingsSectionTitle
 @Composable
 fun SearchSettings(
     onNavigateToSearchProviders: () -> Unit,
+    onNavigateToDefaultCategory: () -> Unit,
     onNavigateToDefaultSortOptions: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -72,6 +73,18 @@ fun SearchSettings(
                     ),
                 )
             },
+        )
+        SettingsItem(
+            onClick = onNavigateToDefaultCategory,
+            leadingIconId = R.drawable.ic_category_search,
+            headlineId = R.string.setting_default_category,
+            supportingContent = settings.defaultCategory.name,
+            trailingContent = {
+                Icon(
+                    painter = painterResource(R.drawable.ic_arrow_forward),
+                    contentDescription = stringResource(R.string.button_go_to_category_list_screen),
+                )
+            }
         )
 
         val defaultSortCriteria = settings.defaultSortOptions.sortCriteria
