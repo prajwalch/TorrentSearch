@@ -77,7 +77,7 @@ private fun SearchHistoryListItem(
                 }
                 IconButton(onClick = onDeleteClick) {
                     Icon(
-                        painter = painterResource(R.drawable.ic_close),
+                        painter = painterResource(R.drawable.ic_delete),
                         contentDescription = stringResource(R.string.button_delete_search_history),
                     )
                 }
