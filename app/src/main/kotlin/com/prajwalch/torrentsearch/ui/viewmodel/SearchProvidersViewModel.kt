@@ -64,7 +64,7 @@ class SearchProvidersViewModel(private val settingsRepository: SettingsRepositor
         SearchProviderUiState(
             id = it.id,
             name = it.name,
-            url = it.url.removePrefix("https://"),
+            url = it.url,
             specializedCategory = it.specializedCategory,
             safetyStatus = it.safetyStatus,
             enabled = it.id in enabledSearchProvidersId
