@@ -6,7 +6,6 @@ import androidx.lifecycle.viewModelScope
 
 import com.prajwalch.torrentsearch.data.DarkTheme
 import com.prajwalch.torrentsearch.data.MaxNumResults
-import com.prajwalch.torrentsearch.data.SearchHistoryRepository
 import com.prajwalch.torrentsearch.data.SettingsRepository
 import com.prajwalch.torrentsearch.data.SortCriteria
 import com.prajwalch.torrentsearch.data.SortOrder
@@ -57,10 +56,7 @@ data class SearchHistorySettingsUiState(
 )
 
 /** ViewModel that handles the business logic of Settings screen. */
-class SettingsViewModel(
-    private val settingsRepository: SettingsRepository,
-    private val searchHistoryRepository: SearchHistoryRepository,
-) : ViewModel() {
+class SettingsViewModel(private val settingsRepository: SettingsRepository) : ViewModel() {
     /** Information of all search providers. */
     private val allSearchProvidersInfo = SearchProviders.allInfo()
 
@@ -223,26 +219,13 @@ class SettingsViewModel(
         }
     }
 
-    /** Clears all search history. */
-    fun clearSearchHistory() {
-        viewModelScope.launch {
-            searchHistoryRepository.clearAll()
-        }
-    }
-
     companion object {
         /** Provides a factory function for [SettingsViewModel]. */
-        fun provideFactory(
-            settingsRepository: SettingsRepository,
-            searchHistoryRepository: SearchHistoryRepository,
-        ): ViewModelProvider.Factory {
+        fun provideFactory(settingsRepository: SettingsRepository): ViewModelProvider.Factory {
             return object : ViewModelProvider.Factory {
                 @Suppress("UNCHECKED_CAST")
                 override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                    return SettingsViewModel(
-                        settingsRepository = settingsRepository,
-                        searchHistoryRepository = searchHistoryRepository,
-                    ) as T
+                    return SettingsViewModel(settingsRepository = settingsRepository) as T
                 }
             }
         }

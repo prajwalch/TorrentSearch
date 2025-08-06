@@ -7,6 +7,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navigation
 
 import com.prajwalch.torrentsearch.ui.screens.Screens
+import com.prajwalch.torrentsearch.ui.viewmodel.SearchHistoryViewModel
 import com.prajwalch.torrentsearch.ui.viewmodel.SearchProvidersViewModel
 import com.prajwalch.torrentsearch.ui.viewmodel.SettingsViewModel
 
@@ -14,6 +15,7 @@ fun NavGraphBuilder.settingsNavigation(
     navController: NavHostController,
     settingsViewModel: SettingsViewModel,
     searchProvidersViewModel: SearchProvidersViewModel,
+    searchHistoryViewModel: SearchHistoryViewModel,
 ) {
     navigation(startDestination = Screens.Settings.MAIN, route = Screens.Settings.ROOT) {
         composable(
@@ -33,6 +35,9 @@ fun NavGraphBuilder.settingsNavigation(
                 },
                 onNavigateToDefaultSortOptions = {
                     navController.navigate(Screens.Settings.DEFAULT_SORT_OPTIONS)
+                },
+                onNavigateToSearchHistory = {
+                    navController.navigate(Screens.Settings.SEARCH_HISTORY)
                 },
                 viewModel = settingsViewModel,
             )
@@ -68,6 +73,17 @@ fun NavGraphBuilder.settingsNavigation(
             DefaultSortOptionsScreen(
                 onNavigateBack = { navController.navigateUp() },
                 viewModel = settingsViewModel,
+            )
+        }
+
+        composable(
+            route = Screens.Settings.SEARCH_HISTORY,
+            enterTransition = { slideIntoContainer(SlideDirection.Start) },
+            popExitTransition = { slideOutOfContainer(SlideDirection.End) },
+        ) {
+            SearchHistoryScreen(
+                onNavigateBack = { navController.navigateUp() },
+                viewModel = searchHistoryViewModel,
             )
         }
     }

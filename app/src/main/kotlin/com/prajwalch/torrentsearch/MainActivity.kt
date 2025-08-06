@@ -30,6 +30,7 @@ import com.prajwalch.torrentsearch.network.HttpClient
 import com.prajwalch.torrentsearch.ui.TorrentSearchApp
 import com.prajwalch.torrentsearch.ui.theme.TorrentSearchTheme
 import com.prajwalch.torrentsearch.ui.viewmodel.BookmarksViewModel
+import com.prajwalch.torrentsearch.ui.viewmodel.SearchHistoryViewModel
 import com.prajwalch.torrentsearch.ui.viewmodel.SearchProvidersViewModel
 import com.prajwalch.torrentsearch.ui.viewmodel.SearchViewModel
 import com.prajwalch.torrentsearch.ui.viewmodel.SettingsViewModel
@@ -43,12 +44,14 @@ class MainActivity : ComponentActivity() {
         TorrentSearchDatabase.getInstance(this)
     }
 
-    private val settingsRepository: SettingsRepository by lazy {
-        SettingsRepository(dataStore = settingsDataStore)
-    }
+    // Repositories.
 
     private val searchHistoryRepository by lazy {
         SearchHistoryRepository(dao = database.searchHistoryDao())
+    }
+
+    private val settingsRepository: SettingsRepository by lazy {
+        SettingsRepository(dataStore = settingsDataStore)
     }
 
     private val torrentsRepository: TorrentsRepository by lazy {
@@ -56,6 +59,23 @@ class MainActivity : ComponentActivity() {
             httpClient = HttpClient,
             bookmarkedTorrentDao = database.bookmarkedTorrentDao(),
         )
+    }
+
+    // ViewModels.
+
+    private val bookmarksViewModel: BookmarksViewModel by viewModels {
+        BookmarksViewModel.provideFactory(
+            settingsRepository = settingsRepository,
+            torrentsRepository = torrentsRepository
+        )
+    }
+
+    private val searchHistoryViewModel: SearchHistoryViewModel by viewModels {
+        SearchHistoryViewModel.providerFactory(searchHistoryRepository = searchHistoryRepository)
+    }
+
+    private val searchProvidersViewModel: SearchProvidersViewModel by viewModels {
+        SearchProvidersViewModel.provideFactory(settingsRepository = settingsRepository)
     }
 
     private val searchViewModel: SearchViewModel by viewModels {
@@ -66,22 +86,8 @@ class MainActivity : ComponentActivity() {
         )
     }
 
-    private val bookmarksViewModel: BookmarksViewModel by viewModels {
-        BookmarksViewModel.provideFactory(
-            settingsRepository = settingsRepository,
-            torrentsRepository = torrentsRepository
-        )
-    }
-
     private val settingsViewModel: SettingsViewModel by viewModels {
-        SettingsViewModel.provideFactory(
-            settingsRepository = settingsRepository,
-            searchHistoryRepository = searchHistoryRepository,
-        )
-    }
-
-    private val searchProvidersViewModel: SearchProvidersViewModel by viewModels {
-        SearchProvidersViewModel.provideFactory(settingsRepository = settingsRepository)
+        SettingsViewModel.provideFactory(settingsRepository = settingsRepository)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -107,10 +113,11 @@ class MainActivity : ComponentActivity() {
                 pureBlack = appearanceSettings.pureBlack,
             ) {
                 TorrentSearchApp(
-                    searchViewModel = searchViewModel,
                     bookmarksViewModel = bookmarksViewModel,
-                    settingsViewModel = settingsViewModel,
+                    searchHistoryViewModel = searchHistoryViewModel,
                     searchProvidersViewModel = searchProvidersViewModel,
+                    searchViewModel = searchViewModel,
+                    settingsViewModel = settingsViewModel,
                     onDownloadTorrent = ::downloadTorrentViaClient,
                     onShareMagnetLink = ::shareMagnetLink,
                     onOpenDescriptionPage = ::openDescriptionPage,

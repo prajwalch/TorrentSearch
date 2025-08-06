@@ -25,6 +25,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.prajwalch.torrentsearch.R
 import com.prajwalch.torrentsearch.models.Torrent
 import com.prajwalch.torrentsearch.ui.components.EmptyPlaceholder
+import com.prajwalch.torrentsearch.ui.components.NavigateBackIconButton
 import com.prajwalch.torrentsearch.ui.components.ScrollToTopFAB
 import com.prajwalch.torrentsearch.ui.components.SortMenu
 import com.prajwalch.torrentsearch.ui.components.TorrentList
@@ -112,12 +113,10 @@ private fun BookmarksScreenTopBar(
         modifier = modifier,
         title = { Text(stringResource(R.string.bookmarks_screen_title)) },
         navigationIcon = {
-            IconButton(onClick = onNavigateBack) {
-                Icon(
-                    painter = painterResource(R.drawable.ic_arrow_back),
-                    contentDescription = stringResource(R.string.button_go_back_to_search_screen),
-                )
-            }
+            NavigateBackIconButton(
+                onClick = onNavigateBack,
+                contentDescriptionId = R.string.button_go_back_to_search_screen,
+            )
         },
         actions = {
             AnimatedVisibility(visible = showDeleteAllAction) {

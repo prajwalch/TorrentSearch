@@ -42,6 +42,7 @@ import com.prajwalch.torrentsearch.R
 import com.prajwalch.torrentsearch.models.Category
 import com.prajwalch.torrentsearch.providers.SearchProviderId
 import com.prajwalch.torrentsearch.providers.SearchProviderSafetyStatus
+import com.prajwalch.torrentsearch.ui.components.NavigateBackIconButton
 import com.prajwalch.torrentsearch.ui.viewmodel.SearchProviderUiState
 import com.prajwalch.torrentsearch.ui.viewmodel.SearchProvidersViewModel
 
@@ -86,12 +87,10 @@ private fun SearchProvidersScreenTopBar(
         modifier = modifier,
         title = { Text(text = stringResource(R.string.setting_search_providers)) },
         navigationIcon = {
-            IconButton(onClick = onNavigateBack) {
-                Icon(
-                    painter = painterResource(R.drawable.ic_arrow_back),
-                    contentDescription = stringResource(R.string.button_go_to_settings_screen),
-                )
-            }
+            NavigateBackIconButton(
+                onClick = onNavigateBack,
+                contentDescriptionId = R.string.button_go_to_settings_screen,
+            )
         },
         actions = {
             IconButton(onClick = onEnableAllSearchProviders) {

@@ -100,8 +100,10 @@
     <string name="setting_save_search_history">Save search history</string>
     <string name="setting_show_search_history">Show search history</string>
     <string name="setting_show_search_history_desc">Show search history in search bar</string>
-    <string name="setting_clear_search_history">Clear search history</string>
-    <string name="hint_search_history_cleared">Search history cleared!</string>
+    <string name="setting_manage_search_history">Manage search history</string>
+    <string name="desc_go_to_search_history_screen">Go to search history screen</string>
+    <string name="search_history_screen_title">Search history</string>
+    <string name="desc_delete_all_search_history">Delete all search history</string>
     <!-- About -->
     <string name="settings_section_about">About</string>
     <string name="setting_version">Version</string>

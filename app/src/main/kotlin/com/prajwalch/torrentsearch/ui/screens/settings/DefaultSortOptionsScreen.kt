@@ -5,8 +5,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Scaffold
@@ -17,7 +15,6 @@ import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -25,6 +22,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.prajwalch.torrentsearch.R
 import com.prajwalch.torrentsearch.data.SortCriteria
 import com.prajwalch.torrentsearch.data.SortOrder
+import com.prajwalch.torrentsearch.ui.components.NavigateBackIconButton
 import com.prajwalch.torrentsearch.ui.components.SettingsSectionTitle
 import com.prajwalch.torrentsearch.ui.viewmodel.SettingsViewModel
 
@@ -74,12 +72,10 @@ private fun DefaultSortOptionsScreenTopBar(
         modifier = modifier,
         title = { Text(text = stringResource(R.string.setting_default_sort_options)) },
         navigationIcon = {
-            IconButton(onClick = onNavigateBack) {
-                Icon(
-                    painter = painterResource(R.drawable.ic_arrow_back),
-                    contentDescription = stringResource(R.string.button_go_to_settings_screen),
-                )
-            }
+            NavigateBackIconButton(
+                onClick = onNavigateBack,
+                contentDescriptionId = R.string.button_go_to_settings_screen,
+            )
         },
     )
 }

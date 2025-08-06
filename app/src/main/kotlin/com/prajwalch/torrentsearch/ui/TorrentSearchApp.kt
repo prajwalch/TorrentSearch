@@ -28,6 +28,7 @@ import com.prajwalch.torrentsearch.ui.screens.Screens
 import com.prajwalch.torrentsearch.ui.screens.SearchScreen
 import com.prajwalch.torrentsearch.ui.screens.settings.settingsNavigation
 import com.prajwalch.torrentsearch.ui.viewmodel.BookmarksViewModel
+import com.prajwalch.torrentsearch.ui.viewmodel.SearchHistoryViewModel
 import com.prajwalch.torrentsearch.ui.viewmodel.SearchProvidersViewModel
 import com.prajwalch.torrentsearch.ui.viewmodel.SearchViewModel
 import com.prajwalch.torrentsearch.ui.viewmodel.SettingsViewModel
@@ -36,10 +37,11 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun TorrentSearchApp(
-    searchViewModel: SearchViewModel,
     bookmarksViewModel: BookmarksViewModel,
-    settingsViewModel: SettingsViewModel,
+    searchHistoryViewModel: SearchHistoryViewModel,
     searchProvidersViewModel: SearchProvidersViewModel,
+    searchViewModel: SearchViewModel,
+    settingsViewModel: SettingsViewModel,
     onDownloadTorrent: (MagnetUri) -> Boolean,
     onShareMagnetLink: (MagnetUri) -> Unit,
     onOpenDescriptionPage: (String) -> Unit,
@@ -130,6 +132,7 @@ fun TorrentSearchApp(
             navController = navController,
             settingsViewModel = settingsViewModel,
             searchProvidersViewModel = searchProvidersViewModel,
+            searchHistoryViewModel = searchHistoryViewModel,
         )
     }
 }
