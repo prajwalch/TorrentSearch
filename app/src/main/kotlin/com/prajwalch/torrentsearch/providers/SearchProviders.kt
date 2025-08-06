@@ -21,6 +21,7 @@ object SearchProviders {
         TorrentDownloads(),
         TorrentsCsv(),
         UIndex(),
+        XXXClub(),
         Yts(),
     )
 
