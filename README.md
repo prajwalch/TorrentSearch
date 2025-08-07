@@ -44,7 +44,7 @@ providers.
     - Open torrent description page
     - Copy/share torrent description page URL
 - Safe mode option:
-    - Automatically disabled Unsafe and NSFW search providers
+    - Automatically disables Unsafe and NSFW search providers
     - Automatically hides NSFW categories
     - Automatically hides NSFW torrents
 - Option to enable or disable individual providers
