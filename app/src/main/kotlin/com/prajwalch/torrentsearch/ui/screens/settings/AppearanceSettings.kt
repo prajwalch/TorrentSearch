@@ -1,5 +1,6 @@
 package com.prajwalch.torrentsearch.ui.screens.settings
 
+import android.os.Build
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.isSystemInDarkTheme
@@ -50,17 +51,21 @@ fun AppearanceSettings(modifier: Modifier = Modifier) {
 
     Column(modifier = modifier) {
         SettingsSectionTitle(titleId = R.string.settings_section_appearance)
-        SettingsItem(
-            onClick = { viewModel.enableDynamicTheme(!settings.enableDynamicTheme) },
-            leadingIconId = R.drawable.ic_palette,
-            headlineId = R.string.setting_enable_dynamic_theme,
-            trailingContent = {
-                Switch(
-                    checked = settings.enableDynamicTheme,
-                    onCheckedChange = { viewModel.enableDynamicTheme(it) },
-                )
-            },
-        )
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            SettingsItem(
+                onClick = { viewModel.enableDynamicTheme(!settings.enableDynamicTheme) },
+                leadingIconId = R.drawable.ic_palette,
+                headlineId = R.string.setting_enable_dynamic_theme,
+                trailingContent = {
+                    Switch(
+                        checked = settings.enableDynamicTheme,
+                        onCheckedChange = { viewModel.enableDynamicTheme(it) },
+                    )
+                },
+            )
+        }
+        
         SettingsItem(
             onClick = { showDarkThemeDialog = true },
             leadingIconId = R.drawable.ic_dark_mode,
