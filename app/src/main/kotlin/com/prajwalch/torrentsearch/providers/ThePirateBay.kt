@@ -20,7 +20,7 @@ class ThePirateBay : SearchProvider {
         url = "https://thepiratebay.org",
         specializedCategory = Category.All,
         safetyStatus = SearchProviderSafetyStatus.Unsafe(
-            reason = "Terrible regulation, and the calculated injection of insidious malware."
+            reason = "Many malware reports due to inadequate moderation."
         ),
         enabledByDefault = false,
     )

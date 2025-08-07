@@ -43,7 +43,7 @@ class TheRarBg : SearchProvider {
         url = "https://therarbg.com",
         specializedCategory = Category.All,
         safetyStatus = SearchProviderSafetyStatus.Unsafe(
-            reason = "Crafted with cunning intent to ensnare unsuspecting users through deliberate deception."
+            reason = "Clone of original RARBG with many fake torrents. Use extreme caution."
         ),
         enabledByDefault = false,
     )

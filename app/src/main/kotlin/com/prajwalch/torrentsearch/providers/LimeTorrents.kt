@@ -23,7 +23,7 @@ class LimeTorrents : SearchProvider {
         url = "https://limetorrents.lol",
         specializedCategory = Category.All,
         safetyStatus = SearchProviderSafetyStatus.Unsafe(
-            reason = "Doesn't respect category selection at all."
+            reason = "Not technically unsafe, but it ignores category selection. Choose carefully."
         ),
         enabledByDefault = false,
     )
