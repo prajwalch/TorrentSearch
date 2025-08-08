@@ -4,8 +4,10 @@ import com.prajwalch.torrentsearch.models.Category
 import com.prajwalch.torrentsearch.models.InfoHashOrMagnetUri
 import com.prajwalch.torrentsearch.models.Torrent
 import com.prajwalch.torrentsearch.utils.FileSizeUnits
+
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Element
 
