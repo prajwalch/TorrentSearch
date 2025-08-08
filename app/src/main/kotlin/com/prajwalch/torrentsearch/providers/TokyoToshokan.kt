@@ -22,7 +22,6 @@ class TokyoToshokan : SearchProvider {
     )
 
     override suspend fun search(query: String, context: SearchContext): List<Torrent> {
-        // https://www.tokyotosho.info/search.php?terms=One&type=1&searchName=true
         val queryParams = "?terms=$query&type=1&searchName=true"
         val requestUrl = "${info.url}/search.php$queryParams"
 
