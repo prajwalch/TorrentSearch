@@ -149,7 +149,7 @@ private fun SearchProviderList(
                 name = searchProvider.name,
                 url = searchProvider.url,
                 specializedCategory = searchProvider.specializedCategory,
-                safetyStatus = searchProvider.safetyStatus,
+                isUnsafe = searchProvider.safetyStatus.isUnsafe(),
                 onShowUnsafeReason = { showUnsafeDetailsDialog = searchProvider },
                 checked = searchProvider.enabled,
                 onCheckedChange = { onProviderCheckedChange(searchProvider.id, it) },
@@ -201,7 +201,7 @@ private fun SearchProviderListItem(
     name: String,
     url: String,
     specializedCategory: Category,
-    safetyStatus: SearchProviderSafetyStatus,
+    isUnsafe: Boolean,
     onShowUnsafeReason: () -> Unit,
     checked: Boolean,
     onCheckedChange: (Boolean) -> Unit,
@@ -217,7 +217,7 @@ private fun SearchProviderListItem(
         headlineContent = {
             SearchProviderName(
                 name = name,
-                safetyStatus = safetyStatus,
+                isUnsafe = isUnsafe,
                 onShowUnsafeReason = onShowUnsafeReason,
             )
         },
@@ -236,17 +236,13 @@ private fun SearchProviderListItem(
 @Composable
 private fun SearchProviderName(
     name: String,
-    safetyStatus: SearchProviderSafetyStatus,
+    isUnsafe: Boolean,
     onShowUnsafeReason: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     BadgedBox(
         modifier = modifier,
-        badge = {
-            if (safetyStatus.isUnsafe()) {
-                UnsafeBadge(onClick = onShowUnsafeReason)
-            }
-        },
+        badge = { if (isUnsafe) UnsafeBadge(onClick = onShowUnsafeReason) },
     ) {
         Text(text = name)
     }
