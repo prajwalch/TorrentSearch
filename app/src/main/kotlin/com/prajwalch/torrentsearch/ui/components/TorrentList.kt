@@ -179,7 +179,7 @@ private fun TorrentProviderNameAndUploadDate(
             color = MaterialTheme.colorScheme.primary,
             fontWeight = FontWeight.SemiBold,
         )
-        Text("\u2022")
+        BulletPoint()
         Text(
             text = uploadDate,
             color = MaterialTheme.colorScheme.onSurfaceVariant,

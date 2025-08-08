@@ -42,6 +42,7 @@ import com.prajwalch.torrentsearch.R
 import com.prajwalch.torrentsearch.models.Category
 import com.prajwalch.torrentsearch.providers.SearchProviderId
 import com.prajwalch.torrentsearch.providers.SearchProviderSafetyStatus
+import com.prajwalch.torrentsearch.ui.components.BulletPoint
 import com.prajwalch.torrentsearch.ui.components.NavigateBackIconButton
 import com.prajwalch.torrentsearch.ui.viewmodel.SearchProviderUiState
 import com.prajwalch.torrentsearch.ui.viewmodel.SearchProvidersViewModel
@@ -285,7 +286,7 @@ private fun SearchProviderMetadata(
                 contentDescription = null,
             )
         }
-        Text(text = "\u2022")
+        BulletPoint()
         Text(text = specializedCategory.name.lowercase())
     }
 }
