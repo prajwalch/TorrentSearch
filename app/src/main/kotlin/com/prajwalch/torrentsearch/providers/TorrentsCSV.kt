@@ -15,7 +15,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.JsonObject
 
-class TorrentsCsv : SearchProvider {
+class TorrentsCSV : SearchProvider {
     override val info = SearchProviderInfo(
         id = "torrentscsv",
         name = "TorrentsCSV",

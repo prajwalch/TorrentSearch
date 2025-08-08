@@ -25,8 +25,8 @@ data class Torrent(
     /**
      * Category of the torrent.
      *
-     * NOTE: The nullable is made only to support TorrentsCsv.
-     * TorrentsCsv doesn't return any category.
+     * NOTE: The nullable is made only to support TorrentsCSV.
+     * TorrentsCSV doesn't return any category.
      */
     val category: Category? = null,
     /** URL of the page where the torrent details is available. */

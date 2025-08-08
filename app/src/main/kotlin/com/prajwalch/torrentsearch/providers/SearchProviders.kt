@@ -19,7 +19,7 @@ object SearchProviders {
         TheRarBg(),
         TokyoToshokan(),
         TorrentDownloads(),
-        TorrentsCsv(),
+        TorrentsCSV(),
         UIndex(),
         XXXClub(),
         Yts(),
