@@ -21,11 +21,7 @@ class Sukebei : SearchProvider {
         enabledByDefault = false,
     )
 
-    override suspend fun search(
-        query: String,
-        context: SearchContext,
-    ): List<Torrent> {
-        // https://sukebei.nyaa.si/?f=0&c=0_0&q=dressed
+    override suspend fun search(query: String, context: SearchContext): List<Torrent> {
         val queryParams = "?f=0&c=0_0&q=$query"
         val requestUrl = "${info.url}/$queryParams"
 
