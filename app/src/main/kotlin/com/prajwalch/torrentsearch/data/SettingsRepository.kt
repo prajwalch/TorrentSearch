@@ -129,11 +129,11 @@ class SettingsRepository(private val dataStore: DataStore<Preferences>) {
         val PURE_BLACK = booleanPreferencesKey("pure_black")
 
         // General keys.
-        val DEFAULT_CATEGORY = stringPreferencesKey("default_category")
         val ENABLE_NSFW_MODE = booleanPreferencesKey("enable_nsfw_mode")
 
         // Search keys.
         val ENABLED_SEARCH_PROVIDERS_ID = stringSetPreferencesKey("enabled_search_providers_id")
+        val DEFAULT_CATEGORY = stringPreferencesKey("default_category")
         val DEFAULT_SORT_CRITERIA = stringPreferencesKey("default_sort_criteria")
         val DEFAULT_SORT_ORDER = stringPreferencesKey("default_sort_order")
         val HIDE_RESULTS_WITH_ZERO_SEEDERS = booleanPreferencesKey("hide_results_with_zero_seeders")
