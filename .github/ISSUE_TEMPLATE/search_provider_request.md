@@ -2,7 +2,7 @@
 name: Search provider request
 about: Suggest a new search provider
 title: ''
-labels: provider
+labels: 'feature, provider'
 assignees: ''
 
 ---
@@ -22,7 +22,7 @@ assignees: ''
   - [ ] Porn
   - [ ] Series
   - [ ] Other
-- **Status**:
+- **Safety status**:
   - [ ] Safe
   - [ ] Unsafe (Reason: [Explain why the provider is considered unsafe])
 
