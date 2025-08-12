@@ -2,7 +2,7 @@
 name: Bug report
 about: Create a bug report to help us improve
 title: ''
-labels: ''
+labels: 'bug'
 assignees: ''
 
 ---
@@ -25,9 +25,9 @@ If applicable, add screenshots to help explain your problem.
 
 **Device information:**
  - Device: [e.g. Xiaomi Redmi Note 13]
- - Android version: [e.g. 15]
+ - OS: [e.g. HyperOS 2 (Android 15)]
 
-**App version**
+**Torrent Search version**
 Application version you're running.
 
 **Additional context**
