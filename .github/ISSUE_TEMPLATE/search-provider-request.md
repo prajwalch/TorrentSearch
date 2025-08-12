@@ -22,8 +22,9 @@ assignees: ''
   - [ ] Porn
   - [ ] Series
   - [ ] Other
-- **Status**: [ ] Safe [ ] Unsafe
-  - **If Unsafe, Reason**: [Explain why the provider is considered unsafe]
+- **Status**:
+  - [ ] Safe
+  - [ ] Unsafe (Reason: [Explain why the provider is considered unsafe])
 
 **Checklist for search provider**
 Ensure the provider includes the following in its search results:
