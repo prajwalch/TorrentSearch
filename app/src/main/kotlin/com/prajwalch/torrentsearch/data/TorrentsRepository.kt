@@ -1,5 +1,7 @@
 package com.prajwalch.torrentsearch.data
 
+import android.util.Log
+
 import com.prajwalch.torrentsearch.database.dao.BookmarkedTorrentDao
 import com.prajwalch.torrentsearch.database.entities.BookmarkedTorrent
 import com.prajwalch.torrentsearch.models.Category
@@ -10,11 +12,12 @@ import com.prajwalch.torrentsearch.network.HttpClientResponse
 import com.prajwalch.torrentsearch.providers.SearchContext
 import com.prajwalch.torrentsearch.providers.SearchProvider
 
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.channelFlow
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.supervisorScope
+import kotlinx.coroutines.launch
 
 class TorrentsRepository(
     /** Uses for remote search. */
@@ -42,45 +45,76 @@ class TorrentsRepository(
         bookmarkedTorrentDao.deleteAll()
     }
 
-    /** Starts a search for the given query. */
-    suspend fun search(
+    /** Starts a search from the network. */
+    fun search(
         query: String,
         category: Category,
         providers: List<SearchProvider>,
-    ): TorrentsRepositoryResult {
+    ): Flow<TorrentsRepositoryResult> = channelFlow {
+        val providersName = providers.map { it.info.name }
+        Log.d(
+            TAG,
+            "Initiating search; query=$query, category=$category, providers=$providersName"
+        )
+
+        Log.i(TAG, "Choosing search providers for given category")
         val searchProviders = chooseSearchProviders(providers = providers, category = category)
+        Log.d(TAG, "Chosen providers=${searchProviders.map { it.info.name }}")
 
         if (searchProviders.isEmpty()) {
-            return TorrentsRepositoryResult()
+            Log.i(TAG, "Search providers are empty, cancelling search")
+            cancel()
         }
+
+        ensureActive()
 
         val query = query.replace(' ', '+').trim()
         val context = SearchContext(category = category, httpClient = httpClient)
 
-        return supervisorScope {
-            val results = searchProviders
-                .map { async(Dispatchers.IO) { it.search(query = query, context = context) } }
-                .map { httpClient.withExceptionHandler { it.await() } }
+        searchProviders.forEach { searchProvider ->
+            Log.i(TAG, "Launching ${searchProvider.info.name} (${searchProvider.info.id})")
 
-            // Check for network error.
-            if (results.all { it is HttpClientResponse.Error.NetworkError }) {
-                return@supervisorScope TorrentsRepositoryResult(isNetworkError = true)
-            }
-
-            val torrents = results
-                .mapNotNull { httpClientResponse -> httpClientResponse as? HttpClientResponse.Ok }
-                .flatMap { httpClientOkResponse -> httpClientOkResponse.result }
-                .map { torrent ->
-                    val bookmarkedInfo = bookmarkedTorrentDao.findByName(torrent.name)
-
-                    bookmarkedInfo
-                        ?.let { info -> torrent.copy(id = info.id, bookmarked = true) }
-                        ?: torrent
+            launch {
+                val httpClientResponse = httpClient.withExceptionHandler {
+                    searchProvider.search(query = query, context = context)
                 }
+                Log.i(TAG, "Received response from ${searchProvider.info.name}")
 
-            TorrentsRepositoryResult(torrents = torrents)
+                when (httpClientResponse) {
+                    is HttpClientResponse.Error.NetworkError -> {
+                        Log.i(TAG, "-> Got network error response")
+                        send(TorrentsRepositoryResult(isNetworkError = true))
+                    }
+
+                    is HttpClientResponse.Ok -> {
+                        Log.i(TAG, "-> Got ${httpClientResponse.result.size} results")
+
+                        if (httpClientResponse.result.isNotEmpty()) {
+                            val torrents = checkForBookmarkedTorrents(
+                                torrents = httpClientResponse.result
+                            )
+
+                            send(TorrentsRepositoryResult(torrents = torrents))
+                        }
+                    }
+
+                    // If needed, handle other cases too.
+                    else -> {
+                        Log.d(TAG, "-> Unhandled response ($httpClientResponse)")
+                    }
+                }
+            }
         }
     }
+
+    /** Checks and updates the bookmark state of the given torrents. */
+    private suspend fun checkForBookmarkedTorrents(torrents: List<Torrent>) =
+        torrents.map { torrent ->
+            bookmarkedTorrentDao
+                .findByName(name = torrent.name)
+                ?.let { entity -> torrent.copy(id = entity.id, bookmarked = true) }
+                ?: torrent
+        }
 
     /**
      * Returns the search providers that is capable of handling the given
@@ -97,6 +131,10 @@ class TorrentsRepository(
         return providers.filter {
             (it.info.specializedCategory == Category.All) || (category == it.info.specializedCategory)
         }
+    }
+
+    private companion object {
+        private const val TAG = "TorrentsRepository"
     }
 }
 

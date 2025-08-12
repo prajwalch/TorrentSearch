@@ -10,6 +10,7 @@ import com.prajwalch.torrentsearch.data.SettingsRepository
 import com.prajwalch.torrentsearch.data.SortCriteria
 import com.prajwalch.torrentsearch.data.SortOrder
 import com.prajwalch.torrentsearch.data.TorrentsRepository
+import com.prajwalch.torrentsearch.data.TorrentsRepositoryResult
 import com.prajwalch.torrentsearch.database.entities.SearchHistory
 import com.prajwalch.torrentsearch.extensions.customSort
 import com.prajwalch.torrentsearch.extensions.filterNSFW
@@ -23,7 +24,11 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onCompletion
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -44,6 +49,7 @@ data class SearchUiState(
     val currentSortOrder: SortOrder = SortOrder.Default,
     val resultsNotFound: Boolean = false,
     val isLoading: Boolean = false,
+    val isSearching: Boolean = false,
     val isInternetError: Boolean = false,
 )
 
@@ -133,7 +139,7 @@ class SearchViewModel(
      * By saving like this, it allows us to give original results to UI when
      * user reverts to previous settings.
      */
-    private var searchResults = emptyList<Torrent>()
+    private var searchResults: List<Torrent> = emptyList()
 
     init {
         loadDefaultCategory()
@@ -212,8 +218,16 @@ class SearchViewModel(
             return
         }
 
-        // Shift to loading state.
-        _uiState.update { it.copy(isLoading = true) }
+        // Prepare for new search.
+        _uiState.update {
+            it.copy(
+                results = emptyList(),
+                resultsNotFound = false,
+                isLoading = true,
+                isSearching = false,
+                isInternetError = false,
+            )
+        }
 
         // Cancel any on-going search.
         //
@@ -244,73 +258,80 @@ class SearchViewModel(
             val searchProviders = SearchProviders.findByIds(
                 ids = settings.value.enabledSearchProvidersId,
             )
-            // Perform the search using them.
-            val torrentsRepositoryResult = torrentsRepository.search(
-                query = _uiState.value.query,
-                category = _uiState.value.selectedCategory,
-                providers = searchProviders,
-            )
 
-            // Return as soon as we get the bad internet connection status.
-            if (torrentsRepositoryResult.isNetworkError) {
-                _uiState.update {
-                    it.copy(
-                        resultsNotFound = false,
-                        isLoading = false,
-                        isInternetError = true,
-                    )
-                }
-                return@launch
-            }
+            torrentsRepository
+                .search(
+                    query = _uiState.value.query,
+                    category = _uiState.value.selectedCategory,
+                    providers = searchProviders,
+                )
+                .distinctUntilChanged()
+                .onEach(::onEachSearchResult)
+                .onCompletion { failureCase -> if (failureCase == null) onSearchCompletion() }
+                .launchIn(scope = this)
+        }
+    }
 
-            // Save the original results.
-            searchResults = torrentsRepositoryResult.torrents.orEmpty()
-            // Is this the right way?
-            //
-            // combine() only supports up to 5 flows, so we can't collect
-            // and save these two like others.
-            val defaultSortCriteria = settingsRepository
-                .defaultSortCriteria
-                .firstOrNull()
-                ?: SortCriteria.Default
-            val defaultSortOrder = settingsRepository
-                .defaultSortOrder
-                .firstOrNull()
-                ?: SortOrder.Default
-
-            // Filter (based on settings) and sort them.
-            val results = filterSearchResults(
-                results = searchResults,
-                settings = settings.value
-            ).customSort(
-                criteria = defaultSortCriteria,
-                order = defaultSortOrder,
-            )
-
-            // If the results are empty then report and return immediately.
-            if (results.isEmpty()) {
-                _uiState.update {
-                    it.copy(
-                        results = emptyList(),
-                        resultsNotFound = true,
-                        isLoading = false,
-                        isInternetError = false,
-                    )
-                }
-                return@launch
-            }
-
-            // And update the UI.
+    /** Runs on every search result emitted by repository. */
+    private suspend fun onEachSearchResult(result: TorrentsRepositoryResult) {
+        // Return as soon as we get the bad internet connection status.
+        if (result.isNetworkError) {
             _uiState.update {
                 it.copy(
-                    results = results,
-                    currentSortCriteria = defaultSortCriteria,
-                    currentSortOrder = defaultSortOrder,
                     resultsNotFound = false,
                     isLoading = false,
-                    isInternetError = false,
+                    isSearching = false,
+                    isInternetError = true,
                 )
             }
+            return
+        }
+        // Save the original results.
+        searchResults += result.torrents.orEmpty()
+        // Is this the right way?
+        //
+        // combine() only supports up to 5 flows, so we can't collect
+        // and save these two like others.
+        val defaultSortCriteria = settingsRepository
+            .defaultSortCriteria
+            .firstOrNull()
+            ?: SortCriteria.Default
+        val defaultSortOrder = settingsRepository
+            .defaultSortOrder
+            .firstOrNull()
+            ?: SortOrder.Default
+
+        // Filter (based on settings) and sort them.
+        val results = filterSearchResults(
+            results = searchResults,
+            settings = settings.value
+        ).customSort(
+            criteria = defaultSortCriteria,
+            order = defaultSortOrder,
+        )
+
+        // And update the UI.
+        _uiState.update {
+            it.copy(
+                results = results,
+                currentSortCriteria = defaultSortCriteria,
+                currentSortOrder = defaultSortOrder,
+                resultsNotFound = false,
+                isLoading = false,
+                isSearching = true,
+                isInternetError = false,
+            )
+        }
+    }
+
+    /** Runs after the search completes. */
+    private fun onSearchCompletion() {
+        _uiState.update {
+            it.copy(
+                resultsNotFound = !it.isInternetError && it.results.isEmpty(),
+                isLoading = false,
+                isSearching = false,
+            )
         }
     }
 

@@ -23,6 +23,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
@@ -31,7 +32,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -45,6 +45,7 @@ import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 
 import com.prajwalch.torrentsearch.R
 import com.prajwalch.torrentsearch.data.SortCriteria
@@ -75,7 +76,7 @@ fun SearchScreen(
     snackbarHostState: SnackbarHostState,
     modifier: Modifier = Modifier,
 ) {
-    val uiState by viewModel.uiState.collectAsState()
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
     // Scroll to top button related.
     val coroutineScope = rememberCoroutineScope()
@@ -110,6 +111,7 @@ fun SearchScreen(
                 onDeleteSearchHistory = viewModel::deleteSearchHistory,
                 onNavigateToBookmarks = onNavigateToBookmarks,
                 onNavigateToSettings = onNavigateToSettings,
+                isSearching = uiState.isSearching,
             )
         },
         floatingActionButton = {
@@ -152,6 +154,7 @@ private fun SearchScreenTopBar(
     onDeleteSearchHistory: (SearchHistoryId) -> Unit,
     onNavigateToBookmarks: () -> Unit,
     onNavigateToSettings: () -> Unit,
+    isSearching: Boolean,
     modifier: Modifier = Modifier,
 ) {
     var searchBarExpanded by remember { mutableStateOf(false) }
@@ -217,6 +220,12 @@ private fun SearchScreenTopBar(
         )
         Spacer(modifier = Modifier.height(8.dp))
         HorizontalDivider()
+        AnimatedVisibility(
+            modifier = Modifier.fillMaxWidth(),
+            visible = isSearching,
+        ) {
+            LinearProgressIndicator()
+        }
     }
 }
 
@@ -319,8 +328,8 @@ private fun SearchScreenContent(
     Column(modifier = modifier, horizontalAlignment = Alignment.CenterHorizontally) {
         when {
             isLoading -> LoadingIndicator(modifier = Modifier.fillMaxSize())
-            
-            isInternetError -> NoInternetConnection(
+
+            isInternetError && results.isEmpty() -> NoInternetConnection(
                 modifier = Modifier.fillMaxSize(),
                 onRetry = onRetry,
             )
