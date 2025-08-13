@@ -3,6 +3,7 @@ package com.prajwalch.torrentsearch.ui.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+
 import com.prajwalch.torrentsearch.data.database.entities.SearchHistory
 import com.prajwalch.torrentsearch.data.repository.MaxNumResults
 import com.prajwalch.torrentsearch.data.repository.SearchHistoryRepository
