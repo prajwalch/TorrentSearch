@@ -1,6 +1,7 @@
 package com.prajwalch.torrentsearch.ui.screens
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -158,6 +159,9 @@ private fun SearchScreenTopBar(
     modifier: Modifier = Modifier,
 ) {
     var searchBarExpanded by remember { mutableStateOf(false) }
+    val searchBarHorizontalPadding by animateDpAsState(if (searchBarExpanded) 0.dp else 16.dp)
+
+
     val windowInsets = TopAppBarDefaults.windowInsets
 
     Column(
@@ -169,6 +173,9 @@ private fun SearchScreenTopBar(
     ) {
         Spacer(modifier = Modifier.height(8.dp))
         TopSearchBar(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = searchBarHorizontalPadding),
             query = query,
             onQueryChange = onQueryChange,
             onSearch = {
