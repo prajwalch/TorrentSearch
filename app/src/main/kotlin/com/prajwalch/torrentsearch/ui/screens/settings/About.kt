@@ -6,6 +6,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.painterResource
+
 import com.prajwalch.torrentsearch.BuildConfig
 import com.prajwalch.torrentsearch.R
 import com.prajwalch.torrentsearch.ui.components.SettingsItem
@@ -34,7 +35,7 @@ fun About(modifier: Modifier = Modifier) {
         )
         SettingsItem(
             onClick = { uriHandler.openUri(uri = repoUrl) },
-            leadingIconId = R.drawable.github_logo,
+            leadingIconId = R.drawable.ic_code,
             headlineId = R.string.setting_source_code,
             supportingContent = repoUrl.removePrefix("https://"),
             trailingContent = {
