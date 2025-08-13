@@ -3,6 +3,7 @@
 ![ic_launcher](https://github.com/prajwalch/TorrentSearch/blob/main/fastlane/metadata/android/en-US/images/icon.png)
 
 [![Latest release](https://img.shields.io/github/v/release/prajwalch/TorrentSearch?style=for-the-badge)](https://github.com/prajwalch/TorrentSearch/releases)
+![F-Droid Version](https://img.shields.io/f-droid/v/com.prajwalch.torrentsearch?style=for-the-badge&color=blue)
 [![IzzyOnDroid version](https://img.shields.io/endpoint?url=https://apt.izzysoft.de/fdroid/api/v1/shield/com.prajwalch.torrentsearch&style=for-the-badge)](https://apt.izzysoft.de/fdroid/index/apk/com.prajwalch.torrentsearch)
 [![Downloads](https://img.shields.io/github/downloads/prajwalch/TorrentSearch/total?style=for-the-badge)](https://github.com/prajwalch/TorrentSearch/releases)
 
@@ -51,9 +52,14 @@ providers.
 
 ## Download
 
-[<img src="https://github.com/machiav3lli/oandbackupx/blob/034b226cea5c1b30eb4f6a6f313e4dadcbb0ece4/badge_github.png" alt="Get it on GitHub" height="80">](https://github.com/prajwalch/TorrentSearch/releases/latest/)
+[<img src="https://f-droid.org/badge/get-it-on.png" alt="Get it on F-Droid" height="80">](https://f-droid.org/packages/com.prajwalch.torrentsearch)
+<br />
 [<img src="https://gitlab.com/IzzyOnDroid/repo/-/raw/master/assets/IzzyOnDroid.png" height="80" alt="Get it on IzzyOnDroid">](https://apt.izzysoft.de/fdroid/index/apk/com.prajwalch.torrentsearch)
+<br />
+[<img src="https://github.com/machiav3lli/oandbackupx/blob/034b226cea5c1b30eb4f6a6f313e4dadcbb0ece4/badge_github.png" alt="Get it on GitHub" height="80">](https://github.com/prajwalch/TorrentSearch/releases/latest/)
+<br />
 [<img src="https://github.com/ImranR98/Obtainium/blob/main/assets/graphics/badge_obtainium.png" alt="Get it on Obtainium" height="55">](https://apps.obtainium.imranr.dev/redirect?r=obtainium://add/https://github.com/prajwalch/TorrentSearch/)
+
 
 The Nightly versions are also available under the artifact section of workflow run (You may require
 to logging in to Github). These are created for
