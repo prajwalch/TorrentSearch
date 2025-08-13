@@ -109,6 +109,17 @@ class SearchViewModel(
         initialValue = SearchSettings(),
     )
 
+    /** The default sort options. */
+    private val defaultSortOptions = combine(
+        settingsRepository.defaultSortCriteria,
+        settingsRepository.defaultSortOrder,
+        ::Pair,
+    ).stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.Eagerly,
+        initialValue = Pair(SortCriteria.Default, SortOrder.Default),
+    )
+
     /** Saved search history. */
     private val searchHistory = combine(
         settingsRepository.showSearchHistory,
@@ -218,10 +229,14 @@ class SearchViewModel(
             return
         }
 
+        val (defaultSortCriteria, defaultSortOrder) = defaultSortOptions.value
+
         // Prepare for new search.
         _uiState.update {
             it.copy(
                 results = emptyList(),
+                currentSortCriteria = defaultSortCriteria,
+                currentSortOrder = defaultSortOrder,
                 resultsNotFound = false,
                 isLoading = true,
                 isSearching = false,
@@ -273,7 +288,7 @@ class SearchViewModel(
     }
 
     /** Runs on every search result emitted by repository. */
-    private suspend fun onEachSearchResult(result: TorrentsRepositoryResult) {
+    private fun onEachSearchResult(result: TorrentsRepositoryResult) {
         // Return as soon as we get the bad internet connection status.
         if (result.isNetworkError) {
             _uiState.update {
@@ -286,36 +301,26 @@ class SearchViewModel(
             }
             return
         }
+
         // Save the original results.
-        searchResults += result.torrents.orEmpty()
-        // Is this the right way?
-        //
-        // combine() only supports up to 5 flows, so we can't collect
-        // and save these two like others.
-        val defaultSortCriteria = settingsRepository
-            .defaultSortCriteria
-            .firstOrNull()
-            ?: SortCriteria.Default
-        val defaultSortOrder = settingsRepository
-            .defaultSortOrder
-            .firstOrNull()
-            ?: SortOrder.Default
+        searchResults += result.torrents ?: return
+
+        // Return if the search results are empty.
+        if (searchResults.isEmpty()) return
 
         // Filter (based on settings) and sort them.
         val results = filterSearchResults(
             results = searchResults,
             settings = settings.value
         ).customSort(
-            criteria = defaultSortCriteria,
-            order = defaultSortOrder,
+            criteria = _uiState.value.currentSortCriteria,
+            order = _uiState.value.currentSortOrder,
         )
 
         // And update the UI.
         _uiState.update {
             it.copy(
                 results = results,
-                currentSortCriteria = defaultSortCriteria,
-                currentSortOrder = defaultSortOrder,
                 resultsNotFound = false,
                 isLoading = false,
                 isSearching = true,
