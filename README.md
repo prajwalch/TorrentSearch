@@ -3,7 +3,7 @@
 ![ic_launcher](https://github.com/prajwalch/TorrentSearch/blob/main/fastlane/metadata/android/en-US/images/icon.png)
 
 [![Latest release](https://img.shields.io/github/v/release/prajwalch/TorrentSearch?style=for-the-badge)](https://github.com/prajwalch/TorrentSearch/releases)
-![F-Droid Version](https://img.shields.io/f-droid/v/com.prajwalch.torrentsearch?style=for-the-badge&color=blue)
+[![F-Droid Version](https://img.shields.io/f-droid/v/com.prajwalch.torrentsearch?style=for-the-badge&color=blue)](https://f-droid.org/packages/com.prajwalch.torrentsearch)
 [![IzzyOnDroid version](https://img.shields.io/endpoint?url=https://apt.izzysoft.de/fdroid/api/v1/shield/com.prajwalch.torrentsearch&style=for-the-badge)](https://apt.izzysoft.de/fdroid/index/apk/com.prajwalch.torrentsearch)
 [![Downloads](https://img.shields.io/github/downloads/prajwalch/TorrentSearch/total?style=for-the-badge)](https://github.com/prajwalch/TorrentSearch/releases)
 
