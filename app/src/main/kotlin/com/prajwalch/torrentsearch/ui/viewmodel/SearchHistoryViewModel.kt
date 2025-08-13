@@ -4,7 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 
-import com.prajwalch.torrentsearch.data.SearchHistoryRepository
+import com.prajwalch.torrentsearch.data.repository.SearchHistoryRepository
 
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.map

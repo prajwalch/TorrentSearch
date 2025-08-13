@@ -4,11 +4,11 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 
-import com.prajwalch.torrentsearch.data.DarkTheme
-import com.prajwalch.torrentsearch.data.MaxNumResults
-import com.prajwalch.torrentsearch.data.SettingsRepository
-import com.prajwalch.torrentsearch.data.SortCriteria
-import com.prajwalch.torrentsearch.data.SortOrder
+import com.prajwalch.torrentsearch.data.repository.DarkTheme
+import com.prajwalch.torrentsearch.data.repository.MaxNumResults
+import com.prajwalch.torrentsearch.data.repository.SettingsRepository
+import com.prajwalch.torrentsearch.data.repository.SortCriteria
+import com.prajwalch.torrentsearch.data.repository.SortOrder
 import com.prajwalch.torrentsearch.models.Category
 import com.prajwalch.torrentsearch.providers.SearchProviders
 

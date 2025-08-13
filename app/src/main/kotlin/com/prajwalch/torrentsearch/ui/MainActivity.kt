@@ -1,4 +1,4 @@
-package com.prajwalch.torrentsearch
+package com.prajwalch.torrentsearch.ui
 
 import android.content.ActivityNotFoundException
 import android.content.Context
@@ -20,14 +20,13 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.preferencesDataStore
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 
-import com.prajwalch.torrentsearch.data.DarkTheme
-import com.prajwalch.torrentsearch.data.SearchHistoryRepository
-import com.prajwalch.torrentsearch.data.SettingsRepository
-import com.prajwalch.torrentsearch.data.TorrentsRepository
-import com.prajwalch.torrentsearch.database.TorrentSearchDatabase
+import com.prajwalch.torrentsearch.data.database.TorrentSearchDatabase
+import com.prajwalch.torrentsearch.data.repository.DarkTheme
+import com.prajwalch.torrentsearch.data.repository.SearchHistoryRepository
+import com.prajwalch.torrentsearch.data.repository.SettingsRepository
+import com.prajwalch.torrentsearch.data.repository.TorrentsRepository
 import com.prajwalch.torrentsearch.models.MagnetUri
 import com.prajwalch.torrentsearch.network.HttpClient
-import com.prajwalch.torrentsearch.ui.TorrentSearchApp
 import com.prajwalch.torrentsearch.ui.theme.TorrentSearchTheme
 import com.prajwalch.torrentsearch.ui.viewmodel.BookmarksViewModel
 import com.prajwalch.torrentsearch.ui.viewmodel.SearchHistoryViewModel

@@ -19,7 +19,7 @@ import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 
 import com.prajwalch.torrentsearch.R
-import com.prajwalch.torrentsearch.data.DarkTheme
+import com.prajwalch.torrentsearch.data.repository.DarkTheme
 import com.prajwalch.torrentsearch.ui.components.DialogListItem
 import com.prajwalch.torrentsearch.ui.components.SettingsDialog
 import com.prajwalch.torrentsearch.ui.components.SettingsItem
@@ -65,7 +65,7 @@ fun AppearanceSettings(modifier: Modifier = Modifier) {
                 },
             )
         }
-        
+
         SettingsItem(
             onClick = { showDarkThemeDialog = true },
             leadingIconId = R.drawable.ic_dark_mode,

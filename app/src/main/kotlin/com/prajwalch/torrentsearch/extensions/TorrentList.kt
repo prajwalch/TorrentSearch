@@ -1,7 +1,7 @@
 package com.prajwalch.torrentsearch.extensions
 
-import com.prajwalch.torrentsearch.data.SortCriteria
-import com.prajwalch.torrentsearch.data.SortOrder
+import com.prajwalch.torrentsearch.data.repository.SortCriteria
+import com.prajwalch.torrentsearch.data.repository.SortOrder
 import com.prajwalch.torrentsearch.models.Torrent
 import com.prajwalch.torrentsearch.utils.prettySizeToBytes
 

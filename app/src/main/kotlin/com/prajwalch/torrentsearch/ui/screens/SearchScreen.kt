@@ -49,8 +49,8 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 
 import com.prajwalch.torrentsearch.R
-import com.prajwalch.torrentsearch.data.SortCriteria
-import com.prajwalch.torrentsearch.data.SortOrder
+import com.prajwalch.torrentsearch.data.repository.SortCriteria
+import com.prajwalch.torrentsearch.data.repository.SortOrder
 import com.prajwalch.torrentsearch.models.Category
 import com.prajwalch.torrentsearch.models.Torrent
 import com.prajwalch.torrentsearch.ui.components.CategoryChipsRow

@@ -1,4 +1,4 @@
-package com.prajwalch.torrentsearch.data
+package com.prajwalch.torrentsearch.data.repository
 
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences

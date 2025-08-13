@@ -22,7 +22,7 @@ import org.junit.Test
 class ProviderTest {
 
     // Change this to test any specific provider implementation
-    private val provider = Knaben(id = "")
+    private val provider = Knaben()
 
     /**
      * 🔎 Basic Search Test
