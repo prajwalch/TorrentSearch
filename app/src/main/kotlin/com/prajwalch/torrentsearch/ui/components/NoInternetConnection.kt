@@ -3,7 +3,6 @@ package com.prajwalch.torrentsearch.ui.components
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Button
@@ -23,14 +22,21 @@ import com.prajwalch.torrentsearch.R
 fun NoInternetConnection(onRetry: () -> Unit, modifier: Modifier = Modifier) {
     Column(
         modifier = modifier,
-        verticalArrangement = Arrangement.Center,
+        verticalArrangement = Arrangement.spacedBy(
+            space = 16.dp,
+            alignment = Alignment.CenterVertically,
+        ),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
+        Icon(
+            modifier = Modifier.size(58.dp),
+            painter = painterResource(R.drawable.ic_signal_wifi_off),
+            contentDescription = stringResource(R.string.desc_retry_connection),
+        )
         Text(
             text = stringResource(R.string.msg_no_internet_connection),
             fontWeight = FontWeight.Bold,
         )
-        Spacer(modifier = Modifier.height(10.dp))
         Button(onClick = onRetry) {
             Icon(
                 modifier = Modifier.size(ButtonDefaults.IconSize),
@@ -38,7 +44,7 @@ fun NoInternetConnection(onRetry: () -> Unit, modifier: Modifier = Modifier) {
                 contentDescription = stringResource(R.string.desc_retry_connection),
             )
             Spacer(modifier = Modifier.width(ButtonDefaults.IconSpacing))
-            Text(text = stringResource(R.string.button_retry))
+            Text(text = stringResource(R.string.button_try_again))
         }
     }
 }

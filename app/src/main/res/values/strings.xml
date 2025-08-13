@@ -32,7 +32,7 @@
     <string name="button_select_search_history">Select search history</string>
     <!-- No internet connection error -->
     <string name="msg_no_internet_connection">No internet connection</string>
-    <string name="button_retry">Retry</string>
+    <string name="button_try_again">Try again</string>
     <string name="desc_retry_connection">Retry connection</string>
     <string name="msg_no_results_found">No results found</string>
     <!-- Empty placeholder -->
