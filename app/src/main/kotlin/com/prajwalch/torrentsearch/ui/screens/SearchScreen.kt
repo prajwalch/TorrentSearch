@@ -161,7 +161,6 @@ private fun SearchScreenTopBar(
     var searchBarExpanded by remember { mutableStateOf(false) }
     val searchBarHorizontalPadding by animateDpAsState(if (searchBarExpanded) 0.dp else 16.dp)
 
-
     val windowInsets = TopAppBarDefaults.windowInsets
 
     Column(
@@ -171,7 +170,6 @@ private fun SearchScreenTopBar(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
     ) {
-        Spacer(modifier = Modifier.height(8.dp))
         TopSearchBar(
             modifier = Modifier
                 .fillMaxWidth()
@@ -199,7 +197,6 @@ private fun SearchScreenTopBar(
                         onNavigateToBookmarks = onNavigateToBookmarks,
                         onNavigateToSettings = onNavigateToSettings,
                     )
-
                 }
             },
         ) {
