@@ -3,6 +3,7 @@ package com.prajwalch.torrentsearch.ui.screens
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -78,7 +79,7 @@ fun BookmarksScreen(
     ) { innerPadding ->
         if (uiState.bookmarks.isEmpty()) {
             EmptyPlaceholder(
-                modifier = Modifier.fillMaxSize(),
+                modifier = Modifier.fillMaxSize().padding(innerPadding),
                 headlineId = R.string.msg_nothing_here_yet,
             )
         } else {
