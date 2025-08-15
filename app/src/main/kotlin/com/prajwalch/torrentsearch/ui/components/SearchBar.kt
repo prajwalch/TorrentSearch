@@ -10,7 +10,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SearchBar
 import androidx.compose.material3.SearchBarDefaults
@@ -22,11 +21,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.platform.LocalFocusManager
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.isTraversalGroup
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.traversalIndex
+
 import com.prajwalch.torrentsearch.R
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -135,18 +134,14 @@ private fun SearchBarInputField(
 
 @Composable
 private fun LeadingIcon(isFocused: Boolean, onBack: () -> Unit, modifier: Modifier = Modifier) {
-    AnimatedContent(targetState = isFocused) { focused ->
+    AnimatedContent(modifier = modifier, targetState = isFocused) { focused ->
         if (focused) {
-            IconButton(onClick = onBack) {
-                Icon(
-                    modifier = modifier,
-                    painter = painterResource(R.drawable.ic_arrow_back),
-                    contentDescription = stringResource(R.string.desc_unfocus_search_bar),
-                )
-            }
+            NavigateBackIconButton(
+                onClick = onBack,
+                contentDescriptionId = R.string.desc_unfocus_search_bar,
+            )
         } else {
             Icon(
-                modifier = modifier,
                 imageVector = Icons.Outlined.Search,
                 contentDescription = null,
             )
