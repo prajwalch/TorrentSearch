@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material3.BottomSheetDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -48,8 +47,6 @@ fun TorrentActionsBottomSheet(
 ) {
     // Always expand the sheet to full.
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
-    // Make the background slightly darker.
-    val scrimColor = BottomSheetDefaults.ScrimColor.copy(alpha = 0.5f)
 
     fun actionWithDismiss(action: () -> Unit) = {
         action()
@@ -60,7 +57,6 @@ fun TorrentActionsBottomSheet(
         modifier = modifier,
         onDismissRequest = onDismissRequest,
         sheetState = sheetState,
-        scrimColor = scrimColor,
     ) {
         TorrentActionsBottomSheetHeader(
             modifier = Modifier.padding(horizontal = 16.dp),
