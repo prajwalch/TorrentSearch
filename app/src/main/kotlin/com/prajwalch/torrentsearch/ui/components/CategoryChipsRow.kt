@@ -27,12 +27,13 @@ fun CategoryChipsRow(
     selectedCategory: Category,
     onCategorySelect: (Category) -> Unit,
     modifier: Modifier = Modifier,
+    contentPadding: PaddingValues = PaddingValues(0.dp),
 ) {
     LazyRow(
         modifier = modifier,
-        contentPadding = PaddingValues(horizontal = 16.dp),
         horizontalArrangement = Arrangement.spacedBy(8.dp),
         verticalAlignment = Alignment.CenterVertically,
+        contentPadding = contentPadding,
     ) {
         items(
             items = categories,
@@ -41,7 +42,7 @@ fun CategoryChipsRow(
         ) { category ->
             CategoryChip(
                 modifier = Modifier.animateItem(),
-                label = category.toString(),
+                label = category.name,
                 selected = selectedCategory == category,
                 onClick = { onCategorySelect(category) },
             )
@@ -56,7 +57,6 @@ private fun CategoryChip(
     label: String,
     modifier: Modifier = Modifier,
 ) {
-    val leadingIconSize = FilterChipDefaults.IconSize
     val border = FilterChipDefaults
         .filterChipBorder(
             enabled = true,
@@ -71,11 +71,11 @@ private fun CategoryChip(
         label = { Text(label) },
         leadingIcon = {
             if (selected) Icon(
-                modifier = Modifier.size(leadingIconSize),
+                modifier = Modifier.size(FilterChipDefaults.IconSize),
                 imageVector = Icons.Outlined.Done,
                 contentDescription = stringResource(R.string.desc_selected_category),
             )
         },
-        border = border
+        border = border,
     )
 }

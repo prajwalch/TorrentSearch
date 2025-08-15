@@ -3,12 +3,10 @@ package com.prajwalch.torrentsearch.ui.screens.settings
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.ListItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -22,6 +20,8 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.prajwalch.torrentsearch.R
 import com.prajwalch.torrentsearch.ui.components.EmptyPlaceholder
 import com.prajwalch.torrentsearch.ui.components.NavigateBackIconButton
+import com.prajwalch.torrentsearch.ui.components.SearchHistoryList
+import com.prajwalch.torrentsearch.ui.components.SearchHistoryListItem
 import com.prajwalch.torrentsearch.ui.viewmodel.SearchHistoryViewModel
 
 @Composable
@@ -31,7 +31,6 @@ fun SearchHistoryScreen(
     modifier: Modifier = Modifier,
 ) {
     val searchHistoryList by viewModel.uiState.collectAsStateWithLifecycle()
-    println(searchHistoryList)
 
     Scaffold(
         modifier = modifier,
@@ -45,22 +44,24 @@ fun SearchHistoryScreen(
     ) { innerPadding ->
         if (searchHistoryList.isEmpty()) {
             EmptyPlaceholder(
-                modifier = Modifier.fillMaxSize(),
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(innerPadding),
                 headlineId = R.string.msg_nothing_here_yet,
             )
         } else {
-            LazyColumn(
+            SearchHistoryList(
                 modifier = Modifier.consumeWindowInsets(innerPadding),
-                contentPadding = innerPadding,
-            ) {
-                items(items = searchHistoryList, key = { it.id }) {
+                histories = searchHistoryList,
+                historyListItem = {
                     SearchHistoryListItem(
                         modifier = Modifier.animateItem(),
                         query = it.query,
-                        onDelete = { viewModel.deleteSearchHistory(id = it.id) },
+                        onDeleteClick = { viewModel.deleteSearchHistory(id = it.id) },
                     )
-                }
-            }
+                },
+                contentPadding = innerPadding,
+            )
         }
     }
 }
@@ -94,25 +95,5 @@ private fun SearchHistoryScreenTopBar(
                 }
             }
         }
-    )
-}
-
-@Composable
-private fun SearchHistoryListItem(
-    query: String,
-    onDelete: () -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    ListItem(
-        modifier = modifier,
-        headlineContent = { Text(text = query) },
-        trailingContent = {
-            IconButton(onClick = onDelete) {
-                Icon(
-                    painter = painterResource(R.drawable.ic_delete),
-                    contentDescription = null,
-                )
-            }
-        },
     )
 }

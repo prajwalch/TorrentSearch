@@ -7,7 +7,6 @@ import androidx.compose.foundation.interaction.collectIsFocusedAsState
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.outlined.ArrowBack
 import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -21,7 +20,9 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.isTraversalGroup
 import androidx.compose.ui.semantics.semantics
@@ -30,7 +31,7 @@ import com.prajwalch.torrentsearch.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TopSearchBar(
+fun SearchBar(
     query: String,
     onQueryChange: (String) -> Unit,
     onSearch: () -> Unit,
@@ -41,15 +42,15 @@ fun TopSearchBar(
     trailingIcon: @Composable (() -> Unit)? = null,
     content: @Composable (ColumnScope.() -> Unit),
 ) {
-    val unfocusedContainerColor = MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.5f)
+    val unfocusedContainerColor = lerp(
+        start = MaterialTheme.colorScheme.secondaryContainer,
+        stop = MaterialTheme.colorScheme.surface,
+        fraction = 0.4f,
+    )
     val focusedContainerColor = MaterialTheme.colorScheme.surface
 
     val containerColor by animateColorAsState(
-        if (expanded) {
-            focusedContainerColor
-        } else {
-            unfocusedContainerColor
-        }
+        if (expanded) focusedContainerColor else unfocusedContainerColor
     )
 
     Box(modifier = Modifier.semantics { isTraversalGroup = true }) {
@@ -139,7 +140,7 @@ private fun LeadingIcon(isFocused: Boolean, onBack: () -> Unit, modifier: Modifi
             IconButton(onClick = onBack) {
                 Icon(
                     modifier = modifier,
-                    imageVector = Icons.AutoMirrored.Outlined.ArrowBack,
+                    painter = painterResource(R.drawable.ic_arrow_back),
                     contentDescription = stringResource(R.string.desc_unfocus_search_bar),
                 )
             }
