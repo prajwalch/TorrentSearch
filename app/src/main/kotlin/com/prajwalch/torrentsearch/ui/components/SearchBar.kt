@@ -52,12 +52,11 @@ fun SearchBar(
         if (expanded) focusedContainerColor else unfocusedContainerColor
     )
 
-    Box(modifier = Modifier.semantics { isTraversalGroup = true }) {
+    Box(modifier = modifier.semantics { isTraversalGroup = true }) {
         SearchBar(
             modifier = Modifier
                 .align(Alignment.TopCenter)
-                .semantics { traversalIndex = 0f }
-                .then(modifier),
+                .semantics { traversalIndex = 0f },
             inputField = {
                 SearchBarInputField(
                     query = query,
