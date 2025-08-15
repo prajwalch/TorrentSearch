@@ -20,12 +20,12 @@ import com.prajwalch.torrentsearch.providers.SearchProviderId
 import com.prajwalch.torrentsearch.providers.SearchProviders
 
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onEach
@@ -66,77 +66,55 @@ data class SearchHistoryUiState(val id: SearchHistoryId, val query: String) {
 }
 
 /** Relevant settings for the Search screen. */
-private data class SearchSettings(
+private data class Settings(
+    /** General settings. */
     val enableNSFWMode: Boolean = false,
-    val enabledSearchProvidersId: Set<SearchProviderId> = emptySet(),
-    val hideResultsWithZeroSeeders: Boolean = false,
-    val maxNumResults: MaxNumResults = MaxNumResults.Unlimited,
+    /** Search settings. */
+    val search: SearchSettings = SearchSettings(),
+    /** Search history settings. */
     val saveSearchHistory: Boolean = true,
 )
 
-/** Drives the search logic. */
+/** Search related settings. */
+private data class SearchSettings(
+    val enabledSearchProvidersId: Set<SearchProviderId> = emptySet(),
+    val defaultCategory: Category = Category.All,
+    val defaultSortOptions: DefaultSortOptions = DefaultSortOptions(),
+    val hideResultsWithZeroSeeders: Boolean = false,
+    val maxNumResults: MaxNumResults = MaxNumResults.Unlimited,
+)
+
+/** ViewModel which handles the business logic of Search screen. */
 class SearchViewModel(
     private val settingsRepository: SettingsRepository,
     private val searchHistoryRepository: SearchHistoryRepository,
     private val torrentsRepository: TorrentsRepository,
 ) : ViewModel() {
-    /**
-     * Current UI state
-     *
-     * State change occurs in 3 conditions:
-     * - on UI demand
-     * - on settings change
-     * - on search histories change
-     */
+    /** UI state. */
     private val _uiState = MutableStateFlow(SearchUiState())
     val uiState = _uiState.asStateFlow()
 
-    /**
-     * Current search settings.
-     *
-     * [observeSettings] observes it and automatically updates the UI.
-     */
+    /** All the settings that this ViewModel cares. */
     private val settings = combine(
         settingsRepository.enableNSFWMode,
-        settingsRepository.enabledSearchProvidersId,
-        settingsRepository.hideResultsWithZeroSeeders,
-        settingsRepository.maxNumResults,
+        settingsRepository.searchSettings(),
         settingsRepository.saveSearchHistory,
-        ::SearchSettings
-    ).stateIn(
-        scope = viewModelScope,
-        started = SharingStarted.Eagerly,
-        initialValue = SearchSettings(),
+        ::Settings,
     )
+        .onEach(::onSettingsChange)
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.Eagerly,
+            initialValue = Settings(),
+        )
 
-    /** The default sort options. */
-    private val defaultSortOptions = combine(
-        settingsRepository.defaultSortCriteria,
-        settingsRepository.defaultSortOrder,
-        ::Pair,
-    ).stateIn(
-        scope = viewModelScope,
-        started = SharingStarted.Eagerly,
-        initialValue = Pair(SortCriteria.Default, SortOrder.Default),
-    )
-
-    /** Saved search history. */
-    private val searchHistory = combine(
-        settingsRepository.showSearchHistory,
-        searchHistoryRepository.getAll(),
-    ) { showSearchHistory, searchHistory ->
-        if (showSearchHistory) searchHistory else emptyList()
-    }.stateIn(
-        scope = viewModelScope,
-        started = SharingStarted.Eagerly,
-        initialValue = emptyList(),
-    )
+    private var isDefaultCategoryLoaded = false
 
     /**
-     * Current on-going search.
+     * On-going search.
      *
-     * Before performing a new search, on-going search must be canceled
-     * even if it is not completed.
+     * Before initiating a new search, on-going search must be canceled
+     * even if it's not completed.
      */
     private var searchJob: Job? = null
 
@@ -153,35 +131,7 @@ class SearchViewModel(
     private var searchResults: List<Torrent> = emptyList()
 
     init {
-        loadDefaultCategory()
-        observeSettings()
         observeSearchHistory()
-    }
-
-    /** Loads the default category and updates the UI state. */
-    private fun loadDefaultCategory() = viewModelScope.launch {
-        settingsRepository.defaultCategory.firstOrNull()?.let { category ->
-            val selectedCategory = if (category in _uiState.value.categories) {
-                category
-            } else {
-                Category.All
-            }
-            _uiState.update { it.copy(selectedCategory = selectedCategory) }
-        }
-    }
-
-    /** Observes the settings and automatically updates the UI state. */
-    private fun observeSettings() = viewModelScope.launch {
-        settings.collect { searchSettings ->
-            updateUiStateOnSettingsChange(settings = searchSettings)
-        }
-    }
-
-    /** Observes search history changes and automatically updates the UI. */
-    private fun observeSearchHistory() = viewModelScope.launch {
-        searchHistory.collect { searchHistory ->
-            _uiState.update { it.copy(histories = searchHistory.toUiStates()) }
-        }
     }
 
     /** Changes the current query with the given query. */
@@ -229,14 +179,14 @@ class SearchViewModel(
             return
         }
 
-        val (defaultSortCriteria, defaultSortOrder) = defaultSortOptions.value
+        val defaultSortOptions = settings.value.search.defaultSortOptions
 
-        // Prepare for new search.
+        // Prepare for the new search.
         _uiState.update {
             it.copy(
                 results = emptyList(),
-                currentSortCriteria = defaultSortCriteria,
-                currentSortOrder = defaultSortOrder,
+                currentSortCriteria = defaultSortOptions.sortCriteria,
+                currentSortOrder = defaultSortOptions.sortOrder,
                 resultsNotFound = false,
                 isLoading = true,
                 isSearching = false,
@@ -261,8 +211,8 @@ class SearchViewModel(
             // inserting same query (one without the leading/trailing whitespace
             // and the other with whitespace).
             //
-            // We can't trim from the `setQuery` function simply because doing so
-            // won't allow the user to insert a whitespace at all.
+            // We can't trim from the `changeQuery` function simply because
+            // doing so won't allow the user to insert a whitespace at all.
             if (settings.value.saveSearchHistory) {
                 searchHistoryRepository.add(
                     searchHistory = SearchHistory(query = _uiState.value.query.trim())
@@ -271,7 +221,7 @@ class SearchViewModel(
 
             // Acquire the enabled providers.
             val searchProviders = SearchProviders.findByIds(
-                ids = settings.value.enabledSearchProvidersId,
+                ids = settings.value.search.enabledSearchProvidersId,
             )
 
             torrentsRepository
@@ -340,17 +290,33 @@ class SearchViewModel(
         }
     }
 
-    /** Updates the UI state based on the given settings. */
-    private fun updateUiStateOnSettingsChange(settings: SearchSettings) {
-        // Filter selectable categories.
-        val categories = Category.entries.filter { settings.enableNSFWMode || !it.isNSFW }
-        // Change the currently selected category to 'All' only if needed.
+    /** Runs when settings changes. */
+    private fun onSettingsChange(settings: Settings) {
+        val categories = Category
+            .entries
+            .filter { settings.enableNSFWMode || !it.isNSFW }
+
         val currentlySelectedCategory = _uiState.value.selectedCategory
-        val selectedCategory = if (currentlySelectedCategory in categories) {
-            currentlySelectedCategory
-        } else {
-            Category.All
+        val selectedCategory = when {
+            !isDefaultCategoryLoaded -> {
+                isDefaultCategoryLoaded = true
+                settings.search.defaultCategory
+            }
+
+            currentlySelectedCategory in categories -> currentlySelectedCategory
+            settings.search.defaultCategory in categories -> settings.search.defaultCategory
+            else -> Category.All
         }
+
+        _uiState.update {
+            it.copy(
+                categories = categories,
+                selectedCategory = selectedCategory,
+            )
+        }
+
+        if (searchResults.isEmpty()) return
+
         // Filter and sort current results.
         val results = filterSearchResults(
             results = searchResults,
@@ -360,14 +326,24 @@ class SearchViewModel(
             order = _uiState.value.currentSortOrder,
         )
 
-        _uiState.update { uIState ->
-            uIState.copy(
-                categories = categories,
-                selectedCategory = selectedCategory,
+        _uiState.update {
+            it.copy(
                 results = results,
                 resultsNotFound = searchResults.isNotEmpty() && results.isEmpty(),
             )
         }
+    }
+
+    /** Observes search history changes and automatically updates the UI. */
+    private fun observeSearchHistory() {
+        combine(
+            settingsRepository.showSearchHistory,
+            searchHistoryRepository.getAll(),
+        ) { showSearchHistory, searchHistory ->
+            if (showSearchHistory) searchHistory else emptyList()
+        }.onEach { histories ->
+            _uiState.update { it.copy(histories = histories.toUiStates()) }
+        }.launchIn(scope = viewModelScope)
     }
 
     /**
@@ -376,16 +352,16 @@ class SearchViewModel(
      */
     private fun filterSearchResults(
         results: List<Torrent>,
-        settings: SearchSettings,
+        settings: Settings,
     ): List<Torrent> {
         val filteredResults = results
             .filterNSFW(isNSFWModeEnabled = settings.enableNSFWMode)
-            .filter { it.providerId in settings.enabledSearchProvidersId }
-            .filter { !settings.hideResultsWithZeroSeeders || it.seeders != 0u }
+            .filter { it.providerId in settings.search.enabledSearchProvidersId }
+            .filter { !settings.search.hideResultsWithZeroSeeders || it.seeders != 0u }
 
         return when {
-            settings.maxNumResults.isUnlimited() -> filteredResults
-            else -> filteredResults.take(settings.maxNumResults.n)
+            settings.search.maxNumResults.isUnlimited() -> filteredResults
+            else -> filteredResults.take(settings.search.maxNumResults.n)
         }
     }
 
@@ -410,3 +386,21 @@ class SearchViewModel(
 
 /** Converts list of search history entity to list of UI states. */
 private fun List<SearchHistory>.toUiStates() = map { SearchHistoryUiState.fromEntity(it) }
+
+/** Returns a flow for search related settings. */
+private fun SettingsRepository.searchSettings(): Flow<SearchSettings> {
+    val defaultSortOptionsFlow = combine(
+        defaultSortCriteria,
+        defaultSortOrder,
+        ::DefaultSortOptions,
+    )
+
+    return combine(
+        enabledSearchProvidersId,
+        defaultCategory,
+        defaultSortOptionsFlow,
+        hideResultsWithZeroSeeders,
+        maxNumResults,
+        ::SearchSettings
+    )
+}
