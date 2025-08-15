@@ -203,7 +203,6 @@ private fun TopSearchBar(
         },
     ) {
         SearchHistoryList(
-            modifier = modifier,
             histories = histories,
             historyListItem = {
                 SearchHistoryListItem(
@@ -232,7 +231,7 @@ private fun SearchBarTrailingIcon(
 ) {
     Row(modifier = modifier, verticalAlignment = Alignment.CenterVertically) {
         AnimatedVisibility(visible = !isQueryEmpty) {
-            IconButton(onClick = onClearQuery, modifier = modifier) {
+            IconButton(onClick = onClearQuery) {
                 Icon(
                     imageVector = Icons.Default.Clear,
                     contentDescription = stringResource(R.string.desc_clear_search_query),
@@ -240,7 +239,7 @@ private fun SearchBarTrailingIcon(
             }
         }
 
-        IconButton(modifier = modifier, onClick = onMoreClick) {
+        IconButton(onClick = onMoreClick) {
             Icon(
                 painter = painterResource(R.drawable.ic_more_vertical),
                 contentDescription = stringResource(R.string.button_go_to_settings_screen),
