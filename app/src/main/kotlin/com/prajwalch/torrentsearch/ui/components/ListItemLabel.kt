@@ -28,7 +28,7 @@ object ListItemLabelDefaults {
 
     /** Default container color for a list item label. */
     val containerColor: Color
-        @Composable get() = MaterialTheme.colorScheme.surfaceContainer
+        @Composable get() = MaterialTheme.colorScheme.surfaceContainerHigh
 
     /** Default padding for a list item label. */
     val Padding = PaddingValues(horizontal = 8.dp, vertical = 4.dp)

@@ -14,18 +14,18 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.ListItem
+import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 
 import com.prajwalch.torrentsearch.R
-import com.prajwalch.torrentsearch.models.Category
 import com.prajwalch.torrentsearch.models.Torrent
 
 import my.nanihadesuka.compose.LazyColumnScrollbar
@@ -103,12 +103,14 @@ fun TorrentListItem(torrent: Torrent, modifier: Modifier = Modifier) {
     ListItem(
         modifier = modifier,
         overlineContent = {
-            TorrentListItemOverlineContent(
-                modifier = Modifier.fillMaxWidth(),
-                provider = torrent.providerName,
-                uploadDate = torrent.uploadDate,
-                category = torrent.category,
-            )
+            Column(verticalArrangement = Arrangement.Center) {
+                TorrentProviderNameAndUploadDate(
+                    provider = torrent.providerName,
+                    uploadDate = torrent.uploadDate,
+                )
+
+                if (torrent.isNSFW()) NSFWTag()
+            }
         },
         headlineContent = {
             Text(
@@ -117,49 +119,29 @@ fun TorrentListItem(torrent: Torrent, modifier: Modifier = Modifier) {
             )
         },
         supportingContent = {
-            TorrentMetadataInfo(
-                size = torrent.size,
-                seeders = torrent.seeders,
-                peers = torrent.peers,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 8.dp),
-            )
+            CompositionLocalProvider(
+                LocalTextStyle provides MaterialTheme.typography.bodySmall
+            ) {
+                TorrentMetadataInfo(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 8.dp),
+                    size = torrent.size,
+                    seeders = torrent.seeders,
+                    peers = torrent.peers,
+                )
+            }
         },
-    )
-    HorizontalDivider()
-}
-
-@Composable
-private fun TorrentListItemOverlineContent(
-    provider: String,
-    uploadDate: String,
-    category: Category?,
-    modifier: Modifier = Modifier,
-) {
-    Row(
-        modifier = modifier,
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        Column(verticalArrangement = Arrangement.Center) {
-            TorrentProviderNameAndUploadDate(
-                provider = provider,
-                uploadDate = uploadDate,
-            )
-
-            val categoryIsNSFWOrNull = category?.isNSFW ?: true
-            if (categoryIsNSFWOrNull) {
-                NSFWTag()
+        trailingContent = {
+            torrent.category?.let {
+                Text(
+                    text = it.name,
+                    color = MaterialTheme.colorScheme.secondary,
+                )
             }
         }
-        category?.let {
-            Text(
-                text = it.toString(),
-                color = MaterialTheme.colorScheme.secondary,
-            )
-        }
-    }
+    )
+    HorizontalDivider()
 }
 
 @Composable
@@ -177,7 +159,6 @@ private fun TorrentProviderNameAndUploadDate(
         Text(
             text = provider,
             color = MaterialTheme.colorScheme.primary,
-            fontWeight = FontWeight.SemiBold,
         )
         BulletPoint()
         Text(
