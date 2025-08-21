@@ -15,6 +15,7 @@
         android:roundIcon="@mipmap/ic_launcher"
         android:supportsRtl="true"
         android:theme="@style/Theme.TorrentSearch"
+        android:usesCleartextTraffic="true"
         tools:targetApi="36">
         <activity
             android:name=".ui.MainActivity"

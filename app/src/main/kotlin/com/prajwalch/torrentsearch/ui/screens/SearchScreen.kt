@@ -1,6 +1,5 @@
 package com.prajwalch.torrentsearch.ui.screens
 
-import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.clickable
@@ -122,13 +121,17 @@ fun SearchScreen(
                     },
                     contentPadding = PaddingValues(horizontal = 16.dp),
                 )
+
                 Spacer(modifier = Modifier.height(8.dp))
-                AnimatedContent(
+                HorizontalDivider()
+
+                AnimatedVisibility(
                     modifier = Modifier.fillMaxWidth(),
-                    targetState = uiState.isSearching,
-                ) { searching ->
-                    if (searching) LinearProgressIndicator() else HorizontalDivider()
+                    visible = uiState.isSearching,
+                ) {
+                    LinearProgressIndicator()
                 }
+
                 SearchScreenContent(
                     modifier = Modifier.fillMaxSize(),
                     results = uiState.results,

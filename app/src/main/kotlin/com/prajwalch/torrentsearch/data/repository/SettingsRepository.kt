@@ -10,12 +10,14 @@ import androidx.datastore.preferences.core.stringSetPreferencesKey
 
 import com.prajwalch.torrentsearch.models.Category
 import com.prajwalch.torrentsearch.providers.SearchProviderId
-import com.prajwalch.torrentsearch.providers.SearchProviders
 
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
-class SettingsRepository(private val dataStore: DataStore<Preferences>) {
+class SettingsRepository(
+    private val dataStore: DataStore<Preferences>,
+    searchProvidersRepository: SearchProvidersRepository,
+) {
     val enableDynamicTheme: Flow<Boolean> = dataStore
         .getOrDefault(key = ENABLE_DYNAMIC_THEME, default = true)
 
@@ -41,7 +43,7 @@ class SettingsRepository(private val dataStore: DataStore<Preferences>) {
     val enabledSearchProvidersId: Flow<Set<SearchProviderId>> = dataStore
         .getOrDefault(
             key = ENABLED_SEARCH_PROVIDERS_ID,
-            default = SearchProviders.defaultEnabledIds(),
+            default = searchProvidersRepository.defaultEnabledIds(),
         )
 
     val defaultSortCriteria: Flow<SortCriteria> = dataStore

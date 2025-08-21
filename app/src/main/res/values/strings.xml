@@ -75,21 +75,15 @@
     <string name="setting_pure_black">Pure black</string>
     <!-- General section -->
     <string name="settings_section_general">General</string>
-    <string name="setting_default_category">Default category</string>
-    <string name="button_go_to_category_list_screen">Go to category list screen</string>
     <string name="setting_enable_nsfw_mode">Enable NSFW mode</string>
     <!-- Search section -->
     <string name="settings_section_search">Search</string>
     <string name="setting_search_providers">Search providers</string>
     <string name="button_go_to_search_provider_list_screen">Go to search provider list screen</string>
     <string name="x_of_x_enabled">%1$d of %2$d enabled</string>
-    <string name="button_enable_all_search_providers">Enable all search providers</string>
-    <string name="button_disable_all_search_providers">Disable all search providers</string>
-    <string name="button_reset_search_providers">Reset search providers setting to default</string>
-    <string name="badge_unsafe">Unsafe</string>
+    <string name="setting_default_category">Default category</string>
+    <string name="button_go_to_category_list_screen">Go to category list screen</string>
     <string name="setting_default_sort_options">Default sort options</string>
-    <string name="settings_section_sort_criteria">Sort criteria</string>
-    <string name="settings_section_sort_order">Sort order</string>
     <string name="button_go_to_default_sort_options_screen">Go to default sort options screen</string>
     <string name="setting_hide_results_with_zero_seeders">Hide results with zero seeders</string>
     <string name="setting_max_num_results">Maximum number of results</string>
@@ -108,7 +102,20 @@
     <string name="settings_section_about">About</string>
     <string name="setting_version">Version</string>
     <string name="setting_source_code">Source code</string>
-
+    <!-- Search providers screen -->
+    <string name="button_enable_all_search_providers">Enable all search providers</string>
+    <string name="button_disable_all_search_providers">Disable all search providers</string>
+    <string name="button_reset_search_providers">Reset search providers setting to default</string>
+    <string name="badge_unsafe">Unsafe</string>
+    <string name="title_new_indexer">New search provider</string>
+    <string name="badge_torznab">Torznab</string>
+    <string name="button_save">Save</string>
+    <string name="label_name">Name</string>
+    <string name="label_url">URL</string>
+    <string name="label_api_key">API key</string>
+    <!-- Default sort options screen -->
+    <string name="settings_section_sort_criteria">Sort criteria</string>
+    <string name="settings_section_sort_order">Sort order</string>
     <!-- Settings dialog -->
     <string name="settings_dialog_button_cancel">Cancel</string>
     <!-- Settings Screen -->

@@ -23,6 +23,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.prajwalch.torrentsearch.data.database.TorrentSearchDatabase
 import com.prajwalch.torrentsearch.data.repository.DarkTheme
 import com.prajwalch.torrentsearch.data.repository.SearchHistoryRepository
+import com.prajwalch.torrentsearch.data.repository.SearchProvidersRepository
 import com.prajwalch.torrentsearch.data.repository.SettingsRepository
 import com.prajwalch.torrentsearch.data.repository.TorrentsRepository
 import com.prajwalch.torrentsearch.models.MagnetUri
@@ -49,8 +50,15 @@ class MainActivity : ComponentActivity() {
         SearchHistoryRepository(dao = database.searchHistoryDao())
     }
 
+    private val searchProvidersRepository: SearchProvidersRepository by lazy {
+        SearchProvidersRepository(dao = database.torznabSearchProviderDao())
+    }
+
     private val settingsRepository: SettingsRepository by lazy {
-        SettingsRepository(dataStore = settingsDataStore)
+        SettingsRepository(
+            dataStore = settingsDataStore,
+            searchProvidersRepository = searchProvidersRepository,
+        )
     }
 
     private val torrentsRepository: TorrentsRepository by lazy {
@@ -74,7 +82,10 @@ class MainActivity : ComponentActivity() {
     }
 
     private val searchProvidersViewModel: SearchProvidersViewModel by viewModels {
-        SearchProvidersViewModel.provideFactory(settingsRepository = settingsRepository)
+        SearchProvidersViewModel.provideFactory(
+            settingsRepository = settingsRepository,
+            searchProvidersRepository = searchProvidersRepository,
+        )
     }
 
     private val searchViewModel: SearchViewModel by viewModels {
@@ -82,11 +93,15 @@ class MainActivity : ComponentActivity() {
             settingsRepository = settingsRepository,
             searchHistoryRepository = searchHistoryRepository,
             torrentsRepository = torrentsRepository,
+            searchProvidersRepository = searchProvidersRepository,
         )
     }
 
     private val settingsViewModel: SettingsViewModel by viewModels {
-        SettingsViewModel.provideFactory(settingsRepository = settingsRepository)
+        SettingsViewModel.provideFactory(
+            settingsRepository = settingsRepository,
+            searchProvidersRepository = searchProvidersRepository,
+        )
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -145,6 +160,7 @@ class MainActivity : ComponentActivity() {
 
     /** Starts the application chooser to share magnet uri with. */
     private fun shareMagnetLink(magnetUri: MagnetUri) {
+        Log.d(TAG, "Sharing magnet URI: $magnetUri")
         try {
             startTextShareIntent(magnetUri)
         } catch (_: ActivityNotFoundException) {

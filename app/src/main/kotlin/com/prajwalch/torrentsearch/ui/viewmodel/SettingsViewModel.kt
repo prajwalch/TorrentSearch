@@ -6,11 +6,11 @@ import androidx.lifecycle.viewModelScope
 
 import com.prajwalch.torrentsearch.data.repository.DarkTheme
 import com.prajwalch.torrentsearch.data.repository.MaxNumResults
+import com.prajwalch.torrentsearch.data.repository.SearchProvidersRepository
 import com.prajwalch.torrentsearch.data.repository.SettingsRepository
 import com.prajwalch.torrentsearch.data.repository.SortCriteria
 import com.prajwalch.torrentsearch.data.repository.SortOrder
 import com.prajwalch.torrentsearch.models.Category
-import com.prajwalch.torrentsearch.providers.SearchProviders
 
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
@@ -41,7 +41,7 @@ data class SearchSettingsUiState(
 
 data class SearchProvidersStat(
     val enabledSearchProvidersCount: Int = 0,
-    val totalSearchProvidersCount: Int = SearchProviders.count(),
+    val totalSearchProvidersCount: Int = 0,
 )
 
 data class DefaultSortOptions(
@@ -56,9 +56,18 @@ data class SearchHistorySettingsUiState(
 )
 
 /** ViewModel that handles the business logic of Settings screen. */
-class SettingsViewModel(private val settingsRepository: SettingsRepository) : ViewModel() {
+class SettingsViewModel(
+    private val settingsRepository: SettingsRepository,
+    private val searchProvidersRepository: SearchProvidersRepository,
+) : ViewModel() {
     /** Information of all search providers. */
-    private val allSearchProvidersInfo = SearchProviders.allInfo()
+    private val allSearchProvidersInfo = searchProvidersRepository
+        .searchProvidersInfo()
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.Eagerly,
+            initialValue = emptyList(),
+        )
 
     /** Currently enabled search providers. */
     private val enabledSearchProvidersId = settingsRepository
@@ -89,9 +98,11 @@ class SettingsViewModel(private val settingsRepository: SettingsRepository) : Vi
             initialValue = GeneralSettingsUiState()
         )
 
-    private val searchProvidersStatFlow = settingsRepository
-        .enabledSearchProvidersId
-        .map { SearchProvidersStat(enabledSearchProvidersCount = it.size) }
+    private val searchProvidersStatFlow = combine(
+        settingsRepository.enabledSearchProvidersId.map { it.size },
+        searchProvidersRepository.count(),
+        ::SearchProvidersStat
+    )
 
     private val defaultSortOptionsFlow = combine(
         settingsRepository.defaultSortCriteria,
@@ -161,6 +172,7 @@ class SettingsViewModel(private val settingsRepository: SettingsRepository) : Vi
     /** Disables NSFW and Unsafe search providers which are currently enabled. */
     private suspend fun disableRestrictedSearchProviders() {
         val newEnabledSearchProvidersId = allSearchProvidersInfo
+            .value
             .filter { it.id in enabledSearchProvidersId.value }
             .filter { !it.specializedCategory.isNSFW && !it.safetyStatus.isUnsafe() }
             .map { it.id }
@@ -221,11 +233,17 @@ class SettingsViewModel(private val settingsRepository: SettingsRepository) : Vi
 
     companion object {
         /** Provides a factory function for [SettingsViewModel]. */
-        fun provideFactory(settingsRepository: SettingsRepository): ViewModelProvider.Factory {
+        fun provideFactory(
+            settingsRepository: SettingsRepository,
+            searchProvidersRepository: SearchProvidersRepository,
+        ): ViewModelProvider.Factory {
             return object : ViewModelProvider.Factory {
                 @Suppress("UNCHECKED_CAST")
                 override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                    return SettingsViewModel(settingsRepository = settingsRepository) as T
+                    return SettingsViewModel(
+                        settingsRepository = settingsRepository,
+                        searchProvidersRepository = searchProvidersRepository,
+                    ) as T
                 }
             }
         }

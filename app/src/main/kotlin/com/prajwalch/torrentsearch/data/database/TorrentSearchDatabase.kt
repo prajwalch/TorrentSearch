@@ -1,6 +1,7 @@
 package com.prajwalch.torrentsearch.data.database
 
 import android.content.Context
+import androidx.room.AutoMigration
 
 import androidx.room.Database
 import androidx.room.Room
@@ -8,22 +9,30 @@ import androidx.room.RoomDatabase
 
 import com.prajwalch.torrentsearch.data.database.dao.BookmarkedTorrentDao
 import com.prajwalch.torrentsearch.data.database.dao.SearchHistoryDao
+import com.prajwalch.torrentsearch.data.database.dao.TorznabSearchProviderDao
 import com.prajwalch.torrentsearch.data.database.entities.BookmarkedTorrent
 import com.prajwalch.torrentsearch.data.database.entities.SearchHistory
+import com.prajwalch.torrentsearch.data.database.entities.TorznabSearchProviderEntity
 
 /** Application database. */
 @Database(
     entities = [
         BookmarkedTorrent::class,
         SearchHistory::class,
+        TorznabSearchProviderEntity::class,
     ],
-    version = 1,
-    exportSchema = true
+    version = 2,
+    exportSchema = true,
+    autoMigrations = [
+        AutoMigration(from = 1, to = 2),
+    ],
 )
 abstract class TorrentSearchDatabase : RoomDatabase() {
     abstract fun bookmarkedTorrentDao(): BookmarkedTorrentDao
 
     abstract fun searchHistoryDao(): SearchHistoryDao
+
+    abstract fun torznabSearchProviderDao(): TorznabSearchProviderDao
 
     companion object {
         /** Name of the database file. */

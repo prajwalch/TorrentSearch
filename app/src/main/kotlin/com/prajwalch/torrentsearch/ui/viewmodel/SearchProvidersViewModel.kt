@@ -4,14 +4,15 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 
+import com.prajwalch.torrentsearch.data.repository.SearchProvidersRepository
 import com.prajwalch.torrentsearch.data.repository.SettingsRepository
 import com.prajwalch.torrentsearch.models.Category
 import com.prajwalch.torrentsearch.providers.SearchProviderId
+import com.prajwalch.torrentsearch.providers.SearchProviderInfo
 import com.prajwalch.torrentsearch.providers.SearchProviderSafetyStatus
-import com.prajwalch.torrentsearch.providers.SearchProviders
 
 import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
@@ -22,13 +23,23 @@ data class SearchProviderUiState(
     val url: String,
     val specializedCategory: Category,
     val safetyStatus: SearchProviderSafetyStatus,
+    val isTorznab: Boolean,
     val enabled: Boolean,
 )
 
 /** ViewModel which handles the business logic of Search providers screen. */
-class SearchProvidersViewModel(private val settingsRepository: SettingsRepository) : ViewModel() {
+class SearchProvidersViewModel(
+    private val settingsRepository: SettingsRepository,
+    private val searchProvidersRepository: SearchProvidersRepository,
+) : ViewModel() {
     /** Information of all search providers. */
-    private val allSearchProvidersInfo = SearchProviders.allInfo()
+    private val allSearchProvidersInfo = searchProvidersRepository
+        .searchProvidersInfo()
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.Eagerly,
+            initialValue = emptyList(),
+        )
 
     /**
      * Currently enabled search providers.
@@ -48,9 +59,15 @@ class SearchProvidersViewModel(private val settingsRepository: SettingsRepositor
             initialValue = emptySet(),
         )
 
-    val searchProvidersUiState = settingsRepository
-        .enabledSearchProvidersId
-        .map { createSearchProvidersUiState(enabledSearchProvidersId = it) }
+    val searchProvidersUiState = combine(
+        settingsRepository.enabledSearchProvidersId,
+        searchProvidersRepository.searchProvidersInfo(),
+    ) { enabledSearchProvidersId, searchProvidersInfo ->
+        createSearchProvidersUiState(
+            searchProvidersInfo = searchProvidersInfo,
+            enabledSearchProvidersId = enabledSearchProvidersId,
+        )
+    }
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5000),
@@ -60,13 +77,15 @@ class SearchProvidersViewModel(private val settingsRepository: SettingsRepositor
     /** Converts list of search providers info to list of UI states. */
     private fun createSearchProvidersUiState(
         enabledSearchProvidersId: Set<SearchProviderId>,
-    ): List<SearchProviderUiState> = allSearchProvidersInfo.map {
+        searchProvidersInfo: List<SearchProviderInfo>,
+    ): List<SearchProviderUiState> = searchProvidersInfo.map {
         SearchProviderUiState(
             id = it.id,
             name = it.name,
             url = it.url,
             specializedCategory = it.specializedCategory,
             safetyStatus = it.safetyStatus,
+            isTorznab = it.isTorznab,
             enabled = it.id in enabledSearchProvidersId
         )
     }
@@ -88,7 +107,7 @@ class SearchProvidersViewModel(private val settingsRepository: SettingsRepositor
 
     /** Enables all search providers. */
     fun enableAllSearchProviders() {
-        val allSearchProvidersId = allSearchProvidersInfo.map { it.id }.toSet()
+        val allSearchProvidersId = allSearchProvidersInfo.value.map { it.id }.toSet()
 
         viewModelScope.launch {
             settingsRepository.updateEnabledSearchProvidersId(
@@ -110,18 +129,35 @@ class SearchProvidersViewModel(private val settingsRepository: SettingsRepositor
     fun resetEnabledSearchProvidersToDefault() {
         viewModelScope.launch {
             settingsRepository.updateEnabledSearchProvidersId(
-                providersId = SearchProviders.defaultEnabledIds(),
+                providersId = searchProvidersRepository.defaultEnabledIds(),
+            )
+        }
+    }
+
+    /** Adds a new Torznab search provider using the given config. */
+    fun addTorznabSearchProvider(name: String, url: String, apiKey: String) {
+        viewModelScope.launch {
+            searchProvidersRepository.addTorznabSearchProvider(
+                name = name,
+                url = url,
+                apiKey = apiKey,
             )
         }
     }
 
     companion object {
         /** Provides a factory function for [SearchProvidersViewModel]. */
-        fun provideFactory(settingsRepository: SettingsRepository): ViewModelProvider.Factory {
+        fun provideFactory(
+            settingsRepository: SettingsRepository,
+            searchProvidersRepository: SearchProvidersRepository,
+        ): ViewModelProvider.Factory {
             return object : ViewModelProvider.Factory {
                 @Suppress("UNCHECKED_CAST")
                 override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                    return SearchProvidersViewModel(settingsRepository = settingsRepository) as T
+                    return SearchProvidersViewModel(
+                        settingsRepository = settingsRepository,
+                        searchProvidersRepository = searchProvidersRepository,
+                    ) as T
                 }
             }
         }

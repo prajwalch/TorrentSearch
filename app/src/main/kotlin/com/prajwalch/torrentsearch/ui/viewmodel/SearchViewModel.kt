@@ -7,6 +7,7 @@ import androidx.lifecycle.viewModelScope
 import com.prajwalch.torrentsearch.data.database.entities.SearchHistory
 import com.prajwalch.torrentsearch.data.repository.MaxNumResults
 import com.prajwalch.torrentsearch.data.repository.SearchHistoryRepository
+import com.prajwalch.torrentsearch.data.repository.SearchProvidersRepository
 import com.prajwalch.torrentsearch.data.repository.SettingsRepository
 import com.prajwalch.torrentsearch.data.repository.SortCriteria
 import com.prajwalch.torrentsearch.data.repository.SortOrder
@@ -17,7 +18,6 @@ import com.prajwalch.torrentsearch.extensions.filterNSFW
 import com.prajwalch.torrentsearch.models.Category
 import com.prajwalch.torrentsearch.models.Torrent
 import com.prajwalch.torrentsearch.providers.SearchProviderId
-import com.prajwalch.torrentsearch.providers.SearchProviders
 
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.Flow
@@ -89,6 +89,7 @@ class SearchViewModel(
     private val settingsRepository: SettingsRepository,
     private val searchHistoryRepository: SearchHistoryRepository,
     private val torrentsRepository: TorrentsRepository,
+    private val searchProvidersRepository: SearchProvidersRepository,
 ) : ViewModel() {
     /** UI state. */
     private val _uiState = MutableStateFlow(SearchUiState())
@@ -109,6 +110,14 @@ class SearchViewModel(
         )
 
     private var isDefaultCategoryLoaded = false
+
+    private val searchProviders = searchProvidersRepository
+        .getInstances()
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.Eagerly,
+            initialValue = emptyList(),
+        )
 
     /**
      * On-going search.
@@ -220,15 +229,15 @@ class SearchViewModel(
             }
 
             // Acquire the enabled providers.
-            val searchProviders = SearchProviders.findByIds(
-                ids = settings.value.search.enabledSearchProvidersId,
-            )
+            val enabledSearchProviders = searchProviders
+                .value
+                .filter { it.info.id in settings.value.search.enabledSearchProvidersId }
 
             torrentsRepository
                 .search(
                     query = _uiState.value.query,
                     category = _uiState.value.selectedCategory,
-                    providers = searchProviders,
+                    providers = enabledSearchProviders,
                 )
                 .distinctUntilChanged()
                 .onEach(::onEachSearchResult)
@@ -371,6 +380,7 @@ class SearchViewModel(
             settingsRepository: SettingsRepository,
             searchHistoryRepository: SearchHistoryRepository,
             torrentsRepository: TorrentsRepository,
+            searchProvidersRepository: SearchProvidersRepository,
         ): ViewModelProvider.Factory = object : ViewModelProvider.Factory {
             @Suppress("UNCHECKED_CAST")
             override fun <T : ViewModel> create(modelClass: Class<T>): T {
@@ -378,6 +388,7 @@ class SearchViewModel(
                     settingsRepository = settingsRepository,
                     searchHistoryRepository = searchHistoryRepository,
                     torrentsRepository = torrentsRepository,
+                    searchProvidersRepository = searchProvidersRepository,
                 ) as T
             }
         }

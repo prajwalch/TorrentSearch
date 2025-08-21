@@ -30,6 +30,11 @@ data class SearchProviderInfo(
     val safetyStatus: SearchProviderSafetyStatus,
     /** Default state of the provider. */
     val enabledByDefault: Boolean,
+    /**
+     * Indicates whether the search provider is externally added Torznab search
+     * provider or not.
+     */
+    val isTorznab: Boolean = false,
 )
 
 /** Unique identifier of the provider. */
