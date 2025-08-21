@@ -439,7 +439,7 @@ private class TorznabCapabilitiesXmlParser {
     }
 
     private fun readSubCat() {
-        parser.require(XmlPullParser.END_TAG, namespace, "subcat")
+        parser.require(XmlPullParser.START_TAG, namespace, "subcat")
         Log.i(TAG, "Reading <subcat>")
 
         val subCategoryId = parser.getAttributeValue(null, "id")
