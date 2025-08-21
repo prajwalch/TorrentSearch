@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "5770943b6d1a4c469c7d534bd2e91dfc",
+    "identityHash": "1b3d354b72d935f2e5abd702f2a56dfa",
     "entities": [
       {
         "tableName": "bookmarks",
