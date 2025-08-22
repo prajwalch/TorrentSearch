@@ -26,6 +26,7 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onEach
@@ -230,7 +231,7 @@ class SearchViewModel(
 
             // Acquire the enabled providers.
             val enabledSearchProviders = searchProviders
-                .value
+                .first { it.isNotEmpty() }
                 .filter { it.info.id in settings.value.search.enabledSearchProvidersId }
 
             torrentsRepository
