@@ -56,12 +56,8 @@ class SearchProvidersRepository(private val dao: TorznabSearchProviderDao) {
         url: String,
         apiKey: String,
     ) {
-        // FIXME: Not a reliable way to generate an ID.
-        val id = "torznab$name"
         val url = url.trimEnd { it == '/' }
-
         val dbEntity = TorznabSearchProviderEntity(
-            id = id,
             name = name,
             url = url,
             apiKey = apiKey,

@@ -4,13 +4,15 @@ import androidx.room.Entity
 import androidx.room.Index
 import androidx.room.PrimaryKey
 
+import java.util.UUID
+
 @Entity(
     tableName = "torznab_search_providers",
     indices = [Index("id", unique = true)],
 )
 data class TorznabSearchProviderEntity(
     @PrimaryKey
-    val id: String,
+    val id: String = UUID.randomUUID().toString(),
     val name: String,
     val url: String,
     val apiKey: String,
