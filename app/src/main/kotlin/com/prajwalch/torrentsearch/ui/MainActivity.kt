@@ -5,6 +5,8 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
+import android.util.Patterns
+import android.widget.Toast
 
 import androidx.activity.ComponentActivity
 import androidx.activity.addCallback
@@ -139,6 +141,8 @@ class MainActivity : ComponentActivity() {
                 )
             }
         }
+
+        handleIntent()
     }
 
     /**
@@ -198,6 +202,69 @@ class MainActivity : ComponentActivity() {
         }
         val shareIntent = Intent.createChooser(sendIntent, null)
         startActivity(shareIntent)
+    }
+
+    /** Handles the intent that started this activity. */
+    private fun handleIntent() {
+        val intent = intent ?: return
+
+        val action = intent.action
+        val type = intent.type
+
+        when (action) {
+            Intent.ACTION_SEND -> {
+                if ("text/plain" == type) {
+                    handleSendText(intent)
+                }
+            }
+
+            Intent.ACTION_PROCESS_TEXT -> {
+                if ("text/plain" == type) {
+                    handleProcessText(intent)
+                }
+            }
+
+            else -> {}
+        }
+    }
+
+    /**
+     * Handles the text received from [Intent.ACTION_SEND] and updates the UI.
+     */
+    private fun handleSendText(intent: Intent) {
+        intent.getStringExtra(Intent.EXTRA_TEXT)?.let {
+            Log.i(TAG, "Received '$it' from Intent.ACTION_SEND")
+            performSearch(text = it)
+        }
+    }
+
+    /**
+     * Handles the text received from [Intent.ACTION_PROCESS_TEXT] and updates
+     * the UI.
+     */
+    private fun handleProcessText(intent: Intent) {
+        intent.getStringExtra(Intent.EXTRA_PROCESS_TEXT)?.let {
+            Log.i(TAG, "Received '$it' from Intent.ACTION_PROCESS_TEXT")
+            performSearch(text = it)
+        }
+    }
+
+    /** Sets the given text as the initial search query. */
+    private fun performSearch(text: String) {
+        val urlPatternMatcher = Patterns.WEB_URL.matcher(text)
+
+        if (urlPatternMatcher.matches()) {
+            Log.w(TAG, "Cannot perform search; text is a URL")
+
+            Toast.makeText(this, "Cannot search using a URL", Toast.LENGTH_LONG).show()
+            return
+        }
+
+        val text = urlPatternMatcher.replaceAll("").trim().trim('"', '\n')
+        Log.d(TAG, "Performing search; query = $text")
+
+        searchViewModel.changeQuery(query = text)
+        searchViewModel.performSearch()
     }
 
     private companion object {
