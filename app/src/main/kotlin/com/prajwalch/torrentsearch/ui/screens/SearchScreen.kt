@@ -1,5 +1,6 @@
 package com.prajwalch.torrentsearch.ui.screens
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.clickable
@@ -85,6 +86,10 @@ fun SearchScreen(
         derivedStateOf { lazyListState.firstVisibleItemIndex <= 1 }
     }
     val showScrollToTopButton = !isFirstResultVisible && !uiState.isLoading
+
+    BackHandler(enabled = uiState.isResettable()) {
+        viewModel.resetToDefault()
+    }
 
     Scaffold(
         modifier = Modifier

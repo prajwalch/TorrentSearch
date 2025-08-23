@@ -52,7 +52,11 @@ data class SearchUiState(
     val isLoading: Boolean = false,
     val isSearching: Boolean = false,
     val isInternetError: Boolean = false,
-)
+) {
+    /** Returns `true` if the state can be reset to default. */
+    fun isResettable() =
+        results.isNotEmpty() || resultsNotFound || isLoading || isSearching || isInternetError
+}
 
 /** Convenient wrapper around the search history entity. */
 data class SearchHistoryUiState(val id: SearchHistoryId, val query: String) {
@@ -178,6 +182,28 @@ class SearchViewModel(
                 results = sortedResults,
                 currentSortCriteria = criteria,
                 currentSortOrder = order,
+            )
+        }
+    }
+
+    /** Resets the state to default value. */
+    fun resetToDefault() {
+        searchJob?.cancel()
+        searchResults = emptyList()
+
+        val (defaultSortCriteria, defaultSortOrder) = settings.value.search.defaultSortOptions
+
+        _uiState.update {
+            it.copy(
+                query = "",
+                selectedCategory = settings.value.search.defaultCategory,
+                results = emptyList(),
+                currentSortCriteria = defaultSortCriteria,
+                currentSortOrder = defaultSortOrder,
+                resultsNotFound = false,
+                isLoading = false,
+                isSearching = false,
+                isInternetError = false,
             )
         }
     }
