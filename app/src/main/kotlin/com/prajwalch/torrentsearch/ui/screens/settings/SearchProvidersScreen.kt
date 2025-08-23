@@ -1,19 +1,27 @@
 package com.prajwalch.torrentsearch.ui.screens.settings
 
+import androidx.compose.foundation.LocalIndication
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.consumeWindowInsets
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyItemScope
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Warning
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Badge
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -45,12 +53,18 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 
 import com.prajwalch.torrentsearch.R
 import com.prajwalch.torrentsearch.models.Category
-import com.prajwalch.torrentsearch.providers.SearchProviderId
 import com.prajwalch.torrentsearch.providers.SearchProviderSafetyStatus
+import com.prajwalch.torrentsearch.providers.SearchProviderType
 import com.prajwalch.torrentsearch.ui.components.NavigateBackIconButton
-import com.prajwalch.torrentsearch.ui.components.SettingsDialog
 import com.prajwalch.torrentsearch.ui.viewmodel.SearchProviderUiState
 import com.prajwalch.torrentsearch.ui.viewmodel.SearchProvidersViewModel
+
+private data class ConfigEditorParams(
+    val id: String,
+    val name: String,
+    val url: String,
+    val apiKey: String,
+)
 
 @Composable
 fun SearchProvidersScreen(
@@ -59,11 +73,17 @@ fun SearchProvidersScreen(
     modifier: Modifier = Modifier,
 ) {
     val searchProvidersUiState by viewModel.searchProvidersUiState.collectAsStateWithLifecycle()
-    var showAddIndexerDialog by rememberSaveable(searchProvidersUiState) { mutableStateOf(false) }
 
-    if (showAddIndexerDialog) {
-        AddNewSearchProviderDialog(
-            onDismissRequest = { showAddIndexerDialog = false },
+    var showNewSearchProviderDialog by rememberSaveable(searchProvidersUiState) {
+        mutableStateOf(false)
+    }
+    var showEditConfigDialog by rememberSaveable(searchProvidersUiState) {
+        mutableStateOf<ConfigEditorParams?>(null)
+    }
+
+    if (showNewSearchProviderDialog) {
+        TorznabSearchProviderConfigDialog(
+            onDismissRequest = { showNewSearchProviderDialog = false },
             onSave = { name, url, apiKey ->
                 viewModel.addTorznabSearchProvider(
                     name = name,
@@ -71,6 +91,25 @@ fun SearchProvidersScreen(
                     apiKey = apiKey,
                 )
             },
+            title = stringResource(R.string.title_new_search_provider),
+        )
+    }
+
+    showEditConfigDialog?.let { configEditorParams ->
+        TorznabSearchProviderConfigDialog(
+            onDismissRequest = { showEditConfigDialog = null },
+            onSave = { name, url, apiKey ->
+                viewModel.updateTorznabSearchProvider(
+                    id = configEditorParams.id,
+                    name = name,
+                    url = url,
+                    apiKey = apiKey,
+                )
+            },
+            title = stringResource(R.string.title_edit_configuration),
+            name = configEditorParams.name,
+            url = configEditorParams.url,
+            apiKey = configEditorParams.apiKey,
         )
     }
 
@@ -89,11 +128,59 @@ fun SearchProvidersScreen(
             modifier = Modifier.consumeWindowInsets(innerPadding),
             contentPadding = innerPadding,
             searchProviders = searchProvidersUiState,
-            onProviderCheckedChange = viewModel::enableSearchProvider,
+            listItem = { searchProviderUiState ->
+                when (searchProviderUiState.type) {
+                    is SearchProviderType.Builtin -> {
+                        BuiltinSearchProviderListItem(
+                            modifier = Modifier.animateItem(),
+                            name = searchProviderUiState.name,
+                            url = searchProviderUiState.url,
+                            specializedCategory = searchProviderUiState.specializedCategory,
+                            safetyStatus = searchProviderUiState.safetyStatus,
+                            checked = searchProviderUiState.enabled,
+                            onCheckedChange = {
+                                viewModel.enableSearchProvider(
+                                    providerId = searchProviderUiState.id,
+                                    enable = it,
+                                )
+                            },
+                        )
+                    }
+
+                    is SearchProviderType.Torznab -> {
+                        TorznabSearchProviderListItem(
+                            modifier = Modifier.animateItem(),
+                            name = searchProviderUiState.name,
+                            url = searchProviderUiState.url,
+                            specializedCategory = searchProviderUiState.specializedCategory,
+                            checked = searchProviderUiState.enabled,
+                            onCheckedChange = {
+                                viewModel.enableSearchProvider(
+                                    providerId = searchProviderUiState.id,
+                                    enable = it,
+                                )
+                            },
+                            onEditConfig = {
+                                showEditConfigDialog = ConfigEditorParams(
+                                    id = searchProviderUiState.id,
+                                    name = searchProviderUiState.name,
+                                    url = searchProviderUiState.url,
+                                    apiKey = searchProviderUiState.type.apiKey,
+                                )
+                            },
+                            onDelete = {
+                                viewModel.deleteTorznabSearchProvider(
+                                    id = searchProviderUiState.id,
+                                )
+                            },
+                        )
+                    }
+                }
+            },
             toolBar = {
                 TextButton(
                     modifier = Modifier.padding(horizontal = 16.dp),
-                    onClick = { showAddIndexerDialog = true }
+                    onClick = { showNewSearchProviderDialog = true }
                 ) {
                     Text(text = "Add Torznab compatible provider")
                 }
@@ -102,6 +189,77 @@ fun SearchProvidersScreen(
         )
     }
 }
+
+@Composable
+private fun TorznabSearchProviderConfigDialog(
+    onDismissRequest: () -> Unit,
+    // (name?, url, API key)
+    onSave: (String, String, String) -> Unit,
+    title: String,
+    modifier: Modifier = Modifier,
+    // Initial values.
+    name: String = "",
+    url: String = "",
+    apiKey: String = "",
+) {
+    var name by rememberSaveable { mutableStateOf(name) }
+    var url by rememberSaveable { mutableStateOf(url) }
+    var apiKey by rememberSaveable { mutableStateOf(apiKey) }
+
+    val enableSaveButton by remember {
+        derivedStateOf {
+            name.isNotEmpty() && url.isNotEmpty() && apiKey.isNotEmpty()
+        }
+    }
+
+    AlertDialog(
+        modifier = modifier,
+        onDismissRequest = onDismissRequest,
+        dismissButton = {
+            TextButton(onClick = onDismissRequest) {
+                Text(stringResource(R.string.settings_dialog_button_cancel))
+            }
+        },
+        confirmButton = {
+            TextButton(
+                enabled = enableSaveButton,
+                onClick = { onSave(name, url, apiKey) },
+            ) {
+                Text(text = stringResource(R.string.button_save))
+            }
+        },
+        title = { Text(text = title) },
+        text = {
+            LazyColumn(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                item {
+                    OutlinedTextField(
+                        value = name,
+                        onValueChange = { name = it },
+                        label = { Text(text = stringResource(R.string.label_name)) },
+                        singleLine = true,
+                    )
+                }
+                item {
+                    OutlinedTextField(
+                        value = url,
+                        onValueChange = { url = it },
+                        label = { Text(text = stringResource(R.string.label_url)) },
+                        singleLine = true,
+                    )
+                }
+                item {
+                    OutlinedTextField(
+                        value = apiKey,
+                        onValueChange = { apiKey = it },
+                        label = { Text(text = stringResource(R.string.label_api_key)) },
+                        singleLine = true,
+                    )
+                }
+            }
+        },
+    )
+}
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -153,23 +311,11 @@ private fun SearchProvidersScreenTopBar(
 @Composable
 private fun SearchProviderList(
     searchProviders: List<SearchProviderUiState>,
-    onProviderCheckedChange: (SearchProviderId, Boolean) -> Unit,
+    listItem: @Composable (LazyItemScope.(SearchProviderUiState) -> Unit),
     modifier: Modifier = Modifier,
     contentPadding: PaddingValues = PaddingValues(0.dp),
     toolBar: @Composable (() -> Unit)? = null,
 ) {
-    var showUnsafeDetailsDialog by remember { mutableStateOf<SearchProviderUiState?>(null) }
-
-    showUnsafeDetailsDialog?.let { searchProviderInfo ->
-        SearchProviderUnsafeDetailsDialog(
-            onDismissRequest = { showUnsafeDetailsDialog = null },
-            providerName = searchProviderInfo.name,
-            url = searchProviderInfo.url,
-            // FIXME: This is poisonous code.
-            unsafeReason = (searchProviderInfo.safetyStatus as SearchProviderSafetyStatus.Unsafe).reason,
-        )
-    }
-
     LazyColumn(
         modifier = modifier,
         contentPadding = contentPadding,
@@ -177,20 +323,50 @@ private fun SearchProviderList(
         toolBar?.let {
             item { it() }
         }
-        items(items = searchProviders, key = { it.id }) { searchProvider ->
-            SearchProviderListItem(
-                modifier = Modifier.animateItem(),
-                name = searchProvider.name,
-                url = searchProvider.url,
-                specializedCategory = searchProvider.specializedCategory,
-                isUnsafe = searchProvider.safetyStatus.isUnsafe(),
-                onShowUnsafeReason = { showUnsafeDetailsDialog = searchProvider },
-                isTorznab = searchProvider.isTorznab,
-                checked = searchProvider.enabled,
-                onCheckedChange = { onProviderCheckedChange(searchProvider.id, it) },
-            )
+        items(items = searchProviders, key = { it.id }) {
+            listItem(it)
         }
     }
+}
+
+@Composable
+private fun BuiltinSearchProviderListItem(
+    name: String,
+    url: String,
+    specializedCategory: Category,
+    safetyStatus: SearchProviderSafetyStatus,
+    checked: Boolean,
+    onCheckedChange: (Boolean) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    var showUnsafeReason by remember { mutableStateOf<String?>(null) }
+
+    showUnsafeReason?.let { unsafeReason ->
+        SearchProviderUnsafeDetailsDialog(
+            onDismissRequest = { showUnsafeReason = null },
+            providerName = name,
+            url = url,
+            unsafeReason = unsafeReason,
+        )
+    }
+
+    SearchProviderListItem(
+        modifier = modifier
+            .clickable(role = Role.Switch) {
+                onCheckedChange(!checked)
+            },
+        name = name,
+        url = url,
+        checked = checked,
+        onCheckedChange = onCheckedChange,
+        badges = {
+            CategoryBadge(category = specializedCategory)
+
+            if (safetyStatus is SearchProviderSafetyStatus.Unsafe) {
+                UnsafeBadge(onClick = { showUnsafeReason = safetyStatus.reason })
+            }
+        },
+    )
 }
 
 @Composable
@@ -232,40 +408,94 @@ private fun SearchProviderUnsafeDetailsDialog(
 }
 
 @Composable
-private fun SearchProviderListItem(
+private fun TorznabSearchProviderListItem(
     name: String,
     url: String,
     specializedCategory: Category,
-    isUnsafe: Boolean,
-    onShowUnsafeReason: () -> Unit,
-    isTorznab: Boolean,
     checked: Boolean,
     onCheckedChange: (Boolean) -> Unit,
+    onEditConfig: () -> Unit,
+    onDelete: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    ListItem(
+    var showMenu by rememberSaveable { mutableStateOf(false) }
+
+    Box(
         modifier = Modifier
-            .clickable(
-                role = Role.Switch,
+            .fillMaxWidth()
+            .then(modifier)
+    ) {
+        SearchProviderListItem(
+            modifier = Modifier.combinedClickable(
+                interactionSource = null,
+                indication = LocalIndication.current,
+                onLongClick = { showMenu = true },
                 onClick = { onCheckedChange(!checked) },
-            )
-            .then(modifier),
-        overlineContent = {
-            Row(
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
+            ),
+            name = name,
+            url = url,
+            checked = checked,
+            onCheckedChange = onCheckedChange,
+            badges = {
                 CategoryBadge(category = specializedCategory)
-                if (isTorznab) TorznabBadge()
-                if (isUnsafe) UnsafeBadge(onClick = onShowUnsafeReason)
-            }
-        },
-        headlineContent = { Text(text = name) },
-        supportingContent = { SearchProviderUrl(url = url, isTorznab = isTorznab) },
-        trailingContent = {
-            Switch(checked = checked, onCheckedChange = onCheckedChange)
-        },
-    )
+                TorznabBadge()
+            },
+        )
+
+        TorznabSearchProviderMenu(
+            expanded = showMenu,
+            onDismissRequest = { showMenu = false },
+            onEditClick = {
+                showMenu = false
+                onEditConfig()
+            },
+            onDeleteClick = {
+                showMenu = false
+                onDelete()
+            },
+        )
+    }
+}
+
+@Composable
+private fun TorznabSearchProviderMenu(
+    expanded: Boolean,
+    onDismissRequest: () -> Unit,
+    onEditClick: () -> Unit,
+    onDeleteClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    DropdownMenu(
+        modifier = modifier,
+        expanded = expanded,
+        onDismissRequest = onDismissRequest,
+        shape = MaterialTheme.shapes.medium,
+    ) {
+        DropdownMenuItem(
+            onClick = onEditClick,
+            leadingIcon = {
+                Icon(
+                    painter = painterResource(R.drawable.ic_edit),
+                    contentDescription = null,
+                )
+            },
+            text = {
+                Text(text = stringResource(R.string.action_edit_configuration))
+            },
+        )
+        DropdownMenuItem(
+            onClick = onDeleteClick,
+            leadingIcon = {
+                Icon(
+                    painter = painterResource(R.drawable.ic_delete),
+                    contentDescription = null,
+                )
+            },
+            text = {
+                Text(text = stringResource(R.string.action_delete_search_provider))
+            },
+        )
+    }
 }
 
 @Composable
@@ -284,7 +514,7 @@ private fun TorznabBadge(modifier: Modifier = Modifier) {
     Badge(
         modifier = modifier,
         containerColor = MaterialTheme.colorScheme.tertiaryContainer,
-        contentColor = MaterialTheme.colorScheme.onTertiaryContainer
+        contentColor = MaterialTheme.colorScheme.onTertiaryContainer,
     ) {
         Text(text = stringResource(R.string.badge_torznab))
     }
@@ -302,11 +532,41 @@ private fun UnsafeBadge(onClick: () -> Unit, modifier: Modifier = Modifier) {
 }
 
 @Composable
-private fun SearchProviderUrl(url: String, isTorznab: Boolean, modifier: Modifier = Modifier) {
+private fun SearchProviderListItem(
+    name: String,
+    url: String,
+    checked: Boolean,
+    onCheckedChange: (Boolean) -> Unit,
+    modifier: Modifier = Modifier,
+    badges: @Composable (RowScope.() -> Unit) = {},
+) {
+    ListItem(
+        modifier = modifier,
+        overlineContent = {
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                content = badges,
+            )
+        },
+        headlineContent = { Text(text = name) },
+        supportingContent = { SearchProviderUrl(url = url) },
+        trailingContent = { Switch(checked = checked, onCheckedChange = onCheckedChange) },
+    )
+}
+
+@Composable
+private fun SearchProviderUrl(url: String, modifier: Modifier = Modifier) {
     val uriHandler = LocalUriHandler.current
-    val modifier = if (isTorznab) modifier else modifier.clickable { uriHandler.openUri(url) }
 
     if (url.isNotEmpty()) {
+        val isHttps = url.startsWith("https://")
+        val modifier = if (isHttps) {
+            modifier.clickable { uriHandler.openUri(url) }
+        } else {
+            modifier
+        }
+
         Row(
             modifier = modifier,
             horizontalArrangement = Arrangement.spacedBy(4.dp),
@@ -317,70 +577,11 @@ private fun SearchProviderUrl(url: String, isTorznab: Boolean, modifier: Modifie
                 overflow = TextOverflow.Ellipsis,
                 maxLines = 2,
             )
-            if (!isTorznab) {
+            if (isHttps) {
                 Icon(
                     modifier = Modifier.size(12.dp),
                     painter = painterResource(R.drawable.ic_open_in_new),
                     contentDescription = null,
-                )
-            }
-        }
-    }
-}
-
-@Composable
-private fun AddNewSearchProviderDialog(
-    onDismissRequest: () -> Unit,
-    // (name?, url, API key)
-    onSave: (String, String, String) -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    var name by rememberSaveable { mutableStateOf("") }
-    var url by rememberSaveable { mutableStateOf("") }
-    var apiKey by rememberSaveable { mutableStateOf("") }
-
-    val enableSaveButton by remember {
-        derivedStateOf {
-            name.isNotEmpty() && url.isNotEmpty() && apiKey.isNotEmpty()
-        }
-    }
-
-    SettingsDialog(
-        modifier = modifier,
-        onDismissRequest = onDismissRequest,
-        titleId = R.string.title_new_indexer,
-        confirmButton = {
-            TextButton(
-                enabled = enableSaveButton,
-                onClick = { onSave(name, url, apiKey) },
-            ) {
-                Text(text = stringResource(R.string.button_save))
-            }
-        },
-    ) {
-        LazyColumn(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-            item {
-                OutlinedTextField(
-                    value = name,
-                    onValueChange = { name = it },
-                    label = { Text(text = stringResource(R.string.label_name)) },
-                    singleLine = true,
-                )
-            }
-            item {
-                OutlinedTextField(
-                    value = url,
-                    onValueChange = { url = it },
-                    label = { Text(text = stringResource(R.string.label_url)) },
-                    singleLine = true,
-                )
-            }
-            item {
-                OutlinedTextField(
-                    value = apiKey,
-                    onValueChange = { apiKey = it },
-                    label = { Text(text = stringResource(R.string.label_api_key)) },
-                    singleLine = true,
                 )
             }
         }

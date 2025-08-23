@@ -107,12 +107,15 @@
     <string name="button_disable_all_search_providers">Disable all search providers</string>
     <string name="button_reset_search_providers">Reset search providers setting to default</string>
     <string name="badge_unsafe">Unsafe</string>
-    <string name="title_new_indexer">New search provider</string>
+    <string name="title_new_search_provider">New search provider</string>
     <string name="badge_torznab">Torznab</string>
     <string name="button_save">Save</string>
     <string name="label_name">Name</string>
     <string name="label_url">URL</string>
     <string name="label_api_key">API key</string>
+    <string name="title_edit_configuration">Edit configuration</string>
+    <string name="action_edit_configuration">Edit configuration</string>
+    <string name="action_delete_search_provider">Delete</string>
     <!-- Default sort options screen -->
     <string name="settings_section_sort_criteria">Sort criteria</string>
     <string name="settings_section_sort_order">Sort order</string>

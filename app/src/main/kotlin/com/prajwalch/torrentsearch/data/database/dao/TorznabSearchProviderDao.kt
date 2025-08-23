@@ -1,10 +1,10 @@
 package com.prajwalch.torrentsearch.data.database.dao
 
 import androidx.room.Dao
-import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import androidx.room.Update
 
 import com.prajwalch.torrentsearch.data.database.entities.TorznabSearchProviderEntity
 
@@ -21,6 +21,9 @@ interface TorznabSearchProviderDao {
     @Query("SELECT COUNT(id) from TORZNAB_SEARCH_PROVIDERS")
     fun getCount(): Flow<Int>
 
-    @Delete
-    suspend fun delete(searchProvider: TorznabSearchProviderEntity)
+    @Update
+    suspend fun update(searchProvider: TorznabSearchProviderEntity)
+
+    @Query("DELETE from torznab_search_providers where id=:id")
+    suspend fun deleteById(id: String)
 }

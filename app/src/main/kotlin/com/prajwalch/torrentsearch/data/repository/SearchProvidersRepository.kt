@@ -65,6 +65,30 @@ class SearchProvidersRepository(private val dao: TorznabSearchProviderDao) {
         dao.insert(searchProvider = dbEntity)
     }
 
+    /**
+     * Updates the Torznab search provider that matches the specified ID
+     * with the given configurations.
+     */
+    suspend fun updateTorznabSearchProvider(
+        id: String,
+        name: String,
+        url: String,
+        apiKey: String,
+    ) {
+        val dbEntity = TorznabSearchProviderEntity(
+            id = id,
+            name = name,
+            url = url,
+            apiKey = apiKey,
+        )
+        dao.update(searchProvider = dbEntity)
+    }
+
+    /** Deletes the Torznab search provider that matches the specified ID. */
+    suspend fun deleteTorznabSearchProvider(id: String) {
+        dao.deleteById(id = id)
+    }
+
     /** Returns a list containing the info of all search providers. */
     fun searchProvidersInfo(): Flow<List<SearchProviderInfo>> =
         getInstances().map { searchProviders -> searchProviders.map { it.info } }

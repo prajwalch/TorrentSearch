@@ -48,7 +48,7 @@ class TorznabSearchProvider(private val config: TorznabSearchProviderConfig) : S
         // TODO: There's no way to check it. Maybe ask the user?
         safetyStatus = SearchProviderSafetyStatus.Safe,
         enabledByDefault = true,
-        isTorznab = true,
+        type = SearchProviderType.Torznab(apiKey = config.apiKey),
     )
 
     /**

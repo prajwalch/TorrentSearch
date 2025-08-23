@@ -10,6 +10,7 @@ import com.prajwalch.torrentsearch.models.Category
 import com.prajwalch.torrentsearch.providers.SearchProviderId
 import com.prajwalch.torrentsearch.providers.SearchProviderInfo
 import com.prajwalch.torrentsearch.providers.SearchProviderSafetyStatus
+import com.prajwalch.torrentsearch.providers.SearchProviderType
 
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
@@ -23,7 +24,7 @@ data class SearchProviderUiState(
     val url: String,
     val specializedCategory: Category,
     val safetyStatus: SearchProviderSafetyStatus,
-    val isTorznab: Boolean,
+    val type: SearchProviderType,
     val enabled: Boolean,
 )
 
@@ -85,8 +86,8 @@ class SearchProvidersViewModel(
             url = it.url,
             specializedCategory = it.specializedCategory,
             safetyStatus = it.safetyStatus,
-            isTorznab = it.isTorznab,
-            enabled = it.id in enabledSearchProvidersId
+            type = it.type,
+            enabled = it.id in enabledSearchProvidersId,
         )
     }
 
@@ -142,6 +143,33 @@ class SearchProvidersViewModel(
                 url = url,
                 apiKey = apiKey,
             )
+        }
+    }
+
+    /**
+     * Updates the Torznab search provider that matches the specified ID
+     * with the given configurations.
+     */
+    fun updateTorznabSearchProvider(
+        id: String,
+        name: String,
+        url: String,
+        apiKey: String,
+    ) {
+        viewModelScope.launch {
+            searchProvidersRepository.updateTorznabSearchProvider(
+                id = id,
+                name = name,
+                url = url,
+                apiKey = apiKey,
+            )
+        }
+    }
+
+    /** Deletes the Torznab search provider that matches the specified ID. */
+    fun deleteTorznabSearchProvider(id: String) {
+        viewModelScope.launch {
+            searchProvidersRepository.deleteTorznabSearchProvider(id = id)
         }
     }
 

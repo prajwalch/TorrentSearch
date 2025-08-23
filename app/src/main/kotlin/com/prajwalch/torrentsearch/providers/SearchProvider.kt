@@ -30,11 +30,8 @@ data class SearchProviderInfo(
     val safetyStatus: SearchProviderSafetyStatus,
     /** Default state of the provider. */
     val enabledByDefault: Boolean,
-    /**
-     * Indicates whether the search provider is externally added Torznab search
-     * provider or not.
-     */
-    val isTorznab: Boolean = false,
+    /** Type of search provider. */
+    val type: SearchProviderType = SearchProviderType.Builtin,
 )
 
 /** Unique identifier of the provider. */
@@ -50,6 +47,18 @@ sealed class SearchProviderSafetyStatus {
 
     /** Returns `true` if the status is [SearchProviderSafetyStatus.Unsafe]. */
     fun isUnsafe(): Boolean = this is Unsafe
+}
+
+/** Specifies the type of search provider. */
+sealed class SearchProviderType {
+    /** Search provider is built-in. */
+    object Builtin : SearchProviderType()
+
+    /**
+     * Search provider is externally added Torznab API compatible search
+     * provider.
+     */
+    data class Torznab(val apiKey: String) : SearchProviderType()
 }
 
 /** The search context. */
