@@ -512,10 +512,21 @@ private fun SearchProviderListItem(
 ) {
     ListItem(
         modifier = modifier,
-        overlineContent = { BadgesRow(badges = badges) },
         headlineContent = { Text(text = name) },
-        supportingContent = { SearchProviderUrl(url = url) },
-        trailingContent = { Switch(checked = checked, onCheckedChange = onCheckedChange) },
+        supportingContent = {
+            Column(
+                verticalArrangement = Arrangement.spacedBy(
+                    space = 8.dp,
+                    alignment = Alignment.CenterVertically,
+                ),
+            ) {
+                SearchProviderUrl(url = url)
+                BadgesRow(badges = badges)
+            }
+        },
+        trailingContent = {
+            Switch(checked = checked, onCheckedChange = onCheckedChange)
+        },
     )
 }
 
