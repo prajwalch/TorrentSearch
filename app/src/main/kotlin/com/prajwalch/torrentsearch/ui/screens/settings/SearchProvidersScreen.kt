@@ -19,7 +19,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Warning
 import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Badge
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -55,7 +54,11 @@ import com.prajwalch.torrentsearch.R
 import com.prajwalch.torrentsearch.models.Category
 import com.prajwalch.torrentsearch.providers.SearchProviderSafetyStatus
 import com.prajwalch.torrentsearch.providers.SearchProviderType
+import com.prajwalch.torrentsearch.ui.components.BadgesRow
+import com.prajwalch.torrentsearch.ui.components.CategoryBadge
 import com.prajwalch.torrentsearch.ui.components.NavigateBackIconButton
+import com.prajwalch.torrentsearch.ui.components.TorznabBadge
+import com.prajwalch.torrentsearch.ui.components.UnsafeBadge
 import com.prajwalch.torrentsearch.ui.viewmodel.SearchProviderUiState
 import com.prajwalch.torrentsearch.ui.viewmodel.SearchProvidersViewModel
 
@@ -499,39 +502,6 @@ private fun TorznabSearchProviderMenu(
 }
 
 @Composable
-private fun CategoryBadge(category: Category, modifier: Modifier = Modifier) {
-    Badge(
-        modifier = modifier,
-        containerColor = MaterialTheme.colorScheme.secondaryContainer,
-        contentColor = MaterialTheme.colorScheme.onSecondaryContainer,
-    ) {
-        Text(text = category.name)
-    }
-}
-
-@Composable
-private fun TorznabBadge(modifier: Modifier = Modifier) {
-    Badge(
-        modifier = modifier,
-        containerColor = MaterialTheme.colorScheme.tertiaryContainer,
-        contentColor = MaterialTheme.colorScheme.onTertiaryContainer,
-    ) {
-        Text(text = stringResource(R.string.badge_torznab))
-    }
-}
-
-@Composable
-private fun UnsafeBadge(onClick: () -> Unit, modifier: Modifier = Modifier) {
-    Badge(
-        modifier = Modifier
-            .clickable(onClick = onClick)
-            .then(modifier),
-    ) {
-        Text(text = stringResource(R.string.badge_unsafe))
-    }
-}
-
-@Composable
 private fun SearchProviderListItem(
     name: String,
     url: String,
@@ -542,13 +512,7 @@ private fun SearchProviderListItem(
 ) {
     ListItem(
         modifier = modifier,
-        overlineContent = {
-            Row(
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                verticalAlignment = Alignment.CenterVertically,
-                content = badges,
-            )
-        },
+        overlineContent = { BadgesRow(badges = badges) },
         headlineContent = { Text(text = name) },
         supportingContent = { SearchProviderUrl(url = url) },
         trailingContent = { Switch(checked = checked, onCheckedChange = onCheckedChange) },

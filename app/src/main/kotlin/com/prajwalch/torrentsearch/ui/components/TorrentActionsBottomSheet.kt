@@ -111,9 +111,7 @@ private fun TorrentActionsBottomSheetHeader(
         modifier = modifier,
         verticalArrangement = Arrangement.Center,
     ) {
-        if (isNSFW) {
-            NSFWTag(style = MaterialTheme.typography.bodySmall)
-        }
+        if (isNSFW) NSFWBadge()
         Text(
             text = title,
             style = MaterialTheme.typography.bodyLarge,
