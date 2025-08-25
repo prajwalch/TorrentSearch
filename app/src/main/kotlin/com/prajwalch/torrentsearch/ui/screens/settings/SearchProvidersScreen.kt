@@ -1,5 +1,8 @@
 package com.prajwalch.torrentsearch.ui.screens.settings
 
+import android.util.Patterns
+
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.LocalIndication
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
@@ -17,6 +20,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyItemScope
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.outlined.Warning
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.DropdownMenu
@@ -209,6 +213,9 @@ private fun TorznabSearchProviderConfigDialog(
     var url by rememberSaveable { mutableStateOf(url) }
     var apiKey by rememberSaveable { mutableStateOf(apiKey) }
 
+    val urlPatternMatcher = Patterns.WEB_URL.matcher(url)
+    var isUrlValid by rememberSaveable { mutableStateOf(true) }
+
     val enableSaveButton by remember {
         derivedStateOf {
             name.isNotEmpty() && url.isNotEmpty() && apiKey.isNotEmpty()
@@ -226,7 +233,13 @@ private fun TorznabSearchProviderConfigDialog(
         confirmButton = {
             TextButton(
                 enabled = enableSaveButton,
-                onClick = { onSave(name, url, apiKey) },
+                onClick = {
+                    if (urlPatternMatcher.matches()) {
+                        onSave(name, url, apiKey)
+                    } else if (isUrlValid) {
+                        isUrlValid = false
+                    }
+                },
             ) {
                 Text(text = stringResource(R.string.button_save))
             }
@@ -243,12 +256,34 @@ private fun TorznabSearchProviderConfigDialog(
                     )
                 }
                 item {
-                    OutlinedTextField(
-                        value = url,
-                        onValueChange = { url = it },
-                        label = { Text(text = stringResource(R.string.label_url)) },
-                        singleLine = true,
-                    )
+                    Column(
+                        verticalArrangement = Arrangement.spacedBy(
+                            space = 4.dp,
+                            alignment = Alignment.CenterVertically,
+                        ),
+                    ) {
+                        OutlinedTextField(
+                            value = url,
+                            onValueChange = { url = it },
+                            label = { Text(text = stringResource(R.string.label_url)) },
+                            trailingIcon = {
+                                AnimatedVisibility(visible = !isUrlValid) {
+                                    Icon(
+                                        imageVector = Icons.Default.Info,
+                                        contentDescription = null,
+                                    )
+                                }
+                            },
+                            isError = !isUrlValid,
+                            singleLine = true,
+                        )
+                        AnimatedVisibility(visible = !isUrlValid) {
+                            Text(
+                                text = "Not a valid URL",
+                                color = MaterialTheme.colorScheme.error,
+                            )
+                        }
+                    }
                 }
                 item {
                     OutlinedTextField(
