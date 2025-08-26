@@ -45,6 +45,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 
 import com.prajwalch.torrentsearch.R
@@ -72,11 +73,11 @@ import kotlinx.coroutines.launch
 fun SearchScreen(
     onNavigateToBookmarks: () -> Unit,
     onNavigateToSettings: () -> Unit,
-    viewModel: SearchViewModel,
     onTorrentSelect: (Torrent) -> Unit,
     snackbarHostState: SnackbarHostState,
     modifier: Modifier = Modifier,
 ) {
+    val viewModel = hiltViewModel<SearchViewModel>()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
     val coroutineScope = rememberCoroutineScope()

@@ -7,16 +7,8 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navigation
 
 import com.prajwalch.torrentsearch.ui.screens.Screens
-import com.prajwalch.torrentsearch.ui.viewmodel.SearchHistoryViewModel
-import com.prajwalch.torrentsearch.ui.viewmodel.SearchProvidersViewModel
-import com.prajwalch.torrentsearch.ui.viewmodel.SettingsViewModel
 
-fun NavGraphBuilder.settingsNavigation(
-    navController: NavHostController,
-    settingsViewModel: SettingsViewModel,
-    searchProvidersViewModel: SearchProvidersViewModel,
-    searchHistoryViewModel: SearchHistoryViewModel,
-) {
+fun NavGraphBuilder.settingsNavigation(navController: NavHostController) {
     navigation(startDestination = Screens.Settings.MAIN, route = Screens.Settings.ROOT) {
         composable(
             route = Screens.Settings.MAIN,
@@ -39,7 +31,6 @@ fun NavGraphBuilder.settingsNavigation(
                 onNavigateToSearchHistory = {
                     navController.navigate(Screens.Settings.SEARCH_HISTORY)
                 },
-                viewModel = settingsViewModel,
             )
         }
 
@@ -48,10 +39,7 @@ fun NavGraphBuilder.settingsNavigation(
             enterTransition = { slideIntoContainer(SlideDirection.Start) },
             popExitTransition = { slideOutOfContainer(SlideDirection.End) },
         ) {
-            DefaultCategoryScreen(
-                onNavigateBack = { navController.navigateUp() },
-                viewModel = settingsViewModel,
-            )
+            DefaultCategoryScreen(onNavigateBack = { navController.navigateUp() })
         }
 
         composable(
@@ -59,10 +47,7 @@ fun NavGraphBuilder.settingsNavigation(
             enterTransition = { slideIntoContainer(SlideDirection.Start) },
             popExitTransition = { slideOutOfContainer(SlideDirection.End) },
         ) {
-            SearchProvidersScreen(
-                onNavigateBack = { navController.navigateUp() },
-                viewModel = searchProvidersViewModel,
-            )
+            SearchProvidersScreen(onNavigateBack = { navController.navigateUp() })
         }
 
         composable(
@@ -70,10 +55,7 @@ fun NavGraphBuilder.settingsNavigation(
             enterTransition = { slideIntoContainer(SlideDirection.Start) },
             popExitTransition = { slideOutOfContainer(SlideDirection.End) },
         ) {
-            DefaultSortOptionsScreen(
-                onNavigateBack = { navController.navigateUp() },
-                viewModel = settingsViewModel,
-            )
+            DefaultSortOptionsScreen(onNavigateBack = { navController.navigateUp() })
         }
 
         composable(
@@ -81,10 +63,7 @@ fun NavGraphBuilder.settingsNavigation(
             enterTransition = { slideIntoContainer(SlideDirection.Start) },
             popExitTransition = { slideOutOfContainer(SlideDirection.End) },
         ) {
-            SearchHistoryScreen(
-                onNavigateBack = { navController.navigateUp() },
-                viewModel = searchHistoryViewModel,
-            )
+            SearchHistoryScreen(onNavigateBack = { navController.navigateUp() })
         }
     }
 }

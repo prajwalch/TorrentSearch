@@ -1,6 +1,7 @@
 package com.prajwalch.torrentsearch.ui.screens.settings
 
 import android.os.Build
+
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.isSystemInDarkTheme
@@ -16,6 +17,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 
 import com.prajwalch.torrentsearch.R
@@ -24,10 +26,11 @@ import com.prajwalch.torrentsearch.ui.components.DialogListItem
 import com.prajwalch.torrentsearch.ui.components.SettingsDialog
 import com.prajwalch.torrentsearch.ui.components.SettingsItem
 import com.prajwalch.torrentsearch.ui.components.SettingsSectionTitle
+import com.prajwalch.torrentsearch.ui.viewmodel.SettingsViewModel
 
 @Composable
 fun AppearanceSettings(modifier: Modifier = Modifier) {
-    val viewModel = LocalSettingsViewModel.current
+    val viewModel = hiltViewModel<SettingsViewModel>()
     val settings by viewModel.appearanceSettingsUiState.collectAsStateWithLifecycle()
 
     var showDarkThemeDialog by remember(settings) { mutableStateOf(false) }

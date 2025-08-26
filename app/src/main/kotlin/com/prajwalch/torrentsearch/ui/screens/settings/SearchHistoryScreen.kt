@@ -15,6 +15,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 
 import com.prajwalch.torrentsearch.R
@@ -25,11 +26,8 @@ import com.prajwalch.torrentsearch.ui.components.SearchHistoryListItem
 import com.prajwalch.torrentsearch.ui.viewmodel.SearchHistoryViewModel
 
 @Composable
-fun SearchHistoryScreen(
-    onNavigateBack: () -> Unit,
-    viewModel: SearchHistoryViewModel,
-    modifier: Modifier = Modifier,
-) {
+fun SearchHistoryScreen(onNavigateBack: () -> Unit, modifier: Modifier = Modifier) {
+    val viewModel = hiltViewModel<SearchHistoryViewModel>()
     val searchHistoryList by viewModel.uiState.collectAsStateWithLifecycle()
 
     Scaffold(

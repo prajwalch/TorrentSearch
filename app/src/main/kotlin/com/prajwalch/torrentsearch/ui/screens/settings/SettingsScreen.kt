@@ -10,19 +10,12 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 
 import com.prajwalch.torrentsearch.R
 import com.prajwalch.torrentsearch.ui.components.NavigateBackIconButton
-import com.prajwalch.torrentsearch.ui.viewmodel.SettingsViewModel
-
-val LocalSettingsViewModel = compositionLocalOf<SettingsViewModel> {
-    error("Settings ViewModel is not provided")
-}
 
 @Composable
 fun SettingsScreen(
@@ -31,7 +24,6 @@ fun SettingsScreen(
     onNavigateToSearchProviders: () -> Unit,
     onNavigateToDefaultSortOptions: () -> Unit,
     onNavigateToSearchHistory: () -> Unit,
-    viewModel: SettingsViewModel,
     modifier: Modifier = Modifier,
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
@@ -43,25 +35,23 @@ fun SettingsScreen(
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
         topBar = { SettingsScreenTopBar(onNavigateBack = onNavigateBack) }
     ) { innerPadding ->
-        CompositionLocalProvider(LocalSettingsViewModel provides viewModel) {
-            LazyColumn(
-                modifier = Modifier.consumeWindowInsets(innerPadding),
-                contentPadding = innerPadding,
-            ) {
-                item { AppearanceSettings() }
-                item { GeneralSettings() }
-                item {
-                    SearchSettings(
-                        onNavigateToSearchProviders = onNavigateToSearchProviders,
-                        onNavigateToDefaultCategory = onNavigateToDefaultCategory,
-                        onNavigateToDefaultSortOptions = onNavigateToDefaultSortOptions,
-                    )
-                }
-                item {
-                    SearchHistorySettings(onNavigateToSearchHistory = onNavigateToSearchHistory)
-                }
-                item { About() }
+        LazyColumn(
+            modifier = Modifier.consumeWindowInsets(innerPadding),
+            contentPadding = innerPadding,
+        ) {
+            item { AppearanceSettings() }
+            item { GeneralSettings() }
+            item {
+                SearchSettings(
+                    onNavigateToSearchProviders = onNavigateToSearchProviders,
+                    onNavigateToDefaultCategory = onNavigateToDefaultCategory,
+                    onNavigateToDefaultSortOptions = onNavigateToDefaultSortOptions,
+                )
             }
+            item {
+                SearchHistorySettings(onNavigateToSearchHistory = onNavigateToSearchHistory)
+            }
+            item { About() }
         }
     }
 }

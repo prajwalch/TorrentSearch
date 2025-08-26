@@ -14,7 +14,9 @@ import com.prajwalch.torrentsearch.providers.SearchProviderId
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
-class SettingsRepository(
+import javax.inject.Inject
+
+class SettingsRepository @Inject constructor(
     private val dataStore: DataStore<Preferences>,
     searchProvidersRepository: SearchProvidersRepository,
 ) {

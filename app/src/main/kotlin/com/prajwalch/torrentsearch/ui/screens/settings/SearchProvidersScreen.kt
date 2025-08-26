@@ -52,6 +52,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 
 import com.prajwalch.torrentsearch.R
@@ -74,11 +75,8 @@ private data class ConfigEditorParams(
 )
 
 @Composable
-fun SearchProvidersScreen(
-    onNavigateBack: () -> Unit,
-    viewModel: SearchProvidersViewModel,
-    modifier: Modifier = Modifier,
-) {
+fun SearchProvidersScreen(onNavigateBack: () -> Unit, modifier: Modifier = Modifier) {
+    val viewModel = hiltViewModel<SearchProvidersViewModel>()
     val searchProvidersUiState by viewModel.searchProvidersUiState.collectAsStateWithLifecycle()
 
     var showNewSearchProviderDialog by rememberSaveable(searchProvidersUiState) {

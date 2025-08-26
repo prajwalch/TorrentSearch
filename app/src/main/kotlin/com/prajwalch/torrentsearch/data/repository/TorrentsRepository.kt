@@ -19,7 +19,9 @@ import kotlinx.coroutines.flow.channelFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 
-class TorrentsRepository(
+import javax.inject.Inject
+
+class TorrentsRepository @Inject constructor(
     /** Uses for remote search. */
     private val httpClient: HttpClient,
     /** Uses for bookmarking torrents. */

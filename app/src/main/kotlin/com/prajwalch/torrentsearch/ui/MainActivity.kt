@@ -1,7 +1,6 @@
 package com.prajwalch.torrentsearch.ui
 
 import android.content.ActivityNotFoundException
-import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
@@ -17,94 +16,25 @@ import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.runtime.getValue
 import androidx.core.net.toUri
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
-import androidx.datastore.core.DataStore
-import androidx.datastore.preferences.core.Preferences
-import androidx.datastore.preferences.preferencesDataStore
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 
 import com.prajwalch.torrentsearch.data.database.TorrentSearchDatabase
 import com.prajwalch.torrentsearch.data.repository.DarkTheme
-import com.prajwalch.torrentsearch.data.repository.SearchHistoryRepository
-import com.prajwalch.torrentsearch.data.repository.SearchProvidersRepository
-import com.prajwalch.torrentsearch.data.repository.SettingsRepository
-import com.prajwalch.torrentsearch.data.repository.TorrentsRepository
 import com.prajwalch.torrentsearch.models.MagnetUri
-import com.prajwalch.torrentsearch.network.HttpClient
 import com.prajwalch.torrentsearch.ui.theme.TorrentSearchTheme
-import com.prajwalch.torrentsearch.ui.viewmodel.BookmarksViewModel
-import com.prajwalch.torrentsearch.ui.viewmodel.SearchHistoryViewModel
-import com.prajwalch.torrentsearch.ui.viewmodel.SearchProvidersViewModel
 import com.prajwalch.torrentsearch.ui.viewmodel.SearchViewModel
 import com.prajwalch.torrentsearch.ui.viewmodel.SettingsViewModel
 
-private val Context.settingsDataStore: DataStore<Preferences> by preferencesDataStore(
-    name = "settings"
-)
+import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
-    private val database: TorrentSearchDatabase by lazy {
-        TorrentSearchDatabase.getInstance(this)
-    }
+    @Inject
+    lateinit var database: TorrentSearchDatabase
 
-    // Repositories.
-
-    private val searchHistoryRepository by lazy {
-        SearchHistoryRepository(dao = database.searchHistoryDao())
-    }
-
-    private val searchProvidersRepository: SearchProvidersRepository by lazy {
-        SearchProvidersRepository(dao = database.torznabSearchProviderDao())
-    }
-
-    private val settingsRepository: SettingsRepository by lazy {
-        SettingsRepository(
-            dataStore = settingsDataStore,
-            searchProvidersRepository = searchProvidersRepository,
-        )
-    }
-
-    private val torrentsRepository: TorrentsRepository by lazy {
-        TorrentsRepository(
-            httpClient = HttpClient,
-            bookmarkedTorrentDao = database.bookmarkedTorrentDao(),
-        )
-    }
-
-    // ViewModels.
-
-    private val bookmarksViewModel: BookmarksViewModel by viewModels {
-        BookmarksViewModel.provideFactory(
-            settingsRepository = settingsRepository,
-            torrentsRepository = torrentsRepository
-        )
-    }
-
-    private val searchHistoryViewModel: SearchHistoryViewModel by viewModels {
-        SearchHistoryViewModel.providerFactory(searchHistoryRepository = searchHistoryRepository)
-    }
-
-    private val searchProvidersViewModel: SearchProvidersViewModel by viewModels {
-        SearchProvidersViewModel.provideFactory(
-            settingsRepository = settingsRepository,
-            searchProvidersRepository = searchProvidersRepository,
-        )
-    }
-
-    private val searchViewModel: SearchViewModel by viewModels {
-        SearchViewModel.provideFactory(
-            settingsRepository = settingsRepository,
-            searchHistoryRepository = searchHistoryRepository,
-            torrentsRepository = torrentsRepository,
-            searchProvidersRepository = searchProvidersRepository,
-        )
-    }
-
-    private val settingsViewModel: SettingsViewModel by viewModels {
-        SettingsViewModel.provideFactory(
-            settingsRepository = settingsRepository,
-            searchProvidersRepository = searchProvidersRepository,
-        )
-    }
+    private val searchViewModel: SearchViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         installSplashScreen()
@@ -115,6 +45,7 @@ class MainActivity : ComponentActivity() {
 
         enableEdgeToEdge()
         setContent {
+            val settingsViewModel = hiltViewModel<SettingsViewModel>()
             val appearanceSettings by settingsViewModel.appearanceSettingsUiState.collectAsStateWithLifecycle()
 
             val darkTheme = when (appearanceSettings.darkTheme) {
@@ -129,11 +60,6 @@ class MainActivity : ComponentActivity() {
                 pureBlack = appearanceSettings.pureBlack,
             ) {
                 TorrentSearchApp(
-                    bookmarksViewModel = bookmarksViewModel,
-                    searchHistoryViewModel = searchHistoryViewModel,
-                    searchProvidersViewModel = searchProvidersViewModel,
-                    searchViewModel = searchViewModel,
-                    settingsViewModel = settingsViewModel,
                     onDownloadTorrent = ::downloadTorrentViaClient,
                     onShareMagnetLink = ::shareMagnetLink,
                     onOpenDescriptionPage = ::openDescriptionPage,

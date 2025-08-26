@@ -1,7 +1,6 @@
 package com.prajwalch.torrentsearch.ui.viewmodel
 
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 
 import com.prajwalch.torrentsearch.data.repository.SearchProvidersRepository
@@ -12,10 +11,14 @@ import com.prajwalch.torrentsearch.providers.SearchProviderInfo
 import com.prajwalch.torrentsearch.providers.SearchProviderSafetyStatus
 import com.prajwalch.torrentsearch.providers.SearchProviderType
 
+import dagger.hilt.android.lifecycle.HiltViewModel
+
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+
+import javax.inject.Inject
 
 /** State for the single search provider. */
 data class SearchProviderUiState(
@@ -29,7 +32,8 @@ data class SearchProviderUiState(
 )
 
 /** ViewModel which handles the business logic of Search providers screen. */
-class SearchProvidersViewModel(
+@HiltViewModel
+class SearchProvidersViewModel @Inject constructor(
     private val settingsRepository: SettingsRepository,
     private val searchProvidersRepository: SearchProvidersRepository,
 ) : ViewModel() {
@@ -170,24 +174,6 @@ class SearchProvidersViewModel(
     fun deleteTorznabSearchProvider(id: String) {
         viewModelScope.launch {
             searchProvidersRepository.deleteTorznabSearchProvider(id = id)
-        }
-    }
-
-    companion object {
-        /** Provides a factory function for [SearchProvidersViewModel]. */
-        fun provideFactory(
-            settingsRepository: SettingsRepository,
-            searchProvidersRepository: SearchProvidersRepository,
-        ): ViewModelProvider.Factory {
-            return object : ViewModelProvider.Factory {
-                @Suppress("UNCHECKED_CAST")
-                override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                    return SearchProvidersViewModel(
-                        settingsRepository = settingsRepository,
-                        searchProvidersRepository = searchProvidersRepository,
-                    ) as T
-                }
-            }
         }
     }
 }

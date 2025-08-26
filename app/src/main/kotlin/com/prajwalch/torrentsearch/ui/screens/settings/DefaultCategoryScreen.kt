@@ -16,6 +16,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 
 import com.prajwalch.torrentsearch.R
@@ -24,12 +25,10 @@ import com.prajwalch.torrentsearch.ui.components.NavigateBackIconButton
 import com.prajwalch.torrentsearch.ui.viewmodel.SettingsViewModel
 
 @Composable
-fun DefaultCategoryScreen(
-    onNavigateBack: () -> Unit,
-    viewModel: SettingsViewModel,
-    modifier: Modifier = Modifier,
-) {
+fun DefaultCategoryScreen(onNavigateBack: () -> Unit, modifier: Modifier = Modifier) {
+    val viewModel = hiltViewModel<SettingsViewModel>()
     val settings by viewModel.searchSettingsUiState.collectAsStateWithLifecycle()
+    
     val defaultCategory by remember { derivedStateOf { settings.defaultCategory } }
 
     Scaffold(

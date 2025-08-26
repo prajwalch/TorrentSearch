@@ -1,18 +1,22 @@
 package com.prajwalch.torrentsearch.ui.viewmodel
 
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 
 import com.prajwalch.torrentsearch.data.repository.SearchHistoryRepository
+
+import dagger.hilt.android.lifecycle.HiltViewModel
 
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
+import javax.inject.Inject
+
 /** ViewModel which handles the business logic of Search history screen. */
-class SearchHistoryViewModel(
+@HiltViewModel
+class SearchHistoryViewModel @Inject constructor(
     private val searchHistoryRepository: SearchHistoryRepository,
 ) : ViewModel() {
     val uiState = searchHistoryRepository
@@ -40,21 +44,5 @@ class SearchHistoryViewModel(
     /** Deletes all search history. */
     fun deleteAllSearchHistory() {
         viewModelScope.launch { searchHistoryRepository.clearAll() }
-    }
-
-    companion object {
-        /** Provides a factory function for [SearchHistoryViewModel]. */
-        fun providerFactory(
-            searchHistoryRepository: SearchHistoryRepository,
-        ): ViewModelProvider.Factory {
-            return object : ViewModelProvider.Factory {
-                @Suppress("UNCHECKED_CAST")
-                override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                    return SearchHistoryViewModel(
-                        searchHistoryRepository = searchHistoryRepository
-                    ) as T
-                }
-            }
-        }
     }
 }

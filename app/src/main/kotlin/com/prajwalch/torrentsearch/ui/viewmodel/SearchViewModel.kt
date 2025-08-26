@@ -1,7 +1,6 @@
 package com.prajwalch.torrentsearch.ui.viewmodel
 
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 
 import com.prajwalch.torrentsearch.data.database.entities.SearchHistory
@@ -19,6 +18,8 @@ import com.prajwalch.torrentsearch.models.Category
 import com.prajwalch.torrentsearch.models.Torrent
 import com.prajwalch.torrentsearch.providers.SearchProviderId
 
+import dagger.hilt.android.lifecycle.HiltViewModel
+
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -33,6 +34,8 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+
+import javax.inject.Inject
 
 /** Unique identifier of the search history. */
 typealias SearchHistoryId = Long
@@ -90,7 +93,8 @@ private data class SearchSettings(
 )
 
 /** ViewModel which handles the business logic of Search screen. */
-class SearchViewModel(
+@HiltViewModel
+class SearchViewModel @Inject constructor(
     private val settingsRepository: SettingsRepository,
     private val searchHistoryRepository: SearchHistoryRepository,
     private val torrentsRepository: TorrentsRepository,
@@ -398,26 +402,6 @@ class SearchViewModel(
         return when {
             settings.search.maxNumResults.isUnlimited() -> filteredResults
             else -> filteredResults.take(settings.search.maxNumResults.n)
-        }
-    }
-
-    companion object {
-        /** Provides a factory function for [SearchViewModel]. */
-        fun provideFactory(
-            settingsRepository: SettingsRepository,
-            searchHistoryRepository: SearchHistoryRepository,
-            torrentsRepository: TorrentsRepository,
-            searchProvidersRepository: SearchProvidersRepository,
-        ): ViewModelProvider.Factory = object : ViewModelProvider.Factory {
-            @Suppress("UNCHECKED_CAST")
-            override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                return SearchViewModel(
-                    settingsRepository = settingsRepository,
-                    searchHistoryRepository = searchHistoryRepository,
-                    torrentsRepository = torrentsRepository,
-                    searchProvidersRepository = searchProvidersRepository,
-                ) as T
-            }
         }
     }
 }

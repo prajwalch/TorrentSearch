@@ -1,7 +1,6 @@
 package com.prajwalch.torrentsearch.ui.viewmodel
 
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 
 import com.prajwalch.torrentsearch.data.repository.SettingsRepository
@@ -12,6 +11,8 @@ import com.prajwalch.torrentsearch.extensions.customSort
 import com.prajwalch.torrentsearch.extensions.filterNSFW
 import com.prajwalch.torrentsearch.models.Torrent
 
+import dagger.hilt.android.lifecycle.HiltViewModel
+
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -21,6 +22,8 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
+import javax.inject.Inject
+
 /** UI state for the Bookmarks screen. */
 data class BookmarksUiState(
     val bookmarks: List<Torrent> = emptyList(),
@@ -29,7 +32,8 @@ data class BookmarksUiState(
 )
 
 /** ViewModel that handles the business logic of Bookmarks screen. */
-class BookmarksViewModel(
+@HiltViewModel
+class BookmarksViewModel @Inject constructor(
     private val settingsRepository: SettingsRepository,
     private val torrentsRepository: TorrentsRepository,
 ) : ViewModel() {
@@ -140,24 +144,6 @@ class BookmarksViewModel(
                 currentSortCriteria = criteria,
                 currentSortOrder = order,
             )
-        }
-    }
-
-    companion object {
-        /** Provides a factory function for [BookmarksViewModel]. */
-        @Suppress("UNCHECKED_CAST")
-        fun provideFactory(
-            settingsRepository: SettingsRepository,
-            torrentsRepository: TorrentsRepository,
-        ): ViewModelProvider.Factory {
-            return object : ViewModelProvider.Factory {
-                override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                    return BookmarksViewModel(
-                        settingsRepository = settingsRepository,
-                        torrentsRepository = torrentsRepository,
-                    ) as T
-                }
-            }
         }
     }
 }

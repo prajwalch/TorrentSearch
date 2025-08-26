@@ -1,7 +1,6 @@
 package com.prajwalch.torrentsearch.ui.viewmodel
 
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 
 import com.prajwalch.torrentsearch.data.repository.DarkTheme
@@ -12,11 +11,15 @@ import com.prajwalch.torrentsearch.data.repository.SortCriteria
 import com.prajwalch.torrentsearch.data.repository.SortOrder
 import com.prajwalch.torrentsearch.models.Category
 
+import dagger.hilt.android.lifecycle.HiltViewModel
+
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+
+import javax.inject.Inject
 
 /** State for the appearance settings. */
 data class AppearanceSettingsUiState(
@@ -56,7 +59,8 @@ data class SearchHistorySettingsUiState(
 )
 
 /** ViewModel that handles the business logic of Settings screen. */
-class SettingsViewModel(
+@HiltViewModel
+class SettingsViewModel @Inject constructor(
     private val settingsRepository: SettingsRepository,
     private val searchProvidersRepository: SearchProvidersRepository,
 ) : ViewModel() {
@@ -228,24 +232,6 @@ class SettingsViewModel(
     fun showSearchHistory(show: Boolean) {
         viewModelScope.launch {
             settingsRepository.updateShowSearchHistory(show = show)
-        }
-    }
-
-    companion object {
-        /** Provides a factory function for [SettingsViewModel]. */
-        fun provideFactory(
-            settingsRepository: SettingsRepository,
-            searchProvidersRepository: SearchProvidersRepository,
-        ): ViewModelProvider.Factory {
-            return object : ViewModelProvider.Factory {
-                @Suppress("UNCHECKED_CAST")
-                override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                    return SettingsViewModel(
-                        settingsRepository = settingsRepository,
-                        searchProvidersRepository = searchProvidersRepository,
-                    ) as T
-                }
-            }
         }
     }
 }

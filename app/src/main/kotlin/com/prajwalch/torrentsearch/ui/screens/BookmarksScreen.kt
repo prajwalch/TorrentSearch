@@ -21,6 +21,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 
 import com.prajwalch.torrentsearch.R
@@ -38,16 +39,16 @@ import kotlinx.coroutines.launch
 fun BookmarksScreen(
     onNavigateBack: () -> Unit,
     onNavigateToSettings: () -> Unit,
-    viewModel: BookmarksViewModel,
     onTorrentSelect: (Torrent) -> Unit,
     snackbarHostState: SnackbarHostState,
     modifier: Modifier = Modifier,
 ) {
+    val viewModel = hiltViewModel<BookmarksViewModel>()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    
     val showDeleteAllAction by remember {
         derivedStateOf { uiState.bookmarks.isNotEmpty() }
     }
-
     // Scroll to top button related.
     val coroutineScope = rememberCoroutineScope()
     val lazyListState = rememberLazyListState()
@@ -79,7 +80,9 @@ fun BookmarksScreen(
     ) { innerPadding ->
         if (uiState.bookmarks.isEmpty()) {
             EmptyPlaceholder(
-                modifier = Modifier.fillMaxSize().padding(innerPadding),
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(innerPadding),
                 headlineId = R.string.msg_nothing_here_yet,
             )
         } else {

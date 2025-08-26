@@ -6,6 +6,7 @@ plugins {
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.ksp)
     alias(libs.plugins.androidx.room)
+    alias(libs.plugins.hilt)
 }
 
 android {
@@ -79,13 +80,17 @@ dependencies {
     implementation(libs.androidx.ui)
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
+    implementation(libs.hilt.android)
     implementation(libs.jsoup)
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.ktor.client.core)
     implementation(libs.ktor.client.okhttp)
     implementation(libs.lazycolumnscrollbar)
     implementation(platform(libs.androidx.compose.bom))
+    implementation(libs.androidx.hilt.navigation.compose)
+    
     ksp(libs.androidx.room.compiler)
+    ksp(libs.hilt.android.compiler)
 
     testImplementation(libs.junit)
 

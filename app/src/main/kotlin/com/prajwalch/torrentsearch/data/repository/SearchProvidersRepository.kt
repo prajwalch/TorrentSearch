@@ -26,7 +26,9 @@ import com.prajwalch.torrentsearch.providers.Yts
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
-class SearchProvidersRepository(private val dao: TorznabSearchProviderDao) {
+import javax.inject.Inject
+
+class SearchProvidersRepository @Inject constructor(private val dao: TorznabSearchProviderDao) {
     /**
      * Instances of built-in search providers.
      *

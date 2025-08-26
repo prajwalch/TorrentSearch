@@ -1,6 +1,7 @@
 package com.prajwalch.torrentsearch.ui
 
 import android.content.ClipData
+
 import androidx.compose.animation.AnimatedContentTransitionScope.SlideDirection
 import androidx.compose.animation.fadeIn
 import androidx.compose.material3.SnackbarHostState
@@ -14,6 +15,7 @@ import androidx.compose.ui.platform.ClipEntry
 import androidx.compose.ui.platform.Clipboard
 import androidx.compose.ui.platform.LocalClipboard
 import androidx.compose.ui.res.stringResource
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -28,25 +30,18 @@ import com.prajwalch.torrentsearch.ui.screens.Screens
 import com.prajwalch.torrentsearch.ui.screens.SearchScreen
 import com.prajwalch.torrentsearch.ui.screens.settings.settingsNavigation
 import com.prajwalch.torrentsearch.ui.viewmodel.BookmarksViewModel
-import com.prajwalch.torrentsearch.ui.viewmodel.SearchHistoryViewModel
-import com.prajwalch.torrentsearch.ui.viewmodel.SearchProvidersViewModel
-import com.prajwalch.torrentsearch.ui.viewmodel.SearchViewModel
-import com.prajwalch.torrentsearch.ui.viewmodel.SettingsViewModel
 
 import kotlinx.coroutines.launch
 
 @Composable
 fun TorrentSearchApp(
-    bookmarksViewModel: BookmarksViewModel,
-    searchHistoryViewModel: SearchHistoryViewModel,
-    searchProvidersViewModel: SearchProvidersViewModel,
-    searchViewModel: SearchViewModel,
-    settingsViewModel: SettingsViewModel,
     onDownloadTorrent: (MagnetUri) -> Boolean,
     onShareMagnetLink: (MagnetUri) -> Unit,
     onOpenDescriptionPage: (String) -> Unit,
     onShareDescriptionPageUrl: (String) -> Unit,
 ) {
+    val bookmarksViewModel = hiltViewModel<BookmarksViewModel>()
+
     val navController = rememberNavController()
     val coroutineScope = rememberCoroutineScope()
     val snackbarHostState = remember { SnackbarHostState() }
@@ -106,7 +101,6 @@ fun TorrentSearchApp(
             SearchScreen(
                 onNavigateToBookmarks = { navController.navigate(Screens.BOOKMARKS) },
                 onNavigateToSettings = { navController.navigate(Screens.Settings.ROOT) },
-                viewModel = searchViewModel,
                 onTorrentSelect = { selectedTorrent = it },
                 snackbarHostState = snackbarHostState,
             )
@@ -122,18 +116,12 @@ fun TorrentSearchApp(
             BookmarksScreen(
                 onNavigateBack = { navController.navigateUp() },
                 onNavigateToSettings = { navController.navigate(Screens.Settings.ROOT) },
-                viewModel = bookmarksViewModel,
                 onTorrentSelect = { selectedTorrent = it },
                 snackbarHostState = snackbarHostState,
             )
         }
 
-        settingsNavigation(
-            navController = navController,
-            settingsViewModel = settingsViewModel,
-            searchProvidersViewModel = searchProvidersViewModel,
-            searchHistoryViewModel = searchHistoryViewModel,
-        )
+        settingsNavigation(navController = navController)
     }
 }
 

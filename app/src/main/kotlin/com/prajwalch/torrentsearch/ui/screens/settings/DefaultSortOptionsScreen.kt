@@ -17,6 +17,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 
 import com.prajwalch.torrentsearch.R
@@ -27,12 +28,10 @@ import com.prajwalch.torrentsearch.ui.components.SettingsSectionTitle
 import com.prajwalch.torrentsearch.ui.viewmodel.SettingsViewModel
 
 @Composable
-fun DefaultSortOptionsScreen(
-    onNavigateBack: () -> Unit,
-    viewModel: SettingsViewModel,
-    modifier: Modifier = Modifier,
-) {
+fun DefaultSortOptionsScreen(onNavigateBack: () -> Unit, modifier: Modifier = Modifier) {
+    val viewModel = hiltViewModel<SettingsViewModel>()
     val searchSettings by viewModel.searchSettingsUiState.collectAsStateWithLifecycle()
+    
     val defaultSortOptions by remember { derivedStateOf { searchSettings.defaultSortOptions } }
 
     Scaffold(

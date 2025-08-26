@@ -4,8 +4,9 @@ import com.prajwalch.torrentsearch.data.database.dao.SearchHistoryDao
 import com.prajwalch.torrentsearch.data.database.entities.SearchHistory
 
 import kotlinx.coroutines.flow.Flow
+import javax.inject.Inject
 
-class SearchHistoryRepository(private val dao: SearchHistoryDao) {
+class SearchHistoryRepository @Inject constructor(private val dao: SearchHistoryDao) {
     /**
      * Adds the given search history otherwise does noting if the query
      * is already saved.
