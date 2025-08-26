@@ -12,8 +12,6 @@ import com.prajwalch.torrentsearch.network.HttpClientResponse
 import com.prajwalch.torrentsearch.providers.SearchContext
 import com.prajwalch.torrentsearch.providers.SearchProvider
 
-import kotlinx.coroutines.cancel
-import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.channelFlow
 import kotlinx.coroutines.flow.map
@@ -51,24 +49,24 @@ class TorrentsRepository @Inject constructor(
     fun search(
         query: String,
         category: Category,
-        providers: List<SearchProvider>,
+        searchProviders: List<SearchProvider>,
     ): Flow<TorrentsRepositoryResult> = channelFlow {
-        val providersName = providers.map { it.info.name }
-        Log.d(
-            TAG,
-            "Initiating search; query=$query, category=$category, providers=$providersName"
+        Log.i(TAG, "search() called")
+
+        val providersName = searchProviders.map { it.info.name }
+        Log.d(TAG, "query=$query, category=$category, providers=$providersName")
+
+        val searchProviders = chooseSearchProviders(
+            searchProviders = searchProviders,
+            category = category,
         )
 
-        Log.i(TAG, "Choosing search providers for given category")
-        val searchProviders = chooseSearchProviders(providers = providers, category = category)
-        Log.d(TAG, "Chosen providers=${searchProviders.map { it.info.name }}")
-
         if (searchProviders.isEmpty()) {
-            Log.i(TAG, "Search providers are empty, cancelling search")
-            cancel()
+            Log.i(TAG, "Search providers are empty. Returning...")
+            return@channelFlow
         }
 
-        ensureActive()
+        Log.d(TAG, "Searching with ${searchProviders.map { it.info.name }}")
 
         val query = query.replace(' ', '+').trim()
         val context = SearchContext(category = category, httpClient = httpClient)
@@ -84,12 +82,12 @@ class TorrentsRepository @Inject constructor(
 
                 when (httpClientResponse) {
                     is HttpClientResponse.Error.NetworkError -> {
-                        Log.i(TAG, "-> Got network error response")
+                        Log.i(TAG, "Got network error response")
                         send(TorrentsRepositoryResult(isNetworkError = true))
                     }
 
                     is HttpClientResponse.Ok -> {
-                        Log.i(TAG, "-> Got ${httpClientResponse.result.size} results")
+                        Log.i(TAG, "Got ${httpClientResponse.result.size} results")
 
                         if (httpClientResponse.result.isNotEmpty()) {
                             val torrents = checkForBookmarkedTorrents(
@@ -102,7 +100,7 @@ class TorrentsRepository @Inject constructor(
 
                     // If needed, handle other cases too.
                     else -> {
-                        Log.d(TAG, "-> Unhandled response ($httpClientResponse)")
+                        Log.d(TAG, "Unhandled response ($httpClientResponse)")
                     }
                 }
             }
@@ -123,14 +121,14 @@ class TorrentsRepository @Inject constructor(
      * category.
      */
     private fun chooseSearchProviders(
-        providers: List<SearchProvider>,
+        searchProviders: List<SearchProvider>,
         category: Category,
     ): List<SearchProvider> {
         if (category == Category.All) {
-            return providers
+            return searchProviders
         }
 
-        return providers.filter {
+        return searchProviders.filter {
             (it.info.specializedCategory == Category.All) || (category == it.info.specializedCategory)
         }
     }
