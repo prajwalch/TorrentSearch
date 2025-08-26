@@ -1,5 +1,7 @@
 package com.prajwalch.torrentsearch.ui.viewmodel
 
+import android.util.Log
+
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 
@@ -16,18 +18,21 @@ import com.prajwalch.torrentsearch.extensions.customSort
 import com.prajwalch.torrentsearch.extensions.filterNSFW
 import com.prajwalch.torrentsearch.models.Category
 import com.prajwalch.torrentsearch.models.Torrent
+import com.prajwalch.torrentsearch.network.ConnectivityObserver
 import com.prajwalch.torrentsearch.providers.SearchProviderId
 
 import dagger.hilt.android.lifecycle.HiltViewModel
 
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onEach
@@ -95,16 +100,55 @@ private data class SearchSettings(
 /** ViewModel which handles the business logic of Search screen. */
 @HiltViewModel
 class SearchViewModel @Inject constructor(
-    private val settingsRepository: SettingsRepository,
-    private val searchHistoryRepository: SearchHistoryRepository,
     private val torrentsRepository: TorrentsRepository,
-    private val searchProvidersRepository: SearchProvidersRepository,
+    searchProvidersRepository: SearchProvidersRepository,
+    private val searchHistoryRepository: SearchHistoryRepository,
+    private val settingsRepository: SettingsRepository,
+    connectivityObserver: ConnectivityObserver,
 ) : ViewModel() {
     /** UI state. */
     private val _uiState = MutableStateFlow(SearchUiState())
     val uiState = _uiState.asStateFlow()
 
-    /** All the settings that this ViewModel cares. */
+    /** Search providers instance. */
+    private val searchProviders = searchProvidersRepository
+        .getInstances()
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.Eagerly,
+            initialValue = emptyList(),
+        )
+
+    /** Internet connection status. */
+    private val isInternetAvailable = connectivityObserver
+        .isInternetAvailable
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.Eagerly,
+            initialValue = false,
+        )
+
+    /**
+     * On-going search.
+     *
+     * Before initiating a new search, on-going search must be canceled
+     * even if it's not completed.
+     */
+    private var activeSearchJob: Job? = null
+
+    /**
+     * Unfiltered search results.
+     *
+     * It will contain the results which we originally receive from the
+     * repository and the results which are given to UI are filtered ones.
+     *
+     * By saving the original results, it allows us to hand over the original
+     * results back to UI when settings are reverted or altered. For e.x.: when
+     * enabling/disabling NSFW mode.
+     */
+    private var searchResults: List<Torrent> = emptyList()
+
+    /** Settings relevant to this ViewModel. */
     private val settings = combine(
         settingsRepository.enableNSFWMode,
         settingsRepository.searchSettings(),
@@ -118,35 +162,11 @@ class SearchViewModel @Inject constructor(
             initialValue = Settings(),
         )
 
+    /**
+     * This can be removed once we have a better way to load default category
+     * for the first time.
+     */
     private var isDefaultCategoryLoaded = false
-
-    private val searchProviders = searchProvidersRepository
-        .getInstances()
-        .stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.Eagerly,
-            initialValue = emptyList(),
-        )
-
-    /**
-     * On-going search.
-     *
-     * Before initiating a new search, on-going search must be canceled
-     * even if it's not completed.
-     */
-    private var searchJob: Job? = null
-
-    /**
-     * Unfiltered search results.
-     *
-     * This is the original results which we get from the repository after a new
-     * search is performed. The UI receives results only after we perform a filter
-     * (based on settings) and sort operations on this.
-     *
-     * By saving like this, it allows us to give original results to UI when
-     * user reverts to previous settings.
-     */
-    private var searchResults: List<Torrent> = emptyList()
 
     init {
         observeSearchHistory()
@@ -192,7 +212,7 @@ class SearchViewModel @Inject constructor(
 
     /** Resets the state to default value. */
     fun resetToDefault() {
-        searchJob?.cancel()
+        activeSearchJob?.cancel()
         searchResults = emptyList()
 
         val (defaultSortCriteria, defaultSortOrder) = settings.value.search.defaultSortOptions
@@ -214,14 +234,16 @@ class SearchViewModel @Inject constructor(
 
     /** Performs a search. */
     fun performSearch() {
-        // Prevent unnecessary processing.
+        Log.i(TAG, "performSearch() called")
+
         if (_uiState.value.query.isEmpty()) {
             return
         }
 
-        val defaultSortOptions = settings.value.search.defaultSortOptions
+        Log.i(TAG, "Cancelling on-going search")
+        activeSearchJob?.cancel()
 
-        // Prepare for the new search.
+        val defaultSortOptions = settings.value.search.defaultSortOptions
         _uiState.update {
             it.copy(
                 results = emptyList(),
@@ -234,83 +256,115 @@ class SearchViewModel @Inject constructor(
             )
         }
 
-        // Cancel any on-going search.
-        //
-        // This helps to prevent from any un-expected behaviour like when user
-        // quickly switch to another category when search is still happening.
-        searchJob?.cancel()
-
         // Clear previous search results.
         searchResults = emptyList()
 
-        // Then initiates a new search.
-        searchJob = viewModelScope.launch {
-            // Save current query.
-            //
-            // Trim the query before saving, this helps to prevent from
-            // inserting same query (one without the leading/trailing whitespace
-            // and the other with whitespace).
-            //
-            // We can't trim from the `changeQuery` function simply because
-            // doing so won't allow the user to insert a whitespace at all.
+        activeSearchJob = viewModelScope.launch {
             if (settings.value.saveSearchHistory) {
+                // Trim the query to prevent same query (e.g. 'one' and 'one ')
+                // from end upping into the database.
+                //
+                // NOTE: Trimming from `changeQuery()` is not possible because
+                // doing so won't allow the user to insert a whitespace at all.
+                val query = _uiState.value.query.trim()
+
                 searchHistoryRepository.add(
-                    searchHistory = SearchHistory(query = _uiState.value.query.trim())
+                    searchHistory = SearchHistory(query = query)
                 )
             }
 
-            // Acquire the enabled providers.
+            if (!isInternetAvailable.value) {
+                Log.w(TAG, "Internet is not available. Returning...")
+
+                _uiState.update {
+                    it.copy(
+                        results = emptyList(),
+                        resultsNotFound = false,
+                        isLoading = false,
+                        isSearching = false,
+                        isInternetError = true,
+                    )
+                }
+                return@launch
+            }
+
+            if (settings.value.search.enabledSearchProvidersId.isEmpty()) {
+                Log.i(TAG, "All search providers are disabled. Returning...")
+
+                _uiState.update {
+                    it.copy(
+                        results = emptyList(),
+                        resultsNotFound = true,
+                        isLoading = false,
+                        isSearching = false,
+                        isInternetError = false,
+                    )
+                }
+                return@launch
+            }
+
             val enabledSearchProviders = searchProviders
                 .first { it.isNotEmpty() }
                 .filter { it.info.id in settings.value.search.enabledSearchProvidersId }
+            Log.i(TAG, "Num enabled search providers = ${enabledSearchProviders.size}")
 
             torrentsRepository
                 .search(
                     query = _uiState.value.query,
                     category = _uiState.value.selectedCategory,
-                    providers = enabledSearchProviders,
+                    searchProviders = enabledSearchProviders,
                 )
-                .distinctUntilChanged()
+                .flowOn(Dispatchers.IO)
                 .onEach(::onEachSearchResult)
-                .onCompletion { failureCase -> if (failureCase == null) onSearchCompletion() }
+                .onCompletion { onSearchCompletion(cause = it) }
                 .launchIn(scope = this)
         }
     }
 
-    /** Runs on every search result emitted by repository. */
+    /**
+     * Runs on every search result emitted by repository.
+     *
+     * This function updates the UI only when successful results are received.
+     * Any network or other errors are ignored though it's best to report them
+     * to the UI but we don't have any implementation for that yet.
+     */
     private fun onEachSearchResult(result: TorrentsRepositoryResult) {
-        // Return as soon as we get the bad internet connection status.
-        if (result.isNetworkError) {
-            _uiState.update {
-                it.copy(
-                    resultsNotFound = false,
-                    isLoading = false,
-                    isSearching = false,
-                    isInternetError = true,
-                )
-            }
+        Log.i(TAG, "onEachSearchResult() called")
+
+        if (result.torrents == null) {
+            Log.i(TAG, "Didn't received any results. Returning...")
             return
         }
 
-        // Save the original results.
-        searchResults += result.torrents ?: return
+        searchResults += result.torrents
+        Log.i(TAG, "Received ${result.torrents.size} results, ${searchResults.size} total")
 
-        // Return if the search results are empty.
-        if (searchResults.isEmpty()) return
+        if (searchResults.isEmpty()) {
+            Log.i(TAG, "Empty results. Returning...")
+            return
+        }
 
-        // Filter (based on settings) and sort them.
-        val results = filterSearchResults(
+        Log.i(TAG, "Processing results based on current settings")
+        val filteredResults = filterSearchResults(
             results = searchResults,
-            settings = settings.value
-        ).customSort(
+            settings = settings.value,
+        )
+
+        if (filteredResults.isEmpty()) {
+            Log.i(TAG, "All results are filtered out. Returning...")
+            return
+        }
+
+        Log.i(TAG, "Final num of results = ${filteredResults.size}")
+
+        val sortedResults = filteredResults.customSort(
             criteria = _uiState.value.currentSortCriteria,
             order = _uiState.value.currentSortOrder,
         )
 
-        // And update the UI.
         _uiState.update {
             it.copy(
-                results = results,
+                results = sortedResults,
                 resultsNotFound = false,
                 isLoading = false,
                 isSearching = true,
@@ -320,10 +374,20 @@ class SearchViewModel @Inject constructor(
     }
 
     /** Runs after the search completes. */
-    private fun onSearchCompletion() {
+    private fun onSearchCompletion(cause: Throwable?) {
+        Log.i(TAG, "onSearchCompletion() called")
+
+        if (cause is CancellationException) {
+            Log.w(TAG, "Search is cancelled. Returning...")
+            return
+        }
+
+        Log.d(TAG, "cause = $cause")
+        Log.i(TAG, "Search completed")
+
         _uiState.update {
             it.copy(
-                resultsNotFound = !it.isInternetError && it.results.isEmpty(),
+                resultsNotFound = it.results.isEmpty(),
                 isLoading = false,
                 isSearching = false,
             )
@@ -403,6 +467,10 @@ class SearchViewModel @Inject constructor(
             settings.search.maxNumResults.isUnlimited() -> filteredResults
             else -> filteredResults.take(settings.search.maxNumResults.n)
         }
+    }
+
+    private companion object {
+        private const val TAG = "SearchViewModel"
     }
 }
 
