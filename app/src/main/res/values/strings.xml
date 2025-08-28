@@ -7,16 +7,12 @@
     <string name="torrent_client_not_found_main_content">
         To use the download feature, install a torrent client, set it up, and return to this app.
     </string>
-    <string name="section_title_recommended_client">Recommended client</string>
-    <string name="section_title_other_clients">Other clients</string>
+    <string name="recommended_client">Recommended client</string>
     <string name="libretorrent">LibreTorrent</string>
     <string name="aria2">Aria2App</string>
     <string name="gopeed">Gopeed</string>
     <string name="pikatorrent">PikaTorrent</string>
     <string name="torrserve">TorrServe</string>
-    <string name="source_playstore">PlayStore</string>
-    <string name="source_fdroid">F-Droid</string>
-    <string name="source_github">Github</string>
     <string name="button_done">Done</string>
     <!-- Root screen -->
 
@@ -122,5 +118,4 @@
     <!-- Settings dialog -->
     <string name="settings_dialog_button_cancel">Cancel</string>
     <!-- Settings Screen -->
-
 </resources>
