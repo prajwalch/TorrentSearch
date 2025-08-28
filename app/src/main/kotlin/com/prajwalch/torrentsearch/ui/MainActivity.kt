@@ -19,7 +19,6 @@ import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 
-import com.prajwalch.torrentsearch.data.database.TorrentSearchDatabase
 import com.prajwalch.torrentsearch.data.repository.DarkTheme
 import com.prajwalch.torrentsearch.models.MagnetUri
 import com.prajwalch.torrentsearch.ui.theme.TorrentSearchTheme
@@ -27,13 +26,9 @@ import com.prajwalch.torrentsearch.ui.viewmodel.SearchViewModel
 import com.prajwalch.torrentsearch.ui.viewmodel.SettingsViewModel
 
 import dagger.hilt.android.AndroidEntryPoint
-import javax.inject.Inject
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
-    @Inject
-    lateinit var database: TorrentSearchDatabase
-
     private val searchViewModel: SearchViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
