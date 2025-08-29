@@ -90,7 +90,7 @@ fun SearchScreen(
     val isFirstResultVisible by remember {
         derivedStateOf { lazyListState.firstVisibleItemIndex <= 1 }
     }
-    val showScrollToTopButton = !isFirstResultVisible && !uiState.isLoading
+    val showScrollToTopButton = uiState.results.isNotEmpty() && !isFirstResultVisible
 
     BackHandler(enabled = uiState.isResettable()) {
         viewModel.resetToDefault()
