@@ -31,8 +31,8 @@ fun CategoryBadge(category: Category, modifier: Modifier = Modifier) {
 fun NSFWBadge(modifier: Modifier = Modifier) {
     Badge(
         modifier = modifier,
-        containerColor = MaterialTheme.colorScheme.error,
-        contentColor = MaterialTheme.colorScheme.onError,
+        containerColor = MaterialTheme.colorScheme.errorContainer,
+        contentColor = MaterialTheme.colorScheme.onErrorContainer,
     ) {
         Text(
             modifier = modifier,
@@ -69,6 +69,8 @@ fun UnsafeBadge(onClick: () -> Unit, modifier: Modifier = Modifier) {
         modifier = Modifier.Companion
             .clickable(onClick = onClick)
             .then(modifier),
+        containerColor = MaterialTheme.colorScheme.errorContainer,
+        contentColor = MaterialTheme.colorScheme.onErrorContainer,
     ) {
         Text(text = stringResource(R.string.badge_unsafe))
     }
