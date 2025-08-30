@@ -62,7 +62,7 @@ data class SearchHistorySettingsUiState(
 @HiltViewModel
 class SettingsViewModel @Inject constructor(
     private val settingsRepository: SettingsRepository,
-    private val searchProvidersRepository: SearchProvidersRepository,
+    searchProvidersRepository: SearchProvidersRepository,
 ) : ViewModel() {
     /** Information of all search providers. */
     private val allSearchProvidersInfo = searchProvidersRepository
