@@ -21,11 +21,11 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 
 import com.prajwalch.torrentsearch.R
 import com.prajwalch.torrentsearch.models.Torrent
+import com.prajwalch.torrentsearch.ui.activityScopedViewModel
 import com.prajwalch.torrentsearch.ui.components.EmptyPlaceholder
 import com.prajwalch.torrentsearch.ui.components.NavigateBackIconButton
 import com.prajwalch.torrentsearch.ui.components.ScrollToTopFAB
@@ -43,9 +43,9 @@ fun BookmarksScreen(
     snackbarHostState: SnackbarHostState,
     modifier: Modifier = Modifier,
 ) {
-    val viewModel = hiltViewModel<BookmarksViewModel>()
+    val viewModel = activityScopedViewModel<BookmarksViewModel>()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-    
+
     val showDeleteAllAction by remember {
         derivedStateOf { uiState.bookmarks.isNotEmpty() }
     }

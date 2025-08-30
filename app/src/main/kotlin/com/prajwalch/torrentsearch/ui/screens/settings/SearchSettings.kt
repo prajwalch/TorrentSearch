@@ -22,11 +22,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 
 import com.prajwalch.torrentsearch.R
 import com.prajwalch.torrentsearch.data.repository.MaxNumResults
+import com.prajwalch.torrentsearch.ui.activityScopedViewModel
 import com.prajwalch.torrentsearch.ui.components.SettingsDialog
 import com.prajwalch.torrentsearch.ui.components.SettingsItem
 import com.prajwalch.torrentsearch.ui.components.SettingsSectionTitle
@@ -39,7 +39,7 @@ fun SearchSettings(
     onNavigateToDefaultSortOptions: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val viewModel = hiltViewModel<SettingsViewModel>()
+    val viewModel = activityScopedViewModel<SettingsViewModel>()
     val settings by viewModel.searchSettingsUiState.collectAsStateWithLifecycle()
 
     var showMaxNumResultsDialog by remember { mutableStateOf(false) }

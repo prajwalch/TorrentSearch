@@ -5,17 +5,17 @@ import androidx.compose.material3.Switch
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 
 import com.prajwalch.torrentsearch.R
+import com.prajwalch.torrentsearch.ui.activityScopedViewModel
 import com.prajwalch.torrentsearch.ui.components.SettingsItem
 import com.prajwalch.torrentsearch.ui.components.SettingsSectionTitle
 import com.prajwalch.torrentsearch.ui.viewmodel.SettingsViewModel
 
 @Composable
 fun GeneralSettings(modifier: Modifier = Modifier) {
-    val viewModel = hiltViewModel<SettingsViewModel>()
+    val viewModel = activityScopedViewModel<SettingsViewModel>()
     val settings by viewModel.generalSettingsUiState.collectAsStateWithLifecycle()
 
     Column(modifier = modifier) {

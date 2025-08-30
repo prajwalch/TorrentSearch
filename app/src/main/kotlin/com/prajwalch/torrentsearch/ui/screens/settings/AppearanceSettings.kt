@@ -17,11 +17,11 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 
 import com.prajwalch.torrentsearch.R
 import com.prajwalch.torrentsearch.data.repository.DarkTheme
+import com.prajwalch.torrentsearch.ui.activityScopedViewModel
 import com.prajwalch.torrentsearch.ui.components.DialogListItem
 import com.prajwalch.torrentsearch.ui.components.SettingsDialog
 import com.prajwalch.torrentsearch.ui.components.SettingsItem
@@ -30,7 +30,7 @@ import com.prajwalch.torrentsearch.ui.viewmodel.SettingsViewModel
 
 @Composable
 fun AppearanceSettings(modifier: Modifier = Modifier) {
-    val viewModel = hiltViewModel<SettingsViewModel>()
+    val viewModel = activityScopedViewModel<SettingsViewModel>()
     val settings by viewModel.appearanceSettingsUiState.collectAsStateWithLifecycle()
 
     var showDarkThemeDialog by remember(settings) { mutableStateOf(false) }

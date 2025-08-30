@@ -52,13 +52,13 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 
 import com.prajwalch.torrentsearch.R
 import com.prajwalch.torrentsearch.models.Category
 import com.prajwalch.torrentsearch.providers.SearchProviderSafetyStatus
 import com.prajwalch.torrentsearch.providers.SearchProviderType
+import com.prajwalch.torrentsearch.ui.activityScopedViewModel
 import com.prajwalch.torrentsearch.ui.components.BadgesRow
 import com.prajwalch.torrentsearch.ui.components.CategoryBadge
 import com.prajwalch.torrentsearch.ui.components.NavigateBackIconButton
@@ -76,7 +76,7 @@ private data class ConfigEditorParams(
 
 @Composable
 fun SearchProvidersScreen(onNavigateBack: () -> Unit, modifier: Modifier = Modifier) {
-    val viewModel = hiltViewModel<SearchProvidersViewModel>()
+    val viewModel = activityScopedViewModel<SearchProvidersViewModel>()
     val searchProvidersUiState by viewModel.searchProvidersUiState.collectAsStateWithLifecycle()
 
     var showNewSearchProviderDialog by rememberSaveable(searchProvidersUiState) {
