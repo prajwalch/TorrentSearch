@@ -34,8 +34,8 @@ data class SearchProviderUiState(
 /** ViewModel which handles the business logic of Search providers screen. */
 @HiltViewModel
 class SearchProvidersViewModel @Inject constructor(
-    private val settingsRepository: SettingsRepository,
     private val searchProvidersRepository: SearchProvidersRepository,
+    private val settingsRepository: SettingsRepository,
 ) : ViewModel() {
     /** Information of all search providers. */
     private val allSearchProvidersInfo = searchProvidersRepository
