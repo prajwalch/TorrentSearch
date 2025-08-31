@@ -1,7 +1,6 @@
 package com.prajwalch.torrentsearch.ui.screens.settings
 
 import android.util.Patterns
-
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.LocalIndication
 import androidx.compose.foundation.clickable
@@ -14,19 +13,19 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyItemScope
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.outlined.Warning
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.ListItem
@@ -127,11 +126,28 @@ fun SearchProvidersScreen(onNavigateBack: () -> Unit, modifier: Modifier = Modif
                 onDisableAllSearchProviders = viewModel::disableAllSearchProviders,
                 onResetToDefault = viewModel::resetEnabledSearchProvidersToDefault,
             )
+        },
+        floatingActionButton = {
+            ExtendedFloatingActionButton(
+                text = { Text(text = stringResource(R.string.button_new_provider)) },
+                icon = {
+                    Icon(
+                        imageVector = Icons.Default.Add,
+                        contentDescription = null,
+                    )
+                },
+                onClick = { showNewSearchProviderDialog = true }
+            )
         }
     ) { innerPadding ->
         SearchProviderList(
             modifier = Modifier.consumeWindowInsets(innerPadding),
-            contentPadding = innerPadding,
+            contentPadding = PaddingValues(
+                start = 0.dp,
+                top = innerPadding.calculateTopPadding(),
+                end = 0.dp,
+                bottom = 80.dp,
+            ),
             searchProviders = searchProvidersUiState,
             listItem = { searchProviderUiState ->
                 when (searchProviderUiState.type) {
@@ -182,15 +198,6 @@ fun SearchProvidersScreen(onNavigateBack: () -> Unit, modifier: Modifier = Modif
                     }
                 }
             },
-            toolBar = {
-                TextButton(
-                    modifier = Modifier.padding(horizontal = 16.dp),
-                    onClick = { showNewSearchProviderDialog = true }
-                ) {
-                    Text(text = "Add Torznab compatible provider")
-                }
-                HorizontalDivider()
-            }
         )
     }
 }
@@ -350,15 +357,11 @@ private fun SearchProviderList(
     listItem: @Composable (LazyItemScope.(SearchProviderUiState) -> Unit),
     modifier: Modifier = Modifier,
     contentPadding: PaddingValues = PaddingValues(0.dp),
-    toolBar: @Composable (() -> Unit)? = null,
 ) {
     LazyColumn(
         modifier = modifier,
         contentPadding = contentPadding,
     ) {
-        toolBar?.let {
-            item { it() }
-        }
         items(items = searchProviders, key = { it.id }) {
             listItem(it)
         }

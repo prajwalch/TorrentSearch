@@ -105,6 +105,7 @@
     <string name="badge_unsafe">Unsafe</string>
     <string name="title_new_search_provider">New search provider</string>
     <string name="badge_torznab">Torznab</string>
+    <string name="button_new_provider">New provider</string>
     <string name="button_save">Save</string>
     <string name="label_name">Name</string>
     <string name="label_url">URL</string>
