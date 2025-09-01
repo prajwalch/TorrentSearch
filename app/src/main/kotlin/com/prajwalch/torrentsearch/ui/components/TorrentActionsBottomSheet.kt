@@ -72,26 +72,26 @@ fun TorrentActionsBottomSheet(
                     onDeleteBookmark = actionWithDismiss(onDeleteBookmark),
                 )
             }
-            item { DownloadTorrentAction(onClick = actionWithDismiss(onDownloadTorrent)) }
-            item { ShareMagnetLinkAction(onClick = actionWithDismiss(onShareMagnetLink)) }
-            item { CopyMagnetLinkAction(onClick = actionWithDismiss(onCopyMagnetLink)) }
+            item { DownloadTorrent(onClick = actionWithDismiss(onDownloadTorrent)) }
+            item { ShareMagnetLink(onClick = actionWithDismiss(onShareMagnetLink)) }
+            item { CopyMagnetLink(onClick = actionWithDismiss(onCopyMagnetLink)) }
             item { Spacer(modifier = Modifier.height(8.dp)) }
 
             if (hasDescriptionPage) {
                 item { HorizontalDivider() }
                 item { Spacer(modifier = Modifier.height(8.dp)) }
                 item {
-                    OpenDescriptionPageAction(
+                    OpenDescriptionPage(
                         onClick = actionWithDismiss(onOpenDescriptionPage)
                     )
                 }
                 item {
-                    CopyDescriptionPageUrlAction(
+                    CopyDescriptionPageUrl(
                         onClick = actionWithDismiss(onCopyDescriptionPageUrl)
                     )
                 }
                 item {
-                    ShareDescriptionPageUrlAction(
+                    ShareDescriptionPageUrl(
                         onClick = actionWithDismiss(onShareDescriptionPageUrl)
                     )
                 }
@@ -129,14 +129,14 @@ private fun BookmarkAction(
     onDeleteBookmark: () -> Unit,
 ) {
     if (!isBookmarked) {
-        BookmarkTorrentAction(onClick = onBookmarkTorrent)
+        BookmarkTorrent(onClick = onBookmarkTorrent)
     } else {
-        DeleteBookmarkAction(onClick = onDeleteBookmark)
+        DeleteBookmark(onClick = onDeleteBookmark)
     }
 }
 
 @Composable
-private fun BookmarkTorrentAction(onClick: () -> Unit, modifier: Modifier = Modifier) {
+private fun BookmarkTorrent(onClick: () -> Unit, modifier: Modifier = Modifier) {
     Action(
         modifier = modifier,
         leadingIconId = R.drawable.ic_star,
@@ -146,7 +146,7 @@ private fun BookmarkTorrentAction(onClick: () -> Unit, modifier: Modifier = Modi
 }
 
 @Composable
-private fun DeleteBookmarkAction(onClick: () -> Unit, modifier: Modifier = Modifier) {
+private fun DeleteBookmark(onClick: () -> Unit, modifier: Modifier = Modifier) {
     Action(
         modifier = modifier,
         leadingIconId = R.drawable.ic_star_filled,
@@ -156,7 +156,7 @@ private fun DeleteBookmarkAction(onClick: () -> Unit, modifier: Modifier = Modif
 }
 
 @Composable
-private fun DownloadTorrentAction(onClick: () -> Unit, modifier: Modifier = Modifier) {
+private fun DownloadTorrent(onClick: () -> Unit, modifier: Modifier = Modifier) {
     Action(
         modifier = modifier,
         leadingIconId = R.drawable.ic_download,
@@ -166,7 +166,7 @@ private fun DownloadTorrentAction(onClick: () -> Unit, modifier: Modifier = Modi
 }
 
 @Composable
-private fun CopyMagnetLinkAction(onClick: () -> Unit, modifier: Modifier = Modifier) {
+private fun CopyMagnetLink(onClick: () -> Unit, modifier: Modifier = Modifier) {
     Action(
         modifier = modifier,
         leadingIconId = R.drawable.ic_copy,
@@ -176,7 +176,7 @@ private fun CopyMagnetLinkAction(onClick: () -> Unit, modifier: Modifier = Modif
 }
 
 @Composable
-private fun ShareMagnetLinkAction(onClick: () -> Unit, modifier: Modifier = Modifier) {
+private fun ShareMagnetLink(onClick: () -> Unit, modifier: Modifier = Modifier) {
     Action(
         modifier = modifier,
         leadingIconId = R.drawable.ic_share,
@@ -186,7 +186,7 @@ private fun ShareMagnetLinkAction(onClick: () -> Unit, modifier: Modifier = Modi
 }
 
 @Composable
-private fun OpenDescriptionPageAction(onClick: () -> Unit, modifier: Modifier = Modifier) {
+private fun OpenDescriptionPage(onClick: () -> Unit, modifier: Modifier = Modifier) {
     Action(
         modifier = modifier,
         leadingIconId = R.drawable.ic_public,
@@ -196,7 +196,7 @@ private fun OpenDescriptionPageAction(onClick: () -> Unit, modifier: Modifier = 
 }
 
 @Composable
-private fun CopyDescriptionPageUrlAction(onClick: () -> Unit, modifier: Modifier = Modifier) {
+private fun CopyDescriptionPageUrl(onClick: () -> Unit, modifier: Modifier = Modifier) {
     Action(
         modifier = modifier,
         leadingIconId = R.drawable.ic_copy,
@@ -206,7 +206,7 @@ private fun CopyDescriptionPageUrlAction(onClick: () -> Unit, modifier: Modifier
 }
 
 @Composable
-private fun ShareDescriptionPageUrlAction(onClick: () -> Unit, modifier: Modifier = Modifier) {
+private fun ShareDescriptionPageUrl(onClick: () -> Unit, modifier: Modifier = Modifier) {
     Action(
         modifier = modifier,
         leadingIconId = R.drawable.ic_share,
