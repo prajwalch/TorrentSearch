@@ -38,7 +38,7 @@ fun NavGraphBuilder.searchProvidersNavigation(navController: NavHostController) 
             enterTransition = { slideIntoContainer(SlideDirection.Start) },
             popExitTransition = { slideOutOfContainer(SlideDirection.End) },
         ) {
-            NewSearchProviderScreen(onNavigateBack = { navController.navigateUp() })
+            NewSearchProviderScreen(onCancel = { navController.navigateUp() })
         }
 
         composable(
@@ -46,7 +46,7 @@ fun NavGraphBuilder.searchProvidersNavigation(navController: NavHostController) 
             enterTransition = { slideIntoContainer(SlideDirection.Start) },
             popExitTransition = { slideOutOfContainer(SlideDirection.End) },
         ) {
-            EditSearchProviderScreen(onNavigateBack = { navController.navigateUp() })
+            EditSearchProviderScreen(onCancel = { navController.navigateUp() })
         }
     }
 }

@@ -1,11 +1,12 @@
 package com.prajwalch.torrentsearch.ui.components
 
 import android.util.Patterns
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material3.Button
@@ -25,7 +26,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -45,7 +45,6 @@ fun TorznabSearchProviderConfigForm(
     onSafetyStatusChange: (SearchProviderSafetyStatus) -> Unit,
     onSave: () -> Unit,
     modifier: Modifier = Modifier,
-    contentPadding: PaddingValues = PaddingValues(0.dp),
 ) {
     val urlPatternMatcher = Patterns.WEB_URL.matcher(config.url)
     var isUrlValid by rememberSaveable { mutableStateOf(true) }
@@ -54,90 +53,119 @@ fun TorznabSearchProviderConfigForm(
         config.name.isNotEmpty() && config.url.isNotEmpty() && config.apiKey.isNotEmpty()
     }
 
-    LazyColumn(
-        modifier = modifier,
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(8.dp),
-        contentPadding = contentPadding,
-    ) {
-        item {
-            OutlinedTextField(
-                value = config.name,
-                onValueChange = onNameChange,
-                label = { Text(text = stringResource(R.string.label_name)) },
-                singleLine = true,
-            )
-        }
-        item {
-            Column(
-                verticalArrangement = Arrangement.spacedBy(
-                    space = 4.dp,
-                    alignment = Alignment.CenterVertically,
-                ),
-            ) {
-                val textFieldColors = OutlinedTextFieldDefaults
-                    .colors(errorTextColor = MaterialTheme.colorScheme.error)
+    val scrollState = rememberScrollState()
 
-                OutlinedTextField(
-                    value = config.url,
-                    onValueChange = onUrlChange,
-                    label = { Text(text = stringResource(R.string.label_url)) },
-                    trailingIcon = {
-                        AnimatedVisibility(visible = !isUrlValid) {
-                            Icon(
-                                imageVector = Icons.Default.Info,
-                                contentDescription = null,
-                            )
-                        }
-                    },
-                    isError = !isUrlValid,
-                    singleLine = true,
-                    colors = textFieldColors,
-                )
-                AnimatedVisibility(visible = !isUrlValid) {
-                    Text(
-                        text = "Not a valid URL",
-                        color = MaterialTheme.colorScheme.error,
-                        style = MaterialTheme.typography.bodyMedium,
-                    )
+    Column(
+        modifier = modifier
+            .verticalScroll(state = scrollState)
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp),
+        verticalArrangement = Arrangement.spacedBy(8.dp),
+    ) {
+        OutlinedTextField(
+            modifier = Modifier.fillMaxWidth(),
+            value = config.name,
+            onValueChange = onNameChange,
+            label = { Text(text = stringResource(R.string.label_name)) },
+            singleLine = true,
+        )
+        OutlinedUrlTextField(
+            modifier = Modifier.fillMaxWidth(),
+            url = config.url,
+            onUrlChange = onUrlChange,
+            isError = !isUrlValid,
+        )
+        OutlinedTextField(
+            modifier = Modifier.fillMaxWidth(),
+            value = config.apiKey,
+            onValueChange = onApiKeyChange,
+            label = { Text(text = stringResource(R.string.label_api_key)) },
+            singleLine = true,
+        )
+
+        Text(
+            modifier = Modifier.padding(vertical = 16.dp),
+            text = stringResource(R.string.additional_options),
+            color = MaterialTheme.colorScheme.primary,
+            style = MaterialTheme.typography.titleSmall,
+        )
+
+        OutlinedCategoryField(
+            modifier = Modifier.fillMaxWidth(),
+            value = config.category,
+            onValueChange = onCategoryChange,
+        )
+        OutlinedSafetyStatusField(
+            modifier = Modifier.fillMaxWidth(),
+            value = config.safetyStatus,
+            onValueChange = onSafetyStatusChange,
+        )
+
+        Button(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 32.dp),
+            enabled = enableSaveButton,
+            onClick = {
+                if (urlPatternMatcher.matches()) {
+                    onSave()
+                } else if (isUrlValid) {
+                    isUrlValid = false
                 }
-            }
-        }
-        item {
-            OutlinedTextField(
-                value = config.apiKey,
-                onValueChange = onApiKeyChange,
-                label = { Text(text = stringResource(R.string.label_api_key)) },
-                singleLine = true,
-            )
-        }
-        item {
-            OutlinedCategoryField(
-                value = config.category,
-                onValueChange = onCategoryChange,
-            )
-        }
-        item {
-            OutlinedSafetyStatusField(
-                value = config.safetyStatus,
-                onValueChange = onSafetyStatusChange,
-            )
-        }
-        item {
-            Button(
-                enabled = enableSaveButton,
-                onClick = {
-                    if (urlPatternMatcher.matches()) {
-                        onSave()
-                    } else if (isUrlValid) {
-                        isUrlValid = false
-                    }
-                },
-            ) {
-                Text(text = stringResource(R.string.button_save))
-            }
+            },
+        ) {
+            Text(text = stringResource(R.string.button_save))
         }
     }
+}
+
+@Composable
+private fun OutlinedUrlTextField(
+    url: String,
+    onUrlChange: (String) -> Unit,
+    isError: Boolean,
+    modifier: Modifier = Modifier,
+) {
+    val textFieldColors = OutlinedTextFieldDefaults
+        .colors(
+            errorTextColor = MaterialTheme.colorScheme.error,
+            errorSupportingTextColor = MaterialTheme.colorScheme.error,
+        )
+
+    val trailingIcon = if (isError) {
+        @Composable {
+            Icon(
+                imageVector = Icons.Default.Info,
+                contentDescription = null,
+            )
+        }
+    } else {
+        null
+    }
+
+    val supportingText = if (isError) {
+        @Composable {
+            Text(
+                text = stringResource(R.string.error_not_a_valid_url),
+                color = MaterialTheme.colorScheme.error,
+                style = MaterialTheme.typography.bodyMedium,
+            )
+        }
+    } else {
+        null
+    }
+
+    OutlinedTextField(
+        modifier = modifier,
+        value = url,
+        onValueChange = onUrlChange,
+        label = { Text(text = stringResource(R.string.label_url)) },
+        trailingIcon = trailingIcon,
+        supportingText = supportingText,
+        isError = isError,
+        singleLine = true,
+        colors = textFieldColors,
+    )
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -150,12 +178,11 @@ private fun OutlinedCategoryField(
     var expanded by remember { mutableStateOf(false) }
 
     ExposedDropdownMenuBox(
-        modifier = modifier,
         expanded = expanded,
         onExpandedChange = { expanded = it },
     ) {
         OutlinedTextField(
-            modifier = Modifier.menuAnchor(MenuAnchorType.PrimaryNotEditable),
+            modifier = modifier.menuAnchor(MenuAnchorType.PrimaryNotEditable),
             value = value.name,
             onValueChange = {},
             readOnly = true,
@@ -193,12 +220,11 @@ private fun OutlinedSafetyStatusField(
     var expanded by remember { mutableStateOf(false) }
 
     ExposedDropdownMenuBox(
-        modifier = modifier,
         expanded = expanded,
         onExpandedChange = { expanded = it },
     ) {
         OutlinedTextField(
-            modifier = Modifier.menuAnchor(MenuAnchorType.PrimaryNotEditable),
+            modifier = modifier.menuAnchor(MenuAnchorType.PrimaryNotEditable),
             value = if (value.isUnsafe()) "Unsafe" else "Safe",
             onValueChange = {},
             readOnly = true,
