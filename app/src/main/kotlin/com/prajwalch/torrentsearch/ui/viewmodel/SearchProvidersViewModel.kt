@@ -144,5 +144,6 @@ class SearchProvidersViewModel @Inject constructor(
         viewModelScope.launch {
             searchProvidersRepository.deleteTorznabSearchProvider(id = id)
         }
+        enableSearchProvider(providerId = id, enable = false)
     }
 }
