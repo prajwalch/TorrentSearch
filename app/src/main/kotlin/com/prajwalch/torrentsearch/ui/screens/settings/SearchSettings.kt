@@ -71,7 +71,7 @@ fun SearchSettings(
                 Icon(
                     painter = painterResource(R.drawable.ic_arrow_forward),
                     contentDescription = stringResource(
-                        R.string.button_go_to_search_provider_list_screen
+                        R.string.button_go_to_search_providers_screen
                     ),
                 )
             },

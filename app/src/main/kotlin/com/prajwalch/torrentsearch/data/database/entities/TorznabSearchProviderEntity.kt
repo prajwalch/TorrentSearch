@@ -16,4 +16,7 @@ data class TorznabSearchProviderEntity(
     val name: String,
     val url: String,
     val apiKey: String,
+    val category: String,
+    // Null indicates safe status, otherwise it's unsafe.
+    val unsafeReason: String?,
 )

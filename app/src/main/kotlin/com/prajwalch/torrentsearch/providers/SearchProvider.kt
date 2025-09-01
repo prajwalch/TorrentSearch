@@ -58,7 +58,7 @@ sealed class SearchProviderType {
      * Search provider is externally added Torznab API compatible search
      * provider.
      */
-    data class Torznab(val apiKey: String) : SearchProviderType()
+    object Torznab : SearchProviderType()
 }
 
 /** The search context. */

@@ -139,37 +139,6 @@ class SearchProvidersViewModel @Inject constructor(
         }
     }
 
-    /** Adds a new Torznab search provider using the given config. */
-    fun addTorznabSearchProvider(name: String, url: String, apiKey: String) {
-        viewModelScope.launch {
-            searchProvidersRepository.addTorznabSearchProvider(
-                name = name,
-                url = url,
-                apiKey = apiKey,
-            )
-        }
-    }
-
-    /**
-     * Updates the Torznab search provider that matches the specified ID
-     * with the given configurations.
-     */
-    fun updateTorznabSearchProvider(
-        id: String,
-        name: String,
-        url: String,
-        apiKey: String,
-    ) {
-        viewModelScope.launch {
-            searchProvidersRepository.updateTorznabSearchProvider(
-                id = id,
-                name = name,
-                url = url,
-                apiKey = apiKey,
-            )
-        }
-    }
-
     /** Deletes the Torznab search provider that matches the specified ID. */
     fun deleteTorznabSearchProvider(id: String) {
         viewModelScope.launch {

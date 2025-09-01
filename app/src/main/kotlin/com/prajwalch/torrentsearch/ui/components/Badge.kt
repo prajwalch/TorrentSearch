@@ -1,6 +1,5 @@
 package com.prajwalch.torrentsearch.ui.components
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
@@ -64,11 +63,9 @@ fun TorznabBadge(modifier: Modifier = Modifier) {
 }
 
 @Composable
-fun UnsafeBadge(onClick: () -> Unit, modifier: Modifier = Modifier) {
+fun UnsafeBadge(modifier: Modifier = Modifier) {
     Badge(
-        modifier = Modifier.Companion
-            .clickable(onClick = onClick)
-            .then(modifier),
+        modifier = modifier,
         containerColor = MaterialTheme.colorScheme.errorContainer,
         contentColor = MaterialTheme.colorScheme.onErrorContainer,
     ) {

@@ -2,6 +2,7 @@ package com.prajwalch.torrentsearch.data.repository
 
 import com.prajwalch.torrentsearch.data.database.dao.TorznabSearchProviderDao
 import com.prajwalch.torrentsearch.data.database.entities.TorznabSearchProviderEntity
+import com.prajwalch.torrentsearch.models.Category
 import com.prajwalch.torrentsearch.providers.AnimeTosho
 import com.prajwalch.torrentsearch.providers.Eztv
 import com.prajwalch.torrentsearch.providers.Knaben
@@ -11,6 +12,7 @@ import com.prajwalch.torrentsearch.providers.Nyaa
 import com.prajwalch.torrentsearch.providers.SearchProvider
 import com.prajwalch.torrentsearch.providers.SearchProviderId
 import com.prajwalch.torrentsearch.providers.SearchProviderInfo
+import com.prajwalch.torrentsearch.providers.SearchProviderSafetyStatus
 import com.prajwalch.torrentsearch.providers.Sukebei
 import com.prajwalch.torrentsearch.providers.ThePirateBay
 import com.prajwalch.torrentsearch.providers.TheRarBg
@@ -53,35 +55,47 @@ class SearchProvidersRepository @Inject constructor(private val dao: TorznabSear
     )
 
     /** Adds a new Torznab API compatible search provider. */
-    suspend fun addTorznabSearchProvider(
-        name: String,
-        url: String,
-        apiKey: String,
-    ) {
-        val url = url.trimEnd { it == '/' }
+    suspend fun addTorznabSearchProvider(config: TorznabSearchProviderConfig) {
+        val url = config.url.trimEnd { it == '/' }
+        val unsafeReason = when (config.safetyStatus) {
+            is SearchProviderSafetyStatus.Safe -> null
+            is SearchProviderSafetyStatus.Unsafe -> config.safetyStatus.reason
+        }
+
         val dbEntity = TorznabSearchProviderEntity(
-            name = name,
+            name = config.name,
             url = url,
-            apiKey = apiKey,
+            apiKey = config.apiKey,
+            category = config.category.name,
+            unsafeReason = unsafeReason,
         )
         dao.insert(searchProvider = dbEntity)
     }
 
     /**
-     * Updates the Torznab search provider that matches the specified ID
-     * with the given configurations.
+     * Returns the config of Torznab search provider that matches the specified
+     * ID, if exists.
      */
-    suspend fun updateTorznabSearchProvider(
-        id: String,
-        name: String,
-        url: String,
-        apiKey: String,
-    ) {
+    suspend fun findTorznabSearchProviderConfig(
+        id: SearchProviderId,
+    ): TorznabSearchProviderConfig? = dao.findById(id = id)?.toConfig()
+
+    /**
+     * Updates the Torznab search provider that matches the specified ID
+     * with the given configuration.
+     */
+    suspend fun updateTorznabSearchProvider(config: TorznabSearchProviderConfig) {
+        val unsafeReason = when (config.safetyStatus) {
+            is SearchProviderSafetyStatus.Safe -> null
+            is SearchProviderSafetyStatus.Unsafe -> config.safetyStatus.reason
+        }
         val dbEntity = TorznabSearchProviderEntity(
-            id = id,
-            name = name,
-            url = url,
-            apiKey = apiKey,
+            id = config.id,
+            name = config.name,
+            url = config.url,
+            apiKey = config.apiKey,
+            category = config.category.name,
+            unsafeReason = unsafeReason,
         )
         dao.update(searchProvider = dbEntity)
     }
@@ -113,10 +127,17 @@ class SearchProvidersRepository @Inject constructor(private val dao: TorznabSear
     }
 }
 
-private fun TorznabSearchProviderEntity.toConfig() =
-    TorznabSearchProviderConfig(
+private fun TorznabSearchProviderEntity.toConfig(): TorznabSearchProviderConfig {
+    val safetyStatus = this.unsafeReason
+        ?.let { SearchProviderSafetyStatus.Unsafe(reason = it) }
+        ?: SearchProviderSafetyStatus.Safe
+
+    return TorznabSearchProviderConfig(
         id = this.id,
         name = this.name,
         url = this.url,
         apiKey = this.apiKey,
+        category = Category.valueOf(this.category),
+        safetyStatus = safetyStatus
     )
+}

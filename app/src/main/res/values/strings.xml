@@ -75,7 +75,7 @@
     <!-- Search section -->
     <string name="settings_section_search">Search</string>
     <string name="setting_search_providers">Search providers</string>
-    <string name="button_go_to_search_provider_list_screen">Go to search provider list screen</string>
+    <string name="button_go_to_search_providers_screen">Go to search providers screen</string>
     <string name="x_of_x_enabled">%1$d of %2$d enabled</string>
     <string name="setting_default_category">Default category</string>
     <string name="button_go_to_category_list_screen">Go to category list screen</string>
@@ -103,16 +103,18 @@
     <string name="button_disable_all_search_providers">Disable all search providers</string>
     <string name="button_reset_search_providers">Reset search providers setting to default</string>
     <string name="badge_unsafe">Unsafe</string>
-    <string name="title_new_search_provider">New search provider</string>
     <string name="badge_torznab">Torznab</string>
     <string name="button_new_provider">New provider</string>
     <string name="button_save">Save</string>
     <string name="label_name">Name</string>
     <string name="label_url">URL</string>
     <string name="label_api_key">API key</string>
-    <string name="title_edit_configuration">Edit configuration</string>
+    <string name="label_category">Category</string>
+    <string name="label_safety_status">Safety status</string>
     <string name="action_edit_configuration">Edit configuration</string>
     <string name="action_delete_search_provider">Delete</string>
+    <string name="edit_search_provider_screen_title">Edit search provider</string>
+    <string name="new_search_provider_screen_title">New search provider</string>
     <!-- Default sort options screen -->
     <string name="settings_section_sort_criteria">Sort criteria</string>
     <string name="settings_section_sort_order">Sort order</string>

@@ -7,6 +7,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navigation
 
 import com.prajwalch.torrentsearch.ui.screens.Screens
+import com.prajwalch.torrentsearch.ui.screens.settings.searchproviders.searchProvidersNavigation
 
 fun NavGraphBuilder.settingsNavigation(navController: NavHostController) {
     navigation(startDestination = Screens.Settings.MAIN, route = Screens.Settings.ROOT) {
@@ -23,7 +24,7 @@ fun NavGraphBuilder.settingsNavigation(navController: NavHostController) {
                     navController.navigate(Screens.Settings.DEFAULT_CATEGORY)
                 },
                 onNavigateToSearchProviders = {
-                    navController.navigate(Screens.Settings.SEARCH_PROVIDERS)
+                    navController.navigate(Screens.Settings.SearchProviders.ROOT)
                 },
                 onNavigateToDefaultSortOptions = {
                     navController.navigate(Screens.Settings.DEFAULT_SORT_OPTIONS)
@@ -43,14 +44,6 @@ fun NavGraphBuilder.settingsNavigation(navController: NavHostController) {
         }
 
         composable(
-            route = Screens.Settings.SEARCH_PROVIDERS,
-            enterTransition = { slideIntoContainer(SlideDirection.Start) },
-            popExitTransition = { slideOutOfContainer(SlideDirection.End) },
-        ) {
-            SearchProvidersScreen(onNavigateBack = { navController.navigateUp() })
-        }
-
-        composable(
             route = Screens.Settings.DEFAULT_SORT_OPTIONS,
             enterTransition = { slideIntoContainer(SlideDirection.Start) },
             popExitTransition = { slideOutOfContainer(SlideDirection.End) },
@@ -65,5 +58,7 @@ fun NavGraphBuilder.settingsNavigation(navController: NavHostController) {
         ) {
             SearchHistoryScreen(onNavigateBack = { navController.navigateUp() })
         }
+
+        searchProvidersNavigation(navController = navController)
     }
 }
