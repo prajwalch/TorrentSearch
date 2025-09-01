@@ -44,6 +44,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 
@@ -359,6 +360,7 @@ private fun TorznabSearchProviderMenu(
         expanded = expanded,
         onDismissRequest = onDismissRequest,
         shape = MaterialTheme.shapes.medium,
+        offset = DpOffset(x = 16.dp, y = 0.dp),
     ) {
         DropdownMenuItem(
             onClick = onEditClick,
