@@ -3,11 +3,12 @@ package com.prajwalch.torrentsearch.ui.screens.settings
 import android.os.Build
 
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
@@ -17,13 +18,13 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.DpOffset
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 
 import com.prajwalch.torrentsearch.R
 import com.prajwalch.torrentsearch.data.repository.DarkTheme
 import com.prajwalch.torrentsearch.ui.activityScopedViewModel
-import com.prajwalch.torrentsearch.ui.components.DialogListItem
-import com.prajwalch.torrentsearch.ui.components.SettingsDialog
 import com.prajwalch.torrentsearch.ui.components.SettingsItem
 import com.prajwalch.torrentsearch.ui.components.SettingsSectionTitle
 import com.prajwalch.torrentsearch.ui.viewmodel.SettingsViewModel
@@ -33,8 +34,6 @@ fun AppearanceSettings(modifier: Modifier = Modifier) {
     val viewModel = activityScopedViewModel<SettingsViewModel>()
     val settings by viewModel.appearanceSettingsUiState.collectAsStateWithLifecycle()
 
-    var showDarkThemeDialog by remember(settings) { mutableStateOf(false) }
-
     val isSystemInDarkTheme = isSystemInDarkTheme()
     val showPureBlackSetting = remember(settings.darkTheme, isSystemInDarkTheme) {
         when (settings.darkTheme) {
@@ -42,14 +41,6 @@ fun AppearanceSettings(modifier: Modifier = Modifier) {
             DarkTheme.Off -> false
             DarkTheme.FollowSystem -> isSystemInDarkTheme
         }
-    }
-
-    if (showDarkThemeDialog) {
-        DarkThemeOptionsDialog(
-            onDismissRequest = { showDarkThemeDialog = false },
-            selectedOption = settings.darkTheme,
-            onOptionSelect = { viewModel.changeDarkTheme(it) },
-        )
     }
 
     Column(modifier = modifier) {
@@ -69,12 +60,36 @@ fun AppearanceSettings(modifier: Modifier = Modifier) {
             )
         }
 
-        SettingsItem(
-            onClick = { showDarkThemeDialog = true },
-            leadingIconId = R.drawable.ic_dark_mode,
-            headlineId = R.string.setting_dark_theme,
-            supportingContent = settings.darkTheme.toString(),
-        )
+        Box {
+            var menuExpanded by remember(settings.darkTheme) { mutableStateOf(false) }
+
+            SettingsItem(
+                onClick = { menuExpanded = true },
+                leadingIconId = R.drawable.ic_dark_mode,
+                headlineId = R.string.setting_dark_theme,
+                supportingContent = settings.darkTheme.toString(),
+            )
+
+            DropdownMenu(
+                expanded = menuExpanded,
+                onDismissRequest = { menuExpanded = false },
+                offset = DpOffset(x = 16.dp, y = 0.dp),
+                shape = MaterialTheme.shapes.medium,
+            ) {
+                DarkTheme.entries.forEach {
+                    DropdownMenuItem(
+                        text = { Text(text = it.toString()) },
+                        onClick = { viewModel.changeDarkTheme(it) },
+                        leadingIcon = {
+                            RadioButton(
+                                selected = it == settings.darkTheme,
+                                onClick = { viewModel.changeDarkTheme(it) },
+                            )
+                        }
+                    )
+                }
+            }
+        }
 
         AnimatedVisibility(visible = showPureBlackSetting) {
             SettingsItem(
@@ -90,47 +105,4 @@ fun AppearanceSettings(modifier: Modifier = Modifier) {
             )
         }
     }
-}
-
-@Composable
-private fun DarkThemeOptionsDialog(
-    onDismissRequest: () -> Unit,
-    selectedOption: DarkTheme,
-    onOptionSelect: (DarkTheme) -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    SettingsDialog(
-        modifier = modifier,
-        onDismissRequest = onDismissRequest,
-        titleId = R.string.setting_dark_theme,
-    ) {
-        LazyColumn {
-            items(
-                items = DarkTheme.entries,
-                contentType = { it }
-            ) { darkThemeOpt ->
-                DarkThemeOptionItem(
-                    selected = darkThemeOpt == selectedOption,
-                    onClick = { onOptionSelect(darkThemeOpt) },
-                    name = darkThemeOpt.toString(),
-                )
-            }
-        }
-    }
-}
-
-@Composable
-private fun DarkThemeOptionItem(
-    selected: Boolean,
-    onClick: () -> Unit,
-    name: String,
-    modifier: Modifier = Modifier,
-) {
-    DialogListItem(
-        modifier = Modifier
-            .clickable(onClick = onClick)
-            .then(modifier),
-        leadingContent = { RadioButton(selected = selected, onClick = onClick) },
-        headlineContent = { Text(text = name) },
-    )
 }
