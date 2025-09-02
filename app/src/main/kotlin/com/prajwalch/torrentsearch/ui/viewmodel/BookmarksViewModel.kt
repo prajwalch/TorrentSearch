@@ -34,8 +34,8 @@ data class BookmarksUiState(
 /** ViewModel that handles the business logic of Bookmarks screen. */
 @HiltViewModel
 class BookmarksViewModel @Inject constructor(
-    private val settingsRepository: SettingsRepository,
     private val torrentsRepository: TorrentsRepository,
+    settingsRepository: SettingsRepository,
 ) : ViewModel() {
     /**
      * Current UI state.
