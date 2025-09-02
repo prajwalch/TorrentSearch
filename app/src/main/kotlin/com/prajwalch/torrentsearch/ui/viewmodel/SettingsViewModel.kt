@@ -178,13 +178,9 @@ class SettingsViewModel @Inject constructor(
         val newEnabledSearchProvidersId = allSearchProvidersInfo
             .value
             .filter { it.id in enabledSearchProvidersId.value }
-            .filter { !it.specializedCategory.isNSFW && !it.safetyStatus.isUnsafe() }
+            .filterNot { it.specializedCategory.isNSFW || it.safetyStatus.isUnsafe() }
             .map { it.id }
             .toSet()
-
-        if (newEnabledSearchProvidersId.isEmpty()) {
-            return
-        }
 
         if (newEnabledSearchProvidersId != enabledSearchProvidersId.value) {
             settingsRepository.updateEnabledSearchProvidersId(
