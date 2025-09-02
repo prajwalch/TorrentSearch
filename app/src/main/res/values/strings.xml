@@ -117,6 +117,7 @@
     <string name="new_search_provider_screen_title">New search provider</string>
     <string name="additional_options">Additional options</string>
     <string name="error_not_a_valid_url">Not a valid URL</string>
+    <string name="learn_how_to_add">Learn how to add</string>
     <!-- Default sort options screen -->
     <string name="settings_section_sort_criteria">Sort criteria</string>
     <string name="settings_section_sort_order">Sort order</string>

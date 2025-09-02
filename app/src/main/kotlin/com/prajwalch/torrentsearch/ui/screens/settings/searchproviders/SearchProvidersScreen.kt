@@ -7,11 +7,9 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyItemScope
 import androidx.compose.foundation.lazy.items
@@ -57,6 +55,7 @@ import com.prajwalch.torrentsearch.ui.activityScopedViewModel
 import com.prajwalch.torrentsearch.ui.components.BadgesRow
 import com.prajwalch.torrentsearch.ui.components.CategoryBadge
 import com.prajwalch.torrentsearch.ui.components.NavigateBackIconButton
+import com.prajwalch.torrentsearch.ui.components.TextUrl
 import com.prajwalch.torrentsearch.ui.components.TorznabBadge
 import com.prajwalch.torrentsearch.ui.components.UnsafeBadge
 import com.prajwalch.torrentsearch.ui.viewmodel.SearchProviderUiState
@@ -421,32 +420,20 @@ private fun SearchProviderListItem(
 @Composable
 private fun SearchProviderUrl(url: String, modifier: Modifier = Modifier) {
     val uriHandler = LocalUriHandler.current
+    val isHttps = url.startsWith("https://")
 
-    if (url.isNotEmpty()) {
-        val isHttps = url.startsWith("https://")
-        val modifier = if (isHttps) {
-            modifier.clickable { uriHandler.openUri(url) }
-        } else {
-            modifier
-        }
-
-        Row(
+    if (isHttps) {
+        TextUrl(
             modifier = modifier,
-            horizontalArrangement = Arrangement.spacedBy(4.dp),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            Text(
-                text = url.removePrefix("https://"),
-                overflow = TextOverflow.Ellipsis,
-                maxLines = 2,
-            )
-            if (isHttps) {
-                Icon(
-                    modifier = Modifier.size(12.dp),
-                    painter = painterResource(R.drawable.ic_open_in_new),
-                    contentDescription = null,
-                )
-            }
-        }
+            text = url.removePrefix("https://"),
+            onClick = { uriHandler.openUri(url) },
+        )
+    } else {
+        Text(
+            modifier = modifier,
+            text = url,
+            overflow = TextOverflow.Ellipsis,
+            maxLines = 2,
+        )
     }
 }
