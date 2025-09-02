@@ -50,7 +50,7 @@ class BookmarksViewModel @Inject constructor(
         .enableNSFWMode
         .stateIn(
             scope = viewModelScope,
-            started = SharingStarted.Eagerly,
+            started = SharingStarted.WhileSubscribed(5000),
             initialValue = false,
         )
 
@@ -65,8 +65,8 @@ class BookmarksViewModel @Inject constructor(
         }
         .stateIn(
             scope = viewModelScope,
-            started = SharingStarted.Eagerly,
-            initialValue = emptyList()
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = emptyList(),
         )
 
     init {
