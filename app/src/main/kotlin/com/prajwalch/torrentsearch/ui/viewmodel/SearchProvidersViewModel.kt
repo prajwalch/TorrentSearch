@@ -37,6 +37,21 @@ class SearchProvidersViewModel @Inject constructor(
     private val searchProvidersRepository: SearchProvidersRepository,
     private val settingsRepository: SettingsRepository,
 ) : ViewModel() {
+    val uiState = combine(
+        settingsRepository.enabledSearchProvidersId,
+        searchProvidersRepository.searchProvidersInfo(),
+    ) { enabledSearchProvidersId, searchProvidersInfo ->
+        createSearchProvidersUiState(
+            searchProvidersInfo = searchProvidersInfo,
+            enabledSearchProvidersId = enabledSearchProvidersId,
+        )
+    }.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5000),
+        initialValue = emptyList(),
+    )
+
+
     /** Information of all search providers. */
     private val allSearchProvidersInfo = searchProvidersRepository
         .searchProvidersInfo()
@@ -62,21 +77,6 @@ class SearchProvidersViewModel @Inject constructor(
             scope = viewModelScope,
             started = SharingStarted.Eagerly,
             initialValue = emptySet(),
-        )
-
-    val searchProvidersUiState = combine(
-        settingsRepository.enabledSearchProvidersId,
-        searchProvidersRepository.searchProvidersInfo(),
-    ) { enabledSearchProvidersId, searchProvidersInfo ->
-        createSearchProvidersUiState(
-            searchProvidersInfo = searchProvidersInfo,
-            enabledSearchProvidersId = enabledSearchProvidersId,
-        )
-    }
-        .stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5000),
-            initialValue = emptyList()
         )
 
     /** Converts list of search providers info to list of UI states. */

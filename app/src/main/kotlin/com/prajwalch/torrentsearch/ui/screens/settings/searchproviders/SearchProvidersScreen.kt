@@ -69,7 +69,7 @@ fun SearchProvidersScreen(
     modifier: Modifier = Modifier,
 ) {
     val viewModel = activityScopedViewModel<SearchProvidersViewModel>()
-    val searchProvidersUiState by viewModel.searchProvidersUiState.collectAsStateWithLifecycle()
+    val searchProvidersUiState by viewModel.uiState.collectAsStateWithLifecycle()
 
     Scaffold(
         modifier = modifier,
