@@ -64,6 +64,61 @@ class SettingsViewModel @Inject constructor(
     private val settingsRepository: SettingsRepository,
     searchProvidersRepository: SearchProvidersRepository,
 ) : ViewModel() {
+    val appearanceSettingsUiState = combine(
+        settingsRepository.enableDynamicTheme,
+        settingsRepository.darkTheme,
+        settingsRepository.pureBlack,
+        ::AppearanceSettingsUiState,
+    ).stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5000),
+        initialValue = AppearanceSettingsUiState(),
+    )
+
+    val generalSettingsUiState = settingsRepository
+        .enableNSFWMode
+        .map(::GeneralSettingsUiState)
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = GeneralSettingsUiState(),
+        )
+
+    private val searchProvidersStatFlow = combine(
+        settingsRepository.enabledSearchProvidersId.map { it.size },
+        searchProvidersRepository.count(),
+        ::SearchProvidersStat,
+    )
+
+    private val defaultSortOptionsFlow = combine(
+        settingsRepository.defaultSortCriteria,
+        settingsRepository.defaultSortOrder,
+        ::DefaultSortOptions,
+    )
+
+    val searchSettingsUiState = combine(
+        searchProvidersStatFlow,
+        settingsRepository.defaultCategory,
+        defaultSortOptionsFlow,
+        settingsRepository.hideResultsWithZeroSeeders,
+        settingsRepository.maxNumResults,
+        ::SearchSettingsUiState,
+    ).stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5000),
+        initialValue = SearchSettingsUiState(),
+    )
+
+    val searchHistorySettingsUiState = combine(
+        settingsRepository.saveSearchHistory,
+        settingsRepository.showSearchHistory,
+        ::SearchHistorySettingsUiState,
+    ).stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5000),
+        initialValue = SearchHistorySettingsUiState(),
+    )
+
     /** Information of all search providers. */
     private val allSearchProvidersInfo = searchProvidersRepository
         .searchProvidersInfo()
@@ -81,61 +136,6 @@ class SettingsViewModel @Inject constructor(
             started = SharingStarted.Eagerly,
             initialValue = emptySet(),
         )
-
-    val appearanceSettingsUiState = combine(
-        settingsRepository.enableDynamicTheme,
-        settingsRepository.darkTheme,
-        settingsRepository.pureBlack,
-        ::AppearanceSettingsUiState
-    ).stateIn(
-        scope = viewModelScope,
-        started = SharingStarted.Eagerly,
-        initialValue = AppearanceSettingsUiState()
-    )
-
-    val generalSettingsUiState = settingsRepository
-        .enableNSFWMode
-        .map(::GeneralSettingsUiState)
-        .stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.Eagerly,
-            initialValue = GeneralSettingsUiState()
-        )
-
-    private val searchProvidersStatFlow = combine(
-        settingsRepository.enabledSearchProvidersId.map { it.size },
-        searchProvidersRepository.count(),
-        ::SearchProvidersStat
-    )
-
-    private val defaultSortOptionsFlow = combine(
-        settingsRepository.defaultSortCriteria,
-        settingsRepository.defaultSortOrder,
-        ::DefaultSortOptions
-    )
-
-    val searchSettingsUiState = combine(
-        searchProvidersStatFlow,
-        settingsRepository.defaultCategory,
-        defaultSortOptionsFlow,
-        settingsRepository.hideResultsWithZeroSeeders,
-        settingsRepository.maxNumResults,
-        ::SearchSettingsUiState,
-    ).stateIn(
-        scope = viewModelScope,
-        started = SharingStarted.Eagerly,
-        initialValue = SearchSettingsUiState()
-    )
-
-    val searchHistorySettingsUiState = combine(
-        settingsRepository.saveSearchHistory,
-        settingsRepository.showSearchHistory,
-        ::SearchHistorySettingsUiState,
-    ).stateIn(
-        scope = viewModelScope,
-        started = SharingStarted.Eagerly,
-        initialValue = SearchHistorySettingsUiState()
-    )
 
     /** Enables/disables dynamic theme. */
     fun enableDynamicTheme(enable: Boolean) {
