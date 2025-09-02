@@ -24,7 +24,7 @@ class SearchHistoryViewModel @Inject constructor(
         .map { list -> list.map(SearchHistoryUiState::fromEntity) }
         .stateIn(
             scope = viewModelScope,
-            started = SharingStarted.Eagerly,
+            started = SharingStarted.WhileSubscribed(5000),
             initialValue = emptyList(),
         )
 
