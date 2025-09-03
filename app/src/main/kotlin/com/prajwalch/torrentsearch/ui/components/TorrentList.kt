@@ -66,11 +66,7 @@ fun TorrentList(
                     )
                 }
             }
-            items(
-                items = torrents,
-                key = { it.hashCode() },
-                contentType = { it.category },
-            ) {
+            items(items = torrents, contentType = { it.category }) {
                 TorrentListItem(
                     modifier = Modifier
                         .animateItem()
