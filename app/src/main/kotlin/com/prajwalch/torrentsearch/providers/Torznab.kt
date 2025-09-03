@@ -270,7 +270,7 @@ private class TorznabResponseXmlParser(
         parser.readParentTag(tagName = "item") {
             when (parser.name) {
                 "title" -> torrentName = readTitle()
-                "guid" -> descriptionPageUrl = readGuid()
+                "comments" -> descriptionPageUrl = readComments()
                 "pubDate" -> uploadDate = readPubDate()
                 "size" -> size = readSize()
                 // Torznab specific attributes.
@@ -326,8 +326,8 @@ private class TorznabResponseXmlParser(
         return readTextContainedTag(tagName = "title")
     }
 
-    private fun readGuid(): String {
-        return readTextContainedTag(tagName = "guid")
+    private fun readComments(): String {
+        return readTextContainedTag(tagName = "comments")
     }
 
     private fun readPubDate(): String {
