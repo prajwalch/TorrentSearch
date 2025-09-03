@@ -160,9 +160,13 @@ class TorznabSearchProvider(private val config: TorznabSearchProviderConfig) : S
             val xmlParser = TorznabResponseXmlParser(
                 providerId = info.id,
                 providerName = info.name,
-                // FIXME: If the category is `All` then we need to read the
-                //        category from the result itself.
-                category = context.category,
+                category = if (info.specializedCategory != Category.All) {
+                    info.specializedCategory
+                } else {
+                    // FIXME: If the category is `All` then we need to read the
+                    //        category from the each result itself.
+                    context.category
+                },
             )
             xmlParser.parse(xml = responseXml)
         }
