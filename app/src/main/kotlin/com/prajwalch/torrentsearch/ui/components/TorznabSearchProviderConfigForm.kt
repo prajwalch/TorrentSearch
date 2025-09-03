@@ -171,6 +171,7 @@ private fun OutlinedCategoryField(
         ExposedDropdownMenu(
             expanded = expanded,
             onDismissRequest = { expanded = false },
+            shape = MaterialTheme.shapes.medium,
         ) {
             Category.entries.forEach {
                 DropdownMenuItem(
@@ -213,6 +214,7 @@ private fun OutlinedSafetyStatusField(
         ExposedDropdownMenu(
             expanded = expanded,
             onDismissRequest = { expanded = false },
+            shape = MaterialTheme.shapes.medium,
         ) {
             values.forEach {
                 DropdownMenuItem(

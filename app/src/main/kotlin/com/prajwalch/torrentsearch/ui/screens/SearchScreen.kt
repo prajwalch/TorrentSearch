@@ -19,7 +19,6 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
@@ -56,6 +55,7 @@ import com.prajwalch.torrentsearch.ui.components.CategoryChipsRow
 import com.prajwalch.torrentsearch.ui.components.EmptyPlaceholder
 import com.prajwalch.torrentsearch.ui.components.NoInternetConnection
 import com.prajwalch.torrentsearch.ui.components.ResultsNotFound
+import com.prajwalch.torrentsearch.ui.components.RoundedDropdownMenu
 import com.prajwalch.torrentsearch.ui.components.ScrollToTopFAB
 import com.prajwalch.torrentsearch.ui.components.SearchBar
 import com.prajwalch.torrentsearch.ui.components.SearchHistoryList
@@ -265,13 +265,10 @@ private fun MoreMenu(
     onNavigateToSettings: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val contentPadding = PaddingValues(start = 12.dp, end = 16.dp)
-
-    DropdownMenu(
+    RoundedDropdownMenu(
         modifier = modifier,
         expanded = expanded,
         onDismissRequest = onDismissRequest,
-        shape = MaterialTheme.shapes.medium,
     ) {
         DropdownMenuItem(
             onClick = {
@@ -285,7 +282,6 @@ private fun MoreMenu(
                 )
             },
             text = { Text(text = stringResource(R.string.bookmarks_screen_title)) },
-            contentPadding = contentPadding,
         )
         DropdownMenuItem(
             onClick = {
@@ -299,7 +295,6 @@ private fun MoreMenu(
                 )
             },
             text = { Text(text = stringResource(R.string.settings_screen_title)) },
-            contentPadding = contentPadding,
         )
     }
 }

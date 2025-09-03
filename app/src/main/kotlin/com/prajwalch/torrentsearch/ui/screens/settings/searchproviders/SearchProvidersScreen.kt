@@ -16,7 +16,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Warning
 import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
@@ -54,6 +53,7 @@ import com.prajwalch.torrentsearch.ui.activityScopedViewModel
 import com.prajwalch.torrentsearch.ui.components.BadgesRow
 import com.prajwalch.torrentsearch.ui.components.CategoryBadge
 import com.prajwalch.torrentsearch.ui.components.NavigateBackIconButton
+import com.prajwalch.torrentsearch.ui.components.RoundedDropdownMenu
 import com.prajwalch.torrentsearch.ui.components.TextUrl
 import com.prajwalch.torrentsearch.ui.components.TorznabBadge
 import com.prajwalch.torrentsearch.ui.components.UnsafeBadge
@@ -351,11 +351,10 @@ private fun TorznabSearchProviderMenu(
     onDeleteClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    DropdownMenu(
+    RoundedDropdownMenu(
         modifier = modifier,
         expanded = expanded,
         onDismissRequest = onDismissRequest,
-        shape = MaterialTheme.shapes.medium,
         offset = DpOffset(x = 16.dp, y = 0.dp),
     ) {
         DropdownMenuItem(

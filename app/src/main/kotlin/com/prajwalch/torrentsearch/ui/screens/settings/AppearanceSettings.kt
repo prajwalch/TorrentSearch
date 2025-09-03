@@ -1,14 +1,11 @@
 package com.prajwalch.torrentsearch.ui.screens.settings
 
 import android.os.Build
-
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
@@ -25,6 +22,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.prajwalch.torrentsearch.R
 import com.prajwalch.torrentsearch.data.repository.DarkTheme
 import com.prajwalch.torrentsearch.ui.activityScopedViewModel
+import com.prajwalch.torrentsearch.ui.components.RoundedDropdownMenu
 import com.prajwalch.torrentsearch.ui.components.SettingsItem
 import com.prajwalch.torrentsearch.ui.components.SettingsSectionTitle
 import com.prajwalch.torrentsearch.ui.viewmodel.SettingsViewModel
@@ -70,11 +68,10 @@ fun AppearanceSettings(modifier: Modifier = Modifier) {
                 supportingContent = settings.darkTheme.toString(),
             )
 
-            DropdownMenu(
+            RoundedDropdownMenu(
                 expanded = menuExpanded,
                 onDismissRequest = { menuExpanded = false },
                 offset = DpOffset(x = 16.dp, y = 0.dp),
-                shape = MaterialTheme.shapes.medium,
             ) {
                 DarkTheme.entries.forEach {
                     DropdownMenuItem(
