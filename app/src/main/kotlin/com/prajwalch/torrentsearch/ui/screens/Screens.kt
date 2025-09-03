@@ -14,7 +14,7 @@ object Screens {
         object SearchProviders {
             const val ROOT = "settings/search_providers"
             const val HOME = "settings/search_providers/home"
-            const val NEW = "settings/search_providers/new"
+            const val ADD = "settings/search_providers/add"
             const val EDIT = "settings/search_providers/edit/{id}"
 
             fun createEditRoute(id: String): String {

@@ -104,7 +104,6 @@
     <string name="button_reset_search_providers">Reset search providers setting to default</string>
     <string name="badge_unsafe">Unsafe</string>
     <string name="badge_torznab">Torznab</string>
-    <string name="button_new_provider">New provider</string>
     <string name="button_save">Save</string>
     <string name="label_name">Name</string>
     <string name="label_url">URL</string>
@@ -114,7 +113,7 @@
     <string name="action_edit_configuration">Edit configuration</string>
     <string name="action_delete_search_provider">Delete</string>
     <string name="edit_search_provider_screen_title">Edit search provider</string>
-    <string name="new_search_provider_screen_title">New search provider</string>
+    <string name="add_search_provider_screen_title">Add search provider</string>
     <string name="additional_options">Additional options</string>
     <string name="error_not_a_valid_url">Not a valid URL</string>
     <string name="learn_how_to_add">Learn how to add</string>

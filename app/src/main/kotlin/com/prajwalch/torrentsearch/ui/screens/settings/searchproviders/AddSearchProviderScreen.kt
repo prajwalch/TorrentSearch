@@ -28,7 +28,7 @@ private const val HOW_TO_WIKI_URL =
     "https://github.com/prajwalch/TorrentSearch/wiki/How-to-add-and-configure-Torznab-search-provider"
 
 @Composable
-fun NewSearchProviderScreen(onCancel: () -> Unit, modifier: Modifier = Modifier) {
+fun AddSearchProviderScreen(onCancel: () -> Unit, modifier: Modifier = Modifier) {
     val viewModel = hiltViewModel<TorznabSearchProviderConfigViewModel>()
     val config by viewModel.uiState.collectAsStateWithLifecycle()
 
@@ -36,7 +36,7 @@ fun NewSearchProviderScreen(onCancel: () -> Unit, modifier: Modifier = Modifier)
 
     Scaffold(
         modifier = modifier,
-        topBar = { NewSearchProviderScreenTopBar(onCancel = onCancel) },
+        topBar = { AddSearchProviderScreenTopBar(onCancel = onCancel) },
     ) { innerPadding ->
         Column(
             modifier = Modifier.padding(innerPadding),
@@ -66,13 +66,13 @@ fun NewSearchProviderScreen(onCancel: () -> Unit, modifier: Modifier = Modifier)
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun NewSearchProviderScreenTopBar(
+private fun AddSearchProviderScreenTopBar(
     onCancel: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     TopAppBar(
         modifier = modifier,
-        title = { Text(text = stringResource(R.string.new_search_provider_screen_title)) },
+        title = { Text(text = stringResource(R.string.add_search_provider_screen_title)) },
         navigationIcon = {
             IconButton(onClick = onCancel) {
                 Icon(

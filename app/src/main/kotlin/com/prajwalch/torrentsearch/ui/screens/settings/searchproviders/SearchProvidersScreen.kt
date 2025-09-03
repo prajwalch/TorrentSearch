@@ -14,13 +14,12 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyItemScope
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.outlined.Warning
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.ExtendedFloatingActionButton
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.ListItem
@@ -64,8 +63,8 @@ import com.prajwalch.torrentsearch.ui.viewmodel.SearchProvidersViewModel
 @Composable
 fun SearchProvidersScreen(
     onNavigateBack: () -> Unit,
-    onNavigateToNewProvider: () -> Unit,
-    onNavigateToEditProvider: (SearchProviderId) -> Unit,
+    onNavigateToAddSearchProvider: () -> Unit,
+    onNavigateToEditSearchProvider: (SearchProviderId) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val viewModel = activityScopedViewModel<SearchProvidersViewModel>()
@@ -82,16 +81,12 @@ fun SearchProvidersScreen(
             )
         },
         floatingActionButton = {
-            ExtendedFloatingActionButton(
-                text = { Text(text = stringResource(R.string.button_new_provider)) },
-                icon = {
-                    Icon(
-                        imageVector = Icons.Default.Add,
-                        contentDescription = null,
-                    )
-                },
-                onClick = onNavigateToNewProvider,
-            )
+            FloatingActionButton(onClick = onNavigateToAddSearchProvider) {
+                Icon(
+                    painter = painterResource(R.drawable.ic_add),
+                    contentDescription = null,
+                )
+            }
         }
     ) { innerPadding ->
         SearchProviderList(
@@ -136,7 +131,9 @@ fun SearchProvidersScreen(
                                     enable = it,
                                 )
                             },
-                            onEditConfig = { onNavigateToEditProvider(searchProviderUiState.id) },
+                            onEditConfig = {
+                                onNavigateToEditSearchProvider(searchProviderUiState.id)
+                            },
                             onDelete = {
                                 viewModel.deleteTorznabSearchProvider(
                                     id = searchProviderUiState.id,

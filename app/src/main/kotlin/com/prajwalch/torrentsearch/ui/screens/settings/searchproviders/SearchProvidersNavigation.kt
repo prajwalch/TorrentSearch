@@ -22,10 +22,10 @@ fun NavGraphBuilder.searchProvidersNavigation(navController: NavHostController) 
         ) {
             SearchProvidersScreen(
                 onNavigateBack = { navController.navigateUp() },
-                onNavigateToNewProvider = {
-                    navController.navigate(route = Screens.Settings.SearchProviders.NEW)
+                onNavigateToAddSearchProvider = {
+                    navController.navigate(route = Screens.Settings.SearchProviders.ADD)
                 },
-                onNavigateToEditProvider = {
+                onNavigateToEditSearchProvider = {
                     navController.navigate(
                         route = Screens.Settings.SearchProviders.createEditRoute(id = it)
                     )
@@ -34,11 +34,11 @@ fun NavGraphBuilder.searchProvidersNavigation(navController: NavHostController) 
         }
 
         composable(
-            route = Screens.Settings.SearchProviders.NEW,
+            route = Screens.Settings.SearchProviders.ADD,
             enterTransition = { slideIntoContainer(SlideDirection.Start) },
             popExitTransition = { slideOutOfContainer(SlideDirection.End) },
         ) {
-            NewSearchProviderScreen(onCancel = { navController.navigateUp() })
+            AddSearchProviderScreen(onCancel = { navController.navigateUp() })
         }
 
         composable(
