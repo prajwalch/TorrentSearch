@@ -260,6 +260,7 @@ private class TorznabResponseXmlParser(
         var uploadDate: String? = null
         var descriptionPageUrl: String? = null
         var magnetUri: String? = null
+        var infoHash: String? = null
 
         parser.readParentTag(tagName = "item") {
             when (parser.name) {
@@ -279,6 +280,7 @@ private class TorznabResponseXmlParser(
                     "seeders" -> seeders = readTorznabAttribute(name = "seeders")
                     "peers" -> peers = readTorznabAttribute(name = "peers")
                     "magneturl" -> magnetUri = readTorznabAttribute(name = "magneturl")
+                    "infohash" -> infoHash = readTorznabAttribute(name = "infohash")
                     else -> {
                         Log.d(TAG, "-> Skipping <${parser.name}>")
                         parser.skipCurrentTag()
@@ -292,6 +294,14 @@ private class TorznabResponseXmlParser(
             }
         }
 
+        val infoHashOrMagnetUri = when {
+            magnetUri != null -> InfoHashOrMagnetUri.MagnetUri(uri = magnetUri)
+            infoHash != null -> InfoHashOrMagnetUri.InfoHash(hash = infoHash)
+            else -> {
+                Log.w(TAG, "Both info hash and magnet URI not found. Skipping..")
+                return
+            }
+        }
         val torrent = Torrent(
             name = torrentName ?: return,
             size = size ?: return,
@@ -302,7 +312,7 @@ private class TorznabResponseXmlParser(
             uploadDate = uploadDate ?: return,
             category = category,
             descriptionPageUrl = descriptionPageUrl ?: return,
-            infoHashOrMagnetUri = InfoHashOrMagnetUri.MagnetUri(magnetUri ?: return),
+            infoHashOrMagnetUri = infoHashOrMagnetUri,
         )
         torrents.add(torrent)
     }
