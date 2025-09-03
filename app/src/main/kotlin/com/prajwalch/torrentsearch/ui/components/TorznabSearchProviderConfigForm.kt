@@ -1,15 +1,12 @@
 package com.prajwalch.torrentsearch.ui.components
 
-import android.util.Patterns
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Info
-import androidx.compose.material3.Button
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
@@ -24,8 +21,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -43,23 +40,12 @@ fun TorznabSearchProviderConfigForm(
     onApiKeyChange: (String) -> Unit,
     onCategoryChange: (Category) -> Unit,
     onSafetyStatusChange: (SearchProviderSafetyStatus) -> Unit,
-    onSave: () -> Unit,
+    isUrlValid: Boolean,
+    confirmButton: @Composable () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val urlPatternMatcher = Patterns.WEB_URL.matcher(config.url)
-    var isUrlValid by rememberSaveable { mutableStateOf(true) }
-
-    val enableSaveButton = remember(config) {
-        config.name.isNotEmpty() && config.url.isNotEmpty() && config.apiKey.isNotEmpty()
-    }
-
-    val scrollState = rememberScrollState()
-
     Column(
-        modifier = modifier
-            .verticalScroll(state = scrollState)
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp),
+        modifier = modifier,
         verticalArrangement = Arrangement.spacedBy(8.dp),
     ) {
         OutlinedTextField(
@@ -101,20 +87,11 @@ fun TorznabSearchProviderConfigForm(
             onValueChange = onSafetyStatusChange,
         )
 
-        Button(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(vertical = 32.dp),
-            enabled = enableSaveButton,
-            onClick = {
-                if (urlPatternMatcher.matches()) {
-                    onSave()
-                } else if (isUrlValid) {
-                    isUrlValid = false
-                }
-            },
+        Box(
+            modifier = Modifier.padding(vertical = 32.dp),
+            contentAlignment = Alignment.Center,
         ) {
-            Text(text = stringResource(R.string.button_save))
+            confirmButton()
         }
     }
 }
