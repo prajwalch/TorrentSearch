@@ -6,6 +6,7 @@
 [![F-Droid Version](https://img.shields.io/f-droid/v/com.prajwalch.torrentsearch?style=for-the-badge&color=blue)](https://f-droid.org/packages/com.prajwalch.torrentsearch)
 [![IzzyOnDroid version](https://img.shields.io/endpoint?style=for-the-badge&url=https://apt.izzysoft.de/fdroid/api/v1/shield/com.prajwalch.torrentsearch)](https://apt.izzysoft.de/fdroid/index/apk/com.prajwalch.torrentsearch)
 [![Downloads](https://img.shields.io/github/downloads/prajwalch/TorrentSearch/total?style=for-the-badge)](https://github.com/prajwalch/TorrentSearch/releases)
+[![Translation status](https://img.shields.io/weblate/progress/torrentsearch?style=for-the-badge)](https://hosted.weblate.org/engage/torrentsearch/)
 
 # Torrent Search
 
@@ -65,6 +66,12 @@ The Nightly versions are also available under the artifact section of workflow r
 to logging in to Github). These are created for
 each commit/push done to the repository and can be used by anyone to test new features. Please note
 that Nightly builds can contain bugs and may not work properly.
+
+## Translations
+
+**Hello and thank you for your interest** — TorrentSearch is being translated using Weblate. For more details or to get started, visit our [Weblate page](https://hosted.weblate.org/projects/torrentsearch/).
+
+[![Translation status](https://hosted.weblate.org/widget/torrentsearch/multi-auto.svg)](https://hosted.weblate.org/engage/torrentsearch/)
 
 ## Thanks
 
