@@ -140,8 +140,10 @@ class TorznabSearchProvider(private val config: TorznabSearchProviderConfig) : S
     private var capabilities: TorznabCapabilities? = null
 
     override suspend fun search(query: String, context: SearchContext): List<Torrent> {
+        val apiUrl = if (!config.url.endsWith("api")) "${config.url}/api" else config.url
+
         if (capabilities == null) {
-            capabilities = fetchCapabilities(httpClient = context.httpClient)
+            capabilities = fetchCapabilities(apiUrl = apiUrl, httpClient = context.httpClient)
         }
 
         var queryParams =
@@ -152,8 +154,9 @@ class TorznabSearchProvider(private val config: TorznabSearchProviderConfig) : S
             queryParams += "&cat=$categoriesId"
         }
 
-        val requestUrl = "${config.url}/api$queryParams"
+        val requestUrl = "$apiUrl$queryParams"
         Log.d(TAG, "Requesting $requestUrl")
+
         val responseXml = context.httpClient.get(url = requestUrl)
         Log.d(TAG, "-> Got response; length = ${responseXml.length}")
 
@@ -173,10 +176,13 @@ class TorznabSearchProvider(private val config: TorznabSearchProviderConfig) : S
         }
     }
 
-    private suspend fun fetchCapabilities(httpClient: HttpClient): TorznabCapabilities {
+    private suspend fun fetchCapabilities(
+        apiUrl: String,
+        httpClient: HttpClient,
+    ): TorznabCapabilities {
         Log.i(TAG, "Fetching ${config.name} capabilities ")
 
-        val requestUrl = "${config.url}/api?t=${TorznabFunctions.CAPS}&apikey=${config.apiKey}"
+        val requestUrl = "$apiUrl?t=${TorznabFunctions.CAPS}&apikey=${config.apiKey}"
         val capabilitiesResponseXml = httpClient.get(url = requestUrl)
 
         Log.i(TAG, "-> Capabilities fetch succeed")
