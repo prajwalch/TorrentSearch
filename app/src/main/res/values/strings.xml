@@ -8,11 +8,11 @@
         To use the download feature, install a torrent client, set it up, and return to this app.
     </string>
     <string name="recommended_client">Recommended client</string>
-    <string name="libretorrent">LibreTorrent</string>
-    <string name="aria2">Aria2App</string>
-    <string name="gopeed">Gopeed</string>
-    <string name="pikatorrent">PikaTorrent</string>
-    <string name="torrserve">TorrServe</string>
+    <string name="libretorrent" translatable="false">LibreTorrent</string>
+    <string name="aria2" translatable="false">Aria2App</string>
+    <string name="gopeed" translatable="false">Gopeed</string>
+    <string name="pikatorrent" translatable="false">PikaTorrent</string>
+    <string name="torrserve" translatable="false">TorrServe</string>
     <string name="button_done">Done</string>
     <!-- Root screen -->
 
@@ -71,6 +71,7 @@
     <string name="setting_pure_black">Pure black</string>
     <!-- General section -->
     <string name="settings_section_general">General</string>
+    <string name="setting_language">Language</string>
     <string name="setting_enable_nsfw_mode">Enable NSFW mode</string>
     <!-- Search section -->
     <string name="settings_section_search">Search</string>
@@ -103,7 +104,7 @@
     <string name="button_disable_all_search_providers">Disable all search providers</string>
     <string name="button_reset_search_providers">Reset search providers setting to default</string>
     <string name="badge_unsafe">Unsafe</string>
-    <string name="badge_torznab">Torznab</string>
+    <string name="badge_torznab" translatable="false">Torznab</string>
     <string name="action_edit_configuration">Edit configuration</string>
     <string name="action_delete_search_provider">Delete</string>
     <!-- Add search provider screen -->

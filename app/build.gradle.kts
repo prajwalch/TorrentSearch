@@ -62,6 +62,10 @@ android {
         includeInBundle = false
     }
 
+    androidResources {
+        generateLocaleConfig = true
+    }
+
     room {
         schemaDirectory("$projectDir/schemas")
     }
@@ -88,7 +92,7 @@ dependencies {
     implementation(libs.lazycolumnscrollbar)
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.hilt.navigation.compose)
-    
+
     ksp(libs.androidx.room.compiler)
     ksp(libs.hilt.android.compiler)
 
