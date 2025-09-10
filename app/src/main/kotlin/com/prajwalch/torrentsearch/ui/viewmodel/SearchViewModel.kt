@@ -34,7 +34,6 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onEach
@@ -94,6 +93,17 @@ class SearchViewModel @Inject constructor(
     private val _uiState = MutableStateFlow(SearchUiState())
     val uiState = _uiState.asStateFlow()
 
+    /**
+     * On-going search.
+     *
+     * Before initiating a new search, on-going search must be canceled
+     * even if it's not completed.
+     */
+    private var activeSearchJob: Job? = null
+
+    /** Unfiltered search results. */
+    private var searchResults = emptyList<Torrent>()
+
     /** Internet connection status. */
     private val isInternetAvailable = connectivityObserver
         .isInternetAvailable
@@ -102,14 +112,6 @@ class SearchViewModel @Inject constructor(
             started = SharingStarted.Eagerly,
             initialValue = false,
         )
-
-    /**
-     * On-going search.
-     *
-     * Before initiating a new search, on-going search must be canceled
-     * even if it's not completed.
-     */
-    private var activeSearchJob: Job? = null
 
     private val searchProvidersLoader = SearchProvidersLoader(
         coroutineScope = viewModelScope,
@@ -148,6 +150,22 @@ class SearchViewModel @Inject constructor(
                     categories = categories,
                     selectedCategory = selectedCategory,
                 )
+            }
+
+            if (searchResults.isNotEmpty()) {
+                val nsfwFilteredResults = searchResults
+                    .filterNSFW(isNSFWModeEnabled = nsfwModeEnabled)
+                    .customSort(
+                        criteria = _uiState.value.currentSortCriteria,
+                        order = _uiState.value.currentSortOrder,
+                    )
+
+                _uiState.update {
+                    it.copy(
+                        results = nsfwFilteredResults,
+                        resultsNotFound = nsfwFilteredResults.isEmpty(),
+                    )
+                }
             }
         }
     }
@@ -205,6 +223,7 @@ class SearchViewModel @Inject constructor(
     /** Resets the state to default value. */
     fun resetToDefault() {
         activeSearchJob?.cancel()
+        searchResults = emptyList()
 
         _uiState.update {
             it.copy(
@@ -229,9 +248,9 @@ class SearchViewModel @Inject constructor(
 
         Log.i(TAG, "Cancelling on-going search")
         activeSearchJob?.cancel()
+        searchResults = emptyList()
 
         Log.i(TAG, "Creating new job")
-
         activeSearchJob = viewModelScope.launch {
             val settings = settingsLoader.getLatestSettings()
             Log.d(TAG, "Settings loaded. $settings")
@@ -302,13 +321,12 @@ class SearchViewModel @Inject constructor(
                     searchProviders = enabledSearchProviders,
                 )
                 .takeWhile { shouldContinueSearch(settings = settings) }
+                .flowOn(Dispatchers.IO)
                 // Any network or other errors are ignored though it's best to
                 // report them to the UI but we don't have any implementation
                 // for that yet.
                 .mapNotNull { repoResult -> repoResult.torrents }
-                .map { filterSearchResults(results = it, settings = settings) }
-                .flowOn(Dispatchers.IO)
-                .onEach(::onEachSearchResults)
+                .onEach { onEachSearchResults(results = it, settings = settings) }
                 .onCompletion { onSearchCompletion(cause = it) }
                 .launchIn(scope = this)
         }
@@ -340,19 +358,31 @@ class SearchViewModel @Inject constructor(
     }
 
     /** Runs on every search result emitted by repository. */
-    private fun onEachSearchResults(results: List<Torrent>) {
+    private fun onEachSearchResults(results: List<Torrent>, settings: SettingsLoader.Settings) {
         Log.i(TAG, "onEachSearchResults() called")
 
-        val allSearchResults = _uiState.value.results + results
+        searchResults += results
+
+        val allSearchResults = searchResults
         if (allSearchResults.isEmpty()) {
             Log.i(TAG, "Empty results. Returning...")
             return
         }
 
         Log.i(TAG, "Received ${results.size} results, ${allSearchResults.size} total")
-        Log.i(TAG, "Sorting results..")
+        Log.i(TAG, "Filtering results..")
 
-        val sortedResults = allSearchResults.customSort(
+        val filteredResults = filterSearchResults(
+            results = allSearchResults,
+            settings = settings,
+        )
+        if (filteredResults.isEmpty()) {
+            Log.i(TAG, "All results are filtered out. Returning...")
+            return
+        }
+
+        Log.i(TAG, "Sorting results...")
+        val sortedResults = filteredResults.customSort(
             criteria = _uiState.value.currentSortCriteria,
             order = _uiState.value.currentSortOrder,
         )
