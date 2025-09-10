@@ -28,26 +28,24 @@ fun GeneralSettings(modifier: Modifier = Modifier) {
     val viewModel = activityScopedViewModel<SettingsViewModel>()
     val settings by viewModel.generalSettingsUiState.collectAsStateWithLifecycle()
 
-
     Column(modifier = modifier) {
         SettingsSectionTitle(titleId = R.string.settings_section_general)
 
-        val context = LocalContext.current
-        SettingsItem(
-            onClick = {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                    context.openAppLocaleSettings()
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            val context = LocalContext.current
+
+            SettingsItem(
+                onClick = { context.openAppLocaleSettings() },
+                leadingIconId = R.drawable.ic_language,
+                headlineId = R.string.setting_language,
+                trailingContent = {
+                    Icon(
+                        painter = painterResource(R.drawable.ic_arrow_forward),
+                        contentDescription = null,
+                    )
                 }
-            },
-            leadingIconId = R.drawable.ic_language,
-            headlineId = R.string.setting_language,
-            trailingContent = {
-                Icon(
-                    painter = painterResource(R.drawable.ic_arrow_forward),
-                    contentDescription = null,
-                )
-            }
-        )
+            )
+        }
 
         SettingsItem(
             onClick = { viewModel.enableNSFWMode(!settings.enableNSFWMode) },
