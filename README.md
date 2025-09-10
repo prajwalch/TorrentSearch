@@ -50,6 +50,8 @@ providers.
     - Automatically hides NSFW categories
     - Automatically hides NSFW torrents
 - Option to enable or disable individual providers
+- Jackett/Prowlarr/other *arr service integration support using [Torznab API](https://torznab.github.io/spec-1.3-draft/torznab/Specification-v1.3.html#torznab-api-specification)
+  - Read [wiki](https://github.com/prajwalch/TorrentSearch/wiki) to learn more
 
 ## Download
 
