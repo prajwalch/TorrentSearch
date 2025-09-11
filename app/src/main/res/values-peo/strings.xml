@@ -1,3 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="torrent_client_not_found_main_content">برای استفاده از قابلیت دانلود یک برنامه دانلود از تورنت نصب کنید و آن را تنظیم کنید و به این برنامه برگردید</string>
+    <string name="search">جستجو …</string>
+    <string name="settings_dialog_button_cancel">لغو</string>
 </resources>
