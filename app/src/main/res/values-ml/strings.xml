@@ -17,7 +17,7 @@
     <string name="msg_no_results_found">ഫലങ്ങൾ ഒന്നും കണ്ടെത്തിയില്ല</string>
     <string name="msg_nothing_here_yet">ഇവിടെ ഒന്നും ഇപ്പോഴേക്ക് ഇല്ല</string>
     <string name="msg_start_searching">ഫലങ്ങൾ കാണാൻ തിരച്ചിൽ ആരംഭിക്കുക</string>
-    <string name="hint_results_count">%1$d ഫലങ്ങളെക്കുറിച്ച്</string>
+    <string name="hint_results_count">ഏകദേശം %1$d ഫലങ്ങൾ</string>
     <string name="button_open_sort_options">സോർട്ട് ഓപ്ഷനുകൾ തുറക്കുക</string>
     <string name="button_change_sort_order">സോർട്ട് ഓർഡർ %s ആയി മാറ്റുക</string>
     <string name="button_scroll_to_top">മുകളിലോട്ട് സ്ക്രോൾ ചെയ്യുക</string>
