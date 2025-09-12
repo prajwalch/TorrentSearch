@@ -1,7 +1,7 @@
 [versions]
-activityCompose = "1.10.1"
+activityCompose = "1.11.0"
 agp = "8.11.1"
-composeBom = "2025.08.01"
+composeBom = "2025.09.00"
 coreKtx = "1.17.0"
 coreSplashscreen = "1.0.1"
 datastorePreferences = "1.1.7"
@@ -16,9 +16,9 @@ ksp = "2.2.0-2.0.2"
 ktor = "3.2.3"
 lazycolumnscrollbar = "2.2.0"
 lifecycleRuntimeKtx = "2.9.3"
-navigationCompose = "2.9.3"
-room = "2.7.2"
-hiltNavigationCompose = "1.2.0"
+navigationCompose = "2.9.4"
+room = "2.8.0"
+hiltNavigationCompose = "1.3.0"
 
 [libraries]
 androidx-activity-compose = { group = "androidx.activity", name = "activity-compose", version.ref = "activityCompose" }
