@@ -20,7 +20,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.lerp
-import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.isTraversalGroup
 import androidx.compose.ui.semantics.semantics
@@ -90,7 +89,6 @@ private fun SearchBarInputField(
 ) {
     val interactionSource = remember { MutableInteractionSource() }
     val isFocused by interactionSource.collectIsFocusedAsState()
-    val focusManager = LocalFocusManager.current
 
     val unfocusedContentColor = MaterialTheme.colorScheme.onSecondaryContainer
     val focusedContentColor = MaterialTheme.colorScheme.onSurface
@@ -118,10 +116,7 @@ private fun SearchBarInputField(
         leadingIcon = leadingIcon ?: {
             LeadingIcon(
                 isFocused = isFocused,
-                onBack = {
-                    focusManager.clearFocus()
-                    onExpandChange(false)
-                }
+                onBack = { onExpandChange(false) },
             )
         },
         trailingIcon = trailingIcon,
