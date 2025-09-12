@@ -14,8 +14,6 @@ import org.jsoup.Jsoup
 import org.jsoup.nodes.Element
 
 import java.text.SimpleDateFormat
-import java.time.LocalDate
-import java.time.format.DateTimeFormatter
 import java.util.Locale
 
 class AnimeTosho : SearchProvider {
@@ -90,17 +88,18 @@ class AnimeTosho : SearchProvider {
             ?.trim()
             ?: return null
 
+        val inputDateOnly = java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy")
         val normalizedRaw = when {
             raw.startsWith("Today") -> {
                 val timePart = raw.removePrefix("Today").trim()
-                val today = LocalDate.now()
-                "${today.format(INPUT_DATE_ONLY)} $timePart"
+                val today = java.time.LocalDate.now()
+                "${today.format(inputDateOnly)} $timePart"
             }
 
             raw.startsWith("Yesterday") -> {
                 val timePart = raw.removePrefix("Yesterday").trim()
-                val yesterday = LocalDate.now().minusDays(1)
-                "${yesterday.format(INPUT_DATE_ONLY)} $timePart"
+                val yesterday = java.time.LocalDate.now().minusDays(1)
+                "${yesterday.format(inputDateOnly)} $timePart"
             }
 
             else -> raw
@@ -134,8 +133,5 @@ class AnimeTosho : SearchProvider {
     private companion object {
         private const val DATE_PREFIX = "Date/time submitted: "
         private val STATS_REGEX = """\[(\d+)↑/(\d+)↓]""".toRegex()
-
-        @RequiresApi(Build.VERSION_CODES.O)
-        private val INPUT_DATE_ONLY = DateTimeFormatter.ofPattern("dd/MM/yyyy")
     }
 }

@@ -20,8 +20,6 @@ import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.putJsonArray
 
-import java.time.OffsetDateTime
-import java.time.format.DateTimeFormatter
 import java.util.Locale
 
 /**
@@ -92,11 +90,13 @@ class Knaben : SearchProvider {
 
         val seeders = obj.getUInt("seeders") ?: 0u
         val peers = obj.getUInt("peers") ?: 0u
+        
         val uploadDateIso = obj.getString("date") ?: ""
-        val uploadDate = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
+        val uploadDate = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             formatIsoDateToPrettyDate(uploadDateIso)
-        else
+        } else {
             uploadDateIso
+        }
 
         val descriptionPageUrl = obj.getString("details").orEmpty()
         val category = extractCategory(obj)
@@ -138,8 +138,10 @@ class Knaben : SearchProvider {
      */
     @RequiresApi(Build.VERSION_CODES.O)
     fun formatIsoDateToPrettyDate(isoDate: String): String {
-        val parsedDate = OffsetDateTime.parse(isoDate)
-        val outputFormatter = DateTimeFormatter.ofPattern("dd MMM yyyy", Locale.ENGLISH)
+        val parsedDate = java.time.OffsetDateTime.parse(isoDate)
+        val outputFormatter =
+            java.time.format.DateTimeFormatter.ofPattern("dd MMM yyyy", Locale.ENGLISH)
+
         return parsedDate.format(outputFormatter)
     }
 
