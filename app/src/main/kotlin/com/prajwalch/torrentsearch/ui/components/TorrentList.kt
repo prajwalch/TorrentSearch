@@ -24,6 +24,7 @@ import androidx.compose.ui.unit.dp
 
 import com.prajwalch.torrentsearch.R
 import com.prajwalch.torrentsearch.models.Torrent
+import com.prajwalch.torrentsearch.ui.theme.spaces
 
 import my.nanihadesuka.compose.LazyColumnScrollbar
 import my.nanihadesuka.compose.ScrollbarSettings
@@ -43,7 +44,7 @@ fun TorrentList(
     LazyColumnScrollbar(
         state = lazyListState,
         settings = ScrollbarSettings.Default.copy(
-            scrollbarPadding = 2.dp,
+            scrollbarPadding = MaterialTheme.spaces.extraSmall,
             thumbThickness = 8.dp,
             thumbMinLength = 0.07f,
             thumbUnselectedColor = scrollbarUnselectedColor,
@@ -61,7 +62,7 @@ fun TorrentList(
                     TorrentListToolbar(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(horizontal = 16.dp),
+                            .padding(horizontal = MaterialTheme.spaces.large),
                         content = toolbar,
                     )
                 }
@@ -96,16 +97,11 @@ fun TorrentListItem(torrent: Torrent, modifier: Modifier = Modifier) {
     ListItem(
         modifier = modifier,
         overlineContent = { Text(text = torrent.uploadDate) },
-        headlineContent = {
-            Text(
-                modifier = Modifier.padding(vertical = 4.dp),
-                text = torrent.name,
-            )
-        },
+        headlineContent = { Text(text = torrent.name) },
         supportingContent = {
             Column(
                 verticalArrangement = Arrangement.spacedBy(
-                    space = 8.dp,
+                    space = MaterialTheme.spaces.extraSmall,
                     alignment = Alignment.CenterVertically,
                 ),
             ) {
@@ -134,7 +130,9 @@ private fun TorrentMetadata(
 ) {
     Row(
         modifier = modifier,
-        horizontalArrangement = Arrangement.spacedBy(space = 4.dp),
+        horizontalArrangement = Arrangement.spacedBy(
+            space = MaterialTheme.spaces.extraSmall,
+        ),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         TorrentMetadataText(text = size)

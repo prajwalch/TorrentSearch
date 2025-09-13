@@ -63,6 +63,7 @@ import com.prajwalch.torrentsearch.ui.components.SearchHistoryList
 import com.prajwalch.torrentsearch.ui.components.SearchHistoryListItem
 import com.prajwalch.torrentsearch.ui.components.SortMenu
 import com.prajwalch.torrentsearch.ui.components.TorrentList
+import com.prajwalch.torrentsearch.ui.theme.spaces
 
 import kotlinx.coroutines.launch
 
@@ -114,7 +115,7 @@ fun SearchScreen(
                 modifier = Modifier.padding(
                     // TODO: Don't depend on `SearchBarDefaults` and remove
                     //       hardcoded padding too.
-                    top = SearchBarDefaults.InputFieldHeight + 16.dp,
+                    top = SearchBarDefaults.InputFieldHeight + MaterialTheme.spaces.large,
                 ),
             ) {
                 CategoryChipsRow(
@@ -124,10 +125,12 @@ fun SearchScreen(
                         viewModel.changeCategory(it)
                         viewModel.performSearch()
                     },
-                    contentPadding = PaddingValues(horizontal = 16.dp),
+                    contentPadding = PaddingValues(
+                        horizontal = MaterialTheme.spaces.large,
+                    ),
                 )
 
-                Spacer(modifier = Modifier.height(8.dp))
+                Spacer(modifier = Modifier.height(MaterialTheme.spaces.small))
                 HorizontalDivider()
 
                 AnimatedVisibility(
@@ -180,7 +183,9 @@ private fun TopSearchBar(
     modifier: Modifier = Modifier,
 ) {
     var expanded by remember { mutableStateOf(false) }
-    val horizontalPadding by animateDpAsState(if (expanded) 0.dp else 16.dp)
+    val horizontalPadding by animateDpAsState(
+        if (expanded) 0.dp else MaterialTheme.spaces.large
+    )
 
     SearchBar(
         modifier = modifier.padding(horizontal = horizontalPadding),
@@ -322,7 +327,7 @@ private fun SearchScreenContent(
             )
 
             resultsNotFound -> {
-                Spacer(modifier = Modifier.height(16.dp))
+                Spacer(modifier = Modifier.height(MaterialTheme.spaces.large))
                 ResultsNotFound(modifier = Modifier.fillMaxWidth())
             }
 

@@ -23,9 +23,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.unit.dp
 
 import com.prajwalch.torrentsearch.R
+import com.prajwalch.torrentsearch.ui.theme.spaces
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -59,7 +59,10 @@ fun TorrentActionsBottomSheet(
         sheetState = sheetState,
     ) {
         TorrentActionsBottomSheetHeader(
-            modifier = Modifier.padding(horizontal = 16.dp),
+            modifier = Modifier
+                .padding(
+                    horizontal = MaterialTheme.spaces.large,
+                ),
             title = title,
             isNSFW = isNSFW,
         )
@@ -75,11 +78,11 @@ fun TorrentActionsBottomSheet(
             item { DownloadTorrent(onClick = actionWithDismiss(onDownloadTorrent)) }
             item { ShareMagnetLink(onClick = actionWithDismiss(onShareMagnetLink)) }
             item { CopyMagnetLink(onClick = actionWithDismiss(onCopyMagnetLink)) }
-            item { Spacer(modifier = Modifier.height(8.dp)) }
+            item { Spacer(modifier = Modifier.height(MaterialTheme.spaces.small)) }
 
             if (hasDescriptionPage) {
                 item { HorizontalDivider() }
-                item { Spacer(modifier = Modifier.height(8.dp)) }
+                item { Spacer(modifier = Modifier.height(MaterialTheme.spaces.small)) }
                 item {
                     OpenDescriptionPage(
                         onClick = actionWithDismiss(onOpenDescriptionPage)
@@ -95,7 +98,7 @@ fun TorrentActionsBottomSheet(
                         onClick = actionWithDismiss(onShareDescriptionPageUrl)
                     )
                 }
-                item { Spacer(modifier = Modifier.height(8.dp)) }
+                item { Spacer(modifier = Modifier.height(MaterialTheme.spaces.small)) }
             }
         }
     }
@@ -117,9 +120,9 @@ private fun TorrentActionsBottomSheetHeader(
             style = MaterialTheme.typography.bodyLarge,
         )
     }
-    Spacer(modifier = Modifier.height(8.dp))
+    Spacer(modifier = Modifier.height(MaterialTheme.spaces.small))
     HorizontalDivider()
-    Spacer(modifier = Modifier.height(8.dp))
+    Spacer(modifier = Modifier.height(MaterialTheme.spaces.small))
 }
 
 @Composable

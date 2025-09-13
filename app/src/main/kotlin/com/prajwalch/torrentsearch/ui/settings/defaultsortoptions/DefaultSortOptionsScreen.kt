@@ -38,7 +38,7 @@ fun DefaultSortOptionsScreen(onNavigateBack: () -> Unit, modifier: Modifier = Mo
         modifier = modifier,
         topBar = {
             DefaultSortOptionsScreenTopBar(onNavigateBack = onNavigateBack)
-        }
+        },
     ) { innerPadding ->
         LazyColumn(
             modifier = Modifier.consumeWindowInsets(innerPadding),

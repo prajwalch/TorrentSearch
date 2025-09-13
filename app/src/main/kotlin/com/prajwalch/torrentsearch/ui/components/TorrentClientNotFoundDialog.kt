@@ -20,6 +20,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalUriHandler
@@ -29,6 +30,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
 
 import com.prajwalch.torrentsearch.R
+import com.prajwalch.torrentsearch.ui.theme.spaces
 
 private val torrentClients = listOf(
     TorrentClient(
@@ -145,7 +147,9 @@ private fun DialogTitle(modifier: Modifier = Modifier) {
 private fun DialogContent(modifier: Modifier = Modifier) {
     Column(
         modifier = modifier,
-        verticalArrangement = Arrangement.spacedBy(20.dp),
+        verticalArrangement = Arrangement.spacedBy(
+            space = MaterialTheme.spaces.extraLarge,
+        ),
     ) {
         Text(stringResource(R.string.torrent_client_not_found_main_content))
         TorrentClientList(clients = torrentClients)
@@ -156,7 +160,9 @@ private fun DialogContent(modifier: Modifier = Modifier) {
 private fun TorrentClientList(clients: List<TorrentClient>, modifier: Modifier = Modifier) {
     LazyColumn(
         modifier = modifier,
-        verticalArrangement = Arrangement.spacedBy(4.dp),
+        verticalArrangement = Arrangement.spacedBy(
+            space = MaterialTheme.spaces.small,
+        ),
     ) {
         items(items = clients) {
             TorrentClientListItem(
@@ -191,6 +197,7 @@ private fun TorrentClientListItem(client: TorrentClient, modifier: Modifier = Mo
     ListItem(
         modifier = Modifier
             .clip(shape = MaterialTheme.shapes.medium)
+            // TODO: For smaller screen devices we need larger height.
             .height(56.dp)
             .then(modifier),
         headlineContent = {
@@ -215,7 +222,11 @@ private fun TorrentClientListItem(client: TorrentClient, modifier: Modifier = Mo
 private fun TorrentClientSourcesRow(sources: List<Source>, modifier: Modifier = Modifier) {
     val uriHandler = LocalUriHandler.current
 
-    Row(modifier = modifier) {
+    Row(
+        modifier = modifier,
+        horizontalArrangement = Arrangement.Center,
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
         sources.forEach {
             IconButton(onClick = { uriHandler.openUri(it.url) }) {
                 Icon(

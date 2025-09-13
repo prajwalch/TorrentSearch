@@ -57,6 +57,7 @@ import com.prajwalch.torrentsearch.ui.components.RoundedDropdownMenu
 import com.prajwalch.torrentsearch.ui.components.TextUrl
 import com.prajwalch.torrentsearch.ui.components.TorznabBadge
 import com.prajwalch.torrentsearch.ui.components.UnsafeBadge
+import com.prajwalch.torrentsearch.ui.theme.spaces
 
 @Composable
 fun SearchProvidersScreen(
@@ -85,7 +86,7 @@ fun SearchProvidersScreen(
                     contentDescription = null,
                 )
             }
-        }
+        },
     ) { innerPadding ->
         SearchProviderList(
             modifier = Modifier.consumeWindowInsets(innerPadding),
@@ -353,7 +354,7 @@ private fun TorznabSearchProviderMenu(
         modifier = modifier,
         expanded = expanded,
         onDismissRequest = onDismissRequest,
-        offset = DpOffset(x = 16.dp, y = 0.dp),
+        offset = DpOffset(x = MaterialTheme.spaces.large, y = 0.dp),
     ) {
         DropdownMenuItem(
             onClick = onEditClick,
@@ -397,7 +398,7 @@ private fun SearchProviderListItem(
         supportingContent = {
             Column(
                 verticalArrangement = Arrangement.spacedBy(
-                    space = 8.dp,
+                    space = MaterialTheme.spaces.extraSmall,
                     alignment = Alignment.CenterVertically,
                 ),
             ) {

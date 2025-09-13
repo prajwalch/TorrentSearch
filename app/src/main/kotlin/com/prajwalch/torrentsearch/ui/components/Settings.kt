@@ -16,8 +16,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.unit.dp
+
 import com.prajwalch.torrentsearch.R
+import com.prajwalch.torrentsearch.ui.theme.spaces
 
 @Composable
 fun SettingsSectionTitle(
@@ -27,7 +28,7 @@ fun SettingsSectionTitle(
     style: TextStyle = MaterialTheme.typography.titleSmall,
 ) {
     Text(
-        modifier = modifier.padding(16.dp),
+        modifier = modifier.padding(MaterialTheme.spaces.large),
         text = stringResource(titleId),
         color = color,
         style = style,

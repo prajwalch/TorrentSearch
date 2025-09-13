@@ -31,6 +31,7 @@ import com.prajwalch.torrentsearch.R
 import com.prajwalch.torrentsearch.models.Category
 import com.prajwalch.torrentsearch.providers.SearchProviderSafetyStatus
 import com.prajwalch.torrentsearch.providers.TorznabSearchProviderConfig
+import com.prajwalch.torrentsearch.ui.theme.spaces
 
 @Composable
 fun TorznabSearchProviderConfigForm(
@@ -46,7 +47,10 @@ fun TorznabSearchProviderConfigForm(
 ) {
     Column(
         modifier = modifier,
-        verticalArrangement = Arrangement.spacedBy(8.dp),
+        verticalArrangement = Arrangement.spacedBy(
+            space = MaterialTheme.spaces.small,
+            alignment = Alignment.CenterVertically,
+        ),
     ) {
         OutlinedTextField(
             modifier = Modifier.fillMaxWidth(),
@@ -70,7 +74,7 @@ fun TorznabSearchProviderConfigForm(
         )
 
         Text(
-            modifier = Modifier.padding(vertical = 16.dp),
+            modifier = Modifier.padding(vertical = MaterialTheme.spaces.large),
             text = stringResource(R.string.additional_options),
             color = MaterialTheme.colorScheme.primary,
             style = MaterialTheme.typography.titleSmall,

@@ -35,7 +35,8 @@ fun DefaultCategoryScreen(onNavigateBack: () -> Unit, modifier: Modifier = Modif
         modifier = modifier,
         topBar = {
             DefaultCategoryScreenTopBar(onNavigateBack = onNavigateBack)
-        }) { innerPadding ->
+        },
+    ) { innerPadding ->
         LazyColumn(
             modifier = Modifier.consumeWindowInsets(innerPadding),
             contentPadding = innerPadding,

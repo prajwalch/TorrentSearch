@@ -20,6 +20,7 @@ import androidx.compose.ui.unit.dp
 
 import com.prajwalch.torrentsearch.R
 import com.prajwalch.torrentsearch.models.Category
+import com.prajwalch.torrentsearch.ui.theme.spaces
 
 @Composable
 fun CategoryChipsRow(
@@ -31,7 +32,10 @@ fun CategoryChipsRow(
 ) {
     LazyRow(
         modifier = modifier,
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
+        horizontalArrangement = Arrangement.spacedBy(
+            space = MaterialTheme.spaces.small,
+            alignment = Alignment.CenterHorizontally,
+        ),
         verticalAlignment = Alignment.CenterVertically,
         contentPadding = contentPadding,
     ) {

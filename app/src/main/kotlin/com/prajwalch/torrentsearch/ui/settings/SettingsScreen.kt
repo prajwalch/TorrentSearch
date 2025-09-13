@@ -33,7 +33,7 @@ fun SettingsScreen(
             .fillMaxSize()
             .then(modifier),
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
-        topBar = { SettingsScreenTopBar(onNavigateBack = onNavigateBack) }
+        topBar = { SettingsScreenTopBar(onNavigateBack = onNavigateBack) },
     ) { innerPadding ->
         LazyColumn(
             modifier = Modifier.consumeWindowInsets(innerPadding),

@@ -29,6 +29,7 @@ import com.prajwalch.torrentsearch.ui.components.NavigateBackIconButton
 import com.prajwalch.torrentsearch.ui.components.TextUrl
 import com.prajwalch.torrentsearch.ui.components.TorznabSearchProviderConfigForm
 import com.prajwalch.torrentsearch.ui.settings.searchproviders.TorznabSearchProviderConfigViewModel
+import com.prajwalch.torrentsearch.ui.theme.spaces
 
 private const val HOW_TO_WIKI_URL =
     "https://github.com/prajwalch/TorrentSearch/wiki/How-to-add-and-configure-Torznab-search-provider"
@@ -55,7 +56,7 @@ fun AddSearchProviderScreen(onNavigateBack: () -> Unit, modifier: Modifier = Mod
                 .verticalScroll(state = scrollState)
                 .fillMaxWidth()
                 .padding(innerPadding)
-                .padding(horizontal = 16.dp),
+                .padding(horizontal = MaterialTheme.spaces.large),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             TorznabSearchProviderConfigForm(

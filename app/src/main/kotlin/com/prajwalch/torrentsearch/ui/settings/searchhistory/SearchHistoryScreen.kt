@@ -37,7 +37,7 @@ fun SearchHistoryScreen(onNavigateBack: () -> Unit, modifier: Modifier = Modifie
                 onDeleteAll = viewModel::deleteAllSearchHistory,
                 showDeleteAllAction = searchHistoryList.isNotEmpty(),
             )
-        }
+        },
     ) { innerPadding ->
         if (searchHistoryList.isEmpty()) {
             EmptyPlaceholder(
