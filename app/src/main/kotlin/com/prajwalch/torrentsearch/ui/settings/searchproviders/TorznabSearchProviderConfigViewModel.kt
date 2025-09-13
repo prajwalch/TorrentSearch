@@ -42,8 +42,8 @@ class TorznabSearchProviderConfigViewModel @Inject constructor(
 ) : ViewModel() {
     private val torznabSearchProviderId = savedStateHandle.get<String>("id")
 
-    private val _uiState2 = MutableStateFlow(TorznabSearchProviderConfigUiState())
-    val uiState2 = _uiState2.asStateFlow()
+    private val _uiState = MutableStateFlow(TorznabSearchProviderConfigUiState())
+    val uiState = _uiState.asStateFlow()
 
     init {
         loadExistingConfig()
@@ -55,44 +55,44 @@ class TorznabSearchProviderConfigViewModel @Inject constructor(
             .findTorznabSearchProviderConfig(id = id)
             ?: return@launch
 
-        _uiState2.update { it.copy(config = existingConfig) }
+        _uiState.update { it.copy(config = existingConfig) }
     }
 
     fun changeName(name: String) {
-        _uiState2.update {
+        _uiState.update {
             it.copy(config = it.config.copy(name = name))
         }
     }
 
     fun changeUrl(url: String) {
-        _uiState2.update {
+        _uiState.update {
             it.copy(config = it.config.copy(url = url))
         }
     }
 
     fun changeAPIKey(apiKey: String) {
-        _uiState2.update {
+        _uiState.update {
             it.copy(config = it.config.copy(apiKey = apiKey))
         }
     }
 
     fun changeCategory(category: Category) {
-        _uiState2.update {
+        _uiState.update {
             it.copy(config = it.config.copy(category = category))
         }
     }
 
     fun changeSafetyStatus(safetyStatus: SearchProviderSafetyStatus) {
-        _uiState2.update {
+        _uiState.update {
             it.copy(config = it.config.copy(safetyStatus = safetyStatus))
         }
     }
 
     fun saveConfig() {
-        val urlPatternMatcher = Patterns.WEB_URL.matcher(_uiState2.value.config.url)
+        val urlPatternMatcher = Patterns.WEB_URL.matcher(_uiState.value.config.url)
 
         if (!urlPatternMatcher.matches()) {
-            _uiState2.update {
+            _uiState.update {
                 it.copy(isUrlValid = false, isConfigSaved = false)
             }
             return
@@ -103,15 +103,15 @@ class TorznabSearchProviderConfigViewModel @Inject constructor(
 
             if (isConfigNew) {
                 searchProvidersRepository.addTorznabSearchProvider(
-                    config = _uiState2.value.config,
+                    config = _uiState.value.config,
                 )
             } else {
                 searchProvidersRepository.updateTorznabSearchProvider(
-                    config = _uiState2.value.config,
+                    config = _uiState.value.config,
                 )
             }
 
-            _uiState2.update {
+            _uiState.update {
                 it.copy(isUrlValid = true, isConfigSaved = true)
             }
         }

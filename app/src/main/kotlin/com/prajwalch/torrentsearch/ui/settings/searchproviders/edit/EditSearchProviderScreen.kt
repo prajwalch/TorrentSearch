@@ -26,7 +26,7 @@ import com.prajwalch.torrentsearch.ui.settings.searchproviders.TorznabSearchProv
 @Composable
 fun EditSearchProviderScreen(onNavigateBack: () -> Unit, modifier: Modifier = Modifier) {
     val viewModel = hiltViewModel<TorznabSearchProviderConfigViewModel>()
-    val uiState by viewModel.uiState2.collectAsStateWithLifecycle()
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
     LaunchedEffect(uiState.isConfigSaved) {
         if (uiState.isConfigSaved) {
