@@ -1,4 +1,4 @@
-package com.prajwalch.torrentsearch.ui.viewmodel
+package com.prajwalch.torrentsearch.ui.search
 
 import android.util.Log
 
@@ -19,6 +19,7 @@ import com.prajwalch.torrentsearch.models.Category
 import com.prajwalch.torrentsearch.models.Torrent
 import com.prajwalch.torrentsearch.network.ConnectivityObserver
 import com.prajwalch.torrentsearch.providers.SearchProvider
+import com.prajwalch.torrentsearch.ui.settings.DefaultSortOptions
 
 import dagger.hilt.android.lifecycle.HiltViewModel
 

@@ -1,4 +1,4 @@
-package com.prajwalch.torrentsearch.ui.screens
+package com.prajwalch.torrentsearch.ui
 
 object Screens {
     const val SEARCH = "search"

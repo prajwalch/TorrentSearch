@@ -16,14 +16,14 @@ import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.runtime.getValue
 import androidx.core.net.toUri
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
-import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 
 import com.prajwalch.torrentsearch.data.repository.DarkTheme
 import com.prajwalch.torrentsearch.models.MagnetUri
+import com.prajwalch.torrentsearch.ui.search.SearchViewModel
+import com.prajwalch.torrentsearch.ui.settings.SettingsViewModel
 import com.prajwalch.torrentsearch.ui.theme.TorrentSearchTheme
-import com.prajwalch.torrentsearch.ui.viewmodel.SearchViewModel
-import com.prajwalch.torrentsearch.ui.viewmodel.SettingsViewModel
 
 import dagger.hilt.android.AndroidEntryPoint
 

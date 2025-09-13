@@ -1,4 +1,4 @@
-package com.prajwalch.torrentsearch.ui.viewmodel
+package com.prajwalch.torrentsearch.ui.settings.searchproviders
 
 import android.util.Patterns
 

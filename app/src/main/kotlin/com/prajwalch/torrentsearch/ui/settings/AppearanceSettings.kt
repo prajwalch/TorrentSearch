@@ -1,4 +1,4 @@
-package com.prajwalch.torrentsearch.ui.screens.settings
+package com.prajwalch.torrentsearch.ui.settings
 
 import android.os.Build
 import androidx.compose.animation.AnimatedVisibility
@@ -25,7 +25,6 @@ import com.prajwalch.torrentsearch.ui.activityScopedViewModel
 import com.prajwalch.torrentsearch.ui.components.RoundedDropdownMenu
 import com.prajwalch.torrentsearch.ui.components.SettingsItem
 import com.prajwalch.torrentsearch.ui.components.SettingsSectionTitle
-import com.prajwalch.torrentsearch.ui.viewmodel.SettingsViewModel
 
 @Composable
 fun AppearanceSettings(modifier: Modifier = Modifier) {

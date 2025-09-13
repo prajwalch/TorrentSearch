@@ -1,4 +1,4 @@
-package com.prajwalch.torrentsearch.ui.screens.settings.searchproviders
+package com.prajwalch.torrentsearch.ui.settings.searchproviders.add
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -21,14 +21,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 
 import com.prajwalch.torrentsearch.R
 import com.prajwalch.torrentsearch.ui.components.NavigateBackIconButton
 import com.prajwalch.torrentsearch.ui.components.TextUrl
 import com.prajwalch.torrentsearch.ui.components.TorznabSearchProviderConfigForm
-import com.prajwalch.torrentsearch.ui.viewmodel.TorznabSearchProviderConfigViewModel
+import com.prajwalch.torrentsearch.ui.settings.searchproviders.TorznabSearchProviderConfigViewModel
 
 private const val HOW_TO_WIKI_URL =
     "https://github.com/prajwalch/TorrentSearch/wiki/How-to-add-and-configure-Torznab-search-provider"

@@ -1,4 +1,4 @@
-package com.prajwalch.torrentsearch.ui.screens
+package com.prajwalch.torrentsearch.ui.bookmarks
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.consumeWindowInsets
@@ -31,7 +31,6 @@ import com.prajwalch.torrentsearch.ui.components.NavigateBackIconButton
 import com.prajwalch.torrentsearch.ui.components.ScrollToTopFAB
 import com.prajwalch.torrentsearch.ui.components.SortMenu
 import com.prajwalch.torrentsearch.ui.components.TorrentList
-import com.prajwalch.torrentsearch.ui.viewmodel.BookmarksViewModel
 
 import kotlinx.coroutines.launch
 

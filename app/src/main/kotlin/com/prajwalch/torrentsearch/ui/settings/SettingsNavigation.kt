@@ -1,4 +1,4 @@
-package com.prajwalch.torrentsearch.ui.screens.settings
+package com.prajwalch.torrentsearch.ui.settings
 
 import androidx.compose.animation.AnimatedContentTransitionScope.SlideDirection
 import androidx.navigation.NavGraphBuilder
@@ -6,8 +6,11 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
 import androidx.navigation.navigation
 
-import com.prajwalch.torrentsearch.ui.screens.Screens
-import com.prajwalch.torrentsearch.ui.screens.settings.searchproviders.searchProvidersNavigation
+import com.prajwalch.torrentsearch.ui.Screens
+import com.prajwalch.torrentsearch.ui.settings.defaultcategory.DefaultCategoryScreen
+import com.prajwalch.torrentsearch.ui.settings.defaultsortoptions.DefaultSortOptionsScreen
+import com.prajwalch.torrentsearch.ui.settings.searchhistory.SearchHistoryScreen
+import com.prajwalch.torrentsearch.ui.settings.searchproviders.searchProvidersNavigation
 
 fun NavGraphBuilder.settingsNavigation(navController: NavHostController) {
     navigation(startDestination = Screens.Settings.MAIN, route = Screens.Settings.ROOT) {

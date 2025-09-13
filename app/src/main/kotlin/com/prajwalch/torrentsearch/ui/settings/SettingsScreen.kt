@@ -1,4 +1,4 @@
-package com.prajwalch.torrentsearch.ui.screens.settings
+package com.prajwalch.torrentsearch.ui.settings
 
 import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize

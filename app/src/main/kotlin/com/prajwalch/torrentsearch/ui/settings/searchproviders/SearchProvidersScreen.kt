@@ -1,4 +1,4 @@
-package com.prajwalch.torrentsearch.ui.screens.settings.searchproviders
+package com.prajwalch.torrentsearch.ui.settings.searchproviders
 
 import androidx.compose.foundation.LocalIndication
 import androidx.compose.foundation.clickable
@@ -57,8 +57,6 @@ import com.prajwalch.torrentsearch.ui.components.RoundedDropdownMenu
 import com.prajwalch.torrentsearch.ui.components.TextUrl
 import com.prajwalch.torrentsearch.ui.components.TorznabBadge
 import com.prajwalch.torrentsearch.ui.components.UnsafeBadge
-import com.prajwalch.torrentsearch.ui.viewmodel.SearchProviderUiState
-import com.prajwalch.torrentsearch.ui.viewmodel.SearchProvidersViewModel
 
 @Composable
 fun SearchProvidersScreen(

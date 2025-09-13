@@ -1,4 +1,4 @@
-package com.prajwalch.torrentsearch.ui.screens.settings
+package com.prajwalch.torrentsearch.ui.settings.defaultsortoptions
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
@@ -25,7 +25,7 @@ import com.prajwalch.torrentsearch.data.repository.SortOrder
 import com.prajwalch.torrentsearch.ui.activityScopedViewModel
 import com.prajwalch.torrentsearch.ui.components.NavigateBackIconButton
 import com.prajwalch.torrentsearch.ui.components.SettingsSectionTitle
-import com.prajwalch.torrentsearch.ui.viewmodel.SettingsViewModel
+import com.prajwalch.torrentsearch.ui.settings.SettingsViewModel
 
 @Composable
 fun DefaultSortOptionsScreen(onNavigateBack: () -> Unit, modifier: Modifier = Modifier) {

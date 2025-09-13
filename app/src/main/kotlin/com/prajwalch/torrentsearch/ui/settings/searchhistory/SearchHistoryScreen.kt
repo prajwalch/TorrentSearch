@@ -1,4 +1,4 @@
-package com.prajwalch.torrentsearch.ui.screens.settings
+package com.prajwalch.torrentsearch.ui.settings.searchhistory
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.consumeWindowInsets
@@ -23,7 +23,6 @@ import com.prajwalch.torrentsearch.ui.components.EmptyPlaceholder
 import com.prajwalch.torrentsearch.ui.components.NavigateBackIconButton
 import com.prajwalch.torrentsearch.ui.components.SearchHistoryList
 import com.prajwalch.torrentsearch.ui.components.SearchHistoryListItem
-import com.prajwalch.torrentsearch.ui.viewmodel.SearchHistoryViewModel
 
 @Composable
 fun SearchHistoryScreen(onNavigateBack: () -> Unit, modifier: Modifier = Modifier) {

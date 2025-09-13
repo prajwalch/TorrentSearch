@@ -1,9 +1,11 @@
-package com.prajwalch.torrentsearch.ui.viewmodel
+package com.prajwalch.torrentsearch.ui.settings.searchhistory
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 
 import com.prajwalch.torrentsearch.data.repository.SearchHistoryRepository
+import com.prajwalch.torrentsearch.ui.search.SearchHistoryId
+import com.prajwalch.torrentsearch.ui.search.SearchHistoryUiState
 
 import dagger.hilt.android.lifecycle.HiltViewModel
 
@@ -21,10 +23,10 @@ class SearchHistoryViewModel @Inject constructor(
 ) : ViewModel() {
     val uiState = searchHistoryRepository
         .getAll()
-        .map { list -> list.map(SearchHistoryUiState::fromEntity) }
+        .map { list -> list.map(SearchHistoryUiState.Companion::fromEntity) }
         .stateIn(
             scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5000),
+            started = SharingStarted.Companion.WhileSubscribed(5000),
             initialValue = emptyList(),
         )
 

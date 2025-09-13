@@ -23,13 +23,12 @@ import androidx.navigation.compose.rememberNavController
 import com.prajwalch.torrentsearch.R
 import com.prajwalch.torrentsearch.models.MagnetUri
 import com.prajwalch.torrentsearch.models.Torrent
+import com.prajwalch.torrentsearch.ui.bookmarks.BookmarksScreen
+import com.prajwalch.torrentsearch.ui.bookmarks.BookmarksViewModel
 import com.prajwalch.torrentsearch.ui.components.TorrentActionsBottomSheet
 import com.prajwalch.torrentsearch.ui.components.TorrentClientNotFoundDialog
-import com.prajwalch.torrentsearch.ui.screens.BookmarksScreen
-import com.prajwalch.torrentsearch.ui.screens.Screens
-import com.prajwalch.torrentsearch.ui.screens.SearchScreen
-import com.prajwalch.torrentsearch.ui.screens.settings.settingsNavigation
-import com.prajwalch.torrentsearch.ui.viewmodel.BookmarksViewModel
+import com.prajwalch.torrentsearch.ui.search.SearchScreen
+import com.prajwalch.torrentsearch.ui.settings.settingsNavigation
 
 import kotlinx.coroutines.launch
 

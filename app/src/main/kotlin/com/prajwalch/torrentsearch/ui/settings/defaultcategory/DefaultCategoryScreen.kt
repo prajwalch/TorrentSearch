@@ -1,4 +1,4 @@
-package com.prajwalch.torrentsearch.ui.screens.settings
+package com.prajwalch.torrentsearch.ui.settings.defaultcategory
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.consumeWindowInsets
@@ -22,7 +22,7 @@ import com.prajwalch.torrentsearch.R
 import com.prajwalch.torrentsearch.models.Category
 import com.prajwalch.torrentsearch.ui.activityScopedViewModel
 import com.prajwalch.torrentsearch.ui.components.NavigateBackIconButton
-import com.prajwalch.torrentsearch.ui.viewmodel.SettingsViewModel
+import com.prajwalch.torrentsearch.ui.settings.SettingsViewModel
 
 @Composable
 fun DefaultCategoryScreen(onNavigateBack: () -> Unit, modifier: Modifier = Modifier) {

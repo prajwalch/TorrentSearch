@@ -1,4 +1,4 @@
-package com.prajwalch.torrentsearch.ui.screens.settings.searchproviders
+package com.prajwalch.torrentsearch.ui.settings.searchproviders.edit
 
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -15,13 +15,13 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 
 import com.prajwalch.torrentsearch.R
 import com.prajwalch.torrentsearch.ui.components.NavigateBackIconButton
 import com.prajwalch.torrentsearch.ui.components.TorznabSearchProviderConfigForm
-import com.prajwalch.torrentsearch.ui.viewmodel.TorznabSearchProviderConfigViewModel
+import com.prajwalch.torrentsearch.ui.settings.searchproviders.TorznabSearchProviderConfigViewModel
 
 @Composable
 fun EditSearchProviderScreen(onNavigateBack: () -> Unit, modifier: Modifier = Modifier) {

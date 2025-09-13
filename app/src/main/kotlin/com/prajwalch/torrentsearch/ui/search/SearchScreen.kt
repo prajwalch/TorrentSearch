@@ -1,4 +1,4 @@
-package com.prajwalch.torrentsearch.ui.screens
+package com.prajwalch.torrentsearch.ui.search
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
@@ -63,9 +63,6 @@ import com.prajwalch.torrentsearch.ui.components.SearchHistoryList
 import com.prajwalch.torrentsearch.ui.components.SearchHistoryListItem
 import com.prajwalch.torrentsearch.ui.components.SortMenu
 import com.prajwalch.torrentsearch.ui.components.TorrentList
-import com.prajwalch.torrentsearch.ui.viewmodel.SearchHistoryId
-import com.prajwalch.torrentsearch.ui.viewmodel.SearchHistoryUiState
-import com.prajwalch.torrentsearch.ui.viewmodel.SearchViewModel
 
 import kotlinx.coroutines.launch
 

@@ -22,7 +22,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 
 import com.prajwalch.torrentsearch.R
-import com.prajwalch.torrentsearch.ui.viewmodel.SearchHistoryUiState
+import com.prajwalch.torrentsearch.ui.search.SearchHistoryUiState
 
 @Composable
 fun SearchHistoryList(

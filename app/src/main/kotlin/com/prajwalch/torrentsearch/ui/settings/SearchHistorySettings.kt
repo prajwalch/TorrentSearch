@@ -1,4 +1,4 @@
-package com.prajwalch.torrentsearch.ui.screens.settings
+package com.prajwalch.torrentsearch.ui.settings
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.material3.Icon
@@ -14,7 +14,6 @@ import com.prajwalch.torrentsearch.R
 import com.prajwalch.torrentsearch.ui.activityScopedViewModel
 import com.prajwalch.torrentsearch.ui.components.SettingsItem
 import com.prajwalch.torrentsearch.ui.components.SettingsSectionTitle
-import com.prajwalch.torrentsearch.ui.viewmodel.SettingsViewModel
 
 @Composable
 fun SearchHistorySettings(onNavigateToSearchHistory: () -> Unit, modifier: Modifier = Modifier) {
