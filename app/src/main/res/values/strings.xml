@@ -58,6 +58,7 @@
     <!-- Bookmarks Screen -->
     <string name="bookmarks_screen_title">Bookmarks</string>
     <string name="button_delete_all_bookmarks">Delete all bookmarks</string>
+    <string name="msg_no_bookmarks">No bookmarks</string>
     <!-- Bookmarks Screen -->
 
     <!-- Settings Screen -->
@@ -125,6 +126,8 @@
     <!-- Default sort options screen -->
     <string name="settings_section_sort_criteria">Sort criteria</string>
     <string name="settings_section_sort_order">Sort order</string>
+    <!-- Search history screen -->
+    <string name="msg_no_search_history">No search history</string>
     <!-- Settings dialog -->
     <string name="settings_dialog_button_cancel">Cancel</string>
     <!-- Settings Screen -->

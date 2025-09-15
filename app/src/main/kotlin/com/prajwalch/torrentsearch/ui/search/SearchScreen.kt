@@ -326,10 +326,7 @@ private fun SearchScreenContent(
                 onRetry = onRetry,
             )
 
-            resultsNotFound -> {
-                Spacer(modifier = Modifier.height(MaterialTheme.spaces.large))
-                ResultsNotFound(modifier = Modifier.fillMaxWidth())
-            }
+            resultsNotFound -> ResultsNotFound(modifier = Modifier.fillMaxSize())
 
             results.isNotEmpty() -> TorrentList(
                 torrents = results,
@@ -351,7 +348,7 @@ private fun SearchScreenContent(
 
             else -> EmptyPlaceholder(
                 modifier = Modifier.fillMaxSize(),
-                headlineId = R.string.msg_nothing_here_yet,
+                headlineTextId = R.string.msg_nothing_here_yet,
                 supportingTextId = R.string.msg_start_searching,
             )
         }

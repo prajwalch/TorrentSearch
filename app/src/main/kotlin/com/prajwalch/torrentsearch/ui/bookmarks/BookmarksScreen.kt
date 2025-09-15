@@ -82,7 +82,7 @@ fun BookmarksScreen(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(innerPadding),
-                headlineId = R.string.msg_nothing_here_yet,
+                headlineTextId = R.string.msg_no_bookmarks,
             )
         } else {
             TorrentList(

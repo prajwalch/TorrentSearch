@@ -44,7 +44,7 @@ fun SearchHistoryScreen(onNavigateBack: () -> Unit, modifier: Modifier = Modifie
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(innerPadding),
-                headlineId = R.string.msg_nothing_here_yet,
+                headlineTextId = R.string.msg_no_search_history,
             )
         } else {
             SearchHistoryList(
