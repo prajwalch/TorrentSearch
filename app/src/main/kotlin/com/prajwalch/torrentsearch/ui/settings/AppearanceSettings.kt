@@ -1,12 +1,15 @@
 package com.prajwalch.torrentsearch.ui.settings
 
 import android.os.Build
+
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.RadioButton
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -77,10 +80,12 @@ fun AppearanceSettings(modifier: Modifier = Modifier) {
                         text = { Text(text = it.toString()) },
                         onClick = { viewModel.changeDarkTheme(it) },
                         leadingIcon = {
-                            RadioButton(
-                                selected = it == settings.darkTheme,
-                                onClick = { viewModel.changeDarkTheme(it) },
-                            )
+                            if (it == settings.darkTheme) {
+                                Icon(
+                                    imageVector = Icons.Default.Check,
+                                    contentDescription = null,
+                                )
+                            }
                         }
                     )
                 }
