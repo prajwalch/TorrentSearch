@@ -1,15 +1,20 @@
 package com.prajwalch.torrentsearch.ui.components
 
 import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsFocusedAsState
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SearchBar
 import androidx.compose.material3.SearchBarDefaults
@@ -51,9 +56,9 @@ fun SearchBar(
         if (expanded) focusedContainerColor else unfocusedContainerColor
     )
 
-    Box(modifier = modifier.semantics { isTraversalGroup = true }) {
+    Box(modifier = Modifier.semantics { isTraversalGroup = true }) {
         SearchBar(
-            modifier = Modifier
+            modifier = modifier
                 .align(Alignment.TopCenter)
                 .semantics { traversalIndex = 0f },
             inputField = {
@@ -119,7 +124,20 @@ private fun SearchBarInputField(
                 onBack = { onExpandChange(false) },
             )
         },
-        trailingIcon = trailingIcon,
+        trailingIcon = trailingIcon ?: {
+            AnimatedVisibility(
+                visible = query.isNotBlank(),
+                enter = fadeIn(),
+                exit = fadeOut(),
+            ) {
+                IconButton(onClick = { onQueryChange("") }) {
+                    Icon(
+                        imageVector = Icons.Default.Clear,
+                        contentDescription = stringResource(R.string.desc_clear_search_query),
+                    )
+                }
+            }
+        },
         interactionSource = interactionSource,
         colors = colors,
     )

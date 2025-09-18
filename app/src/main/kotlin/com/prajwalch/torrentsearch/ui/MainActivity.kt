@@ -11,7 +11,6 @@ import androidx.activity.ComponentActivity
 import androidx.activity.addCallback
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.activity.viewModels
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.runtime.getValue
 import androidx.core.net.toUri
@@ -21,7 +20,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 
 import com.prajwalch.torrentsearch.data.repository.DarkTheme
 import com.prajwalch.torrentsearch.models.MagnetUri
-import com.prajwalch.torrentsearch.ui.search.SearchViewModel
 import com.prajwalch.torrentsearch.ui.settings.SettingsViewModel
 import com.prajwalch.torrentsearch.ui.theme.TorrentSearchTheme
 
@@ -29,8 +27,6 @@ import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
-    private val searchViewModel: SearchViewModel by viewModels()
-
     override fun onCreate(savedInstanceState: Bundle?) {
         installSplashScreen()
         super.onCreate(savedInstanceState)
@@ -184,8 +180,9 @@ class MainActivity : ComponentActivity() {
         val text = urlPatternMatcher.replaceAll("").trim().trim('"', '\n')
         Log.d(TAG, "Performing search; query = $text")
 
-        searchViewModel.changeQuery(query = text)
-        searchViewModel.performSearch()
+        // FIXME: Bring it back
+        // searchViewModel.changeQuery(query = text)
+        // searchViewModel.performSearch()
     }
 
     private companion object {

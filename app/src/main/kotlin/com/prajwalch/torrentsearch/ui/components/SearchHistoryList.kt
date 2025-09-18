@@ -22,17 +22,17 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 
 import com.prajwalch.torrentsearch.R
-import com.prajwalch.torrentsearch.ui.search.SearchHistoryUiState
 
 @Composable
-fun SearchHistoryList(
-    histories: List<SearchHistoryUiState>,
-    historyListItem: @Composable LazyItemScope.(SearchHistoryUiState) -> Unit,
+fun <T> SearchHistoryList(
+    histories: List<T>,
+    historyListItem: @Composable LazyItemScope.(T) -> Unit,
     modifier: Modifier = Modifier,
+    key: ((T) -> Any)? = null,
     contentPadding: PaddingValues = PaddingValues(0.dp),
 ) {
     LazyColumn(modifier = modifier, contentPadding = contentPadding) {
-        items(items = histories, key = { it.id }) {
+        items(items = histories, key = key) {
             historyListItem(it)
         }
     }

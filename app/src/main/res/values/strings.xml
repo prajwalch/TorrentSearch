@@ -26,6 +26,7 @@
     <string name="button_go_to_settings_screen">Go to settings screen</string>
     <string name="button_delete_search_history">Delete search history</string>
     <string name="button_select_search_history">Select search history</string>
+    <string name="button_search">Search</string>
     <!-- No internet connection error -->
     <string name="msg_no_internet_connection">No internet connection</string>
     <string name="button_try_again">Try again</string>

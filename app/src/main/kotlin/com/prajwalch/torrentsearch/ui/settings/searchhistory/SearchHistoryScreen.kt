@@ -57,6 +57,7 @@ fun SearchHistoryScreen(onNavigateBack: () -> Unit, modifier: Modifier = Modifie
                         onDeleteClick = { viewModel.deleteSearchHistory(id = it.id) },
                     )
                 },
+                key = { it.id },
                 contentPadding = innerPadding,
             )
         }

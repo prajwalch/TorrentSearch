@@ -1,8 +1,15 @@
 package com.prajwalch.torrentsearch.ui
 
+import com.prajwalch.torrentsearch.models.Category
+
 object Screens {
     const val SEARCH = "search"
+    const val SEARCH_RESULTS = "search/{query}/{category}"
     const val BOOKMARKS = "bookmarks"
+
+    fun createSearchResultsRoute(query: String, category: Category): String {
+        return SEARCH_RESULTS.replace("{query}", query).replace("{category}", category.name)
+    }
 
     object Settings {
         const val ROOT = "settings"
