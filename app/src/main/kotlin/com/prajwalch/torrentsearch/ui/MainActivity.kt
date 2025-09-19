@@ -19,6 +19,7 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 
 import com.prajwalch.torrentsearch.data.repository.DarkTheme
+import com.prajwalch.torrentsearch.models.Category
 import com.prajwalch.torrentsearch.models.MagnetUri
 import com.prajwalch.torrentsearch.ui.settings.SettingsViewModel
 import com.prajwalch.torrentsearch.ui.theme.TorrentSearchTheme
@@ -27,12 +28,16 @@ import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
+    private var startDestination = Screens.SEARCH
+
     override fun onCreate(savedInstanceState: Bundle?) {
+        Log.i(TAG, "onCreate() called")
+
         installSplashScreen()
         super.onCreate(savedInstanceState)
-        Log.i(TAG, "onCreate called")
 
         onBackPressedDispatcher.addCallback(this) { moveTaskToBack(true) }
+        handleIntent()
 
         enableEdgeToEdge()
         setContent {
@@ -55,70 +60,10 @@ class MainActivity : ComponentActivity() {
                     onShareMagnetLink = ::shareMagnetLink,
                     onOpenDescriptionPage = ::openDescriptionPage,
                     onShareDescriptionPageUrl = ::shareDescriptionPageUrl,
+                    startDestination = startDestination,
                 )
             }
         }
-
-        handleIntent()
-    }
-
-    /**
-     * Starts the available torrent client for downloading the given torrent.
-     *
-     * @return `true` if the client starts successfully, `false` otherwise.
-     */
-    private fun downloadTorrentViaClient(magnetUri: MagnetUri): Boolean {
-        val torrentClientOpenIntent = Intent(Intent.ACTION_VIEW, magnetUri.toUri())
-
-        return try {
-            startActivity(torrentClientOpenIntent)
-            true
-        } catch (_: ActivityNotFoundException) {
-            Log.e(TAG, "Torrent client launch failed. (Activity not found)")
-            false
-        }
-    }
-
-    /** Starts the application chooser to share magnet uri with. */
-    private fun shareMagnetLink(magnetUri: MagnetUri) {
-        Log.d(TAG, "Sharing magnet URI: $magnetUri")
-        try {
-            startTextShareIntent(magnetUri)
-        } catch (_: ActivityNotFoundException) {
-            Log.e(TAG, "Magnet uri share intent launch failed. (Activity not found)")
-        }
-    }
-
-    /** Opens a description page in a default browser. */
-    private fun openDescriptionPage(url: String) {
-        val openPageIntent = Intent(Intent.ACTION_VIEW, url.toUri())
-
-        try {
-            startActivity(openPageIntent)
-        } catch (_: ActivityNotFoundException) {
-            Log.e(TAG, "Failed to open description page. (Activity not found)")
-        }
-    }
-
-    /** Starts the application chooser to share url with. */
-    private fun shareDescriptionPageUrl(url: String) {
-        try {
-            startTextShareIntent(url)
-        } catch (_: ActivityNotFoundException) {
-            Log.e(TAG, "Description page URL share intent launch failed. (Activity not found)")
-        }
-    }
-
-    /** Starts the application chooser to share the text with. */
-    private fun startTextShareIntent(text: String) {
-        val sendIntent = Intent().apply {
-            action = Intent.ACTION_SEND
-            type = "text/plain"
-
-            putExtra(Intent.EXTRA_TEXT, text)
-        }
-        val shareIntent = Intent.createChooser(sendIntent, null)
-        startActivity(shareIntent)
     }
 
     /** Handles the intent that started this activity. */
@@ -180,9 +125,70 @@ class MainActivity : ComponentActivity() {
         val text = urlPatternMatcher.replaceAll("").trim().trim('"', '\n')
         Log.d(TAG, "Performing search; query = $text")
 
-        // FIXME: Bring it back
-        // searchViewModel.changeQuery(query = text)
-        // searchViewModel.performSearch()
+        startDestination = Screens.createSearchResultsRoute(
+            query = text,
+            // FIXME: Default category is not respected.
+            category = Category.All,
+        )
+    }
+
+    /**
+     * Starts the available torrent client for downloading the given torrent.
+     *
+     * @return `true` if the client starts successfully, `false` otherwise.
+     */
+    private fun downloadTorrentViaClient(magnetUri: MagnetUri): Boolean {
+        val torrentClientOpenIntent = Intent(Intent.ACTION_VIEW, magnetUri.toUri())
+
+        return try {
+            startActivity(torrentClientOpenIntent)
+            true
+        } catch (_: ActivityNotFoundException) {
+            Log.e(TAG, "Torrent client launch failed. (Activity not found)")
+            false
+        }
+    }
+
+    /** Starts the application chooser to share magnet uri with. */
+    private fun shareMagnetLink(magnetUri: MagnetUri) {
+        Log.d(TAG, "Sharing magnet URI: $magnetUri")
+        try {
+            startTextShareIntent(magnetUri)
+        } catch (_: ActivityNotFoundException) {
+            Log.e(TAG, "Magnet uri share intent launch failed. (Activity not found)")
+        }
+    }
+
+    /** Opens a description page in a default browser. */
+    private fun openDescriptionPage(url: String) {
+        val openPageIntent = Intent(Intent.ACTION_VIEW, url.toUri())
+
+        try {
+            startActivity(openPageIntent)
+        } catch (_: ActivityNotFoundException) {
+            Log.e(TAG, "Failed to open description page. (Activity not found)")
+        }
+    }
+
+    /** Starts the application chooser to share url with. */
+    private fun shareDescriptionPageUrl(url: String) {
+        try {
+            startTextShareIntent(url)
+        } catch (_: ActivityNotFoundException) {
+            Log.e(TAG, "Description page URL share intent launch failed. (Activity not found)")
+        }
+    }
+
+    /** Starts the application chooser to share the text with. */
+    private fun startTextShareIntent(text: String) {
+        val sendIntent = Intent().apply {
+            action = Intent.ACTION_SEND
+            type = "text/plain"
+
+            putExtra(Intent.EXTRA_TEXT, text)
+        }
+        val shareIntent = Intent.createChooser(sendIntent, null)
+        startActivity(shareIntent)
     }
 
     private companion object {

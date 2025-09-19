@@ -39,14 +39,13 @@ fun TorrentSearchApp(
     onShareMagnetLink: (MagnetUri) -> Unit,
     onOpenDescriptionPage: (String) -> Unit,
     onShareDescriptionPageUrl: (String) -> Unit,
+    startDestination: String = Screens.SEARCH,
 ) {
     val bookmarksViewModel = hiltViewModel<BookmarksViewModel>()
 
     val navController = rememberNavController()
     val coroutineScope = rememberCoroutineScope()
     val snackbarHostState = remember { SnackbarHostState() }
-
-    val clipboard = LocalClipboard.current
 
     var isTorrentClientMissing by remember { mutableStateOf(false) }
     var selectedTorrent by remember { mutableStateOf<Torrent?>(null) }
@@ -58,9 +57,10 @@ fun TorrentSearchApp(
     }
 
     selectedTorrent?.let { torrent ->
+        val clipboard = LocalClipboard.current
+
         val magnetLinkCopiedHint = stringResource(R.string.hint_magnet_link_copied)
         val descriptionPageUrlCopiedHint = stringResource(R.string.hint_description_page_url_copied)
-        val hasDescriptionPage = torrent.descriptionPageUrl.isNotEmpty()
 
         TorrentActionsBottomSheet(
             onDismissRequest = { selectedTorrent = null },
@@ -87,11 +87,11 @@ fun TorrentSearchApp(
             onShareDescriptionPageUrl = { onShareDescriptionPageUrl(torrent.descriptionPageUrl) },
             isNSFW = torrent.isNSFW(),
             isBookmarked = torrent.bookmarked,
-            hasDescriptionPage = hasDescriptionPage,
+            hasDescriptionPage = torrent.descriptionPageUrl.isNotEmpty(),
         )
     }
 
-    NavHost(navController = navController, startDestination = Screens.SEARCH) {
+    NavHost(navController = navController, startDestination = startDestination) {
         composable(
             route = Screens.SEARCH,
             enterTransition = { fadeIn() },
