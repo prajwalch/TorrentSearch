@@ -5,7 +5,6 @@ import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -27,7 +26,6 @@ import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.window.DialogProperties
 
 import com.prajwalch.torrentsearch.R
 import com.prajwalch.torrentsearch.ui.theme.spaces
@@ -106,13 +104,9 @@ private data class Source(
 fun TorrentClientNotFoundDialog(
     onConfirmation: () -> Unit,
     modifier: Modifier = Modifier,
-    properties: DialogProperties = DialogProperties(
-        usePlatformDefaultWidth = false,
-        decorFitsSystemWindows = false,
-    ),
 ) {
     AlertDialog(
-        modifier = modifier.fillMaxWidth(0.9f),
+        modifier = modifier,
         onDismissRequest = onConfirmation,
         confirmButton = {
             TextButton(onClick = onConfirmation) {
@@ -122,7 +116,6 @@ fun TorrentClientNotFoundDialog(
         icon = { DialogLeadingIcon() },
         title = { DialogTitle() },
         text = { DialogContent() },
-        properties = properties,
     )
 }
 
@@ -161,7 +154,7 @@ private fun TorrentClientList(clients: List<TorrentClient>, modifier: Modifier =
     LazyColumn(
         modifier = modifier,
         verticalArrangement = Arrangement.spacedBy(
-            space = MaterialTheme.spaces.small,
+            space = MaterialTheme.spaces.extraSmall,
         ),
     ) {
         items(items = clients) {
@@ -197,8 +190,7 @@ private fun TorrentClientListItem(client: TorrentClient, modifier: Modifier = Mo
     ListItem(
         modifier = Modifier
             .clip(shape = MaterialTheme.shapes.medium)
-            // TODO: For smaller screen devices we need larger height.
-            .height(56.dp)
+            .height(60.dp)
             .then(modifier),
         headlineContent = {
             Text(
@@ -209,7 +201,8 @@ private fun TorrentClientListItem(client: TorrentClient, modifier: Modifier = Mo
         supportingContent = {
             if (client.isRecommended) {
                 Text(
-                    text = stringResource(R.string.recommended_client)
+                    text = stringResource(R.string.recommended_client),
+                    style = MaterialTheme.typography.bodySmall,
                 )
             }
         },
@@ -241,7 +234,6 @@ private fun TorrentClientSourcesRow(sources: List<Source>, modifier: Modifier = 
 private fun createFDroidUrl(packageId: String): String {
     return "https://f-droid.org/en/packages/$packageId"
 }
-
 
 private fun createGithubReleaseUrl(username: String, repo: String): String {
     return "https://github.com/$username/$repo/releases"
