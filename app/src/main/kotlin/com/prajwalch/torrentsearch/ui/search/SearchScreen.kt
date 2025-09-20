@@ -1,8 +1,13 @@
 package com.prajwalch.torrentsearch.ui.search
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.consumeWindowInsets
@@ -19,14 +24,18 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.zIndex
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 
 import com.prajwalch.torrentsearch.R
@@ -48,45 +57,45 @@ fun SearchScreen(
     val viewModel = activityScopedViewModel<SearchViewModel>()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
+    var showExpandedSearchBar by remember { mutableStateOf(false) }
+
     Scaffold(
         modifier = modifier,
         topBar = {
-            SearchScreenTopBar(
-                onNavigateToBookmarks = onNavigateToBookmarks,
-                onNavigateToSettings = onNavigateToSettings,
-            )
+            AnimatedVisibility(
+                visible = !showExpandedSearchBar,
+                enter = fadeIn(),
+                exit = fadeOut(),
+                label = "Search screen top bar visibility animation",
+            ) {
+                SearchScreenTopBar(
+                    onNavigateToBookmarks = onNavigateToBookmarks,
+                    onNavigateToSettings = onNavigateToSettings,
+                )
+            }
         },
     ) { innerPadding ->
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .consumeWindowInsets(innerPadding)
-                .padding(innerPadding),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(
-                space = MaterialTheme.spaces.large,
-            ),
-        ) {
-            Text(
-                modifier = Modifier.padding(vertical = MaterialTheme.spaces.extraLarge),
-                text = stringResource(R.string.app_name),
-                style = MaterialTheme.typography.headlineMedium,
+        Box {
+            SearchScreenContent(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .consumeWindowInsets(innerPadding)
+                    .padding(innerPadding),
+                query = uiState.query,
+                onSearch = { onSearch(uiState.query, uiState.selectedCategory) },
+                categories = uiState.categories,
+                selectedCategory = uiState.selectedCategory,
+                onCategorySelect = viewModel::changeCategory,
+                onShowExpandedSearchBar = { showExpandedSearchBar = true },
             )
 
-            var searchBarExpanded by remember { mutableStateOf(false) }
-            SearchBar(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = MaterialTheme.spaces.large),
+            ExpandedSearchBar(
+                modifier = Modifier.zIndex(1f),
                 query = uiState.query,
                 onQueryChange = viewModel::changeQuery,
-                onSearch = {
-                    if (uiState.query.isNotBlank()) {
-                        onSearch(uiState.query, uiState.selectedCategory)
-                    }
-                },
-                expanded = searchBarExpanded,
-                onExpandChange = { searchBarExpanded = it },
+                onSearch = { onSearch(uiState.query, uiState.selectedCategory) },
+                visible = showExpandedSearchBar,
+                onVisibleChange = { showExpandedSearchBar = it },
             ) {
                 SearchHistoryList(
                     histories = uiState.histories,
@@ -96,7 +105,7 @@ fun SearchScreen(
                                 .animateItem()
                                 .clickable {
                                     viewModel.changeQuery(it.query)
-                                    searchBarExpanded = false
+                                    showExpandedSearchBar = false
                                     onSearch(uiState.query, uiState.selectedCategory)
                                 },
                             query = it.query,
@@ -106,21 +115,6 @@ fun SearchScreen(
                     },
                     key = { it.id },
                 )
-            }
-
-            CategoryChipsRow(
-                categories = uiState.categories,
-                selectedCategory = uiState.selectedCategory,
-                onCategorySelect = viewModel::changeCategory,
-                contentPadding = PaddingValues(horizontal = MaterialTheme.spaces.large),
-            )
-
-            Spacer(modifier = Modifier.height(MaterialTheme.spaces.small))
-            Button(
-                onClick = { onSearch(uiState.query, uiState.selectedCategory) },
-                enabled = uiState.query.isNotBlank(),
-            ) {
-                Text(text = stringResource(R.string.button_search))
             }
         }
     }
@@ -151,4 +145,93 @@ private fun SearchScreenTopBar(
             }
         }
     )
+}
+
+@Composable
+private fun SearchScreenContent(
+    query: String,
+    onSearch: () -> Unit,
+    categories: List<Category>,
+    selectedCategory: Category,
+    onCategorySelect: (Category) -> Unit,
+    onShowExpandedSearchBar: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Column(
+        modifier = modifier,
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(
+            space = MaterialTheme.spaces.large,
+        ),
+    ) {
+        Text(
+            modifier = Modifier.padding(vertical = MaterialTheme.spaces.extraLarge),
+            text = stringResource(R.string.app_name),
+            style = MaterialTheme.typography.headlineMedium,
+        )
+
+        // TODO: Don't use this search bar.
+        SearchBar(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = MaterialTheme.spaces.large),
+            query = query,
+            onQueryChange = {},
+            onSearch = {},
+            expanded = false,
+            onExpandChange = { onShowExpandedSearchBar() },
+            content = {},
+        )
+
+        CategoryChipsRow(
+            categories = categories,
+            selectedCategory = selectedCategory,
+            onCategorySelect = onCategorySelect,
+            contentPadding = PaddingValues(
+                horizontal = MaterialTheme.spaces.large
+            ),
+        )
+
+        Spacer(modifier = Modifier.height(MaterialTheme.spaces.small))
+        Button(
+            onClick = onSearch,
+            enabled = query.isNotBlank(),
+        ) {
+            Text(text = stringResource(R.string.button_search))
+        }
+    }
+}
+
+@Composable
+private fun ExpandedSearchBar(
+    query: String,
+    onQueryChange: (String) -> Unit,
+    onSearch: () -> Unit,
+    visible: Boolean,
+    onVisibleChange: (Boolean) -> Unit,
+    modifier: Modifier = Modifier,
+    content: @Composable (ColumnScope.() -> Unit),
+) {
+    AnimatedVisibility(
+        visible = visible,
+        enter = fadeIn(),
+        exit = fadeOut(),
+        label = "Expanded screen search bar visibility animation"
+    ) {
+        val focusRequester = remember { FocusRequester() }
+
+        LaunchedEffect(Unit) {
+            focusRequester.requestFocus()
+        }
+
+        SearchBar(
+            modifier = modifier.focusRequester(focusRequester),
+            query = query,
+            onQueryChange = onQueryChange,
+            onSearch = { if (query.isNotBlank()) onSearch() },
+            expanded = true,
+            onExpandChange = onVisibleChange,
+            content = content,
+        )
+    }
 }
