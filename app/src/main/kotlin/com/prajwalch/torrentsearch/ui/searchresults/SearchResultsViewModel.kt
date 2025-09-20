@@ -32,6 +32,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.launchIn
@@ -55,6 +56,15 @@ data class SearchResultsUiState(
     val isInternetError: Boolean = false,
 )
 
+/** Relevant settings for the search results screen. */
+private data class Settings(
+    val enableNSFWMode: Boolean,
+    val defaultSortOptions: DefaultSortOptions,
+    val hideResultsWithZeroSeeders: Boolean,
+    val maxNumResults: MaxNumResults,
+    val saveSearchHistory: Boolean,
+)
+
 @HiltViewModel
 class SearchResultsViewModel @Inject constructor(
     private val torrentsRepository: TorrentsRepository,
@@ -76,7 +86,7 @@ class SearchResultsViewModel @Inject constructor(
      * Before initiating a new search, on-going search must be canceled
      * even if it's not completed.
      */
-    private var activeSearchJob: Job? = null
+    private var searchJob: Job? = null
 
     /** Unfiltered search results. */
     private var searchResults = emptyList<Torrent>()
@@ -96,39 +106,12 @@ class SearchResultsViewModel @Inject constructor(
         settingsRepository = settingsRepository,
     )
 
-    private val settingsLoader = SettingsLoader(
-        coroutineScope = viewModelScope,
-        settingsRepository = settingsRepository,
-    )
-
     init {
         Log.i(TAG, "init is invoked")
         Log.d(TAG, "Query = $query, Category = $category")
 
         performSearch()
         observeNSFWMode()
-    }
-
-    private fun observeNSFWMode() = viewModelScope.launch {
-        settingsLoader.observeNSFWMode { nsfwModeEnabled ->
-            if (searchResults.isEmpty()) {
-                return@observeNSFWMode
-            }
-
-            val nsfwFilteredResults = searchResults
-                .filterNSFW(isNSFWModeEnabled = nsfwModeEnabled)
-                .customSort(
-                    criteria = _uiState.value.currentSortCriteria,
-                    order = _uiState.value.currentSortOrder,
-                )
-
-            _uiState.update {
-                it.copy(
-                    results = nsfwFilteredResults,
-                    resultsNotFound = nsfwFilteredResults.isEmpty(),
-                )
-            }
-        }
     }
 
     /** Sorts and updates the UI state according to given criteria and order. */
@@ -157,12 +140,12 @@ class SearchResultsViewModel @Inject constructor(
         }
 
         Log.i(TAG, "Cancelling on-going search")
-        activeSearchJob?.cancel()
+        searchJob?.cancel()
         searchResults = emptyList()
 
         Log.i(TAG, "Creating new job")
-        activeSearchJob = viewModelScope.launch {
-            val settings = settingsLoader.getLatestSettings()
+        searchJob = viewModelScope.launch {
+            val settings = getLatestSettings()
             Log.d(TAG, "Settings loaded. $settings")
 
             val defaultSortOptions = settings.defaultSortOptions
@@ -239,8 +222,26 @@ class SearchResultsViewModel @Inject constructor(
         }
     }
 
+    /** Fetches and returns the latest settings. */
+    private suspend fun getLatestSettings(): Settings {
+        val defaultSortOptionsFlow = combine(
+            settingsRepository.defaultSortCriteria,
+            settingsRepository.defaultSortOrder,
+            ::DefaultSortOptions,
+        )
+
+        return combine(
+            settingsRepository.enableNSFWMode,
+            defaultSortOptionsFlow,
+            settingsRepository.hideResultsWithZeroSeeders,
+            settingsRepository.maxNumResults,
+            settingsRepository.saveSearchHistory,
+            ::Settings,
+        ).first()
+    }
+
     /** Returns `true` if the search should be continue. */
-    private fun shouldContinueSearch(settings: SettingsLoader.Settings): Boolean {
+    private fun shouldContinueSearch(settings: Settings): Boolean {
         Log.i(TAG, "shouldContinueSearch() called")
 
         val maxNumResults = settings.maxNumResults
@@ -248,7 +249,7 @@ class SearchResultsViewModel @Inject constructor(
     }
 
     /** Runs on every search result emitted by repository. */
-    private fun onEachSearchResults(results: List<Torrent>, settings: SettingsLoader.Settings) {
+    private fun onEachSearchResults(results: List<Torrent>, settings: Settings) {
         Log.i(TAG, "onEachSearchResults() called")
 
         searchResults += results
@@ -291,7 +292,7 @@ class SearchResultsViewModel @Inject constructor(
     /** Filters the given search results based on the given settings. */
     private fun filterSearchResults(
         results: List<Torrent>,
-        settings: SettingsLoader.Settings,
+        settings: Settings,
     ): List<Torrent> {
         val filteredResults = results
             .filterNSFW(isNSFWModeEnabled = settings.enableNSFWMode)
@@ -326,49 +327,31 @@ class SearchResultsViewModel @Inject constructor(
         }
     }
 
+    private fun observeNSFWMode() = viewModelScope.launch {
+        settingsRepository.enableNSFWMode.distinctUntilChanged().collect { nsfwModeEnabled ->
+            if (searchResults.isEmpty()) {
+                return@collect
+            }
+
+            val nsfwFilteredResults = searchResults
+                .filterNSFW(isNSFWModeEnabled = nsfwModeEnabled)
+                .customSort(
+                    criteria = _uiState.value.currentSortCriteria,
+                    order = _uiState.value.currentSortOrder,
+                )
+
+            _uiState.update {
+                it.copy(
+                    results = nsfwFilteredResults,
+                    resultsNotFound = nsfwFilteredResults.isEmpty(),
+                )
+            }
+        }
+    }
+
     private companion object {
         private const val TAG = "SearchResultsViewModel"
     }
-}
-
-private class SettingsLoader(
-    coroutineScope: CoroutineScope,
-    settingsRepository: SettingsRepository,
-) {
-    val defaultSortOptionsFlow = combine(
-        settingsRepository.defaultSortCriteria,
-        settingsRepository.defaultSortOrder,
-        ::DefaultSortOptions,
-    )
-
-    val settings = combine(
-        settingsRepository.enableNSFWMode,
-        defaultSortOptionsFlow,
-        settingsRepository.hideResultsWithZeroSeeders,
-        settingsRepository.maxNumResults,
-        settingsRepository.saveSearchHistory,
-        ::Settings,
-    ).stateIn(
-        scope = coroutineScope,
-        started = SharingStarted.Eagerly,
-        initialValue = null,
-    )
-
-    suspend fun getLatestSettings(): Settings = settings.mapNotNull { it }.first()
-
-    suspend fun observeNSFWMode(action: suspend (Boolean) -> Unit) {
-        settings.mapNotNull { it?.enableNSFWMode }.collect { action(it) }
-    }
-
-    /** Relevant settings for the Search screen. */
-    data class Settings(
-        /** General settings. */
-        val enableNSFWMode: Boolean,
-        val defaultSortOptions: DefaultSortOptions,
-        val hideResultsWithZeroSeeders: Boolean,
-        val maxNumResults: MaxNumResults,
-        val saveSearchHistory: Boolean,
-    )
 }
 
 private class SearchProvidersLoader(
