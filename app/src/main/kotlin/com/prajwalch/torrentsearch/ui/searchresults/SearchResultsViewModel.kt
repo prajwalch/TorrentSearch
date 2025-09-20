@@ -18,7 +18,7 @@ import com.prajwalch.torrentsearch.extensions.customSort
 import com.prajwalch.torrentsearch.extensions.filterNSFW
 import com.prajwalch.torrentsearch.models.Category
 import com.prajwalch.torrentsearch.models.Torrent
-import com.prajwalch.torrentsearch.network.ConnectivityObserver
+import com.prajwalch.torrentsearch.network.ConnectivityChecker
 import com.prajwalch.torrentsearch.providers.SearchProvider
 import com.prajwalch.torrentsearch.ui.settings.DefaultSortOptions
 
@@ -28,7 +28,6 @@ import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -38,10 +37,10 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.takeWhile
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 import javax.inject.Inject
 
@@ -70,7 +69,7 @@ class SearchResultsViewModel @Inject constructor(
     private val searchProvidersRepository: SearchProvidersRepository,
     private val settingsRepository: SettingsRepository,
     private val searchHistoryRepository: SearchHistoryRepository,
-    connectivityObserver: ConnectivityObserver,
+    private val connectivityChecker: ConnectivityChecker,
     savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(SearchResultsUiState())
@@ -89,15 +88,6 @@ class SearchResultsViewModel @Inject constructor(
 
     /** Unfiltered search results. */
     private var searchResults = emptyList<Torrent>()
-
-    /** Internet connection status. */
-    private val isInternetAvailable = connectivityObserver
-        .isInternetAvailable
-        .stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.Eagerly,
-            initialValue = false,
-        )
 
     init {
         Log.i(TAG, "init is invoked")
@@ -164,7 +154,10 @@ class SearchResultsViewModel @Inject constructor(
                 )
             }
 
-            if (!isInternetAvailable.first()) {
+            val isInternetAvailable = withContext(Dispatchers.IO) {
+                connectivityChecker.isInternetAvailable()
+            }
+            if (!isInternetAvailable) {
                 Log.w(TAG, "Internet is not available. Returning...")
 
                 _uiState.update {

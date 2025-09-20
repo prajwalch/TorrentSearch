@@ -4,7 +4,7 @@ import android.content.Context
 import android.net.ConnectivityManager
 import androidx.core.content.getSystemService
 
-import com.prajwalch.torrentsearch.network.ConnectivityObserver
+import com.prajwalch.torrentsearch.network.ConnectivityChecker
 
 import dagger.Module
 import dagger.Provides
@@ -16,9 +16,9 @@ import dagger.hilt.components.SingletonComponent
 @InstallIn(SingletonComponent::class)
 object ConnectivityModule {
     @Provides
-    fun provideConnectivityObserver(
+    fun provideConnectivityChecker(
         connectivityManager: ConnectivityManager,
-    ): ConnectivityObserver = ConnectivityObserver(
+    ): ConnectivityChecker = ConnectivityChecker(
         connectivityManager = connectivityManager
     )
 
