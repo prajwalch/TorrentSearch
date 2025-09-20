@@ -15,10 +15,10 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 
 import com.prajwalch.torrentsearch.R
-import com.prajwalch.torrentsearch.ui.activityScopedViewModel
 import com.prajwalch.torrentsearch.ui.components.EmptyPlaceholder
 import com.prajwalch.torrentsearch.ui.components.NavigateBackIconButton
 import com.prajwalch.torrentsearch.ui.components.SearchHistoryList
@@ -26,7 +26,7 @@ import com.prajwalch.torrentsearch.ui.components.SearchHistoryListItem
 
 @Composable
 fun SearchHistoryScreen(onNavigateBack: () -> Unit, modifier: Modifier = Modifier) {
-    val viewModel = activityScopedViewModel<SearchHistoryViewModel>()
+    val viewModel = hiltViewModel<SearchHistoryViewModel>()
     val searchHistoryList by viewModel.uiState.collectAsStateWithLifecycle()
 
     Scaffold(
