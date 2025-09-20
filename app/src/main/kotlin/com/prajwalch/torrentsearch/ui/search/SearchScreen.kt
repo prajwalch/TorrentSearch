@@ -104,9 +104,9 @@ fun SearchScreen(
                             modifier = Modifier
                                 .animateItem()
                                 .clickable {
-                                    viewModel.changeQuery(it.query)
+                                    onSearch(it.query, uiState.selectedCategory)
                                     showExpandedSearchBar = false
-                                    onSearch(uiState.query, uiState.selectedCategory)
+                                    viewModel.changeQuery(it.query)
                                 },
                             query = it.query,
                             onInsertClick = { viewModel.changeQuery(it.query) },
