@@ -6,7 +6,9 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 
+import com.prajwalch.torrentsearch.data.database.entities.SearchHistory
 import com.prajwalch.torrentsearch.data.repository.MaxNumResults
+import com.prajwalch.torrentsearch.data.repository.SearchHistoryRepository
 import com.prajwalch.torrentsearch.data.repository.SearchProvidersRepository
 import com.prajwalch.torrentsearch.data.repository.SettingsRepository
 import com.prajwalch.torrentsearch.data.repository.SortCriteria
@@ -58,6 +60,7 @@ class SearchResultsViewModel @Inject constructor(
     private val torrentsRepository: TorrentsRepository,
     searchProvidersRepository: SearchProvidersRepository,
     private val settingsRepository: SettingsRepository,
+    private val searchHistoryRepository: SearchHistoryRepository,
     connectivityObserver: ConnectivityObserver,
     savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
@@ -175,18 +178,15 @@ class SearchResultsViewModel @Inject constructor(
                 )
             }
 
-//            if (settings.saveSearchHistory) {
-//                // Trim the query to prevent same query (e.g. 'one' and 'one ')
-//                // from end upping into the database.
-//                //
-//                // NOTE: Trimming from `changeQuery()` is not possible because
-//                // doing so won't allow the user to insert a whitespace at all.
-//                val query = _uiState.value.query.trim()
-//
-//                searchHistoryRepository.add(
-//                    searchHistory = SearchHistory(query = query)
-//                )
-//            }
+            if (settings.saveSearchHistory) {
+                // Trim the query to prevent same query (e.g. 'one' and 'one ')
+                // from end upping into the database.
+                val query = query.trim()
+
+                searchHistoryRepository.add(
+                    searchHistory = SearchHistory(query = query)
+                )
+            }
 
             if (!isInternetAvailable.first()) {
                 Log.w(TAG, "Internet is not available. Returning...")
@@ -346,6 +346,7 @@ private class SettingsLoader(
         defaultSortOptionsFlow,
         settingsRepository.hideResultsWithZeroSeeders,
         settingsRepository.maxNumResults,
+        settingsRepository.saveSearchHistory,
         ::Settings,
     ).stateIn(
         scope = coroutineScope,
@@ -366,6 +367,7 @@ private class SettingsLoader(
         val defaultSortOptions: DefaultSortOptions,
         val hideResultsWithZeroSeeders: Boolean,
         val maxNumResults: MaxNumResults,
+        val saveSearchHistory: Boolean,
     )
 }
 
