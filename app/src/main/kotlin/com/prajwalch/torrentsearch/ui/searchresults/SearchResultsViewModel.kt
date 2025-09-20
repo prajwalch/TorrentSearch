@@ -25,7 +25,6 @@ import com.prajwalch.torrentsearch.ui.settings.DefaultSortOptions
 import dagger.hilt.android.lifecycle.HiltViewModel
 
 import kotlinx.coroutines.CancellationException
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -68,7 +67,7 @@ private data class Settings(
 @HiltViewModel
 class SearchResultsViewModel @Inject constructor(
     private val torrentsRepository: TorrentsRepository,
-    searchProvidersRepository: SearchProvidersRepository,
+    private val searchProvidersRepository: SearchProvidersRepository,
     private val settingsRepository: SettingsRepository,
     private val searchHistoryRepository: SearchHistoryRepository,
     connectivityObserver: ConnectivityObserver,
@@ -99,12 +98,6 @@ class SearchResultsViewModel @Inject constructor(
             started = SharingStarted.Eagerly,
             initialValue = false,
         )
-
-    private val searchProvidersLoader = SearchProvidersLoader(
-        coroutineScope = viewModelScope,
-        searchProvidersRepository = searchProvidersRepository,
-        settingsRepository = settingsRepository,
-    )
 
     init {
         Log.i(TAG, "init is invoked")
@@ -186,7 +179,7 @@ class SearchResultsViewModel @Inject constructor(
                 return@launch
             }
 
-            val enabledSearchProviders = searchProvidersLoader.getEnabledSearchProviders()
+            val enabledSearchProviders = getEnabledSearchProviders()
 
             if (enabledSearchProviders.isEmpty()) {
                 Log.i(TAG, "All search providers are disabled. Returning...")
@@ -238,6 +231,16 @@ class SearchResultsViewModel @Inject constructor(
             settingsRepository.saveSearchHistory,
             ::Settings,
         ).first()
+    }
+
+    /** Fetches and returns enabled search providers. */
+    private suspend fun getEnabledSearchProviders(): List<SearchProvider> {
+        return combine(
+            searchProvidersRepository.getInstances(),
+            settingsRepository.enabledSearchProvidersId,
+        ) { searchProviders, enabledSearchProvidersId ->
+            searchProviders.filter { it.info.id in enabledSearchProvidersId }
+        }.first()
     }
 
     /** Returns `true` if the search should be continue. */
@@ -351,29 +354,5 @@ class SearchResultsViewModel @Inject constructor(
 
     private companion object {
         private const val TAG = "SearchResultsViewModel"
-    }
-}
-
-private class SearchProvidersLoader(
-    coroutineScope: CoroutineScope,
-    searchProvidersRepository: SearchProvidersRepository,
-    settingsRepository: SettingsRepository,
-) {
-    private val enabledSearchProvidersFlow = combine(
-        searchProvidersRepository.getInstances(),
-        settingsRepository.enabledSearchProvidersId,
-    ) { searchProviders, enabledSearchProvidersId ->
-        searchProviders.filter { it.info.id in enabledSearchProvidersId }
-    }
-
-    private val enabledSearchProviders = enabledSearchProvidersFlow
-        .stateIn(
-            scope = coroutineScope,
-            started = SharingStarted.Eagerly,
-            initialValue = null,
-        )
-
-    suspend fun getEnabledSearchProviders(): List<SearchProvider> {
-        return enabledSearchProviders.first { it != null }.orEmpty()
     }
 }
