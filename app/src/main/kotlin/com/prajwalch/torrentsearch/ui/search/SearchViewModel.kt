@@ -22,13 +22,13 @@ import javax.inject.Inject
 
 data class SearchUiState(
     val query: String = "",
-    val histories: List<SearchHistoryItemState> = emptyList(),
+    val histories: List<SearchHistoryItemUiState> = emptyList(),
     val categories: List<Category> = Category.entries,
     val selectedCategory: Category = Category.All,
 )
 
 /** Convenient wrapper around the search history entity. */
-data class SearchHistoryItemState(val id: SearchHistoryId, val query: String)
+data class SearchHistoryItemUiState(val id: SearchHistoryId, val query: String)
 
 @HiltViewModel
 class SearchViewModel @Inject constructor(
@@ -104,7 +104,7 @@ class SearchViewModel @Inject constructor(
             if (showSearchHistory) histories else emptyList()
         }.collect { histories ->
             val histories = histories.map {
-                SearchHistoryItemState(id = it.id, query = it.query)
+                SearchHistoryItemUiState(id = it.id, query = it.query)
             }
             _uiState.update { it.copy(histories = histories) }
         }
