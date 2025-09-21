@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 
 import com.prajwalch.torrentsearch.data.database.entities.SearchHistory
+import com.prajwalch.torrentsearch.data.database.entities.SearchHistoryId
 import com.prajwalch.torrentsearch.data.repository.SearchHistoryRepository
 import com.prajwalch.torrentsearch.data.repository.SettingsRepository
 import com.prajwalch.torrentsearch.models.Category
@@ -19,27 +20,15 @@ import kotlinx.coroutines.launch
 
 import javax.inject.Inject
 
-/** Unique identifier of the search history. */
-typealias SearchHistoryId = Long
-
 data class SearchUiState(
     val query: String = "",
-    val histories: List<SearchHistoryUiState> = emptyList(),
+    val histories: List<SearchHistoryItemState> = emptyList(),
     val categories: List<Category> = Category.entries,
     val selectedCategory: Category = Category.All,
 )
 
 /** Convenient wrapper around the search history entity. */
-data class SearchHistoryUiState(val id: SearchHistoryId, val query: String) {
-    /** Converts UI state into entity. */
-    fun toEntity() = SearchHistory(id = id, query = query)
-
-    companion object {
-        /** Creates a new instance from the search history entity. */
-        fun fromEntity(entity: SearchHistory) =
-            SearchHistoryUiState(id = entity.id, query = entity.query)
-    }
-}
+data class SearchHistoryItemState(val id: SearchHistoryId, val query: String)
 
 @HiltViewModel
 class SearchViewModel @Inject constructor(
@@ -68,12 +57,11 @@ class SearchViewModel @Inject constructor(
     /** Deletes the search history associated with given id. */
     fun deleteSearchHistory(id: SearchHistoryId) {
         viewModelScope.launch {
-            val searchHistory = _uiState.value.histories.find { it.id == id }
+            val searchHistoryItemState = _uiState.value.histories.find { it.id == id }
 
-            searchHistory?.let { searchHistoryUiState ->
-                searchHistoryRepository.remove(
-                    searchHistory = searchHistoryUiState.toEntity()
-                )
+            searchHistoryItemState?.let {
+                val searchHistory = SearchHistory(id = it.id, query = it.query)
+                searchHistoryRepository.remove(searchHistory = searchHistory)
             }
         }
     }
@@ -115,7 +103,9 @@ class SearchViewModel @Inject constructor(
         ) { showSearchHistory, histories ->
             if (showSearchHistory) histories else emptyList()
         }.collect { histories ->
-            val histories = histories.map { SearchHistoryUiState.fromEntity(it) }
+            val histories = histories.map {
+                SearchHistoryItemState(id = it.id, query = it.query)
+            }
             _uiState.update { it.copy(histories = histories) }
         }
     }

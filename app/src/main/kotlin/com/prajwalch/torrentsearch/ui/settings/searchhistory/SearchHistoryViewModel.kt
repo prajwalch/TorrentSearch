@@ -2,10 +2,10 @@ package com.prajwalch.torrentsearch.ui.settings.searchhistory
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.prajwalch.torrentsearch.data.database.entities.SearchHistory
 
+import com.prajwalch.torrentsearch.data.database.entities.SearchHistoryId
 import com.prajwalch.torrentsearch.data.repository.SearchHistoryRepository
-import com.prajwalch.torrentsearch.ui.search.SearchHistoryId
-import com.prajwalch.torrentsearch.ui.search.SearchHistoryUiState
 
 import dagger.hilt.android.lifecycle.HiltViewModel
 
@@ -16,6 +16,8 @@ import kotlinx.coroutines.launch
 
 import javax.inject.Inject
 
+data class SearchHistoryItemState(val id: SearchHistoryId, val query: String)
+
 /** ViewModel which handles the business logic of Search history screen. */
 @HiltViewModel
 class SearchHistoryViewModel @Inject constructor(
@@ -23,7 +25,9 @@ class SearchHistoryViewModel @Inject constructor(
 ) : ViewModel() {
     val uiState = searchHistoryRepository
         .getAll()
-        .map { list -> list.map(SearchHistoryUiState.Companion::fromEntity) }
+        .map { histories ->
+            histories.map { SearchHistoryItemState(id = it.id, query = it.query) }
+        }
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.Companion.WhileSubscribed(5000),
@@ -33,12 +37,11 @@ class SearchHistoryViewModel @Inject constructor(
     /** Deletes the search history associated with given id. */
     fun deleteSearchHistory(id: SearchHistoryId) {
         viewModelScope.launch {
-            val searchHistory = uiState.value.find { it.id == id }
+            val searchHistoryItemState = uiState.value.find { it.id == id }
 
-            searchHistory?.let { searchHistoryUiState ->
-                searchHistoryRepository.remove(
-                    searchHistory = searchHistoryUiState.toEntity()
-                )
+            searchHistoryItemState?.let {
+                val searchHistory = SearchHistory(id = it.id, query = it.query)
+                searchHistoryRepository.remove(searchHistory = searchHistory)
             }
         }
     }
