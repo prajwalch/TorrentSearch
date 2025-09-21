@@ -20,7 +20,6 @@ import com.prajwalch.torrentsearch.models.SortOrder
 import com.prajwalch.torrentsearch.models.Torrent
 import com.prajwalch.torrentsearch.network.ConnectivityChecker
 import com.prajwalch.torrentsearch.providers.SearchProvider
-import com.prajwalch.torrentsearch.ui.settings.DefaultSortOptions
 
 import dagger.hilt.android.lifecycle.HiltViewModel
 
@@ -61,6 +60,11 @@ private data class Settings(
     val hideResultsWithZeroSeeders: Boolean,
     val maxNumResults: MaxNumResults,
     val saveSearchHistory: Boolean,
+)
+
+private data class DefaultSortOptions(
+    val sortCriteria: SortCriteria = SortCriteria.Default,
+    val sortOrder: SortOrder = SortOrder.Default,
 )
 
 @HiltViewModel
