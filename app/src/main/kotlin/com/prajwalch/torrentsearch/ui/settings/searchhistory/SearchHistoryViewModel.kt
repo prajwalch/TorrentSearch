@@ -16,7 +16,7 @@ import kotlinx.coroutines.launch
 
 import javax.inject.Inject
 
-data class SearchHistoryItemState(val id: SearchHistoryId, val query: String)
+data class SearchHistoryItemUiState(val id: SearchHistoryId, val query: String)
 
 /** ViewModel which handles the business logic of Search history screen. */
 @HiltViewModel
@@ -26,7 +26,7 @@ class SearchHistoryViewModel @Inject constructor(
     val uiState = searchHistoryRepository
         .getAll()
         .map { histories ->
-            histories.map { SearchHistoryItemState(id = it.id, query = it.query) }
+            histories.map { SearchHistoryItemUiState(id = it.id, query = it.query) }
         }
         .stateIn(
             scope = viewModelScope,
