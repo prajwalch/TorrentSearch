@@ -3,13 +3,13 @@ package com.prajwalch.torrentsearch.ui.settings
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 
-import com.prajwalch.torrentsearch.data.repository.DarkTheme
-import com.prajwalch.torrentsearch.data.repository.MaxNumResults
 import com.prajwalch.torrentsearch.data.repository.SearchProvidersRepository
 import com.prajwalch.torrentsearch.data.repository.SettingsRepository
-import com.prajwalch.torrentsearch.data.repository.SortCriteria
-import com.prajwalch.torrentsearch.data.repository.SortOrder
 import com.prajwalch.torrentsearch.models.Category
+import com.prajwalch.torrentsearch.models.DarkTheme
+import com.prajwalch.torrentsearch.models.MaxNumResults
+import com.prajwalch.torrentsearch.models.SortCriteria
+import com.prajwalch.torrentsearch.models.SortOrder
 
 import dagger.hilt.android.lifecycle.HiltViewModel
 

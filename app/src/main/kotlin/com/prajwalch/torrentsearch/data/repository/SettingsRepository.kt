@@ -9,6 +9,10 @@ import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.core.stringSetPreferencesKey
 
 import com.prajwalch.torrentsearch.models.Category
+import com.prajwalch.torrentsearch.models.DarkTheme
+import com.prajwalch.torrentsearch.models.MaxNumResults
+import com.prajwalch.torrentsearch.models.SortCriteria
+import com.prajwalch.torrentsearch.models.SortOrder
 import com.prajwalch.torrentsearch.providers.SearchProviderId
 
 import kotlinx.coroutines.flow.Flow
@@ -169,57 +173,4 @@ private fun <T, U> DataStore<Preferences>.getMapOrDefault(
 /** Sets a preferences or updates if it already exists .*/
 private suspend fun <T> DataStore<Preferences>.setOrUpdate(key: Preferences.Key<T>, value: T) {
     edit { preferences -> preferences[key] = value }
-}
-
-/** Dark theme options. */
-enum class DarkTheme {
-    On,
-    Off,
-    FollowSystem {
-        override fun toString() = "Follow System"
-    };
-}
-
-/** Results sort criteria. */
-enum class SortCriteria {
-    Name,
-    Seeders,
-    Peers,
-    FileSize {
-        override fun toString() = "File size"
-    },
-    Date;
-
-    companion object {
-        /** The default criteria. */
-        val Default = Seeders
-    }
-}
-
-/** Results sort order. */
-enum class SortOrder {
-    Ascending,
-    Descending;
-
-    /** Returns the opposite order. */
-    fun opposite() = when (this) {
-        Ascending -> Descending
-        Descending -> Ascending
-    }
-
-    companion object {
-        /** The default sort order. */
-        val Default = Descending
-    }
-}
-
-/** Defines maximum number of results to be shown. */
-data class MaxNumResults(val n: Int) {
-    fun isUnlimited() = n == UNLIMITED_N
-
-    companion object {
-        private const val UNLIMITED_N = -1
-
-        val Unlimited = MaxNumResults(n = UNLIMITED_N)
-    }
 }

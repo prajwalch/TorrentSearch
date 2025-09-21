@@ -18,8 +18,8 @@ import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 
-import com.prajwalch.torrentsearch.data.repository.DarkTheme
 import com.prajwalch.torrentsearch.models.Category
+import com.prajwalch.torrentsearch.models.DarkTheme
 import com.prajwalch.torrentsearch.models.MagnetUri
 import com.prajwalch.torrentsearch.ui.settings.SettingsViewModel
 import com.prajwalch.torrentsearch.ui.theme.TorrentSearchTheme
