@@ -6,9 +6,11 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -19,6 +21,8 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
@@ -27,6 +31,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
@@ -70,6 +75,8 @@ fun SearchResultsScreen(
             SearchResultsScreenTopBar(
                 onNavigateBack = onNavigateBack,
                 onNavigateToSettings = onNavigateToSettings,
+                filterQuery = uiState.filterQuery,
+                onFilterQueryChange = viewModel::changeFilterQuery,
             )
         },
         floatingActionButton = {
@@ -111,12 +118,14 @@ fun SearchResultsScreen(
 private fun SearchResultsScreenTopBar(
     onNavigateBack: () -> Unit,
     onNavigateToSettings: () -> Unit,
+    filterQuery: String,
+    onFilterQueryChange: (String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     TopAppBar(
         modifier = modifier,
         navigationIcon = { NavigateBackIconButton(onClick = onNavigateBack) },
-        title = {},
+        title = { SearchBar(query = filterQuery, onQueryChange = onFilterQueryChange) },
         actions = {
             IconButton(onClick = onNavigateToSettings) {
                 Icon(
@@ -125,6 +134,27 @@ private fun SearchResultsScreenTopBar(
                 )
             }
         }
+    )
+}
+
+@Composable
+private fun SearchBar(
+    query: String,
+    onQueryChange: (String) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    TextField(
+        modifier = modifier.height(TextFieldDefaults.MinHeight),
+        value = query,
+        onValueChange = onQueryChange,
+        textStyle = MaterialTheme.typography.bodyLarge,
+        placeholder = { Text(text = stringResource(R.string.search_results)) },
+        singleLine = true,
+        shape = RoundedCornerShape(percent = 100),
+        colors = TextFieldDefaults.colors(
+            focusedIndicatorColor = Color.Transparent,
+            unfocusedIndicatorColor = Color.Transparent,
+        ),
     )
 }
 

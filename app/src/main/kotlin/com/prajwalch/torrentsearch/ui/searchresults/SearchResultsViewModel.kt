@@ -1,7 +1,6 @@
 package com.prajwalch.torrentsearch.ui.searchresults
 
 import android.util.Log
-
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -47,6 +46,7 @@ data class SearchResultsUiState(
     val results: List<Torrent> = emptyList(),
     val currentSortCriteria: SortCriteria = SortCriteria.Default,
     val currentSortOrder: SortOrder = SortOrder.Default,
+    val filterQuery: String = "",
     val resultsNotFound: Boolean = false,
     val isLoading: Boolean = false,
     val isSearching: Boolean = false,
@@ -99,6 +99,15 @@ class SearchResultsViewModel @Inject constructor(
 
         performSearch()
         observeNSFWMode()
+    }
+
+    fun changeFilterQuery(query: String) {
+        val filteredSearchResults = if (searchResults.isNotEmpty()) {
+            searchResults.filter { it.name.contains(query) }
+        } else {
+            searchResults
+        }
+        _uiState.update { it.copy(filterQuery = query, results = filteredSearchResults) }
     }
 
     /** Sorts and updates the UI state according to given criteria and order. */

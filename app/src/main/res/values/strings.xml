@@ -56,6 +56,10 @@
     <string name="hint_description_page_url_copied">Url copied to clipboard!</string>
     <!-- Search Screen -->
 
+    <!-- Search results screen -->
+    <string name="search_results">Search results</string>
+    <!-- Search results screen -->
+
     <!-- Bookmarks Screen -->
     <string name="bookmarks_screen_title">Bookmarks</string>
     <string name="button_delete_all_bookmarks">Delete all bookmarks</string>
