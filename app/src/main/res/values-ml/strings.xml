@@ -90,4 +90,7 @@
     <string name="settings_dialog_button_cancel">റദ്ദാക്കുക</string>
     <string name="nsfw">NSFW</string>
     <string name="label_url">URL</string>
+    <string name="button_search">സേർച്ച്</string>
+    <string name="msg_no_bookmarks">ബുക്ക്മാർക്കുകളൊന്നുമില്ല</string>
+    <string name="msg_no_search_history">സേർച്ച് ഹിസ്റ്ററിയൊന്നുമില്ല</string>
 </resources>
