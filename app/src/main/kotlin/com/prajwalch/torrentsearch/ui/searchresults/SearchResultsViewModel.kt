@@ -90,8 +90,8 @@ class SearchResultsViewModel @Inject constructor(
      */
     private var searchJob: Job? = null
 
-    /** Unfiltered search results. */
-    private var searchResults = emptyList<Torrent>()
+    /** Recent search results cache. */
+    private var searchResultsCache = emptyList<Torrent>()
 
     init {
         Log.i(TAG, "init is invoked")
@@ -102,10 +102,10 @@ class SearchResultsViewModel @Inject constructor(
     }
 
     fun changeFilterQuery(query: String) {
-        val filteredSearchResults = if (searchResults.isNotEmpty()) {
-            searchResults.filter { it.name.contains(query) }
+        val filteredSearchResults = if (searchResultsCache.isNotEmpty()) {
+            searchResultsCache.filter { it.name.contains(query) }
         } else {
-            searchResults
+            searchResultsCache
         }
         _uiState.update { it.copy(filterQuery = query, results = filteredSearchResults) }
     }
@@ -137,7 +137,7 @@ class SearchResultsViewModel @Inject constructor(
 
         Log.i(TAG, "Cancelling on-going search")
         searchJob?.cancel()
-        searchResults = emptyList()
+        searchResultsCache = emptyList()
 
         Log.i(TAG, "Creating new job")
         searchJob = viewModelScope.launch {
@@ -261,9 +261,9 @@ class SearchResultsViewModel @Inject constructor(
     private fun onEachSearchResults(results: List<Torrent>, settings: Settings) {
         Log.i(TAG, "onEachSearchResults() called")
 
-        searchResults += results
+        searchResultsCache += results
 
-        val allSearchResults = searchResults
+        val allSearchResults = searchResultsCache
         if (allSearchResults.isEmpty()) {
             Log.i(TAG, "Empty results. Returning...")
             return
@@ -338,11 +338,11 @@ class SearchResultsViewModel @Inject constructor(
 
     private fun observeNSFWMode() = viewModelScope.launch {
         settingsRepository.enableNSFWMode.distinctUntilChanged().collect { nsfwModeEnabled ->
-            if (searchResults.isEmpty()) {
+            if (searchResultsCache.isEmpty()) {
                 return@collect
             }
 
-            val nsfwFilteredResults = searchResults
+            val nsfwFilteredResults = searchResultsCache
                 .filterNSFW(isNSFWModeEnabled = nsfwModeEnabled)
                 .customSort(
                     criteria = _uiState.value.currentSortCriteria,
