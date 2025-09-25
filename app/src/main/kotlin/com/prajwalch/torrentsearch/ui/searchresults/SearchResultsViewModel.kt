@@ -91,7 +91,7 @@ class SearchResultsViewModel @Inject constructor(
     private var searchJob: Job? = null
 
     /** Recent search results cache. */
-    private var searchResultsCache = emptyList<Torrent>()
+    private var searchResultsCache = mutableListOf<Torrent>()
 
     init {
         Log.i(TAG, "init is invoked")
@@ -137,7 +137,7 @@ class SearchResultsViewModel @Inject constructor(
 
         Log.i(TAG, "Cancelling on-going search")
         searchJob?.cancel()
-        searchResultsCache = emptyList()
+        searchResultsCache.clear()
 
         Log.i(TAG, "Creating new job")
         searchJob = viewModelScope.launch {
@@ -261,19 +261,18 @@ class SearchResultsViewModel @Inject constructor(
     private fun onEachSearchResults(results: List<Torrent>, settings: Settings) {
         Log.i(TAG, "onEachSearchResults() called")
 
-        searchResultsCache += results
+        searchResultsCache.addAll(results)
 
-        val allSearchResults = searchResultsCache
-        if (allSearchResults.isEmpty()) {
+        if (searchResultsCache.isEmpty()) {
             Log.i(TAG, "Empty results. Returning...")
             return
         }
 
-        Log.i(TAG, "Received ${results.size} results, ${allSearchResults.size} total")
+        Log.i(TAG, "Received ${results.size} results, ${searchResultsCache.size} total")
         Log.i(TAG, "Filtering results..")
 
         val filteredResults = filterSearchResults(
-            results = allSearchResults,
+            results = searchResultsCache,
             settings = settings,
         )
         if (filteredResults.isEmpty()) {
