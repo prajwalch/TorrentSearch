@@ -225,7 +225,7 @@ private fun Action(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
     colors: ListItemColors = ListItemDefaults.colors(
-        containerColor = Color.Unspecified
+        containerColor = Color.Transparent
     ),
 ) {
     ListItem(

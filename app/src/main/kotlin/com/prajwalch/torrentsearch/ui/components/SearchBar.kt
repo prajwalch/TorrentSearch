@@ -9,9 +9,6 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsFocusedAsState
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.ColumnScope
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Clear
-import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -25,6 +22,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.lerp
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.isTraversalGroup
 import androidx.compose.ui.semantics.semantics
@@ -132,7 +130,7 @@ private fun SearchBarInputField(
             ) {
                 IconButton(onClick = { onQueryChange("") }) {
                     Icon(
-                        imageVector = Icons.Default.Clear,
+                        painter = painterResource(R.drawable.ic_close),
                         contentDescription = stringResource(R.string.desc_clear_search_query),
                     )
                 }
@@ -154,7 +152,7 @@ private fun LeadingIcon(isFocused: Boolean, onBack: () -> Unit, modifier: Modifi
             )
         } else {
             Icon(
-                imageVector = Icons.Outlined.Search,
+                painter = painterResource(R.drawable.ic_search),
                 contentDescription = null,
             )
         }

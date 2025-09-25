@@ -5,15 +5,13 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Info
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExposedDropdownMenuAnchorType
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.MenuAnchorType
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
@@ -24,6 +22,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 
@@ -116,7 +115,7 @@ private fun OutlinedUrlTextField(
     val trailingIcon = if (isError) {
         @Composable {
             Icon(
-                imageVector = Icons.Default.Info,
+                painter = painterResource(R.drawable.ic_info),
                 contentDescription = null,
             )
         }
@@ -163,7 +162,9 @@ private fun OutlinedCategoryField(
         onExpandedChange = { expanded = it },
     ) {
         OutlinedTextField(
-            modifier = modifier.menuAnchor(MenuAnchorType.PrimaryNotEditable),
+            modifier = modifier.menuAnchor(
+                type = ExposedDropdownMenuAnchorType.PrimaryNotEditable
+            ),
             value = value.name,
             onValueChange = {},
             readOnly = true,
@@ -206,7 +207,9 @@ private fun OutlinedSafetyStatusField(
         onExpandedChange = { expanded = it },
     ) {
         OutlinedTextField(
-            modifier = modifier.menuAnchor(MenuAnchorType.PrimaryNotEditable),
+            modifier = modifier.menuAnchor(
+                type = ExposedDropdownMenuAnchorType.PrimaryNotEditable,
+            ),
             value = if (value.isUnsafe()) "Unsafe" else "Safe",
             onValueChange = {},
             readOnly = true,
