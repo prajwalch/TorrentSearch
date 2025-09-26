@@ -17,6 +17,7 @@ import androidx.compose.material3.SearchBar
 import androidx.compose.material3.SearchBarDefaults
 import androidx.compose.material3.SearchBarState
 import androidx.compose.material3.SearchBarValue
+import androidx.compose.material3.Text
 import androidx.compose.material3.rememberSearchBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
@@ -87,6 +88,7 @@ private fun SearchBarInputField(
             coroutineScope.launch { searchBarState.animateToCollapsed() }
             onSearch(it)
         },
+        placeholder = { Text(stringResource(R.string.search)) },
         leadingIcon = {
             LeadingIcon(
                 isSearchBarExpanded = searchBarState.currentValue == SearchBarValue.Expanded,
