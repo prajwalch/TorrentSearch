@@ -1,6 +1,9 @@
 package com.prajwalch.torrentsearch.ui.search
 
+import android.os.Build
+
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.focusable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -62,8 +65,17 @@ fun SearchScreen(
             )
         },
     ) { innerPadding ->
+        // Prevent search bar from being auto focused on older Android versions
+        // which range from 7.1 to 8.1 (<9).
+        val focusableModifier = if (Build.VERSION.SDK_INT < Build.VERSION_CODES.P) {
+            Modifier.focusable()
+        } else {
+            Modifier
+        }
         Column(
-            modifier = Modifier.padding(innerPadding),
+            modifier = Modifier
+                .padding(innerPadding)
+                .then(focusableModifier),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(
                 space = MaterialTheme.spaces.large,
