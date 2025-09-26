@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.input.rememberTextFieldState
@@ -126,6 +127,9 @@ fun SearchScreen(
 
             Spacer(modifier = Modifier.height(MaterialTheme.spaces.small))
             Button(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = MaterialTheme.spaces.large),
                 onClick = {
                     onSearch(textFieldState.text.toString(), uiState.selectedCategory)
                 },
