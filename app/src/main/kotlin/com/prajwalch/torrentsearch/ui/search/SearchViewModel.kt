@@ -21,7 +21,6 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 data class SearchUiState(
-    val query: String = "",
     val histories: List<SearchHistoryItemUiState> = emptyList(),
     val categories: List<Category> = Category.entries,
     val selectedCategory: Category = Category.All,
@@ -42,11 +41,6 @@ class SearchViewModel @Inject constructor(
         loadDefaultCategory()
         observeNSFWMode()
         observeSearchHistory()
-    }
-
-    /** Changes the current query with the given query. */
-    fun changeQuery(query: String) {
-        _uiState.update { it.copy(query = query) }
     }
 
     /** Changes the current category with the given category. */
