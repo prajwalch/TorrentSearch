@@ -88,6 +88,7 @@ fun SearchScreen(
             )
 
             SearchBar(
+                modifier = Modifier.padding(horizontal = MaterialTheme.spaces.large),
                 searchBarState = searchBarState,
                 textFieldState = textFieldState,
                 onSearch = {
