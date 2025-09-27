@@ -25,6 +25,8 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -33,6 +35,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -57,6 +60,7 @@ import com.prajwalch.torrentsearch.ui.components.TorznabBadge
 import com.prajwalch.torrentsearch.ui.components.UnsafeBadge
 import com.prajwalch.torrentsearch.ui.theme.spaces
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SearchProvidersScreen(
     onNavigateBack: () -> Unit,
@@ -67,14 +71,17 @@ fun SearchProvidersScreen(
     val viewModel = activityScopedViewModel<SearchProvidersViewModel>()
     val searchProvidersUiState by viewModel.uiState.collectAsStateWithLifecycle()
 
+    val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
+
     Scaffold(
-        modifier = modifier,
+        modifier = modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
         topBar = {
             SearchProvidersScreenTopBar(
                 onNavigateBack = onNavigateBack,
                 onEnableAllSearchProviders = viewModel::enableAllSearchProviders,
                 onDisableAllSearchProviders = viewModel::disableAllSearchProviders,
                 onResetToDefault = viewModel::resetEnabledSearchProvidersToDefault,
+                scrollBehavior = scrollBehavior,
             )
         },
         floatingActionButton = {
@@ -152,6 +159,7 @@ private fun SearchProvidersScreenTopBar(
     onDisableAllSearchProviders: () -> Unit,
     onResetToDefault: () -> Unit,
     modifier: Modifier = Modifier,
+    scrollBehavior: TopAppBarScrollBehavior? = null,
 ) {
     TopAppBar(
         modifier = modifier,
@@ -187,7 +195,8 @@ private fun SearchProvidersScreenTopBar(
                     ),
                 )
             }
-        }
+        },
+        scrollBehavior = scrollBehavior,
     )
 }
 
