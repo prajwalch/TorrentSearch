@@ -1,6 +1,6 @@
 package com.prajwalch.torrentsearch.ui.bookmarks
 
-import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -13,17 +13,24 @@ import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 
 import com.prajwalch.torrentsearch.R
+import com.prajwalch.torrentsearch.models.SortCriteria
+import com.prajwalch.torrentsearch.models.SortOrder
 import com.prajwalch.torrentsearch.models.Torrent
 import com.prajwalch.torrentsearch.ui.activityScopedViewModel
 import com.prajwalch.torrentsearch.ui.components.EmptyPlaceholder
@@ -34,6 +41,7 @@ import com.prajwalch.torrentsearch.ui.components.TorrentList
 
 import kotlinx.coroutines.launch
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun BookmarksScreen(
     onNavigateBack: () -> Unit,
@@ -55,9 +63,12 @@ fun BookmarksScreen(
         derivedStateOf { lazyListState.firstVisibleItemIndex > 1 }
     }
 
+    val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
+
     Scaffold(
         modifier = Modifier
             .fillMaxSize()
+            .nestedScroll(scrollBehavior.nestedScrollConnection)
             .then(modifier),
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
         topBar = {
@@ -66,6 +77,10 @@ fun BookmarksScreen(
                 onDeleteAllBookmarks = viewModel::deleteAllBookmarks,
                 onNavigateToSettings = onNavigateToSettings,
                 showDeleteAllAction = showDeleteAllAction,
+                currentSortCriteria = uiState.currentSortCriteria,
+                currentSortOrder = uiState.currentSortOrder,
+                onSortRequest = viewModel::sortBookmarks,
+                scrollBehavior = scrollBehavior,
             )
         },
         floatingActionButton = {
@@ -89,13 +104,6 @@ fun BookmarksScreen(
                 modifier = Modifier.consumeWindowInsets(innerPadding),
                 torrents = uiState.bookmarks,
                 onTorrentSelect = onTorrentSelect,
-                toolbarContent = {
-                    SortMenu(
-                        currentSortCriteria = uiState.currentSortCriteria,
-                        currentSortOrder = uiState.currentSortOrder,
-                        onSortRequest = viewModel::sortBookmarks,
-                    )
-                },
                 contentPadding = innerPadding,
                 lazyListState = lazyListState,
             )
@@ -110,7 +118,11 @@ private fun BookmarksScreenTopBar(
     onDeleteAllBookmarks: () -> Unit,
     onNavigateToSettings: () -> Unit,
     showDeleteAllAction: Boolean,
+    currentSortCriteria: SortCriteria,
+    currentSortOrder: SortOrder,
+    onSortRequest: (SortCriteria, SortOrder) -> Unit,
     modifier: Modifier = Modifier,
+    scrollBehavior: TopAppBarScrollBehavior? = null,
 ) {
     TopAppBar(
         modifier = modifier,
@@ -122,7 +134,7 @@ private fun BookmarksScreenTopBar(
             )
         },
         actions = {
-            AnimatedVisibility(visible = showDeleteAllAction) {
+            if (showDeleteAllAction) {
                 IconButton(onClick = onDeleteAllBookmarks) {
                     Icon(
                         painter = painterResource(R.drawable.ic_delete_forever),
@@ -130,12 +142,33 @@ private fun BookmarksScreenTopBar(
                     )
                 }
             }
+            Box {
+                var showSortMenu by remember(currentSortCriteria, currentSortOrder) {
+                    mutableStateOf(false)
+                }
+
+                IconButton(onClick = { showSortMenu = true }) {
+                    Icon(
+                        painter = painterResource(R.drawable.ic_sort),
+                        contentDescription = stringResource(R.string.button_open_sort_options),
+                    )
+                }
+
+                SortMenu(
+                    expanded = showSortMenu,
+                    onDismissRequest = { showSortMenu = false },
+                    currentSortCriteria = currentSortCriteria,
+                    currentSortOrder = currentSortOrder,
+                    onSortRequest = onSortRequest,
+                )
+            }
             IconButton(onClick = onNavigateToSettings) {
                 Icon(
                     painter = painterResource(R.drawable.ic_settings),
                     contentDescription = stringResource(R.string.button_go_to_settings_screen),
                 )
             }
-        }
+        },
+        scrollBehavior = scrollBehavior,
     )
 }
