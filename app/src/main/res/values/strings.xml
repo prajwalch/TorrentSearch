@@ -36,7 +36,7 @@
     <string name="msg_nothing_here_yet">Nothing here yet</string>
     <string name="msg_start_searching">Start searching to see results</string>
     <!-- Results toolbar -->
-    <string name="hint_results_count">About %1$d results</string>
+    <string name="hint_results_count">%1$s results for \'%2$s\'</string>
     <string name="button_open_sort_options">Open sort options</string>
     <string name="button_change_sort_order">Change sort order to %s</string>
     <string name="nsfw">NSFW</string>

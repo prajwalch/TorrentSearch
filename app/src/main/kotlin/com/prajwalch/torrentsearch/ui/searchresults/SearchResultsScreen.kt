@@ -1,5 +1,6 @@
 package com.prajwalch.torrentsearch.ui.searchresults
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -10,7 +11,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -24,14 +24,22 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
@@ -50,6 +58,7 @@ import com.prajwalch.torrentsearch.ui.components.TorrentList
 
 import kotlinx.coroutines.launch
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SearchResultsScreen(
     onNavigateBack: () -> Unit,
@@ -69,14 +78,20 @@ fun SearchResultsScreen(
     }
     val showScrollToTopButton = uiState.results.isNotEmpty() && !isFirstResultVisible
 
+    val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
+
     Scaffold(
-        modifier = modifier,
+        modifier = modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
         topBar = {
             SearchResultsScreenTopBar(
                 onNavigateBack = onNavigateBack,
                 onNavigateToSettings = onNavigateToSettings,
                 filterQuery = uiState.filterQuery,
                 onFilterQueryChange = viewModel::changeFilterQuery,
+                scrollBehavior = scrollBehavior,
+                currentSortCriteria = uiState.currentSortCriteria,
+                currentSortOrder = uiState.currentSortOrder,
+                onSortRequest = viewModel::sortResults,
             )
         },
         floatingActionButton = {
@@ -96,8 +111,10 @@ fun SearchResultsScreen(
             ) {
                 LinearProgressIndicator()
             }
+
             SearchResultsScreenContent(
                 modifier = Modifier.fillMaxHeight(),
+                searchQuery = uiState.searchQuery,
                 results = uiState.results,
                 resultsNotFound = uiState.resultsNotFound,
                 onResultSelect = onResultSelect,
@@ -105,9 +122,6 @@ fun SearchResultsScreen(
                 isLoading = uiState.isLoading,
                 isInternetError = uiState.isInternetError,
                 onRetry = { viewModel.performSearch() },
-                currentSortCriteria = uiState.currentSortCriteria,
-                currentSortOrder = uiState.currentSortOrder,
-                onSortResults = viewModel::sortResults,
             )
         }
     }
@@ -120,20 +134,79 @@ private fun SearchResultsScreenTopBar(
     onNavigateToSettings: () -> Unit,
     filterQuery: String,
     onFilterQueryChange: (String) -> Unit,
+    currentSortCriteria: SortCriteria,
+    currentSortOrder: SortOrder,
+    onSortRequest: (SortCriteria, SortOrder) -> Unit,
     modifier: Modifier = Modifier,
+    scrollBehavior: TopAppBarScrollBehavior? = null,
 ) {
+    var showSearchBar by remember { mutableStateOf(false) }
+    val searchBarFocusRequester = remember { FocusRequester() }
+
+    LaunchedEffect(showSearchBar) {
+        if (showSearchBar) {
+            searchBarFocusRequester.requestFocus()
+        }
+    }
+
+    BackHandler(enabled = showSearchBar) {
+        showSearchBar = false
+    }
+
     TopAppBar(
         modifier = modifier,
-        navigationIcon = { NavigateBackIconButton(onClick = onNavigateBack) },
-        title = { SearchBar(query = filterQuery, onQueryChange = onFilterQueryChange) },
+        navigationIcon = {
+            NavigateBackIconButton(onClick = {
+                if (showSearchBar) showSearchBar = false else onNavigateBack()
+            })
+        },
+        title = {
+            if (showSearchBar) {
+                SearchBar(
+                    modifier = Modifier.focusRequester(searchBarFocusRequester),
+                    query = filterQuery,
+                    onQueryChange = onFilterQueryChange,
+                )
+            }
+        },
         actions = {
+            if (!showSearchBar) {
+                IconButton(onClick = { showSearchBar = true }) {
+                    Icon(
+                        painter = painterResource(R.drawable.ic_search),
+                        contentDescription = null,
+                    )
+                }
+
+                Box {
+                    var showSortMenu by remember(currentSortCriteria, currentSortOrder) {
+                        mutableStateOf(false)
+                    }
+
+                    IconButton(onClick = { showSortMenu = true }) {
+                        Icon(
+                            painter = painterResource(R.drawable.ic_sort),
+                            contentDescription = stringResource(R.string.button_open_sort_options),
+                        )
+                    }
+
+                    SortMenu(
+                        expanded = showSortMenu,
+                        onDismissRequest = { showSortMenu = false },
+                        currentSortCriteria = currentSortCriteria,
+                        currentSortOrder = currentSortOrder,
+                        onSortRequest = onSortRequest,
+                    )
+                }
+            }
             IconButton(onClick = onNavigateToSettings) {
                 Icon(
                     painter = painterResource(R.drawable.ic_settings),
-                    contentDescription = null,
+                    contentDescription = stringResource(R.string.button_go_to_settings_screen),
                 )
             }
-        }
+        },
+        scrollBehavior = scrollBehavior,
     )
 }
 
@@ -149,9 +222,20 @@ private fun SearchBar(
         onValueChange = onQueryChange,
         textStyle = MaterialTheme.typography.bodyLarge,
         placeholder = { Text(text = stringResource(R.string.search_results)) },
+        trailingIcon = {
+            if (query.isNotEmpty()) {
+                IconButton(onClick = { onQueryChange("") }) {
+                    Icon(
+                        painter = painterResource(R.drawable.ic_close),
+                        contentDescription = stringResource(R.string.desc_clear_search_query),
+                    )
+                }
+            }
+        },
         singleLine = true,
-        shape = RoundedCornerShape(percent = 100),
         colors = TextFieldDefaults.colors(
+            focusedContainerColor = Color.Transparent,
+            unfocusedContainerColor = Color.Transparent,
             focusedIndicatorColor = Color.Transparent,
             unfocusedIndicatorColor = Color.Transparent,
         ),
@@ -160,6 +244,7 @@ private fun SearchBar(
 
 @Composable
 private fun SearchResultsScreenContent(
+    searchQuery: String,
     results: List<Torrent>,
     resultsNotFound: Boolean,
     onResultSelect: (Torrent) -> Unit,
@@ -167,9 +252,6 @@ private fun SearchResultsScreenContent(
     isLoading: Boolean,
     isInternetError: Boolean,
     onRetry: () -> Unit,
-    currentSortCriteria: SortCriteria,
-    currentSortOrder: SortOrder,
-    onSortResults: (SortCriteria, SortOrder) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Column(modifier = modifier, horizontalAlignment = Alignment.CenterHorizontally) {
@@ -183,23 +265,24 @@ private fun SearchResultsScreenContent(
 
             resultsNotFound -> ResultsNotFound(modifier = Modifier.fillMaxSize())
 
-            results.isNotEmpty() -> TorrentList(
-                torrents = results,
-                onTorrentSelect = onResultSelect,
-                toolbarContent = {
-                    Text(
-                        text = stringResource(R.string.hint_results_count, results.size),
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        style = MaterialTheme.typography.bodyMedium,
-                    )
-                    SortMenu(
-                        currentSortCriteria = currentSortCriteria,
-                        currentSortOrder = currentSortOrder,
-                        onSortRequest = onSortResults,
-                    )
-                },
-                lazyListState = lazyListState,
-            )
+            results.isNotEmpty() -> {
+                TorrentList(
+                    torrents = results,
+                    onTorrentSelect = onResultSelect,
+                    toolbarContent = {
+                        Text(
+                            text = stringResource(
+                                R.string.hint_results_count,
+                                results.size,
+                                searchQuery,
+                            ),
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            style = MaterialTheme.typography.bodyMedium,
+                        )
+                    },
+                    lazyListState = lazyListState,
+                )
+            }
         }
     }
 }

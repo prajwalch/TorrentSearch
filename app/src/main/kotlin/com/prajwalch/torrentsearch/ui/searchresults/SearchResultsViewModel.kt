@@ -43,6 +43,7 @@ import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 data class SearchResultsUiState(
+    val searchQuery: String = "",
     val results: List<Torrent> = emptyList(),
     val currentSortCriteria: SortCriteria = SortCriteria.Default,
     val currentSortOrder: SortOrder = SortOrder.Default,
@@ -134,6 +135,8 @@ class SearchResultsViewModel @Inject constructor(
         if (query.isBlank()) {
             return
         }
+
+        _uiState.update { it.copy(searchQuery = query) }
 
         Log.i(TAG, "Cancelling on-going search")
         searchJob?.cancel()
