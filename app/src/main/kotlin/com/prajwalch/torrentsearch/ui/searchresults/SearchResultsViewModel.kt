@@ -44,10 +44,10 @@ import javax.inject.Inject
 
 data class SearchResultsUiState(
     val searchQuery: String = "",
-    val results: List<Torrent> = emptyList(),
+    val searchResults: List<Torrent> = emptyList(),
+    val filteredResults: List<Torrent>? = null,
     val currentSortCriteria: SortCriteria = SortCriteria.Default,
     val currentSortOrder: SortOrder = SortOrder.Default,
-    val filterQuery: String = "",
     val resultsNotFound: Boolean = false,
     val isLoading: Boolean = false,
     val isSearching: Boolean = false,
@@ -102,24 +102,27 @@ class SearchResultsViewModel @Inject constructor(
         observeNSFWMode()
     }
 
-    fun changeFilterQuery(query: String) {
-        val filteredSearchResults = if (searchResultsCache.isNotEmpty()) {
-            searchResultsCache.filter { it.name.contains(query) }
-        } else {
-            searchResultsCache
+    fun filterResults(query: String) {
+        if (query.isEmpty()) {
+            _uiState.update { it.copy(filteredResults = null) }
+            return
         }
-        _uiState.update { it.copy(filterQuery = query, results = filteredSearchResults) }
+
+        val filteredResults = _uiState.value.searchResults.filter {
+            it.name.contains(query, ignoreCase = true)
+        }
+        _uiState.update { it.copy(filteredResults = filteredResults) }
     }
 
     /** Sorts and updates the UI state according to given criteria and order. */
     fun sortResults(criteria: SortCriteria, order: SortOrder) {
-        val sortedResults = _uiState.value.results.customSort(
+        val sortedResults = _uiState.value.searchResults.customSort(
             criteria = criteria,
             order = order,
         )
         _uiState.update {
             it.copy(
-                results = sortedResults,
+                searchResults = sortedResults,
                 currentSortCriteria = criteria,
                 currentSortOrder = order,
             )
@@ -150,7 +153,7 @@ class SearchResultsViewModel @Inject constructor(
             val defaultSortOptions = settings.defaultSortOptions
             _uiState.update {
                 it.copy(
-                    results = emptyList(),
+                    searchResults = emptyList(),
                     currentSortCriteria = defaultSortOptions.sortCriteria,
                     currentSortOrder = defaultSortOptions.sortOrder,
                     resultsNotFound = false,
@@ -178,7 +181,7 @@ class SearchResultsViewModel @Inject constructor(
 
                 _uiState.update {
                     it.copy(
-                        results = emptyList(),
+                        searchResults = emptyList(),
                         resultsNotFound = false,
                         isLoading = false,
                         isSearching = false,
@@ -195,7 +198,7 @@ class SearchResultsViewModel @Inject constructor(
 
                 _uiState.update {
                     it.copy(
-                        results = emptyList(),
+                        searchResults = emptyList(),
                         resultsNotFound = true,
                         isLoading = false,
                         isSearching = false,
@@ -257,7 +260,7 @@ class SearchResultsViewModel @Inject constructor(
         Log.i(TAG, "shouldContinueSearch() called")
 
         val maxNumResults = settings.maxNumResults
-        return maxNumResults.isUnlimited() || _uiState.value.results.size < maxNumResults.n
+        return maxNumResults.isUnlimited() || _uiState.value.searchResults.size < maxNumResults.n
     }
 
     /** Runs on every search result emitted by repository. */
@@ -291,7 +294,7 @@ class SearchResultsViewModel @Inject constructor(
 
         _uiState.update {
             it.copy(
-                results = sortedResults,
+                searchResults = sortedResults,
                 resultsNotFound = false,
                 isLoading = false,
                 isSearching = true,
@@ -313,7 +316,7 @@ class SearchResultsViewModel @Inject constructor(
             return filteredResults
         }
 
-        val numResultsLeft = settings.maxNumResults.n - _uiState.value.results.size
+        val numResultsLeft = settings.maxNumResults.n - _uiState.value.searchResults.size
         return results.take(numResultsLeft)
     }
 
@@ -331,7 +334,7 @@ class SearchResultsViewModel @Inject constructor(
 
         _uiState.update {
             it.copy(
-                resultsNotFound = it.results.isEmpty(),
+                resultsNotFound = it.searchResults.isEmpty(),
                 isLoading = false,
                 isSearching = false,
             )
@@ -353,7 +356,7 @@ class SearchResultsViewModel @Inject constructor(
 
             _uiState.update {
                 it.copy(
-                    results = nsfwFilteredResults,
+                    searchResults = nsfwFilteredResults,
                     resultsNotFound = nsfwFilteredResults.isEmpty(),
                 )
             }

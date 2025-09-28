@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -31,6 +32,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
@@ -55,6 +57,7 @@ import com.prajwalch.torrentsearch.ui.components.SortDropdownMenu
 import com.prajwalch.torrentsearch.ui.components.SortIconButton
 import com.prajwalch.torrentsearch.ui.components.TorrentList
 
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -75,7 +78,7 @@ fun SearchResultsScreen(
     val isFirstResultVisible by remember {
         derivedStateOf { lazyListState.firstVisibleItemIndex <= 1 }
     }
-    val showScrollToTopButton = uiState.results.isNotEmpty() && !isFirstResultVisible
+    val showScrollToTopButton = uiState.searchResults.isNotEmpty() && !isFirstResultVisible
 
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
 
@@ -85,12 +88,11 @@ fun SearchResultsScreen(
             SearchResultsScreenTopBar(
                 onNavigateBack = onNavigateBack,
                 onNavigateToSettings = onNavigateToSettings,
-                filterQuery = uiState.filterQuery,
-                onFilterQueryChange = viewModel::changeFilterQuery,
-                scrollBehavior = scrollBehavior,
+                onFilterResults = viewModel::filterResults,
                 currentSortCriteria = uiState.currentSortCriteria,
                 currentSortOrder = uiState.currentSortOrder,
                 onSortRequest = viewModel::sortResults,
+                scrollBehavior = scrollBehavior,
             )
         },
         floatingActionButton = {
@@ -114,7 +116,8 @@ fun SearchResultsScreen(
             SearchResultsScreenContent(
                 modifier = Modifier.fillMaxHeight(),
                 searchQuery = uiState.searchQuery,
-                results = uiState.results,
+                searchResults = uiState.searchResults,
+                filteredResults = uiState.filteredResults,
                 resultsNotFound = uiState.resultsNotFound,
                 onResultSelect = onResultSelect,
                 lazyListState = lazyListState,
@@ -131,8 +134,7 @@ fun SearchResultsScreen(
 private fun SearchResultsScreenTopBar(
     onNavigateBack: () -> Unit,
     onNavigateToSettings: () -> Unit,
-    filterQuery: String,
-    onFilterQueryChange: (String) -> Unit,
+    onFilterResults: (String) -> Unit,
     currentSortCriteria: SortCriteria,
     currentSortOrder: SortOrder,
     onSortRequest: (SortCriteria, SortOrder) -> Unit,
@@ -152,6 +154,13 @@ private fun SearchResultsScreenTopBar(
         showSearchBar = false
     }
 
+    val textFieldState = rememberTextFieldState()
+
+    LaunchedEffect(Unit) {
+        snapshotFlow { textFieldState.text }
+            .collectLatest { onFilterResults(it.toString()) }
+    }
+
     TopAppBar(
         modifier = modifier,
         navigationIcon = {
@@ -163,8 +172,7 @@ private fun SearchResultsScreenTopBar(
             if (showSearchBar) {
                 SearchBar(
                     modifier = Modifier.focusRequester(searchBarFocusRequester),
-                    query = filterQuery,
-                    onQueryChange = onFilterQueryChange,
+                    textFieldState = textFieldState,
                     placeholder = { Text(text = stringResource(R.string.search_results)) },
                 )
             }
@@ -202,7 +210,8 @@ private fun SearchResultsScreenTopBar(
 @Composable
 private fun SearchResultsScreenContent(
     searchQuery: String,
-    results: List<Torrent>,
+    searchResults: List<Torrent>,
+    filteredResults: List<Torrent>?,
     resultsNotFound: Boolean,
     onResultSelect: (Torrent) -> Unit,
     lazyListState: LazyListState,
@@ -215,22 +224,22 @@ private fun SearchResultsScreenContent(
         when {
             isLoading -> LoadingIndicator(modifier = Modifier.fillMaxSize())
 
-            isInternetError && results.isEmpty() -> NoInternetConnection(
+            isInternetError && searchResults.isEmpty() -> NoInternetConnection(
                 modifier = Modifier.fillMaxSize(),
                 onRetry = onRetry,
             )
 
             resultsNotFound -> ResultsNotFound(modifier = Modifier.fillMaxSize())
 
-            results.isNotEmpty() -> {
+            filteredResults != null || searchResults.isNotEmpty() -> {
                 TorrentList(
-                    torrents = results,
+                    torrents = filteredResults ?: searchResults,
                     onTorrentSelect = onResultSelect,
                     toolbarContent = {
                         Text(
                             text = stringResource(
                                 R.string.hint_results_count,
-                                results.size,
+                                filteredResults?.size ?: searchResults.size,
                                 searchQuery,
                             ),
                             color = MaterialTheme.colorScheme.onSurfaceVariant,

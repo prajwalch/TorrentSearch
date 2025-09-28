@@ -3,6 +3,7 @@ package com.prajwalch.torrentsearch.ui.components
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.text.input.TextFieldLineLimits
 import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.foundation.text.input.clearText
 import androidx.compose.foundation.text.input.rememberTextFieldState
@@ -110,28 +111,28 @@ private fun SearchBarInputField(
 // TODO: Rename it
 @Composable
 fun SearchBar(
-    query: String,
-    onQueryChange: (String) -> Unit,
+    textFieldState: TextFieldState,
     modifier: Modifier = Modifier,
     placeholder: @Composable (() -> Unit)? = null,
 ) {
     TextField(
         modifier = modifier.height(TextFieldDefaults.MinHeight),
-        value = query,
-        onValueChange = onQueryChange,
+        state = textFieldState,
         textStyle = MaterialTheme.typography.bodyLarge,
         placeholder = placeholder,
         trailingIcon = {
-            if (query.isNotEmpty()) {
-                ClearIconButton(onClick = { onQueryChange("") })
+            if (textFieldState.text.isNotEmpty()) {
+                ClearIconButton(onClick = { textFieldState.clearText() })
             }
         },
-        singleLine = true,
+        lineLimits = TextFieldLineLimits.SingleLine,
         colors = TextFieldDefaults.colors(
             focusedContainerColor = Color.Transparent,
             unfocusedContainerColor = Color.Transparent,
             focusedIndicatorColor = Color.Transparent,
             unfocusedIndicatorColor = Color.Transparent,
+            focusedTextColor = MaterialTheme.colorScheme.onSurface,
+            unfocusedTextColor = MaterialTheme.colorScheme.onSurfaceVariant,
         ),
     )
 }
