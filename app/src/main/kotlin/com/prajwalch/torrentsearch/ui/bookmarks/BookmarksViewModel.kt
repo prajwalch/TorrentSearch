@@ -27,6 +27,7 @@ import javax.inject.Inject
 /** UI state for the Bookmarks screen. */
 data class BookmarksUiState(
     val bookmarks: List<Torrent> = emptyList(),
+    val filteredBookmarks: List<Torrent>? = null,
     val currentSortCriteria: SortCriteria = SortCriteria.Default,
     val currentSortOrder: SortOrder = SortOrder.Default,
 )
@@ -145,5 +146,17 @@ class BookmarksViewModel @Inject constructor(
                 currentSortOrder = order,
             )
         }
+    }
+
+    fun filterBookmarks(query: String) {
+        if (query.isEmpty()) {
+            _uiState.update { it.copy(filteredBookmarks = null) }
+            return
+        }
+
+        val filteredBookmarks = _uiState.value.bookmarks.filter {
+            it.name.contains(query, ignoreCase = true)
+        }
+        _uiState.update { it.copy(filteredBookmarks = filteredBookmarks) }
     }
 }
