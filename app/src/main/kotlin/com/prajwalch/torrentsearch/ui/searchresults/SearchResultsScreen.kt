@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -21,8 +20,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
-import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TopAppBarScrollBehavior
@@ -38,7 +35,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -53,7 +49,10 @@ import com.prajwalch.torrentsearch.ui.components.NavigateBackIconButton
 import com.prajwalch.torrentsearch.ui.components.NoInternetConnection
 import com.prajwalch.torrentsearch.ui.components.ResultsNotFound
 import com.prajwalch.torrentsearch.ui.components.ScrollToTopFAB
-import com.prajwalch.torrentsearch.ui.components.SortMenu
+import com.prajwalch.torrentsearch.ui.components.SearchBar
+import com.prajwalch.torrentsearch.ui.components.SettingsIconButton
+import com.prajwalch.torrentsearch.ui.components.SortDropdownMenu
+import com.prajwalch.torrentsearch.ui.components.SortIconButton
 import com.prajwalch.torrentsearch.ui.components.TorrentList
 
 import kotlinx.coroutines.launch
@@ -166,6 +165,7 @@ private fun SearchResultsScreenTopBar(
                     modifier = Modifier.focusRequester(searchBarFocusRequester),
                     query = filterQuery,
                     onQueryChange = onFilterQueryChange,
+                    placeholder = { Text(text = stringResource(R.string.search_results)) },
                 )
             }
         },
@@ -183,14 +183,8 @@ private fun SearchResultsScreenTopBar(
                         mutableStateOf(false)
                     }
 
-                    IconButton(onClick = { showSortMenu = true }) {
-                        Icon(
-                            painter = painterResource(R.drawable.ic_sort),
-                            contentDescription = stringResource(R.string.button_open_sort_options),
-                        )
-                    }
-
-                    SortMenu(
+                    SortIconButton(onClick = { showSortMenu = true })
+                    SortDropdownMenu(
                         expanded = showSortMenu,
                         onDismissRequest = { showSortMenu = false },
                         currentSortCriteria = currentSortCriteria,
@@ -199,46 +193,9 @@ private fun SearchResultsScreenTopBar(
                     )
                 }
             }
-            IconButton(onClick = onNavigateToSettings) {
-                Icon(
-                    painter = painterResource(R.drawable.ic_settings),
-                    contentDescription = stringResource(R.string.button_go_to_settings_screen),
-                )
-            }
+            SettingsIconButton(onClick = onNavigateToSettings)
         },
         scrollBehavior = scrollBehavior,
-    )
-}
-
-@Composable
-private fun SearchBar(
-    query: String,
-    onQueryChange: (String) -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    TextField(
-        modifier = modifier.height(TextFieldDefaults.MinHeight),
-        value = query,
-        onValueChange = onQueryChange,
-        textStyle = MaterialTheme.typography.bodyLarge,
-        placeholder = { Text(text = stringResource(R.string.search_results)) },
-        trailingIcon = {
-            if (query.isNotEmpty()) {
-                IconButton(onClick = { onQueryChange("") }) {
-                    Icon(
-                        painter = painterResource(R.drawable.ic_close),
-                        contentDescription = stringResource(R.string.desc_clear_search_query),
-                    )
-                }
-            }
-        },
-        singleLine = true,
-        colors = TextFieldDefaults.colors(
-            focusedContainerColor = Color.Transparent,
-            unfocusedContainerColor = Color.Transparent,
-            focusedIndicatorColor = Color.Transparent,
-            unfocusedIndicatorColor = Color.Transparent,
-        ),
     )
 }
 

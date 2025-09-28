@@ -1,10 +1,8 @@
 package com.prajwalch.torrentsearch.ui.components
 
 import androidx.compose.animation.AnimatedContent
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.layout.ColumnScope
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.foundation.text.input.clearText
 import androidx.compose.foundation.text.input.rememberTextFieldState
@@ -18,10 +16,13 @@ import androidx.compose.material3.SearchBarDefaults
 import androidx.compose.material3.SearchBarState
 import androidx.compose.material3.SearchBarValue
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.rememberSearchBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 
@@ -98,12 +99,40 @@ private fun SearchBarInputField(
             )
         },
         trailingIcon = {
-            ClearIconButton(
-                visible = textFieldState.text.isNotEmpty(),
-                onClick = { textFieldState.clearText() },
-            )
+            if (textFieldState.text.isNotEmpty()) {
+                ClearIconButton(onClick = { textFieldState.clearText() })
+            }
         },
         colors = colors,
+    )
+}
+
+// TODO: Rename it
+@Composable
+fun SearchBar(
+    query: String,
+    onQueryChange: (String) -> Unit,
+    modifier: Modifier = Modifier,
+    placeholder: @Composable (() -> Unit)? = null,
+) {
+    TextField(
+        modifier = modifier.height(TextFieldDefaults.MinHeight),
+        value = query,
+        onValueChange = onQueryChange,
+        textStyle = MaterialTheme.typography.bodyLarge,
+        placeholder = placeholder,
+        trailingIcon = {
+            if (query.isNotEmpty()) {
+                ClearIconButton(onClick = { onQueryChange("") })
+            }
+        },
+        singleLine = true,
+        colors = TextFieldDefaults.colors(
+            focusedContainerColor = Color.Transparent,
+            unfocusedContainerColor = Color.Transparent,
+            focusedIndicatorColor = Color.Transparent,
+            unfocusedIndicatorColor = Color.Transparent,
+        ),
     )
 }
 
@@ -132,21 +161,11 @@ private fun LeadingIcon(
 }
 
 @Composable
-private fun ClearIconButton(
-    visible: Boolean,
-    onClick: () -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    AnimatedVisibility(
-        visible = visible,
-        enter = fadeIn(),
-        exit = fadeOut(),
-    ) {
-        IconButton(modifier = modifier, onClick = onClick) {
-            Icon(
-                painter = painterResource(R.drawable.ic_close),
-                contentDescription = stringResource(R.string.desc_clear_search_query),
-            )
-        }
+private fun ClearIconButton(onClick: () -> Unit, modifier: Modifier = Modifier) {
+    IconButton(modifier = modifier, onClick = onClick) {
+        Icon(
+            painter = painterResource(R.drawable.ic_close),
+            contentDescription = stringResource(R.string.desc_clear_search_query),
+        )
     }
 }

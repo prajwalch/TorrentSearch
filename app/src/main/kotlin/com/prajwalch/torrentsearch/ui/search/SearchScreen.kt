@@ -40,6 +40,7 @@ import com.prajwalch.torrentsearch.ui.components.CategoryChipsRow
 import com.prajwalch.torrentsearch.ui.components.SearchBar
 import com.prajwalch.torrentsearch.ui.components.SearchHistoryList
 import com.prajwalch.torrentsearch.ui.components.SearchHistoryListItem
+import com.prajwalch.torrentsearch.ui.components.SettingsIconButton
 import com.prajwalch.torrentsearch.ui.theme.spaces
 
 import kotlinx.coroutines.launch
@@ -162,12 +163,7 @@ private fun SearchScreenTopBar(
                     contentDescription = null,
                 )
             }
-            IconButton(onClick = onNavigateToSettings) {
-                Icon(
-                    painter = painterResource(R.drawable.ic_settings),
-                    contentDescription = null,
-                )
-            }
+            SettingsIconButton(onClick = onNavigateToSettings)
         }
     )
 }

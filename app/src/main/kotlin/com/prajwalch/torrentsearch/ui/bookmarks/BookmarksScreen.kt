@@ -36,7 +36,9 @@ import com.prajwalch.torrentsearch.ui.activityScopedViewModel
 import com.prajwalch.torrentsearch.ui.components.EmptyPlaceholder
 import com.prajwalch.torrentsearch.ui.components.NavigateBackIconButton
 import com.prajwalch.torrentsearch.ui.components.ScrollToTopFAB
-import com.prajwalch.torrentsearch.ui.components.SortMenu
+import com.prajwalch.torrentsearch.ui.components.SettingsIconButton
+import com.prajwalch.torrentsearch.ui.components.SortDropdownMenu
+import com.prajwalch.torrentsearch.ui.components.SortIconButton
 import com.prajwalch.torrentsearch.ui.components.TorrentList
 
 import kotlinx.coroutines.launch
@@ -147,14 +149,8 @@ private fun BookmarksScreenTopBar(
                     mutableStateOf(false)
                 }
 
-                IconButton(onClick = { showSortMenu = true }) {
-                    Icon(
-                        painter = painterResource(R.drawable.ic_sort),
-                        contentDescription = stringResource(R.string.button_open_sort_options),
-                    )
-                }
-
-                SortMenu(
+                SortIconButton(onClick = { showSortMenu = true })
+                SortDropdownMenu(
                     expanded = showSortMenu,
                     onDismissRequest = { showSortMenu = false },
                     currentSortCriteria = currentSortCriteria,
@@ -162,12 +158,7 @@ private fun BookmarksScreenTopBar(
                     onSortRequest = onSortRequest,
                 )
             }
-            IconButton(onClick = onNavigateToSettings) {
-                Icon(
-                    painter = painterResource(R.drawable.ic_settings),
-                    contentDescription = stringResource(R.string.button_go_to_settings_screen),
-                )
-            }
+            SettingsIconButton(onClick = onNavigateToSettings)
         },
         scrollBehavior = scrollBehavior,
     )
