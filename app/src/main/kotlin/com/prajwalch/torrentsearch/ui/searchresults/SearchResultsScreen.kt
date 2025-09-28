@@ -83,7 +83,10 @@ fun SearchResultsScreen(
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
 
     Scaffold(
-        modifier = modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
+        modifier = Modifier
+            .fillMaxSize()
+            .nestedScroll(scrollBehavior.nestedScrollConnection)
+            .then(modifier),
         topBar = {
             SearchResultsScreenTopBar(
                 onNavigateBack = onNavigateBack,
