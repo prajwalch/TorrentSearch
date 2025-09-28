@@ -5,6 +5,7 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
@@ -25,7 +26,7 @@ fun ScrollToTopFAB(
         enter = fadeIn() + slideInVertically { fullHeight -> fullHeight },
         exit = fadeOut() + slideOutVertically { fullHeight -> fullHeight },
     ) {
-        FloatingActionButton(onClick = onClick) {
+        FloatingActionButton(modifier = Modifier.imePadding(), onClick = onClick) {
             Icon(
                 painter = painterResource(R.drawable.ic_arrow_up),
                 contentDescription = stringResource(R.string.button_scroll_to_top)
