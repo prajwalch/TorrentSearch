@@ -1,6 +1,7 @@
 package com.prajwalch.torrentsearch.ui.settings.searchproviders.edit
 
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -45,6 +46,7 @@ fun EditSearchProviderScreen(onNavigateBack: () -> Unit, modifier: Modifier = Mo
             modifier = Modifier
                 .verticalScroll(state = scrollState)
                 .fillMaxWidth()
+                .imePadding()
                 .padding(innerPadding)
                 .padding(horizontal = MaterialTheme.spaces.large),
             config = uiState.config,
