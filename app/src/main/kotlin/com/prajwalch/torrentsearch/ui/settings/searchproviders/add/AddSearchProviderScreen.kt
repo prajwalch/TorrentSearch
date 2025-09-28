@@ -2,6 +2,7 @@ package com.prajwalch.torrentsearch.ui.settings.searchproviders.add
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
@@ -47,7 +48,9 @@ fun AddSearchProviderScreen(onNavigateBack: () -> Unit, modifier: Modifier = Mod
     }
 
     Scaffold(
-        modifier = modifier,
+        modifier = Modifier
+            .fillMaxSize()
+            .then(modifier),
         topBar = { AddSearchProviderScreenTopBar(onNavigateBack = onNavigateBack) },
     ) { innerPadding ->
         val scrollState = rememberScrollState()

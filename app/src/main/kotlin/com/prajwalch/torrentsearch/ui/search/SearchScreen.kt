@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -61,7 +62,9 @@ fun SearchScreen(
     val coroutineScope = rememberCoroutineScope()
 
     Scaffold(
-        modifier = modifier,
+        modifier = Modifier
+            .fillMaxSize()
+            .then(modifier),
         topBar = {
             SearchScreenTopBar(
                 onNavigateToBookmarks = onNavigateToBookmarks,

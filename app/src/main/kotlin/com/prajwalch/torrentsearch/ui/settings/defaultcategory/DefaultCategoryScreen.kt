@@ -2,6 +2,7 @@ package com.prajwalch.torrentsearch.ui.settings.defaultcategory
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.consumeWindowInsets
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -32,7 +33,9 @@ fun DefaultCategoryScreen(onNavigateBack: () -> Unit, modifier: Modifier = Modif
     val defaultCategory by remember { derivedStateOf { settings.defaultCategory } }
 
     Scaffold(
-        modifier = modifier,
+        modifier = Modifier
+            .fillMaxSize()
+            .then(modifier),
         topBar = {
             DefaultCategoryScreenTopBar(onNavigateBack = onNavigateBack)
         },

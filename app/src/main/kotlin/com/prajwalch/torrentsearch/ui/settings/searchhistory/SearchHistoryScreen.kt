@@ -30,7 +30,9 @@ fun SearchHistoryScreen(onNavigateBack: () -> Unit, modifier: Modifier = Modifie
     val searchHistoryList by viewModel.uiState.collectAsStateWithLifecycle()
 
     Scaffold(
-        modifier = modifier,
+        modifier = Modifier
+            .fillMaxSize()
+            .then(modifier),
         topBar = {
             SearchHistoryScreenTopBar(
                 onNavigateBack = onNavigateBack,

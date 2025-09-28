@@ -3,6 +3,7 @@ package com.prajwalch.torrentsearch.ui.settings.defaultsortoptions
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.consumeWindowInsets
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ListItem
@@ -35,7 +36,9 @@ fun DefaultSortOptionsScreen(onNavigateBack: () -> Unit, modifier: Modifier = Mo
     val defaultSortOptions by remember { derivedStateOf { searchSettings.defaultSortOptions } }
 
     Scaffold(
-        modifier = modifier,
+        modifier = Modifier
+            .fillMaxSize()
+            .then(modifier),
         topBar = {
             DefaultSortOptionsScreenTopBar(onNavigateBack = onNavigateBack)
         },
