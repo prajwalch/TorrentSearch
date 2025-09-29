@@ -1,8 +1,12 @@
 package com.prajwalch.torrentsearch.ui.settings
 
+import android.content.ComponentName
+import android.content.pm.PackageManager
+
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 
+import com.prajwalch.torrentsearch.BuildConfig
 import com.prajwalch.torrentsearch.data.repository.SearchProvidersRepository
 import com.prajwalch.torrentsearch.data.repository.SettingsRepository
 import com.prajwalch.torrentsearch.models.Category
@@ -56,6 +60,11 @@ data class DefaultSortOptions(
 data class SearchHistorySettingsUiState(
     val saveSearchHistory: Boolean = true,
     val showSearchHistory: Boolean = true,
+)
+
+data class AdvanceSettingsUiState(
+    val enableShareIntegration: Boolean = true,
+    val enableQuickSearch: Boolean = true,
 )
 
 /** ViewModel that handles the business logic of Settings screen. */
@@ -118,6 +127,17 @@ class SettingsViewModel @Inject constructor(
         started = SharingStarted.WhileSubscribed(5000),
         initialValue = SearchHistorySettingsUiState(),
     )
+
+    val advanceSettingsUiState = combine(
+        settingsRepository.enableShareIntegration,
+        settingsRepository.enableQuickSearch,
+        ::AdvanceSettingsUiState,
+    )
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = AdvanceSettingsUiState()
+        )
 
     /** Information of all search providers. */
     private val allSearchProvidersInfo = searchProvidersRepository
@@ -215,6 +235,49 @@ class SettingsViewModel @Inject constructor(
         viewModelScope.launch {
             settingsRepository.updateMaxNumResults(maxNumResults = maxNumResults)
         }
+    }
+
+    fun enableShareIntegration(enable: Boolean, packageManager: PackageManager) {
+        viewModelScope.launch {
+            enableIntentIntegration(
+                enable = enable,
+                packageManager = packageManager,
+                activityAliasName = ".SendAlias",
+            )
+            settingsRepository.updateEnableShareIntegration(enable = enable)
+        }
+    }
+
+    fun enableQuickSearch(enable: Boolean, packageManager: PackageManager) {
+        viewModelScope.launch {
+            enableIntentIntegration(
+                enable = enable,
+                packageManager = packageManager,
+                activityAliasName = ".ProcessTextAlias",
+            )
+            settingsRepository.updateEnableQuickSearch(enable = enable)
+        }
+    }
+
+    private fun enableIntentIntegration(
+        enable: Boolean,
+        packageManager: PackageManager,
+        activityAliasName: String,
+    ) {
+        val packageName = BuildConfig.APPLICATION_ID
+        val componentName = ComponentName(packageName, "$packageName$activityAliasName")
+
+        val componentEnabledState = if (enable) {
+            PackageManager.COMPONENT_ENABLED_STATE_ENABLED
+        } else {
+            PackageManager.COMPONENT_ENABLED_STATE_DISABLED
+        }
+
+        packageManager.setComponentEnabledSetting(
+            componentName,
+            componentEnabledState,
+            PackageManager.DONT_KILL_APP,
+        )
     }
 
     /** Saves/unsaves search history. */

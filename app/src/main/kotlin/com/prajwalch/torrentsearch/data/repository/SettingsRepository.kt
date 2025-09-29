@@ -82,6 +82,12 @@ class SettingsRepository @Inject constructor(
     val showSearchHistory: Flow<Boolean> = dataStore
         .getOrDefault(key = SHOW_SEARCH_HISTORY, default = true)
 
+    val enableShareIntegration: Flow<Boolean> = dataStore
+        .getOrDefault(key = ENABLE_SHARE_INTEGRATION, default = true)
+
+    val enableQuickSearch: Flow<Boolean> = dataStore
+        .getOrDefault(key = ENABLE_QUICK_SEARCH, default = true)
+
     suspend fun updateEnableDynamicTheme(enable: Boolean) {
         dataStore.setOrUpdate(key = ENABLE_DYNAMIC_THEME, enable)
     }
@@ -130,6 +136,14 @@ class SettingsRepository @Inject constructor(
         dataStore.setOrUpdate(key = SHOW_SEARCH_HISTORY, value = show)
     }
 
+    suspend fun updateEnableShareIntegration(enable: Boolean) {
+        dataStore.setOrUpdate(key = ENABLE_SHARE_INTEGRATION, value = enable)
+    }
+
+    suspend fun updateEnableQuickSearch(enable: Boolean) {
+        dataStore.setOrUpdate(key = ENABLE_QUICK_SEARCH, value = enable)
+    }
+
     private companion object PreferencesKeys {
         // Appearance keys.
         val ENABLE_DYNAMIC_THEME = booleanPreferencesKey("enable_dynamic_theme")
@@ -150,6 +164,10 @@ class SettingsRepository @Inject constructor(
         // Search history.
         val SAVE_SEARCH_HISTORY = booleanPreferencesKey("save_search_history")
         val SHOW_SEARCH_HISTORY = booleanPreferencesKey("show_search_history")
+
+        // Advanced
+        val ENABLE_SHARE_INTEGRATION = booleanPreferencesKey("enable_share_integration")
+        val ENABLE_QUICK_SEARCH = booleanPreferencesKey("enable_quick_search")
     }
 }
 

@@ -26,14 +26,33 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+        </activity>
+
+        <activity-alias
+            android:name="${applicationId}.SendAlias"
+            android:exported="true"
+            android:targetActivity=".ui.MainActivity">
+
             <intent-filter>
                 <action android:name="android.intent.action.SEND" />
-                <action android:name="android.intent.action.PROCESS_TEXT" />
 
                 <category android:name="android.intent.category.DEFAULT" />
                 <data android:mimeType="text/plain" />
             </intent-filter>
-        </activity>
+        </activity-alias>
+
+        <activity-alias
+            android:name="${applicationId}.ProcessTextAlias"
+            android:exported="true"
+            android:targetActivity=".ui.MainActivity">
+
+            <intent-filter>
+                <action android:name="android.intent.action.PROCESS_TEXT" />
+                
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:mimeType="text/plain" />
+            </intent-filter>
+        </activity-alias>
     </application>
 
 </manifest>

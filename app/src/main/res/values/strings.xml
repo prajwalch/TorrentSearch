@@ -102,6 +102,16 @@
     <string name="desc_go_to_search_history_screen">Go to search history screen</string>
     <string name="search_history_screen_title">Search history</string>
     <string name="desc_delete_all_search_history">Delete all search history</string>
+    <!-- Advanced section -->
+    <string name="settings_section_advanced">Advanced</string>
+    <string name="setting_enable_share_integration">Enable share integration</string>
+    <string name="setting_enable_quick_search">Enable quick search</string>
+    <string name="setting_enable_quick_search_supporting_text">
+        When enabled, adds this app to the text selection menu (like Copy or Cut).
+    </string>
+    <string name="setting_enable_share_integration_supporting_text">
+        When enabled, adds this app in the share menu.
+    </string>
     <!-- About -->
     <string name="settings_section_about">About</string>
     <string name="setting_version">Version</string>

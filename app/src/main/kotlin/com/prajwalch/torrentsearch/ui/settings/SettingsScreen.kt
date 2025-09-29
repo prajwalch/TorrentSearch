@@ -51,6 +51,7 @@ fun SettingsScreen(
             item {
                 SearchHistorySettings(onNavigateToSearchHistory = onNavigateToSearchHistory)
             }
+            item { AdvancedSettings() }
             item { About() }
         }
     }
