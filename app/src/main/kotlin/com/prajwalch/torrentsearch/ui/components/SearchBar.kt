@@ -137,6 +137,37 @@ fun SearchBar(
     )
 }
 
+// TODO: Rename it
+@Composable
+fun SearchBar(
+    query: String,
+    onQueryChange: (String) -> Unit,
+    modifier: Modifier = Modifier,
+    placeholder: @Composable (() -> Unit)? = null,
+) {
+    TextField(
+        modifier = modifier.height(TextFieldDefaults.MinHeight),
+        value = query,
+        onValueChange = onQueryChange,
+        textStyle = MaterialTheme.typography.bodyLarge,
+        placeholder = placeholder,
+        trailingIcon = {
+            if (query.isNotEmpty()) {
+                ClearIconButton(onClick = { onQueryChange("") })
+            }
+        },
+        singleLine = true,
+        colors = TextFieldDefaults.colors(
+            focusedContainerColor = Color.Transparent,
+            unfocusedContainerColor = Color.Transparent,
+            focusedIndicatorColor = Color.Transparent,
+            unfocusedIndicatorColor = Color.Transparent,
+            focusedTextColor = MaterialTheme.colorScheme.onSurface,
+            unfocusedTextColor = MaterialTheme.colorScheme.onSurfaceVariant,
+        ),
+    )
+}
+
 @Composable
 private fun LeadingIcon(
     isSearchBarExpanded: Boolean,

@@ -2,21 +2,26 @@ package com.prajwalch.torrentsearch.ui.searchresults
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyListState
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
@@ -32,7 +37,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
-import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
@@ -40,6 +44,7 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 
@@ -47,6 +52,7 @@ import com.prajwalch.torrentsearch.R
 import com.prajwalch.torrentsearch.models.SortCriteria
 import com.prajwalch.torrentsearch.models.SortOrder
 import com.prajwalch.torrentsearch.models.Torrent
+import com.prajwalch.torrentsearch.providers.SearchProviderId
 import com.prajwalch.torrentsearch.ui.components.NavigateBackIconButton
 import com.prajwalch.torrentsearch.ui.components.NoInternetConnection
 import com.prajwalch.torrentsearch.ui.components.ResultsNotFound
@@ -56,8 +62,8 @@ import com.prajwalch.torrentsearch.ui.components.SettingsIconButton
 import com.prajwalch.torrentsearch.ui.components.SortDropdownMenu
 import com.prajwalch.torrentsearch.ui.components.SortIconButton
 import com.prajwalch.torrentsearch.ui.components.TorrentList
+import com.prajwalch.torrentsearch.ui.theme.spaces
 
-import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -91,10 +97,12 @@ fun SearchResultsScreen(
             SearchResultsScreenTopBar(
                 onNavigateBack = onNavigateBack,
                 onNavigateToSettings = onNavigateToSettings,
-                onFilterResults = viewModel::filterResults,
                 currentSortCriteria = uiState.currentSortCriteria,
                 currentSortOrder = uiState.currentSortOrder,
                 onSortRequest = viewModel::sortResults,
+                filterOptions = uiState.filterOptions,
+                onFilterQueryChange = viewModel::changeFilterQuery,
+                onToggleSearchProviderSelection = viewModel::toggleSearchProviderSelection,
                 scrollBehavior = scrollBehavior,
             )
         },
@@ -137,10 +145,12 @@ fun SearchResultsScreen(
 private fun SearchResultsScreenTopBar(
     onNavigateBack: () -> Unit,
     onNavigateToSettings: () -> Unit,
-    onFilterResults: (String) -> Unit,
     currentSortCriteria: SortCriteria,
     currentSortOrder: SortOrder,
     onSortRequest: (SortCriteria, SortOrder) -> Unit,
+    filterOptions: FilterOptionsUiState,
+    onFilterQueryChange: (String) -> Unit,
+    onToggleSearchProviderSelection: (SearchProviderId) -> Unit,
     modifier: Modifier = Modifier,
     scrollBehavior: TopAppBarScrollBehavior? = null,
 ) {
@@ -157,11 +167,14 @@ private fun SearchResultsScreenTopBar(
         showSearchBar = false
     }
 
-    val textFieldState = rememberTextFieldState()
+    var showFilterOptionBottomSheet by remember { mutableStateOf(false) }
 
-    LaunchedEffect(Unit) {
-        snapshotFlow { textFieldState.text }
-            .collectLatest { onFilterResults(it.toString()) }
+    if (showFilterOptionBottomSheet) {
+        FilterOptionsBottomSheet(
+            onDismissRequest = { showFilterOptionBottomSheet = false },
+            filterOptions = filterOptions,
+            onToggleSearchProviderSelection = onToggleSearchProviderSelection,
+        )
     }
 
     TopAppBar(
@@ -175,7 +188,8 @@ private fun SearchResultsScreenTopBar(
             if (showSearchBar) {
                 SearchBar(
                     modifier = Modifier.focusRequester(searchBarFocusRequester),
-                    textFieldState = textFieldState,
+                    query = filterOptions.query,
+                    onQueryChange = onFilterQueryChange,
                     placeholder = { Text(text = stringResource(R.string.search_results)) },
                 )
             }
@@ -203,11 +217,73 @@ private fun SearchResultsScreenTopBar(
                         onSortRequest = onSortRequest,
                     )
                 }
+
+                IconButton(onClick = { showFilterOptionBottomSheet = true }) {
+                    Icon(
+                        painter = painterResource(R.drawable.ic_filter_list),
+                        contentDescription = null,
+                    )
+                }
             }
             SettingsIconButton(onClick = onNavigateToSettings)
         },
         scrollBehavior = scrollBehavior,
     )
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun FilterOptionsBottomSheet(
+    onDismissRequest: () -> Unit,
+    filterOptions: FilterOptionsUiState,
+    onToggleSearchProviderSelection: (SearchProviderId) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    ModalBottomSheet(modifier = modifier, onDismissRequest = onDismissRequest) {
+        Column(modifier = Modifier.padding(bottom = MaterialTheme.spaces.large)) {
+            Text(
+                modifier = Modifier.padding(
+                    horizontal = MaterialTheme.spaces.large,
+                    vertical = MaterialTheme.spaces.small,
+                ),
+                text = stringResource(R.string.search_providers),
+                color = MaterialTheme.colorScheme.primary,
+                style = MaterialTheme.typography.titleSmall,
+            )
+            SearchProvidersChipsRow(
+                searchProviders = filterOptions.searchProviders,
+                onToggleSearchProviderSelection = onToggleSearchProviderSelection,
+                contentPadding = PaddingValues(horizontal = MaterialTheme.spaces.large),
+            )
+        }
+    }
+}
+
+@Composable
+private fun SearchProvidersChipsRow(
+    searchProviders: List<SearchProviderFilterUiState>,
+    onToggleSearchProviderSelection: (SearchProviderId) -> Unit,
+    modifier: Modifier = Modifier,
+    contentPadding: PaddingValues = PaddingValues(0.dp),
+) {
+    val searchProviders = remember(searchProviders) {
+        searchProviders.sortedBy { it.searchProviderName }
+    }
+
+    LazyRow(
+        modifier = modifier,
+        horizontalArrangement = Arrangement.spacedBy(space = MaterialTheme.spaces.small),
+        contentPadding = contentPadding,
+    ) {
+        items(items = searchProviders, key = { it.searchProviderId }) {
+            FilterChip(
+                selected = it.selected,
+                onClick = { onToggleSearchProviderSelection(it.searchProviderId) },
+                label = { Text(text = it.searchProviderName) },
+                enabled = it.enabled,
+            )
+        }
+    }
 }
 
 @Composable

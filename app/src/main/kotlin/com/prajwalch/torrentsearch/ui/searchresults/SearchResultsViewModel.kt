@@ -1,6 +1,7 @@
 package com.prajwalch.torrentsearch.ui.searchresults
 
 import android.util.Log
+
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -19,6 +20,7 @@ import com.prajwalch.torrentsearch.models.SortOrder
 import com.prajwalch.torrentsearch.models.Torrent
 import com.prajwalch.torrentsearch.network.ConnectivityChecker
 import com.prajwalch.torrentsearch.providers.SearchProvider
+import com.prajwalch.torrentsearch.providers.SearchProviderId
 
 import dagger.hilt.android.lifecycle.HiltViewModel
 
@@ -45,6 +47,7 @@ import javax.inject.Inject
 data class SearchResultsUiState(
     val searchQuery: String = "",
     val searchResults: List<Torrent> = emptyList(),
+    val filterOptions: FilterOptionsUiState = FilterOptionsUiState(),
     val filteredResults: List<Torrent>? = null,
     val currentSortCriteria: SortCriteria = SortCriteria.Default,
     val currentSortOrder: SortOrder = SortOrder.Default,
@@ -52,6 +55,18 @@ data class SearchResultsUiState(
     val isLoading: Boolean = false,
     val isSearching: Boolean = false,
     val isInternetError: Boolean = false,
+)
+
+data class FilterOptionsUiState(
+    val query: String = "",
+    val searchProviders: List<SearchProviderFilterUiState> = emptyList(),
+)
+
+data class SearchProviderFilterUiState(
+    val searchProviderId: SearchProviderId,
+    val searchProviderName: String,
+    val enabled: Boolean = false,
+    val selected: Boolean = false,
 )
 
 /** Relevant settings for the search results screen. */
@@ -80,8 +95,8 @@ class SearchResultsViewModel @Inject constructor(
     private val _uiState = MutableStateFlow(SearchResultsUiState())
     val uiState = _uiState.asStateFlow()
 
-    private val query = savedStateHandle.get<String>("query")
-    private val category = savedStateHandle.get<String>("category")?.let(Category::valueOf)
+    private val searchQuery = savedStateHandle.get<String>("query")
+    private val searchCategory = savedStateHandle.get<String>("category")?.let(Category::valueOf)
 
     /**
      * On-going search.
@@ -96,22 +111,47 @@ class SearchResultsViewModel @Inject constructor(
 
     init {
         Log.i(TAG, "init is invoked")
-        Log.d(TAG, "Query = $query, Category = $category")
+        Log.d(TAG, "Query = $searchQuery, Category = $searchCategory")
 
         performSearch()
         observeNSFWMode()
     }
 
-    fun filterResults(query: String) {
-        if (query.isEmpty()) {
-            _uiState.update { it.copy(filteredResults = null) }
-            return
+    fun changeFilterQuery(filterQuery: String) {
+        applyFilterOptions(_uiState.value.filterOptions.copy(query = filterQuery))
+    }
+
+    /** Filters the search results according to the search provider selection state. */
+    fun toggleSearchProviderSelection(searchProviderId: SearchProviderId) {
+        val searchProvidersFilterUiState = _uiState.value.filterOptions.searchProviders.map {
+            if (it.searchProviderId == searchProviderId) {
+                it.copy(selected = !it.selected)
+            } else {
+                it
+            }
+        }
+        val filterOptions = _uiState.value.filterOptions.copy(
+            searchProviders = searchProvidersFilterUiState,
+        )
+
+        applyFilterOptions(filterOptions = filterOptions)
+    }
+
+    private fun applyFilterOptions(filterOptions: FilterOptionsUiState) {
+        val selectedSearchProvidersId = filterOptions.searchProviders.mapNotNull {
+            if (it.selected) it.searchProviderId else null
         }
 
-        val filteredResults = _uiState.value.searchResults.filter {
-            it.name.contains(query, ignoreCase = true)
+        val filteredResults = _uiState.value.searchResults
+            .filter { it.providerId in selectedSearchProvidersId }
+            .filter { it.name.contains(filterOptions.query, ignoreCase = true) }
+
+        _uiState.update {
+            it.copy(
+                filterOptions = filterOptions,
+                filteredResults = filteredResults,
+            )
         }
-        _uiState.update { it.copy(filteredResults = filteredResults) }
     }
 
     /** Sorts and updates the UI state according to given criteria and order. */
@@ -132,14 +172,12 @@ class SearchResultsViewModel @Inject constructor(
     fun performSearch() {
         Log.i(TAG, "performSearch() called")
 
-        val query = query ?: return
-        val category = category ?: return
+        val searchQuery = searchQuery ?: return
+        val category = searchCategory ?: return
 
-        if (query.isBlank()) {
+        if (searchQuery.isBlank()) {
             return
         }
-
-        _uiState.update { it.copy(searchQuery = query) }
 
         Log.i(TAG, "Cancelling on-going search")
         searchJob?.cancel()
@@ -153,7 +191,10 @@ class SearchResultsViewModel @Inject constructor(
             val defaultSortOptions = settings.defaultSortOptions
             _uiState.update {
                 it.copy(
+                    searchQuery = searchQuery,
                     searchResults = emptyList(),
+                    filterOptions = FilterOptionsUiState(),
+                    filteredResults = null,
                     currentSortCriteria = defaultSortOptions.sortCriteria,
                     currentSortOrder = defaultSortOptions.sortOrder,
                     resultsNotFound = false,
@@ -166,7 +207,7 @@ class SearchResultsViewModel @Inject constructor(
             if (settings.saveSearchHistory) {
                 // Trim the query to prevent same query (e.g. 'one' and 'one ')
                 // from end upping into the database.
-                val query = query.trim()
+                val query = searchQuery.trim()
 
                 searchHistoryRepository.add(
                     searchHistory = SearchHistory(query = query)
@@ -211,7 +252,7 @@ class SearchResultsViewModel @Inject constructor(
 
             torrentsRepository
                 .search(
-                    query = query,
+                    query = searchQuery,
                     category = category,
                     searchProviders = enabledSearchProviders,
                 )
@@ -267,6 +308,24 @@ class SearchResultsViewModel @Inject constructor(
     private fun onEachSearchResults(results: List<Torrent>, settings: Settings) {
         Log.i(TAG, "onEachSearchResults() called")
 
+        _uiState.update {
+            val firstResult = results.first()
+
+            val searchProviderFilterUiState = SearchProviderFilterUiState(
+                searchProviderId = firstResult.providerId,
+                searchProviderName = firstResult.providerName,
+                enabled = true,
+                selected = true,
+            )
+            val filterOptions = it.filterOptions.copy(
+                searchProviders = it.filterOptions.searchProviders.plus(
+                    searchProviderFilterUiState
+                )
+            )
+
+            it.copy(filterOptions = filterOptions)
+        }
+
         searchResultsCache.addAll(results)
 
         if (searchResultsCache.isEmpty()) {
@@ -277,7 +336,7 @@ class SearchResultsViewModel @Inject constructor(
         Log.i(TAG, "Received ${results.size} results, ${searchResultsCache.size} total")
         Log.i(TAG, "Filtering results..")
 
-        val filteredResults = filterSearchResults(
+        val filteredResults = filterSearchResultsBySettings(
             results = searchResultsCache,
             settings = settings,
         )
@@ -304,7 +363,7 @@ class SearchResultsViewModel @Inject constructor(
     }
 
     /** Filters the given search results based on the given settings. */
-    private fun filterSearchResults(
+    private fun filterSearchResultsBySettings(
         results: List<Torrent>,
         settings: Settings,
     ): List<Torrent> {
