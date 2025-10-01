@@ -66,9 +66,6 @@ class SettingsRepository @Inject constructor(
             default = SortOrder.Default,
         )
 
-    val hideResultsWithZeroSeeders: Flow<Boolean> = dataStore
-        .getOrDefault(key = HIDE_RESULTS_WITH_ZERO_SEEDERS, default = false)
-
     val maxNumResults: Flow<MaxNumResults> = dataStore
         .getMapOrDefault(
             key = MAX_NUM_RESULTS,
@@ -120,10 +117,6 @@ class SettingsRepository @Inject constructor(
         dataStore.setOrUpdate(key = DEFAULT_SORT_ORDER, value = sortOrder.name)
     }
 
-    suspend fun updateHideResultsWithZeroSeeders(enable: Boolean) {
-        dataStore.setOrUpdate(key = HIDE_RESULTS_WITH_ZERO_SEEDERS, value = enable)
-    }
-
     suspend fun updateMaxNumResults(maxNumResults: MaxNumResults) {
         dataStore.setOrUpdate(key = MAX_NUM_RESULTS, value = maxNumResults.n)
     }
@@ -158,7 +151,6 @@ class SettingsRepository @Inject constructor(
         val DEFAULT_CATEGORY = stringPreferencesKey("default_category")
         val DEFAULT_SORT_CRITERIA = stringPreferencesKey("default_sort_criteria")
         val DEFAULT_SORT_ORDER = stringPreferencesKey("default_sort_order")
-        val HIDE_RESULTS_WITH_ZERO_SEEDERS = booleanPreferencesKey("hide_results_with_zero_seeders")
         val MAX_NUM_RESULTS = intPreferencesKey("max_num_results")
 
         // Search history.

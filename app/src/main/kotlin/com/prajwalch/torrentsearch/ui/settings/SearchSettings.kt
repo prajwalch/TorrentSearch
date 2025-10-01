@@ -8,7 +8,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Slider
-import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -101,19 +100,6 @@ fun SearchSettings(
                     contentDescription = stringResource(
                         R.string.button_go_to_default_sort_options_screen,
                     ),
-                )
-            },
-        )
-        SettingsItem(
-            onClick = {
-                viewModel.hideResultsWithZeroSeeders(!settings.hideResultsWithZeroSeeders)
-            },
-            leadingIconId = R.drawable.ic_visibility_off,
-            headlineId = R.string.setting_hide_results_with_zero_seeders,
-            trailingContent = {
-                Switch(
-                    checked = settings.hideResultsWithZeroSeeders,
-                    onCheckedChange = { viewModel.hideResultsWithZeroSeeders(it) },
                 )
             },
         )

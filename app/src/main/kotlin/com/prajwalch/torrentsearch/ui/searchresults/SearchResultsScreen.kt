@@ -1,10 +1,12 @@
 package com.prajwalch.torrentsearch.ui.searchresults
 
 import androidx.activity.compose.BackHandler
+import androidx.annotation.StringRes
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
@@ -102,7 +104,8 @@ fun SearchResultsScreen(
                 onSortRequest = viewModel::sortResults,
                 filterOptions = uiState.filterOptions,
                 onFilterQueryChange = viewModel::changeFilterQuery,
-                onToggleSearchProviderSelection = viewModel::toggleSearchProviderSelection,
+                onSearchProviderClick = viewModel::showSearchProviderResults,
+                onShowZeroSeedersResultsClick = viewModel::showZeroSeedersResults,
                 scrollBehavior = scrollBehavior,
             )
         },
@@ -150,7 +153,8 @@ private fun SearchResultsScreenTopBar(
     onSortRequest: (SortCriteria, SortOrder) -> Unit,
     filterOptions: FilterOptionsUiState,
     onFilterQueryChange: (String) -> Unit,
-    onToggleSearchProviderSelection: (SearchProviderId) -> Unit,
+    onSearchProviderClick: (SearchProviderId) -> Unit,
+    onShowZeroSeedersResultsClick: () -> Unit,
     modifier: Modifier = Modifier,
     scrollBehavior: TopAppBarScrollBehavior? = null,
 ) {
@@ -173,7 +177,8 @@ private fun SearchResultsScreenTopBar(
         FilterOptionsBottomSheet(
             onDismissRequest = { showFilterOptionBottomSheet = false },
             filterOptions = filterOptions,
-            onToggleSearchProviderSelection = onToggleSearchProviderSelection,
+            onSearchProviderClick = onSearchProviderClick,
+            onShowZeroSeedersResultsClick = onShowZeroSeedersResultsClick,
         )
     }
 
@@ -236,33 +241,55 @@ private fun SearchResultsScreenTopBar(
 private fun FilterOptionsBottomSheet(
     onDismissRequest: () -> Unit,
     filterOptions: FilterOptionsUiState,
-    onToggleSearchProviderSelection: (SearchProviderId) -> Unit,
+    onSearchProviderClick: (SearchProviderId) -> Unit,
+    onShowZeroSeedersResultsClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     ModalBottomSheet(modifier = modifier, onDismissRequest = onDismissRequest) {
         Column(modifier = Modifier.padding(bottom = MaterialTheme.spaces.large)) {
-            Text(
-                modifier = Modifier.padding(
-                    horizontal = MaterialTheme.spaces.large,
-                    vertical = MaterialTheme.spaces.small,
-                ),
-                text = stringResource(R.string.search_providers),
-                color = MaterialTheme.colorScheme.primary,
-                style = MaterialTheme.typography.titleSmall,
-            )
+            FiltersSectionTitle(titleId = R.string.filters_section_search_providers)
             SearchProvidersChipsRow(
                 searchProviders = filterOptions.searchProviders,
-                onToggleSearchProviderSelection = onToggleSearchProviderSelection,
+                onSearchProviderClick = onSearchProviderClick,
                 contentPadding = PaddingValues(horizontal = MaterialTheme.spaces.large),
             )
+
+            FiltersSectionTitle(titleId = R.string.filters_section_additional_options)
+            FlowRow(
+                modifier = Modifier.padding(horizontal = MaterialTheme.spaces.large),
+                itemVerticalAlignment = Alignment.CenterVertically,
+            ) {
+                FilterChip(
+                    selected = filterOptions.showZeroSeedersResults,
+                    onClick = onShowZeroSeedersResultsClick,
+                    label = {
+                        Text(text = stringResource(R.string.filter_show_zero_seeders_results))
+                    },
+                )
+            }
         }
     }
 }
 
 @Composable
+private fun FiltersSectionTitle(@StringRes titleId: Int, modifier: Modifier = Modifier) {
+    Text(
+        modifier = Modifier
+            .padding(
+                horizontal = MaterialTheme.spaces.large,
+                vertical = MaterialTheme.spaces.small,
+            )
+            .then(modifier),
+        text = stringResource(titleId),
+        color = MaterialTheme.colorScheme.primary,
+        style = MaterialTheme.typography.titleSmall,
+    )
+}
+
+@Composable
 private fun SearchProvidersChipsRow(
     searchProviders: List<SearchProviderFilterUiState>,
-    onToggleSearchProviderSelection: (SearchProviderId) -> Unit,
+    onSearchProviderClick: (SearchProviderId) -> Unit,
     modifier: Modifier = Modifier,
     contentPadding: PaddingValues = PaddingValues(0.dp),
 ) {
@@ -278,7 +305,7 @@ private fun SearchProvidersChipsRow(
         items(items = searchProviders, key = { it.searchProviderId }) {
             FilterChip(
                 selected = it.selected,
-                onClick = { onToggleSearchProviderSelection(it.searchProviderId) },
+                onClick = { onSearchProviderClick(it.searchProviderId) },
                 label = { Text(text = it.searchProviderName) },
                 enabled = it.enabled,
             )

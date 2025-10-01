@@ -60,6 +60,7 @@ data class SearchResultsUiState(
 data class FilterOptionsUiState(
     val query: String = "",
     val searchProviders: List<SearchProviderFilterUiState> = emptyList(),
+    val showZeroSeedersResults: Boolean = true,
 )
 
 data class SearchProviderFilterUiState(
@@ -73,7 +74,6 @@ data class SearchProviderFilterUiState(
 private data class Settings(
     val enableNSFWMode: Boolean,
     val defaultSortOptions: DefaultSortOptions,
-    val hideResultsWithZeroSeeders: Boolean,
     val maxNumResults: MaxNumResults,
     val saveSearchHistory: Boolean,
 )
@@ -121,8 +121,8 @@ class SearchResultsViewModel @Inject constructor(
         applyFilterOptions(_uiState.value.filterOptions.copy(query = filterQuery))
     }
 
-    /** Filters the search results according to the search provider selection state. */
-    fun toggleSearchProviderSelection(searchProviderId: SearchProviderId) {
+    /** Toggles the search results of search provider matching the specified Id. */
+    fun showSearchProviderResults(searchProviderId: SearchProviderId) {
         val searchProvidersFilterUiState = _uiState.value.filterOptions.searchProviders.map {
             if (it.searchProviderId == searchProviderId) {
                 it.copy(selected = !it.selected)
@@ -137,6 +137,14 @@ class SearchResultsViewModel @Inject constructor(
         applyFilterOptions(filterOptions = filterOptions)
     }
 
+    /** Toggles the zero seeders results. */
+    fun showZeroSeedersResults() {
+        val filterOptions = with(_uiState.value.filterOptions) {
+            this.copy(showZeroSeedersResults = !this.showZeroSeedersResults)
+        }
+        applyFilterOptions(filterOptions = filterOptions)
+    }
+
     private fun applyFilterOptions(filterOptions: FilterOptionsUiState) {
         val selectedSearchProvidersId = filterOptions.searchProviders.mapNotNull {
             if (it.selected) it.searchProviderId else null
@@ -145,6 +153,7 @@ class SearchResultsViewModel @Inject constructor(
         val filteredResults = _uiState.value.searchResults
             .filter { it.providerId in selectedSearchProvidersId }
             .filter { it.name.contains(filterOptions.query, ignoreCase = true) }
+            .filter { filterOptions.showZeroSeedersResults || it.seeders != 0u }
 
         _uiState.update {
             it.copy(
@@ -279,7 +288,6 @@ class SearchResultsViewModel @Inject constructor(
         return combine(
             settingsRepository.enableNSFWMode,
             defaultSortOptionsFlow,
-            settingsRepository.hideResultsWithZeroSeeders,
             settingsRepository.maxNumResults,
             settingsRepository.saveSearchHistory,
             ::Settings,
@@ -367,9 +375,7 @@ class SearchResultsViewModel @Inject constructor(
         results: List<Torrent>,
         settings: Settings,
     ): List<Torrent> {
-        val filteredResults = results
-            .filterNSFW(isNSFWModeEnabled = settings.enableNSFWMode)
-            .filter { !settings.hideResultsWithZeroSeeders || it.seeders != 0u }
+        val filteredResults = results.filterNSFW(isNSFWModeEnabled = settings.enableNSFWMode)
 
         if (settings.maxNumResults.isUnlimited()) {
             return filteredResults

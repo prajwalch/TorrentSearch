@@ -42,7 +42,6 @@ data class SearchSettingsUiState(
     val searchProvidersStat: SearchProvidersStat = SearchProvidersStat(),
     val defaultCategory: Category = Category.All,
     val defaultSortOptions: DefaultSortOptions = DefaultSortOptions(),
-    val hideResultsWithZeroSeeders: Boolean = false,
     val maxNumResults: MaxNumResults = MaxNumResults.Unlimited,
 )
 
@@ -109,7 +108,6 @@ class SettingsViewModel @Inject constructor(
         searchProvidersStatFlow,
         settingsRepository.defaultCategory,
         defaultSortOptionsFlow,
-        settingsRepository.hideResultsWithZeroSeeders,
         settingsRepository.maxNumResults,
         ::SearchSettingsUiState,
     ).stateIn(
@@ -220,13 +218,6 @@ class SettingsViewModel @Inject constructor(
     fun changeDefaultSortOrder(sortOrder: SortOrder) {
         viewModelScope.launch {
             settingsRepository.updateDefaultSortOrder(sortOrder = sortOrder)
-        }
-    }
-
-    /** Enables/disables an option to hide zero seeders. */
-    fun hideResultsWithZeroSeeders(yes: Boolean) {
-        viewModelScope.launch {
-            settingsRepository.updateHideResultsWithZeroSeeders(enable = yes)
         }
     }
 
