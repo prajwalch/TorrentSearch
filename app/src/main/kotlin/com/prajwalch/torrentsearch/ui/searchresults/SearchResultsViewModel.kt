@@ -71,7 +71,6 @@ data class SearchProviderFilterUiState(
     val selected: Boolean = false,
 )
 
-/** Relevant settings for the search results screen. */
 private data class Settings(
     val enableNSFWMode: Boolean,
     val defaultSortOptions: DefaultSortOptions,
@@ -115,12 +114,12 @@ class SearchResultsViewModel @Inject constructor(
         observeNSFWMode()
     }
 
-    fun setFilterQuery(query: String) {
+    fun updateFilterQuery(query: String) {
         _uiState.update { it.copy(filterQuery = query) }
         filterSearchResultsByQuery(searchResults = _uiState.value.searchResults)
     }
 
-    fun sortResults(criteria: SortCriteria, order: SortOrder) {
+    fun sortSearchResults(criteria: SortCriteria, order: SortOrder) {
         viewModelScope.launch {
             val sortedResults = withContext(Dispatchers.Default) {
                 _uiState.value.searchResults.customSort(
@@ -139,11 +138,7 @@ class SearchResultsViewModel @Inject constructor(
         }
     }
 
-    /**
-     * Shows or hides search results fetched from the search provider whose ID
-     * matches the given ID.
-     */
-    fun filterSearchProviderResults(searchProviderId: SearchProviderId) {
+    fun toggleSearchProviderResults(searchProviderId: SearchProviderId) {
         val searchProvidersFilterUiState = _uiState.value.filterOptions.searchProviders.map {
             if (it.searchProviderId == searchProviderId) {
                 it.copy(selected = !it.selected)
@@ -162,8 +157,7 @@ class SearchResultsViewModel @Inject constructor(
         filterSearchResultsByOptions()
     }
 
-    /** Shows or hides zero seeders results (dead torrents). */
-    fun filterZeroSeedersResults() {
+    fun toggleZeroSeedersResults() {
         _uiState.update {
             it.copy(
                 filterOptions = it.filterOptions.copy(
@@ -322,7 +316,6 @@ class SearchResultsViewModel @Inject constructor(
         }
     }
 
-    /** Fetches and returns the latest settings. */
     private suspend fun getLatestSettings(): Settings {
         val defaultSortOptionsFlow = combine(
             settingsRepository.defaultSortCriteria,
@@ -339,7 +332,6 @@ class SearchResultsViewModel @Inject constructor(
         ).first()
     }
 
-    /** Fetches and returns enabled search providers. */
     private suspend fun getEnabledSearchProviders(): List<SearchProvider> {
         return combine(
             searchProvidersRepository.getInstances(),
@@ -349,7 +341,6 @@ class SearchResultsViewModel @Inject constructor(
         }.first()
     }
 
-    /** Returns `true` if the search should be continue. */
     private fun shouldContinueSearch(maxNumResults: MaxNumResults): Boolean {
         return maxNumResults.isUnlimited() || _uiState.value.searchResults.size < maxNumResults.n
     }
@@ -370,7 +361,6 @@ class SearchResultsViewModel @Inject constructor(
         }
     }
 
-    /** Runs on every search result emitted by repository. */
     private suspend fun onEachSearchResults(searchResults: List<Torrent>) {
         Log.i(TAG, "onEachSearchResults() called")
 
@@ -418,7 +408,6 @@ class SearchResultsViewModel @Inject constructor(
         }
     }
 
-    /** Runs after the search completes. */
     private fun onSearchCompletion(cause: Throwable?) {
         Log.i(TAG, "onSearchCompletion() called")
 

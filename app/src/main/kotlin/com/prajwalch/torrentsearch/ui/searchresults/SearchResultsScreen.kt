@@ -83,10 +83,15 @@ fun SearchResultsScreen(
     val coroutineScope = rememberCoroutineScope()
     val lazyListState = rememberLazyListState()
 
-    val isFirstResultVisible by remember {
-        derivedStateOf { lazyListState.firstVisibleItemIndex <= 1 }
+    var showFilterOptions by remember { mutableStateOf(false) }
+    if (showFilterOptions) {
+        FilterOptionsBottomSheet(
+            onDismissRequest = { showFilterOptions = false },
+            filterOptions = uiState.filterOptions,
+            onToggleSearchProvider = viewModel::toggleSearchProviderResults,
+            onToggleShowZeroSeedersResults = viewModel::toggleZeroSeedersResults,
+        )
     }
-    val showScrollToTopButton = uiState.searchResults.isNotEmpty() && !isFirstResultVisible
 
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
 
@@ -98,21 +103,23 @@ fun SearchResultsScreen(
         topBar = {
             SearchResultsScreenTopBar(
                 onNavigateBack = onNavigateBack,
-                onNavigateToSettings = onNavigateToSettings,
                 filterQuery = uiState.filterQuery,
-                onFilterQueryChange = viewModel::setFilterQuery,
+                onFilterQueryChange = viewModel::updateFilterQuery,
                 currentSortCriteria = uiState.currentSortCriteria,
                 currentSortOrder = uiState.currentSortOrder,
-                onSortRequest = viewModel::sortResults,
-                filterOptions = uiState.filterOptions,
-                onSearchProviderClick = viewModel::filterSearchProviderResults,
-                onShowZeroSeedersResultsClick = viewModel::filterZeroSeedersResults,
+                onSortSearchResults = viewModel::sortSearchResults,
+                onShowFilterOptions = { showFilterOptions = true },
+                onNavigateToSettings = onNavigateToSettings,
                 scrollBehavior = scrollBehavior,
             )
         },
         floatingActionButton = {
+            val isFirstResultVisible by remember {
+                derivedStateOf { lazyListState.firstVisibleItemIndex <= 1 }
+            }
+
             ScrollToTopFAB(
-                visible = showScrollToTopButton,
+                visible = !isFirstResultVisible,
                 onClick = {
                     coroutineScope.launch { lazyListState.animateScrollToItem(0) }
                 },
@@ -133,9 +140,9 @@ fun SearchResultsScreen(
                 searchQuery = uiState.searchQuery,
                 searchResults = uiState.searchResults,
                 filteredSearchResults = uiState.filteredSearchResults,
-                resultsNotFound = uiState.resultsNotFound,
                 onResultSelect = onResultSelect,
                 lazyListState = lazyListState,
+                resultsNotFound = uiState.resultsNotFound,
                 isLoading = uiState.isLoading,
                 isInternetError = uiState.isInternetError,
                 onRetry = { viewModel.performSearch() },
@@ -148,20 +155,22 @@ fun SearchResultsScreen(
 @Composable
 private fun SearchResultsScreenTopBar(
     onNavigateBack: () -> Unit,
-    onNavigateToSettings: () -> Unit,
     filterQuery: String,
     onFilterQueryChange: (String) -> Unit,
     currentSortCriteria: SortCriteria,
     currentSortOrder: SortOrder,
-    onSortRequest: (SortCriteria, SortOrder) -> Unit,
-    filterOptions: FilterOptionsUiState,
-    onSearchProviderClick: (SearchProviderId) -> Unit,
-    onShowZeroSeedersResultsClick: () -> Unit,
+    onSortSearchResults: (SortCriteria, SortOrder) -> Unit,
+    onShowFilterOptions: () -> Unit,
+    onNavigateToSettings: () -> Unit,
     modifier: Modifier = Modifier,
     scrollBehavior: TopAppBarScrollBehavior? = null,
 ) {
     var showSearchBar by remember { mutableStateOf(false) }
     val searchBarFocusRequester = remember { FocusRequester() }
+
+    var showSortMenu by remember(currentSortCriteria, currentSortOrder) {
+        mutableStateOf(false)
+    }
 
     LaunchedEffect(showSearchBar) {
         if (showSearchBar) {
@@ -171,17 +180,6 @@ private fun SearchResultsScreenTopBar(
 
     BackHandler(enabled = showSearchBar) {
         showSearchBar = false
-    }
-
-    var showFilterOptionBottomSheet by remember { mutableStateOf(false) }
-
-    if (showFilterOptionBottomSheet) {
-        FilterOptionsBottomSheet(
-            onDismissRequest = { showFilterOptionBottomSheet = false },
-            filterOptions = filterOptions,
-            onSearchProviderClick = onSearchProviderClick,
-            onShowZeroSeedersResultsClick = onShowZeroSeedersResultsClick,
-        )
     }
 
     TopAppBar(
@@ -210,24 +208,18 @@ private fun SearchResultsScreenTopBar(
                     )
                 }
 
-                Box {
-                    var showSortMenu by remember(currentSortCriteria, currentSortOrder) {
-                        mutableStateOf(false)
-                    }
+                SortIconButton(onClick = { showSortMenu = true })
+                SortDropdownMenu(
+                    expanded = showSortMenu,
+                    onDismissRequest = { showSortMenu = false },
+                    currentSortCriteria = currentSortCriteria,
+                    currentSortOrder = currentSortOrder,
+                    onSortRequest = onSortSearchResults,
+                )
 
-                    SortIconButton(onClick = { showSortMenu = true })
-                    SortDropdownMenu(
-                        expanded = showSortMenu,
-                        onDismissRequest = { showSortMenu = false },
-                        currentSortCriteria = currentSortCriteria,
-                        currentSortOrder = currentSortOrder,
-                        onSortRequest = onSortRequest,
-                    )
-                }
-
-                IconButton(onClick = { showFilterOptionBottomSheet = true }) {
+                IconButton(onClick = onShowFilterOptions) {
                     Icon(
-                        painter = painterResource(R.drawable.ic_filter_list),
+                        painter = painterResource(R.drawable.ic_filter_alt),
                         contentDescription = null,
                     )
                 }
@@ -243,8 +235,8 @@ private fun SearchResultsScreenTopBar(
 private fun FilterOptionsBottomSheet(
     onDismissRequest: () -> Unit,
     filterOptions: FilterOptionsUiState,
-    onSearchProviderClick: (SearchProviderId) -> Unit,
-    onShowZeroSeedersResultsClick: () -> Unit,
+    onToggleSearchProvider: (SearchProviderId) -> Unit,
+    onToggleShowZeroSeedersResults: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     ModalBottomSheet(modifier = modifier, onDismissRequest = onDismissRequest) {
@@ -252,7 +244,7 @@ private fun FilterOptionsBottomSheet(
             FiltersSectionTitle(titleId = R.string.filters_section_search_providers)
             SearchProvidersChipsRow(
                 searchProviders = filterOptions.searchProviders,
-                onSearchProviderClick = onSearchProviderClick,
+                onToggleSearchProvider = onToggleSearchProvider,
                 contentPadding = PaddingValues(horizontal = MaterialTheme.spaces.large),
             )
 
@@ -263,7 +255,7 @@ private fun FilterOptionsBottomSheet(
             ) {
                 FilterChip(
                     selected = filterOptions.showZeroSeedersResults,
-                    onClick = onShowZeroSeedersResultsClick,
+                    onClick = onToggleShowZeroSeedersResults,
                     label = {
                         Text(text = stringResource(R.string.filter_show_zero_seeders_results))
                     },
@@ -291,7 +283,7 @@ private fun FiltersSectionTitle(@StringRes titleId: Int, modifier: Modifier = Mo
 @Composable
 private fun SearchProvidersChipsRow(
     searchProviders: List<SearchProviderFilterUiState>,
-    onSearchProviderClick: (SearchProviderId) -> Unit,
+    onToggleSearchProvider: (SearchProviderId) -> Unit,
     modifier: Modifier = Modifier,
     contentPadding: PaddingValues = PaddingValues(0.dp),
 ) {
@@ -307,7 +299,7 @@ private fun SearchProvidersChipsRow(
         items(items = searchProviders, key = { it.searchProviderId }) {
             FilterChip(
                 selected = it.selected,
-                onClick = { onSearchProviderClick(it.searchProviderId) },
+                onClick = { onToggleSearchProvider(it.searchProviderId) },
                 label = { Text(text = it.searchProviderName) },
                 enabled = it.enabled,
             )
@@ -320,9 +312,9 @@ private fun SearchResultsScreenContent(
     searchQuery: String,
     searchResults: List<Torrent>,
     filteredSearchResults: List<Torrent>?,
-    resultsNotFound: Boolean,
     onResultSelect: (Torrent) -> Unit,
     lazyListState: LazyListState,
+    resultsNotFound: Boolean,
     isLoading: Boolean,
     isInternetError: Boolean,
     onRetry: () -> Unit,
