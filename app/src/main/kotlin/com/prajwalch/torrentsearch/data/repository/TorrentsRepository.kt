@@ -16,6 +16,8 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.channelFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 
 import javax.inject.Inject
 
@@ -25,6 +27,9 @@ class TorrentsRepository @Inject constructor(
     /** Uses for bookmarking torrents. */
     private val bookmarkedTorrentDao: BookmarkedTorrentDao,
 ) {
+    private val cachedResultsMutex = Mutex()
+    private val searchResultsCache = mutableListOf<Torrent>()
+
     /** Currently bookmarked torrents. */
     val bookmarkedTorrents: Flow<List<Torrent>> = bookmarkedTorrentDao
         .getAll()
@@ -52,6 +57,8 @@ class TorrentsRepository @Inject constructor(
         searchProviders: List<SearchProvider>,
     ): Flow<TorrentsRepositoryResult> = channelFlow {
         Log.i(TAG, "search() called")
+
+        cachedResultsMutex.withLock { searchResultsCache.clear() }
 
         val providersName = searchProviders.map { it.info.name }
         Log.d(TAG, "query=$query, category=$category, providers=$providersName")
@@ -94,6 +101,8 @@ class TorrentsRepository @Inject constructor(
                                 torrents = httpClientResponse.result
                             )
 
+                            cachedResultsMutex.withLock { searchResultsCache.addAll(torrents) }
+
                             send(TorrentsRepositoryResult(torrents = torrents))
                         }
                     }
@@ -132,6 +141,8 @@ class TorrentsRepository @Inject constructor(
             (it.info.specializedCategory == Category.All) || (category == it.info.specializedCategory)
         }
     }
+
+    fun getSearchResultsCache(): List<Torrent> = searchResultsCache.toList()
 
     private companion object {
         private const val TAG = "TorrentsRepository"

@@ -34,6 +34,7 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onEach
@@ -47,10 +48,11 @@ import javax.inject.Inject
 data class SearchResultsUiState(
     val searchQuery: String = "",
     val searchResults: List<Torrent> = emptyList(),
-    val filterOptions: FilterOptionsUiState = FilterOptionsUiState(),
-    val filteredResults: List<Torrent>? = null,
+    val filterQuery: String = "",
+    val filteredSearchResults: List<Torrent>? = null,
     val currentSortCriteria: SortCriteria = SortCriteria.Default,
     val currentSortOrder: SortOrder = SortOrder.Default,
+    val filterOptions: FilterOptionsUiState = FilterOptionsUiState(),
     val resultsNotFound: Boolean = false,
     val isLoading: Boolean = false,
     val isSearching: Boolean = false,
@@ -58,7 +60,6 @@ data class SearchResultsUiState(
 )
 
 data class FilterOptionsUiState(
-    val query: String = "",
     val searchProviders: List<SearchProviderFilterUiState> = emptyList(),
     val showZeroSeedersResults: Boolean = true,
 )
@@ -76,12 +77,12 @@ private data class Settings(
     val defaultSortOptions: DefaultSortOptions,
     val maxNumResults: MaxNumResults,
     val saveSearchHistory: Boolean,
-)
-
-private data class DefaultSortOptions(
-    val sortCriteria: SortCriteria = SortCriteria.Default,
-    val sortOrder: SortOrder = SortOrder.Default,
-)
+) {
+    data class DefaultSortOptions(
+        val sortCriteria: SortCriteria = SortCriteria.Default,
+        val sortOrder: SortOrder = SortOrder.Default,
+    )
+}
 
 @HiltViewModel
 class SearchResultsViewModel @Inject constructor(
@@ -106,9 +107,6 @@ class SearchResultsViewModel @Inject constructor(
      */
     private var searchJob: Job? = null
 
-    /** Recent search results cache. */
-    private var searchResultsCache = mutableListOf<Torrent>()
-
     init {
         Log.i(TAG, "init is invoked")
         Log.d(TAG, "Query = $searchQuery, Category = $searchCategory")
@@ -117,12 +115,35 @@ class SearchResultsViewModel @Inject constructor(
         observeNSFWMode()
     }
 
-    fun changeFilterQuery(filterQuery: String) {
-        applyFilterOptions(_uiState.value.filterOptions.copy(query = filterQuery))
+    fun setFilterQuery(query: String) {
+        _uiState.update { it.copy(filterQuery = query) }
+        filterSearchResultsByQuery(searchResults = _uiState.value.searchResults)
     }
 
-    /** Toggles the search results of search provider matching the specified Id. */
-    fun showSearchProviderResults(searchProviderId: SearchProviderId) {
+    fun sortResults(criteria: SortCriteria, order: SortOrder) {
+        viewModelScope.launch {
+            val sortedResults = withContext(Dispatchers.Default) {
+                _uiState.value.searchResults.customSort(
+                    criteria = criteria,
+                    order = order,
+                )
+            }
+
+            _uiState.update {
+                it.copy(
+                    searchResults = sortedResults,
+                    currentSortCriteria = criteria,
+                    currentSortOrder = order,
+                )
+            }
+        }
+    }
+
+    /**
+     * Shows or hides search results fetched from the search provider whose ID
+     * matches the given ID.
+     */
+    fun filterSearchProviderResults(searchProviderId: SearchProviderId) {
         val searchProvidersFilterUiState = _uiState.value.filterOptions.searchProviders.map {
             if (it.searchProviderId == searchProviderId) {
                 it.copy(selected = !it.selected)
@@ -130,51 +151,78 @@ class SearchResultsViewModel @Inject constructor(
                 it
             }
         }
-        val filterOptions = _uiState.value.filterOptions.copy(
-            searchProviders = searchProvidersFilterUiState,
-        )
-
-        applyFilterOptions(filterOptions = filterOptions)
-    }
-
-    /** Toggles the zero seeders results. */
-    fun showZeroSeedersResults() {
-        val filterOptions = with(_uiState.value.filterOptions) {
-            this.copy(showZeroSeedersResults = !this.showZeroSeedersResults)
-        }
-        applyFilterOptions(filterOptions = filterOptions)
-    }
-
-    private fun applyFilterOptions(filterOptions: FilterOptionsUiState) {
-        val selectedSearchProvidersId = filterOptions.searchProviders.mapNotNull {
-            if (it.selected) it.searchProviderId else null
-        }
-
-        val filteredResults = _uiState.value.searchResults
-            .filter { it.providerId in selectedSearchProvidersId }
-            .filter { it.name.contains(filterOptions.query, ignoreCase = true) }
-            .filter { filterOptions.showZeroSeedersResults || it.seeders != 0u }
 
         _uiState.update {
             it.copy(
-                filterOptions = filterOptions,
-                filteredResults = filteredResults,
+                filterOptions = it.filterOptions.copy(
+                    searchProviders = searchProvidersFilterUiState,
+                )
             )
+        }
+        filterSearchResultsByOptions()
+    }
+
+    /** Shows or hides zero seeders results (dead torrents). */
+    fun filterZeroSeedersResults() {
+        _uiState.update {
+            it.copy(
+                filterOptions = it.filterOptions.copy(
+                    showZeroSeedersResults = !it.filterOptions.showZeroSeedersResults,
+                )
+            )
+        }
+        filterSearchResultsByOptions()
+    }
+
+    private fun filterSearchResultsByQuery(searchResults: List<Torrent>) {
+        viewModelScope.launch {
+            val filterQuery = _uiState.value.filterQuery
+
+            if (filterQuery.isBlank()) {
+                _uiState.update { it.copy(filteredSearchResults = null) }
+                return@launch
+            }
+
+            val filteredSearchResults = withContext(Dispatchers.Default) {
+                searchResults.filter { it.name.contains(filterQuery, ignoreCase = true) }
+            }
+
+            _uiState.update {
+                it.copy(
+                    searchResults = searchResults,
+                    filteredSearchResults = filteredSearchResults,
+                )
+            }
         }
     }
 
-    /** Sorts and updates the UI state according to given criteria and order. */
-    fun sortResults(criteria: SortCriteria, order: SortOrder) {
-        val sortedResults = _uiState.value.searchResults.customSort(
-            criteria = criteria,
-            order = order,
-        )
-        _uiState.update {
-            it.copy(
-                searchResults = sortedResults,
-                currentSortCriteria = criteria,
-                currentSortOrder = order,
-            )
+    private fun filterSearchResultsByOptions(showNSFWResults: Boolean? = null) {
+        viewModelScope.launch {
+            val filterOptions = _uiState.value.filterOptions
+
+            val selectedSearchProvidersId = filterOptions.searchProviders.mapNotNull {
+                if (it.selected) it.searchProviderId else null
+            }
+            val showNSFWResults = showNSFWResults ?: settingsRepository.enableNSFWMode.first()
+
+            val filteredSearchResults = withContext(Dispatchers.Default) {
+                torrentsRepository
+                    .getSearchResultsCache()
+                    .filter { it.providerId in selectedSearchProvidersId }
+                    .filter { filterOptions.showZeroSeedersResults || it.seeders != 0u }
+                    // Global filter option.
+                    .filterNSFW(isNSFWModeEnabled = showNSFWResults)
+                    .customSort(
+                        criteria = _uiState.value.currentSortCriteria,
+                        order = _uiState.value.currentSortOrder,
+                    )
+            }
+
+            if (_uiState.value.filterQuery.isBlank()) {
+                _uiState.update { it.copy(searchResults = filteredSearchResults) }
+            } else {
+                filterSearchResultsByQuery(searchResults = filteredSearchResults)
+            }
         }
     }
 
@@ -182,7 +230,7 @@ class SearchResultsViewModel @Inject constructor(
         Log.i(TAG, "performSearch() called")
 
         val searchQuery = searchQuery ?: return
-        val category = searchCategory ?: return
+        val searchCategory = searchCategory ?: return
 
         if (searchQuery.isBlank()) {
             return
@@ -190,7 +238,6 @@ class SearchResultsViewModel @Inject constructor(
 
         Log.i(TAG, "Cancelling on-going search")
         searchJob?.cancel()
-        searchResultsCache.clear()
 
         Log.i(TAG, "Creating new job")
         searchJob = viewModelScope.launch {
@@ -203,7 +250,6 @@ class SearchResultsViewModel @Inject constructor(
                     searchQuery = searchQuery,
                     searchResults = emptyList(),
                     filterOptions = FilterOptionsUiState(),
-                    filteredResults = null,
                     currentSortCriteria = defaultSortOptions.sortCriteria,
                     currentSortOrder = defaultSortOptions.sortOrder,
                     resultsNotFound = false,
@@ -219,7 +265,7 @@ class SearchResultsViewModel @Inject constructor(
                 val query = searchQuery.trim()
 
                 searchHistoryRepository.add(
-                    searchHistory = SearchHistory(query = query)
+                    searchHistory = SearchHistory(query = query),
                 )
             }
 
@@ -262,16 +308,15 @@ class SearchResultsViewModel @Inject constructor(
             torrentsRepository
                 .search(
                     query = searchQuery,
-                    category = category,
+                    category = searchCategory,
                     searchProviders = enabledSearchProviders,
                 )
-                .takeWhile { shouldContinueSearch(settings = settings) }
-                .flowOn(Dispatchers.IO)
-                // Any network or other errors are ignored though it's best to
-                // report them to the UI but we don't have any implementation
-                // for that yet.
+                .takeWhile { shouldContinueSearch(maxNumResults = settings.maxNumResults) }
                 .mapNotNull { repoResult -> repoResult.torrents }
-                .onEach { onEachSearchResults(results = it, settings = settings) }
+                .flowOn(Dispatchers.IO)
+                .map { filterSearchResultsBySettings(searchResults = it, settings = settings) }
+                .flowOn(Dispatchers.Default)
+                .onEach { onEachSearchResults(searchResults = it) }
                 .onCompletion { onSearchCompletion(cause = it) }
                 .launchIn(scope = this)
         }
@@ -282,7 +327,7 @@ class SearchResultsViewModel @Inject constructor(
         val defaultSortOptionsFlow = combine(
             settingsRepository.defaultSortCriteria,
             settingsRepository.defaultSortOrder,
-            ::DefaultSortOptions,
+            Settings::DefaultSortOptions,
         )
 
         return combine(
@@ -305,84 +350,72 @@ class SearchResultsViewModel @Inject constructor(
     }
 
     /** Returns `true` if the search should be continue. */
-    private fun shouldContinueSearch(settings: Settings): Boolean {
-        Log.i(TAG, "shouldContinueSearch() called")
-
-        val maxNumResults = settings.maxNumResults
+    private fun shouldContinueSearch(maxNumResults: MaxNumResults): Boolean {
         return maxNumResults.isUnlimited() || _uiState.value.searchResults.size < maxNumResults.n
     }
 
+    private fun filterSearchResultsBySettings(
+        searchResults: List<Torrent>,
+        settings: Settings,
+    ): List<Torrent> {
+        val nsfwFilteredResults = searchResults.filterNSFW(
+            isNSFWModeEnabled = settings.enableNSFWMode,
+        )
+
+        return if (settings.maxNumResults.isUnlimited()) {
+            nsfwFilteredResults
+        } else {
+            val numResultsLeft = settings.maxNumResults.n - _uiState.value.searchResults.size
+            nsfwFilteredResults.take(numResultsLeft)
+        }
+    }
+
     /** Runs on every search result emitted by repository. */
-    private fun onEachSearchResults(results: List<Torrent>, settings: Settings) {
+    private suspend fun onEachSearchResults(searchResults: List<Torrent>) {
         Log.i(TAG, "onEachSearchResults() called")
 
-        _uiState.update {
-            val firstResult = results.first()
+        if (searchResults.isEmpty()) {
+            Log.i(TAG, "Received empty or filtered out results. Returning")
+            return
+        }
 
-            val searchProviderFilterUiState = SearchProviderFilterUiState(
-                searchProviderId = firstResult.providerId,
-                searchProviderName = firstResult.providerName,
+        Log.i(TAG, "Received ${searchResults.size} results")
+        Log.i(TAG, "Sorting search results")
+
+        val sortedSearchResults = withContext(Dispatchers.Default) {
+            with(_uiState.value) {
+                this.searchResults
+                    .plus(searchResults)
+                    .customSort(
+                        criteria = this.currentSortCriteria,
+                        order = this.currentSortOrder,
+                    )
+            }
+        }
+
+        val searchProviderFilterUiState = with(searchResults.first()) {
+            SearchProviderFilterUiState(
+                searchProviderId = this.providerId,
+                searchProviderName = this.providerName,
                 enabled = true,
                 selected = true,
             )
-            val filterOptions = it.filterOptions.copy(
-                searchProviders = it.filterOptions.searchProviders.plus(
-                    searchProviderFilterUiState
-                )
-            )
-
-            it.copy(filterOptions = filterOptions)
         }
-
-        searchResultsCache.addAll(results)
-
-        if (searchResultsCache.isEmpty()) {
-            Log.i(TAG, "Empty results. Returning...")
-            return
-        }
-
-        Log.i(TAG, "Received ${results.size} results, ${searchResultsCache.size} total")
-        Log.i(TAG, "Filtering results..")
-
-        val filteredResults = filterSearchResultsBySettings(
-            results = searchResultsCache,
-            settings = settings,
-        )
-        if (filteredResults.isEmpty()) {
-            Log.i(TAG, "All results are filtered out. Returning...")
-            return
-        }
-
-        Log.i(TAG, "Sorting results...")
-        val sortedResults = filteredResults.customSort(
-            criteria = _uiState.value.currentSortCriteria,
-            order = _uiState.value.currentSortOrder,
-        )
 
         _uiState.update {
             it.copy(
-                searchResults = sortedResults,
+                searchResults = sortedSearchResults,
+                filterOptions = it.filterOptions.copy(
+                    searchProviders = it.filterOptions.searchProviders.plus(
+                        searchProviderFilterUiState,
+                    )
+                ),
                 resultsNotFound = false,
                 isLoading = false,
                 isSearching = true,
                 isInternetError = false,
             )
         }
-    }
-
-    /** Filters the given search results based on the given settings. */
-    private fun filterSearchResultsBySettings(
-        results: List<Torrent>,
-        settings: Settings,
-    ): List<Torrent> {
-        val filteredResults = results.filterNSFW(isNSFWModeEnabled = settings.enableNSFWMode)
-
-        if (settings.maxNumResults.isUnlimited()) {
-            return filteredResults
-        }
-
-        val numResultsLeft = settings.maxNumResults.n - _uiState.value.searchResults.size
-        return results.take(numResultsLeft)
     }
 
     /** Runs after the search completes. */
@@ -407,24 +440,8 @@ class SearchResultsViewModel @Inject constructor(
     }
 
     private fun observeNSFWMode() = viewModelScope.launch {
-        settingsRepository.enableNSFWMode.distinctUntilChanged().collect { nsfwModeEnabled ->
-            if (searchResultsCache.isEmpty()) {
-                return@collect
-            }
-
-            val nsfwFilteredResults = searchResultsCache
-                .filterNSFW(isNSFWModeEnabled = nsfwModeEnabled)
-                .customSort(
-                    criteria = _uiState.value.currentSortCriteria,
-                    order = _uiState.value.currentSortOrder,
-                )
-
-            _uiState.update {
-                it.copy(
-                    searchResults = nsfwFilteredResults,
-                    resultsNotFound = nsfwFilteredResults.isEmpty(),
-                )
-            }
+        settingsRepository.enableNSFWMode.distinctUntilChanged().collect {
+            filterSearchResultsByOptions(showNSFWResults = it)
         }
     }
 

@@ -99,13 +99,14 @@ fun SearchResultsScreen(
             SearchResultsScreenTopBar(
                 onNavigateBack = onNavigateBack,
                 onNavigateToSettings = onNavigateToSettings,
+                filterQuery = uiState.filterQuery,
+                onFilterQueryChange = viewModel::setFilterQuery,
                 currentSortCriteria = uiState.currentSortCriteria,
                 currentSortOrder = uiState.currentSortOrder,
                 onSortRequest = viewModel::sortResults,
                 filterOptions = uiState.filterOptions,
-                onFilterQueryChange = viewModel::changeFilterQuery,
-                onSearchProviderClick = viewModel::showSearchProviderResults,
-                onShowZeroSeedersResultsClick = viewModel::showZeroSeedersResults,
+                onSearchProviderClick = viewModel::filterSearchProviderResults,
+                onShowZeroSeedersResultsClick = viewModel::filterZeroSeedersResults,
                 scrollBehavior = scrollBehavior,
             )
         },
@@ -131,7 +132,7 @@ fun SearchResultsScreen(
                 modifier = Modifier.fillMaxHeight(),
                 searchQuery = uiState.searchQuery,
                 searchResults = uiState.searchResults,
-                filteredResults = uiState.filteredResults,
+                filteredSearchResults = uiState.filteredSearchResults,
                 resultsNotFound = uiState.resultsNotFound,
                 onResultSelect = onResultSelect,
                 lazyListState = lazyListState,
@@ -148,11 +149,12 @@ fun SearchResultsScreen(
 private fun SearchResultsScreenTopBar(
     onNavigateBack: () -> Unit,
     onNavigateToSettings: () -> Unit,
+    filterQuery: String,
+    onFilterQueryChange: (String) -> Unit,
     currentSortCriteria: SortCriteria,
     currentSortOrder: SortOrder,
     onSortRequest: (SortCriteria, SortOrder) -> Unit,
     filterOptions: FilterOptionsUiState,
-    onFilterQueryChange: (String) -> Unit,
     onSearchProviderClick: (SearchProviderId) -> Unit,
     onShowZeroSeedersResultsClick: () -> Unit,
     modifier: Modifier = Modifier,
@@ -193,7 +195,7 @@ private fun SearchResultsScreenTopBar(
             if (showSearchBar) {
                 SearchBar(
                     modifier = Modifier.focusRequester(searchBarFocusRequester),
-                    query = filterOptions.query,
+                    query = filterQuery,
                     onQueryChange = onFilterQueryChange,
                     placeholder = { Text(text = stringResource(R.string.search_results)) },
                 )
@@ -317,7 +319,7 @@ private fun SearchProvidersChipsRow(
 private fun SearchResultsScreenContent(
     searchQuery: String,
     searchResults: List<Torrent>,
-    filteredResults: List<Torrent>?,
+    filteredSearchResults: List<Torrent>?,
     resultsNotFound: Boolean,
     onResultSelect: (Torrent) -> Unit,
     lazyListState: LazyListState,
@@ -337,15 +339,15 @@ private fun SearchResultsScreenContent(
 
             resultsNotFound -> ResultsNotFound(modifier = Modifier.fillMaxSize())
 
-            filteredResults != null || searchResults.isNotEmpty() -> {
+            filteredSearchResults != null || searchResults.isNotEmpty() -> {
                 TorrentList(
-                    torrents = filteredResults ?: searchResults,
+                    torrents = filteredSearchResults ?: searchResults,
                     onTorrentSelect = onResultSelect,
                     toolbarContent = {
                         Text(
                             text = stringResource(
                                 R.string.hint_results_count,
-                                filteredResults?.size ?: searchResults.size,
+                                filteredSearchResults?.size ?: searchResults.size,
                                 searchQuery,
                             ),
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
