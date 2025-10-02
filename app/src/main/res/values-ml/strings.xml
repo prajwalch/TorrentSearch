@@ -7,7 +7,6 @@
     <string name="desc_unfocus_search_bar">സേർച്ച് ബാർ അടച്ച് കീബോർഡ് മറയ്ക്കുക</string>
     <string name="desc_clear_search_query">സേർച്ച് ക്വറി മായ്ക്കുക</string>
     <string name="desc_selected_category">തിരഞ്ഞെടുത്ത വിഭാഗം</string>
-    <string name="button_go_to_bookmarks_screen">ബുക്ക്‌മാർക്ക്‌സ് സ്ക്രീനിലേക്ക് പോകുക</string>
     <string name="button_go_to_settings_screen">സെറ്റിംഗ്‌സ് സ്ക്രീനിലേക്ക് പോകുക</string>
     <string name="button_delete_search_history">സേർച്ച് ഹിസ്റ്ററി മായ്ക്കുക</string>
     <string name="button_select_search_history">സേർച്ച് ഹിസ്റ്ററി തിരഞ്ഞെടുക്കുക</string>
@@ -15,11 +14,8 @@
     <string name="button_try_again">വീണ്ടും ശ്രമിക്കുക</string>
     <string name="desc_retry_connection">കണക്ഷൻ വീണ്ടും ശ്രമിക്കുക</string>
     <string name="msg_no_results_found">ഫലങ്ങൾ ഒന്നും കണ്ടെത്തിയില്ല</string>
-    <string name="msg_nothing_here_yet">ഇവിടെ ഒന്നും ഇപ്പോഴേക്ക് ഇല്ല</string>
-    <string name="msg_start_searching">ഫലങ്ങൾ കാണാൻ തിരച്ചിൽ ആരംഭിക്കുക</string>
     <string name="hint_results_count">ഏകദേശം %1$d ഫലങ്ങൾ</string>
     <string name="button_open_sort_options">സോർട്ട് ഓപ്ഷനുകൾ തുറക്കുക</string>
-    <string name="button_change_sort_order">സോർട്ട് ഓർഡർ %s ആയി മാറ്റുക</string>
     <string name="button_scroll_to_top">മുകളിലോട്ട് സ്ക്രോൾ ചെയ്യുക</string>
     <string name="seeders">സീഡേഴ്‌സ് %1$s</string>
     <string name="peers">പിയേഴ്സ് %1$s</string>
@@ -53,7 +49,6 @@
     <string name="search">സേർച്ച്…</string>
     <string name="setting_default_sort_options">ഡീഫാൾട്ട് സോർട്ട് ഓപ്ഷനുകൾ</string>
     <string name="button_go_to_default_sort_options_screen">ഡീഫാൾട്ട് സോർട്ട് ഓപ്ഷൻസ് സ്ക്രീനിലേക്ക് പോകുക</string>
-    <string name="setting_hide_results_with_zero_seeders">സീഡേഴ്സ് ഇല്ലാത്ത ഫലങ്ങൾ മറയ്ക്കുക</string>
     <string name="setting_max_num_results">ഫലങ്ങളുടെ പരമാവധി എണ്ണം</string>
     <string name="max_n_results">%1$d ഫലങ്ങൾ</string>
     <string name="unlimited">പരിധിയില്ല</string>

@@ -8,7 +8,6 @@
     <string name="desc_unfocus_search_bar">نوار جستجو را از حالت تمرکز خارج کرده و صفحه کلید را پنهان کنید</string>
     <string name="desc_clear_search_query">پاک کردن جستجوی پرسش و پاسخ</string>
     <string name="desc_selected_category">دسته انتخاب شده</string>
-    <string name="button_go_to_bookmarks_screen">رفتن به صفحه نشانک‌ ها</string>
     <string name="button_go_to_settings_screen">رفتن به صفحه تنظیمات</string>
     <string name="button_delete_search_history">حذف تاریخچه جستجو</string>
     <string name="button_select_search_history">انتخاب تاریخچه جستجو</string>

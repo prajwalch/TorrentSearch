@@ -7,7 +7,6 @@
     <string name="search">Pesquisa…</string>
     <string name="desc_clear_search_query">Limpar dados de pesquisa</string>
     <string name="desc_selected_category">Categorias selecionadas</string>
-    <string name="button_go_to_bookmarks_screen">Ir para os favoritos</string>
     <string name="button_go_to_settings_screen">Ir para as configurações</string>
     <string name="button_delete_search_history">Deletar histórico de pesquisa</string>
     <string name="button_select_search_history">Selecionar histórico de pesquisa</string>
@@ -15,10 +14,7 @@
     <string name="button_try_again">Tente novamente</string>
     <string name="desc_retry_connection">Tentar conexão</string>
     <string name="msg_no_results_found">Nenhum resultado encontrado</string>
-    <string name="msg_nothing_here_yet">Nada aqui por enquanto</string>
-    <string name="msg_start_searching">Comece a pesquisar para ver os resultados</string>
     <string name="button_open_sort_options">Abrir opções de ordenação</string>
-    <string name="button_change_sort_order">Mudar ordenação para %s</string>
     <string name="button_scroll_to_top">Rolar para o topo</string>
     <string name="action_bookmark_torrent">Favoritar torrent</string>
     <string name="action_delete_bookmark">Deletar favorito</string>
@@ -45,7 +41,6 @@
     <string name="x_of_x_enabled">%1$d ou %2$d habilitado</string>
     <string name="setting_default_category">Categoria padrão</string>
     <string name="setting_default_sort_options">Opções de ordenação padrão</string>
-    <string name="setting_hide_results_with_zero_seeders">Esconder resultados sem seeders</string>
     <string name="setting_max_num_results">Número máximo de resultados</string>
     <string name="max_n_results">%1$d resultados</string>
     <string name="unlimited">Ilimitado</string>
