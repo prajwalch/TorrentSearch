@@ -89,7 +89,7 @@ fun SearchResultsScreen(
             onDismissRequest = { showFilterOptions = false },
             filterOptions = uiState.filterOptions,
             onToggleSearchProvider = viewModel::toggleSearchProviderResults,
-            onToggleShowZeroSeedersResults = viewModel::toggleZeroSeedersResults,
+            onToggleDeadTorrents = viewModel::toggleDeadTorrents,
         )
     }
 
@@ -236,7 +236,7 @@ private fun FilterOptionsBottomSheet(
     onDismissRequest: () -> Unit,
     filterOptions: FilterOptionsUiState,
     onToggleSearchProvider: (SearchProviderId) -> Unit,
-    onToggleShowZeroSeedersResults: () -> Unit,
+    onToggleDeadTorrents: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     ModalBottomSheet(modifier = modifier, onDismissRequest = onDismissRequest) {
@@ -254,11 +254,9 @@ private fun FilterOptionsBottomSheet(
                 itemVerticalAlignment = Alignment.CenterVertically,
             ) {
                 FilterChip(
-                    selected = filterOptions.showZeroSeedersResults,
-                    onClick = onToggleShowZeroSeedersResults,
-                    label = {
-                        Text(text = stringResource(R.string.filter_show_zero_seeders_results))
-                    },
+                    selected = filterOptions.deadTorrents,
+                    onClick = onToggleDeadTorrents,
+                    label = { Text(text = stringResource(R.string.filter_dead_torrents)) },
                 )
             }
         }

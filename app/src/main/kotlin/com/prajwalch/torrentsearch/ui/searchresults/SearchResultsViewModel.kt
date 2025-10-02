@@ -61,7 +61,7 @@ data class SearchResultsUiState(
 
 data class FilterOptionsUiState(
     val searchProviders: List<SearchProviderFilterUiState> = emptyList(),
-    val showZeroSeedersResults: Boolean = true,
+    val deadTorrents: Boolean = true,
 )
 
 data class SearchProviderFilterUiState(
@@ -157,11 +157,11 @@ class SearchResultsViewModel @Inject constructor(
         filterSearchResultsByOptions()
     }
 
-    fun toggleZeroSeedersResults() {
+    fun toggleDeadTorrents() {
         _uiState.update {
             it.copy(
                 filterOptions = it.filterOptions.copy(
-                    showZeroSeedersResults = !it.filterOptions.showZeroSeedersResults,
+                    deadTorrents = !it.filterOptions.deadTorrents,
                 )
             )
         }
@@ -203,7 +203,7 @@ class SearchResultsViewModel @Inject constructor(
                 torrentsRepository
                     .getSearchResultsCache()
                     .filter { it.providerId in selectedSearchProvidersId }
-                    .filter { filterOptions.showZeroSeedersResults || it.seeders != 0u }
+                    .filter { filterOptions.deadTorrents || (it.seeders != 0u && it.peers != 0u) }
                     // Global filter option.
                     .filterNSFW(isNSFWModeEnabled = showNSFWResults)
                     .customSort(

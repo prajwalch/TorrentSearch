@@ -56,7 +56,7 @@
     <string name="search_results">Search results</string>
     <string name="filters_section_search_providers">Search providers</string>
     <string name="filters_section_additional_options">Additional options</string>
-    <string name="filter_show_zero_seeders_results">Show zero seeders results</string>
+    <string name="filter_dead_torrents">Dead torrents</string>
     <!-- Search results screen -->
 
     <!-- Bookmarks Screen -->
