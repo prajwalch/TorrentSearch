@@ -334,7 +334,7 @@ class SearchResultsViewModel @Inject constructor(
 
     private suspend fun getEnabledSearchProviders(): List<SearchProvider> {
         return combine(
-            searchProvidersRepository.getInstances(),
+            searchProvidersRepository.getSearchProvidersInstance(),
             settingsRepository.enabledSearchProvidersId,
         ) { searchProviders, enabledSearchProvidersId ->
             searchProviders.filter { it.info.id in enabledSearchProvidersId }

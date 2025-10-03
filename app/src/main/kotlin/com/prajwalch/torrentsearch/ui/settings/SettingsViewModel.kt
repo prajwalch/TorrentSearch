@@ -94,7 +94,7 @@ class SettingsViewModel @Inject constructor(
 
     private val searchProvidersStatFlow = combine(
         settingsRepository.enabledSearchProvidersId.map { it.size },
-        searchProvidersRepository.count(),
+        searchProvidersRepository.getSearchProvidersCount(),
         ::SearchProvidersStat,
     )
 
@@ -139,7 +139,7 @@ class SettingsViewModel @Inject constructor(
 
     /** Information of all search providers. */
     private val allSearchProvidersInfo = searchProvidersRepository
-        .searchProvidersInfo()
+        .getSearchProvidersInfo()
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.Eagerly,

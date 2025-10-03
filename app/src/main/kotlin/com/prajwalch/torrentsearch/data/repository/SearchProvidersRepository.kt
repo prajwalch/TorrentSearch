@@ -54,6 +54,29 @@ class SearchProvidersRepository @Inject constructor(private val dao: TorznabSear
         Yts(),
     )
 
+    /** Returns a list containing the info of all search providers. */
+    fun getSearchProvidersInfo(): Flow<List<SearchProviderInfo>> =
+        getSearchProvidersInstance().map { searchProviders -> searchProviders.map { it.info } }
+
+    /** Returns the getSearchProvidersCount of search providers. */
+    fun getSearchProvidersCount(): Flow<Int> = dao.getCount().map { it + builtins.size }
+
+    /**
+     * Returns a set containing the ID of search providers that are enabled
+     * by default.
+     */
+    fun getEnabledSearchProvidersId(): Set<SearchProviderId> =
+        builtins.filter { it.info.enabledByDefault }.map { it.info.id }.toSet()
+
+    /** Returns the instance of search providers. */
+    fun getSearchProvidersInstance(): Flow<List<SearchProvider>> =
+        dao.getAll().map { entities ->
+            entities
+                .map { TorznabSearchProvider(config = it.toConfig()) }
+                .plus(builtins)
+                .sortedBy { it.info.name }
+        }
+
     /** Adds a new Torznab API compatible search provider. */
     suspend fun addTorznabSearchProvider(config: TorznabSearchProviderConfig) {
         val url = config.url.trimEnd { it == '/' }
@@ -103,27 +126,6 @@ class SearchProvidersRepository @Inject constructor(private val dao: TorznabSear
     /** Deletes the Torznab search provider that matches the specified ID. */
     suspend fun deleteTorznabSearchProvider(id: String) {
         dao.deleteById(id = id)
-    }
-
-    /** Returns a list containing the info of all search providers. */
-    fun searchProvidersInfo(): Flow<List<SearchProviderInfo>> =
-        getInstances().map { searchProviders -> searchProviders.map { it.info } }
-
-    /** Returns the count of search providers. */
-    fun count(): Flow<Int> = dao.getCount().map { it + builtins.size }
-
-    /**
-     * Returns a set containing the ID of search providers that are enabled
-     * by default.
-     */
-    fun defaultEnabledIds(): Set<SearchProviderId> =
-        builtins.filter { it.info.enabledByDefault }.map { it.info.id }.toSet()
-
-    fun getInstances(): Flow<List<SearchProvider>> = dao.getAll().map { entities ->
-        entities
-            .map { TorznabSearchProvider(config = it.toConfig()) }
-            .plus(builtins)
-            .sortedBy { it.info.name }
     }
 }
 
