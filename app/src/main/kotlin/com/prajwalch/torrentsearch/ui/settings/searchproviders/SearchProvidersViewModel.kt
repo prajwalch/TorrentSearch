@@ -104,7 +104,7 @@ class SearchProvidersViewModel @Inject constructor(
         }
 
         viewModelScope.launch {
-            settingsRepository.updateEnabledSearchProvidersId(
+            settingsRepository.setEnabledSearchProvidersId(
                 providersId = newEnabledSearchProvidersId,
             )
         }
@@ -115,7 +115,7 @@ class SearchProvidersViewModel @Inject constructor(
         val allSearchProvidersId = allSearchProvidersInfo.value.map { it.id }.toSet()
 
         viewModelScope.launch {
-            settingsRepository.updateEnabledSearchProvidersId(
+            settingsRepository.setEnabledSearchProvidersId(
                 providersId = allSearchProvidersId,
             )
         }
@@ -124,7 +124,7 @@ class SearchProvidersViewModel @Inject constructor(
     /** Disables all search providers. */
     fun disableAllSearchProviders() {
         viewModelScope.launch {
-            settingsRepository.updateEnabledSearchProvidersId(
+            settingsRepository.setEnabledSearchProvidersId(
                 providersId = emptySet(),
             )
         }
@@ -133,7 +133,7 @@ class SearchProvidersViewModel @Inject constructor(
     /** Resets enabled search providers to default. */
     fun resetEnabledSearchProvidersToDefault() {
         viewModelScope.launch {
-            settingsRepository.updateEnabledSearchProvidersId(
+            settingsRepository.setEnabledSearchProvidersId(
                 providersId = searchProvidersRepository.defaultEnabledIds(),
             )
         }

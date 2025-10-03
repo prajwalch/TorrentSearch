@@ -77,7 +77,7 @@ fun AppearanceSettings(modifier: Modifier = Modifier) {
                 DarkTheme.entries.forEach {
                     DropdownMenuItem(
                         text = { Text(text = it.toString()) },
-                        onClick = { viewModel.changeDarkTheme(it) },
+                        onClick = { viewModel.setDarkTheme(it) },
                         leadingIcon = {
                             if (it == settings.darkTheme) {
                                 Icon(

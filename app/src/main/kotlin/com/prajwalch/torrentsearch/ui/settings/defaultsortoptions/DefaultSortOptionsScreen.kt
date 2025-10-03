@@ -50,14 +50,14 @@ fun DefaultSortOptionsScreen(onNavigateBack: () -> Unit, modifier: Modifier = Mo
             item {
                 SortCriteriaSection(
                     selectedCriteria = defaultSortOptions.sortCriteria,
-                    onCriteriaSelect = viewModel::changeDefaultSortCriteria,
+                    onCriteriaSelect = viewModel::setDefaultSortCriteria,
                 )
             }
 
             item {
                 SortOrderSection(
                     selectedOrder = defaultSortOptions.sortOrder,
-                    onOrderSelect = viewModel::changeDefaultSortOrder,
+                    onOrderSelect = viewModel::setDefaultSortOrder,
                 )
             }
         }

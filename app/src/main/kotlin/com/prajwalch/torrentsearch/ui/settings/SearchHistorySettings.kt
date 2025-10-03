@@ -23,25 +23,25 @@ fun SearchHistorySettings(onNavigateToSearchHistory: () -> Unit, modifier: Modif
     Column(modifier = modifier) {
         SettingsSectionTitle(titleId = R.string.settings_section_search_history)
         SettingsItem(
-            onClick = { viewModel.saveSearchHistory(!settings.saveSearchHistory) },
+            onClick = { viewModel.enableSaveSearchHistory(!settings.saveSearchHistory) },
             leadingIconId = R.drawable.ic_search_activity,
             headlineId = R.string.setting_save_search_history,
             trailingContent = {
                 Switch(
                     checked = settings.saveSearchHistory,
-                    onCheckedChange = { viewModel.saveSearchHistory(it) },
+                    onCheckedChange = { viewModel.enableSaveSearchHistory(it) },
                 )
             },
         )
         SettingsItem(
-            onClick = { viewModel.showSearchHistory(!settings.showSearchHistory) },
+            onClick = { viewModel.enableShowSearchHistory(!settings.showSearchHistory) },
             leadingIconId = R.drawable.ic_history_toggle_off,
             headlineId = R.string.setting_show_search_history,
             supportingContent = stringResource(R.string.setting_show_search_history_desc),
             trailingContent = {
                 Switch(
                     checked = settings.showSearchHistory,
-                    onCheckedChange = { viewModel.showSearchHistory(it) },
+                    onCheckedChange = { viewModel.enableShowSearchHistory(it) },
                 )
             },
         )

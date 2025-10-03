@@ -46,10 +46,10 @@ fun SearchSettings(
         MaxNumResultsDialog(
             onDismissRequest = { showMaxNumResultsDialog = false },
             num = if (settings.maxNumResults.isUnlimited()) null else settings.maxNumResults.n,
-            onNumChange = { viewModel.updateMaxNumResults(MaxNumResults(n = it)) },
+            onNumChange = { viewModel.setMaxNumResults(MaxNumResults(n = it)) },
             onUnlimitedClick = {
                 showMaxNumResultsDialog = false
-                viewModel.updateMaxNumResults(MaxNumResults.Unlimited)
+                viewModel.setMaxNumResults(MaxNumResults.Unlimited)
             },
         )
     }

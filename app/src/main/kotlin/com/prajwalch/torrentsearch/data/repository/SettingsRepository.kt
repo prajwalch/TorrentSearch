@@ -34,14 +34,8 @@ class SettingsRepository @Inject constructor(
             default = DarkTheme.FollowSystem,
         )
 
-    val pureBlack: Flow<Boolean> = dataStore.getOrDefault(key = PURE_BLACK, default = false)
-
-    val defaultCategory: Flow<Category> = dataStore
-        .getMapOrDefault(
-            key = DEFAULT_CATEGORY,
-            map = Category::valueOf,
-            default = Category.All,
-        )
+    val pureBlack: Flow<Boolean> = dataStore
+        .getOrDefault(key = PURE_BLACK, default = false)
 
     val enableNSFWMode: Flow<Boolean> = dataStore
         .getOrDefault(key = ENABLE_NSFW_MODE, default = false)
@@ -50,6 +44,13 @@ class SettingsRepository @Inject constructor(
         .getOrDefault(
             key = ENABLED_SEARCH_PROVIDERS_ID,
             default = searchProvidersRepository.defaultEnabledIds(),
+        )
+
+    val defaultCategory: Flow<Category> = dataStore
+        .getMapOrDefault(
+            key = DEFAULT_CATEGORY,
+            map = Category::valueOf,
+            default = Category.All,
         )
 
     val defaultSortCriteria: Flow<SortCriteria> = dataStore
@@ -85,75 +86,75 @@ class SettingsRepository @Inject constructor(
     val enableQuickSearch: Flow<Boolean> = dataStore
         .getOrDefault(key = ENABLE_QUICK_SEARCH, default = true)
 
-    suspend fun updateEnableDynamicTheme(enable: Boolean) {
+    suspend fun enableDynamicTheme(enable: Boolean) {
         dataStore.setOrUpdate(key = ENABLE_DYNAMIC_THEME, enable)
     }
 
-    suspend fun updateDarkTheme(darkTheme: DarkTheme) {
+    suspend fun setDarkTheme(darkTheme: DarkTheme) {
         dataStore.setOrUpdate(key = DARK_THEME, value = darkTheme.name)
     }
 
-    suspend fun updatePureBlack(enable: Boolean) {
+    suspend fun enablePureBlack(enable: Boolean) {
         dataStore.setOrUpdate(key = PURE_BLACK, value = enable)
     }
 
-    suspend fun updateDefaultCategory(category: Category) {
-        dataStore.setOrUpdate(key = DEFAULT_CATEGORY, value = category.name)
-    }
-
-    suspend fun updateEnableNSFWMode(enable: Boolean) {
+    suspend fun enableNSFWMode(enable: Boolean) {
         dataStore.setOrUpdate(key = ENABLE_NSFW_MODE, value = enable)
     }
 
-    suspend fun updateEnabledSearchProvidersId(providersId: Set<SearchProviderId>) {
+    suspend fun setEnabledSearchProvidersId(providersId: Set<SearchProviderId>) {
         dataStore.setOrUpdate(key = ENABLED_SEARCH_PROVIDERS_ID, value = providersId)
     }
 
-    suspend fun updateDefaultSortCriteria(sortCriteria: SortCriteria) {
+    suspend fun setDefaultCategory(category: Category) {
+        dataStore.setOrUpdate(key = DEFAULT_CATEGORY, value = category.name)
+    }
+
+    suspend fun setDefaultSortCriteria(sortCriteria: SortCriteria) {
         dataStore.setOrUpdate(key = DEFAULT_SORT_CRITERIA, value = sortCriteria.name)
     }
 
-    suspend fun updateDefaultSortOrder(sortOrder: SortOrder) {
+    suspend fun setDefaultSortOrder(sortOrder: SortOrder) {
         dataStore.setOrUpdate(key = DEFAULT_SORT_ORDER, value = sortOrder.name)
     }
 
-    suspend fun updateMaxNumResults(maxNumResults: MaxNumResults) {
+    suspend fun setMaxNumResults(maxNumResults: MaxNumResults) {
         dataStore.setOrUpdate(key = MAX_NUM_RESULTS, value = maxNumResults.n)
     }
 
-    suspend fun updateSaveSearchHistory(save: Boolean) {
-        dataStore.setOrUpdate(key = SAVE_SEARCH_HISTORY, value = save)
+    suspend fun enableSaveSearchHistory(enable: Boolean) {
+        dataStore.setOrUpdate(key = SAVE_SEARCH_HISTORY, value = enable)
     }
 
-    suspend fun updateShowSearchHistory(show: Boolean) {
+    suspend fun enableShowSearchHistory(show: Boolean) {
         dataStore.setOrUpdate(key = SHOW_SEARCH_HISTORY, value = show)
     }
 
-    suspend fun updateEnableShareIntegration(enable: Boolean) {
+    suspend fun enableShareIntegration(enable: Boolean) {
         dataStore.setOrUpdate(key = ENABLE_SHARE_INTEGRATION, value = enable)
     }
 
-    suspend fun updateEnableQuickSearch(enable: Boolean) {
+    suspend fun enableQuickSearch(enable: Boolean) {
         dataStore.setOrUpdate(key = ENABLE_QUICK_SEARCH, value = enable)
     }
 
     private companion object PreferencesKeys {
-        // Appearance keys.
+        // Appearance
         val ENABLE_DYNAMIC_THEME = booleanPreferencesKey("enable_dynamic_theme")
         val DARK_THEME = stringPreferencesKey("dark_theme")
         val PURE_BLACK = booleanPreferencesKey("pure_black")
 
-        // General keys.
+        // General
         val ENABLE_NSFW_MODE = booleanPreferencesKey("enable_nsfw_mode")
 
-        // Search keys.
+        // Search
         val ENABLED_SEARCH_PROVIDERS_ID = stringSetPreferencesKey("enabled_search_providers_id")
         val DEFAULT_CATEGORY = stringPreferencesKey("default_category")
         val DEFAULT_SORT_CRITERIA = stringPreferencesKey("default_sort_criteria")
         val DEFAULT_SORT_ORDER = stringPreferencesKey("default_sort_order")
         val MAX_NUM_RESULTS = intPreferencesKey("max_num_results")
 
-        // Search history.
+        // Search history
         val SAVE_SEARCH_HISTORY = booleanPreferencesKey("save_search_history")
         val SHOW_SEARCH_HISTORY = booleanPreferencesKey("show_search_history")
 

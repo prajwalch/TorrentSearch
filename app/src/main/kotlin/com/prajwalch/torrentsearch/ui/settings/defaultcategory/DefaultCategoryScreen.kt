@@ -46,7 +46,7 @@ fun DefaultCategoryScreen(onNavigateBack: () -> Unit, modifier: Modifier = Modif
         ) {
             items(items = Category.entries, contentType = { it }) { category ->
                 CategoryListItem(
-                    onClick = { viewModel.changeDefaultCategory(category) },
+                    onClick = { viewModel.setDefaultCategory(category) },
                     selected = category == defaultCategory,
                     name = category.name,
                 )

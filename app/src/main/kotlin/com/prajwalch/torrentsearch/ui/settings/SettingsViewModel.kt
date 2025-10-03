@@ -158,36 +158,36 @@ class SettingsViewModel @Inject constructor(
     /** Enables/disables dynamic theme. */
     fun enableDynamicTheme(enable: Boolean) {
         viewModelScope.launch {
-            settingsRepository.updateEnableDynamicTheme(enable = enable)
+            settingsRepository.enableDynamicTheme(enable = enable)
         }
     }
 
     /** Changes the dark theme mode. */
-    fun changeDarkTheme(darkTheme: DarkTheme) {
+    fun setDarkTheme(darkTheme: DarkTheme) {
         viewModelScope.launch {
-            settingsRepository.updateDarkTheme(darkTheme = darkTheme)
+            settingsRepository.setDarkTheme(darkTheme = darkTheme)
         }
     }
 
     /** Enables/disables pure black mode. */
     fun enablePureBlackTheme(enable: Boolean) {
         viewModelScope.launch {
-            settingsRepository.updatePureBlack(enable = enable)
-        }
-    }
-
-    /** Changes the default category to given one. */
-    fun changeDefaultCategory(category: Category) {
-        viewModelScope.launch {
-            settingsRepository.updateDefaultCategory(category = category)
+            settingsRepository.enablePureBlack(enable = enable)
         }
     }
 
     /** Enables/disables NSFW mode. */
     fun enableNSFWMode(enable: Boolean) {
         viewModelScope.launch {
-            settingsRepository.updateEnableNSFWMode(enable = enable)
+            settingsRepository.enableNSFWMode(enable = enable)
             if (!enable) disableRestrictedSearchProviders()
+        }
+    }
+
+    /** Changes the default category to given one. */
+    fun setDefaultCategory(category: Category) {
+        viewModelScope.launch {
+            settingsRepository.setDefaultCategory(category = category)
         }
     }
 
@@ -201,30 +201,44 @@ class SettingsViewModel @Inject constructor(
             .toSet()
 
         if (newEnabledSearchProvidersId != enabledSearchProvidersId.value) {
-            settingsRepository.updateEnabledSearchProvidersId(
+            settingsRepository.setEnabledSearchProvidersId(
                 providersId = newEnabledSearchProvidersId.toSet(),
             )
         }
     }
 
     /** Changes the default sort criteria. */
-    fun changeDefaultSortCriteria(sortCriteria: SortCriteria) {
+    fun setDefaultSortCriteria(sortCriteria: SortCriteria) {
         viewModelScope.launch {
-            settingsRepository.updateDefaultSortCriteria(sortCriteria = sortCriteria)
+            settingsRepository.setDefaultSortCriteria(sortCriteria = sortCriteria)
         }
     }
 
     /** Changes the default sort order. */
-    fun changeDefaultSortOrder(sortOrder: SortOrder) {
+    fun setDefaultSortOrder(sortOrder: SortOrder) {
         viewModelScope.launch {
-            settingsRepository.updateDefaultSortOrder(sortOrder = sortOrder)
+            settingsRepository.setDefaultSortOrder(sortOrder = sortOrder)
         }
     }
 
     /** Updates the maximum number of results. */
-    fun updateMaxNumResults(maxNumResults: MaxNumResults) {
+    fun setMaxNumResults(maxNumResults: MaxNumResults) {
         viewModelScope.launch {
-            settingsRepository.updateMaxNumResults(maxNumResults = maxNumResults)
+            settingsRepository.setMaxNumResults(maxNumResults = maxNumResults)
+        }
+    }
+
+    /** Saves/unsaves search history. */
+    fun enableSaveSearchHistory(save: Boolean) {
+        viewModelScope.launch {
+            settingsRepository.enableSaveSearchHistory(enable = save)
+        }
+    }
+
+    /** Shows/hides search history. */
+    fun enableShowSearchHistory(show: Boolean) {
+        viewModelScope.launch {
+            settingsRepository.enableShowSearchHistory(show = show)
         }
     }
 
@@ -235,7 +249,7 @@ class SettingsViewModel @Inject constructor(
                 packageManager = packageManager,
                 activityAliasName = ".SendAlias",
             )
-            settingsRepository.updateEnableShareIntegration(enable = enable)
+            settingsRepository.enableShareIntegration(enable = enable)
         }
     }
 
@@ -246,7 +260,7 @@ class SettingsViewModel @Inject constructor(
                 packageManager = packageManager,
                 activityAliasName = ".ProcessTextAlias",
             )
-            settingsRepository.updateEnableQuickSearch(enable = enable)
+            settingsRepository.enableQuickSearch(enable = enable)
         }
     }
 
@@ -269,19 +283,5 @@ class SettingsViewModel @Inject constructor(
             componentEnabledState,
             PackageManager.DONT_KILL_APP,
         )
-    }
-
-    /** Saves/unsaves search history. */
-    fun saveSearchHistory(save: Boolean) {
-        viewModelScope.launch {
-            settingsRepository.updateSaveSearchHistory(save = save)
-        }
-    }
-
-    /** Shows/hides search history. */
-    fun showSearchHistory(show: Boolean) {
-        viewModelScope.launch {
-            settingsRepository.updateShowSearchHistory(show = show)
-        }
     }
 }
