@@ -127,7 +127,7 @@ fun SearchScreen(
             CategoryChipsRow(
                 categories = uiState.categories,
                 selectedCategory = uiState.selectedCategory,
-                onCategorySelect = viewModel::changeCategory,
+                onCategorySelect = viewModel::setCategory,
                 contentPadding = PaddingValues(
                     horizontal = MaterialTheme.spaces.large
                 ),

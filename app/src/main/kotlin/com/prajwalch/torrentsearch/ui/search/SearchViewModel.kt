@@ -44,7 +44,7 @@ class SearchViewModel @Inject constructor(
     }
 
     /** Changes the current category with the given category. */
-    fun changeCategory(category: Category) {
+    fun setCategory(category: Category) {
         _uiState.update { it.copy(selectedCategory = category) }
     }
 
