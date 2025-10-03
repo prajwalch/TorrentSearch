@@ -336,7 +336,7 @@ private fun SearchResultsScreenContent(
                 TorrentList(
                     torrents = filteredSearchResults ?: searchResults,
                     onTorrentSelect = onResultSelect,
-                    toolbarContent = {
+                    headerContent = {
                         Text(
                             text = stringResource(
                                 R.string.hint_results_count,

@@ -35,7 +35,7 @@ fun TorrentList(
     torrents: List<Torrent>,
     onTorrentSelect: (Torrent) -> Unit,
     modifier: Modifier = Modifier,
-    toolbarContent: @Composable (RowScope.() -> Unit)? = null,
+    headerContent: @Composable (RowScope.() -> Unit)? = null,
     lazyListState: LazyListState = rememberLazyListState(),
     contentPadding: PaddingValues = PaddingValues(0.dp),
 ) {
@@ -58,16 +58,20 @@ fun TorrentList(
             state = lazyListState,
             contentPadding = contentPadding,
         ) {
-            toolbarContent?.let { toolbar ->
+            if (headerContent != null) {
                 item {
-                    TorrentListToolbar(
+                    TorrentListHeader(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(horizontal = MaterialTheme.spaces.large),
-                        content = toolbar,
+                            .padding(
+                                horizontal = MaterialTheme.spaces.large,
+                                vertical = MaterialTheme.spaces.small,
+                            ),
+                        content = headerContent,
                     )
                 }
             }
+
             items(items = torrents, contentType = { it.category }) {
                 TorrentListItem(
                     modifier = Modifier
@@ -81,7 +85,7 @@ fun TorrentList(
 }
 
 @Composable
-private fun TorrentListToolbar(
+private fun TorrentListHeader(
     modifier: Modifier = Modifier,
     content: @Composable (RowScope.() -> Unit),
 ) {
