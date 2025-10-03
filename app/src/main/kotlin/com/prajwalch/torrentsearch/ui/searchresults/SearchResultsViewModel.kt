@@ -47,6 +47,7 @@ import javax.inject.Inject
 
 data class SearchResultsUiState(
     val searchQuery: String = "",
+    val searchCategory: Category = Category.All,
     val searchResults: List<Torrent> = emptyList(),
     val filterQuery: String = "",
     val filteredSearchResults: List<Torrent>? = null,
@@ -242,6 +243,7 @@ class SearchResultsViewModel @Inject constructor(
             _uiState.update {
                 it.copy(
                     searchQuery = searchQuery,
+                    searchCategory = searchCategory,
                     searchResults = emptyList(),
                     filterOptions = FilterOptionsUiState(),
                     currentSortCriteria = defaultSortOptions.sortCriteria,

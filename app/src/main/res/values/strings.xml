@@ -33,7 +33,7 @@
     <string name="msg_no_results_found">No results found</string>
     <!-- Empty placeholder -->
     <!-- Results toolbar -->
-    <string name="hint_results_count">%1$s results for \'%2$s\'</string>
+    <string name="hint_results_count">%1$s results for \'%2$s\' (%3$s)</string>
     <string name="button_open_sort_options">Open sort options</string>
     <string name="nsfw">NSFW</string>
     <string name="button_scroll_to_top">Scroll to top</string>

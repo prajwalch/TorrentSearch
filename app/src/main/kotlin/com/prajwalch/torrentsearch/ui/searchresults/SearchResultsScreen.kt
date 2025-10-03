@@ -51,6 +51,7 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 
 import com.prajwalch.torrentsearch.R
+import com.prajwalch.torrentsearch.models.Category
 import com.prajwalch.torrentsearch.models.SortCriteria
 import com.prajwalch.torrentsearch.models.SortOrder
 import com.prajwalch.torrentsearch.models.Torrent
@@ -138,6 +139,7 @@ fun SearchResultsScreen(
             SearchResultsScreenContent(
                 modifier = Modifier.fillMaxHeight(),
                 searchQuery = uiState.searchQuery,
+                searchCategory = uiState.searchCategory,
                 searchResults = uiState.searchResults,
                 filteredSearchResults = uiState.filteredSearchResults,
                 onResultSelect = onResultSelect,
@@ -308,6 +310,7 @@ private fun SearchProvidersChipsRow(
 @Composable
 private fun SearchResultsScreenContent(
     searchQuery: String,
+    searchCategory: Category,
     searchResults: List<Torrent>,
     filteredSearchResults: List<Torrent>?,
     onResultSelect: (Torrent) -> Unit,
@@ -339,6 +342,7 @@ private fun SearchResultsScreenContent(
                                 R.string.hint_results_count,
                                 filteredSearchResults?.size ?: searchResults.size,
                                 searchQuery,
+                                searchCategory,
                             ),
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                             style = MaterialTheme.typography.bodyMedium,
