@@ -22,24 +22,24 @@ import com.prajwalch.torrentsearch.ui.theme.spaces
 
 @Composable
 fun SettingsSectionTitle(
-    @StringRes titleId: Int,
+    @StringRes title: Int,
     modifier: Modifier = Modifier,
     color: Color = MaterialTheme.colorScheme.primary,
     style: TextStyle = MaterialTheme.typography.titleSmall,
 ) {
     Text(
         modifier = modifier.padding(MaterialTheme.spaces.large),
-        text = stringResource(titleId),
+        text = stringResource(title),
         color = color,
         style = style,
     )
 }
 
 @Composable
-fun SettingsItem(
+fun SettingsListItem(
     onClick: () -> Unit,
-    @DrawableRes leadingIconId: Int,
-    @StringRes headlineId: Int,
+    @DrawableRes icon: Int,
+    @StringRes headline: Int,
     modifier: Modifier = Modifier,
     supportingContent: String? = null,
     trailingContent: @Composable (() -> Unit)? = null,
@@ -50,11 +50,11 @@ fun SettingsItem(
             .then(modifier),
         leadingContent = {
             Icon(
-                painter = painterResource(leadingIconId),
-                contentDescription = stringResource(headlineId),
+                painter = painterResource(icon),
+                contentDescription = stringResource(headline),
             )
         },
-        headlineContent = { Text(text = stringResource(headlineId)) },
+        headlineContent = { Text(text = stringResource(headline)) },
         supportingContent = supportingContent?.let { { Text(text = it) } },
         trailingContent = trailingContent,
     )
@@ -63,7 +63,7 @@ fun SettingsItem(
 @Composable
 fun SettingsDialog(
     onDismissRequest: () -> Unit,
-    @StringRes titleId: Int,
+    @StringRes title: Int,
     modifier: Modifier = Modifier,
     confirmButton: @Composable (() -> Unit)? = null,
     content: @Composable () -> Unit,
@@ -77,7 +77,7 @@ fun SettingsDialog(
             }
         },
         confirmButton = confirmButton ?: {},
-        title = { Text(text = stringResource(titleId)) },
+        title = { Text(text = stringResource(title)) },
         text = content,
     )
 }

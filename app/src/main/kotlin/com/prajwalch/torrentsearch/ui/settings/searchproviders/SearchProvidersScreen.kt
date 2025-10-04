@@ -44,6 +44,7 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 
 import com.prajwalch.torrentsearch.R
@@ -51,10 +52,9 @@ import com.prajwalch.torrentsearch.models.Category
 import com.prajwalch.torrentsearch.providers.SearchProviderId
 import com.prajwalch.torrentsearch.providers.SearchProviderSafetyStatus
 import com.prajwalch.torrentsearch.providers.SearchProviderType
-import com.prajwalch.torrentsearch.ui.activityScopedViewModel
+import com.prajwalch.torrentsearch.ui.components.ArrowBackIconButton
 import com.prajwalch.torrentsearch.ui.components.BadgesRow
 import com.prajwalch.torrentsearch.ui.components.CategoryBadge
-import com.prajwalch.torrentsearch.ui.components.NavigateBackIconButton
 import com.prajwalch.torrentsearch.ui.components.RoundedDropdownMenu
 import com.prajwalch.torrentsearch.ui.components.TextUrl
 import com.prajwalch.torrentsearch.ui.components.TorznabBadge
@@ -69,7 +69,7 @@ fun SearchProvidersScreen(
     onNavigateToEditSearchProvider: (SearchProviderId) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val viewModel = activityScopedViewModel<SearchProvidersViewModel>()
+    val viewModel = hiltViewModel<SearchProvidersViewModel>()
     val searchProvidersUiState by viewModel.uiState.collectAsStateWithLifecycle()
 
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
@@ -169,9 +169,9 @@ private fun SearchProvidersScreenTopBar(
         modifier = modifier,
         title = { Text(text = stringResource(R.string.setting_search_providers)) },
         navigationIcon = {
-            NavigateBackIconButton(
+            ArrowBackIconButton(
                 onClick = onNavigateBack,
-                contentDescriptionId = R.string.button_go_to_settings_screen,
+                contentDescription = R.string.button_go_to_settings_screen,
             )
         },
         actions = {
@@ -341,11 +341,11 @@ private fun TorznabSearchProviderListItem(
         TorznabSearchProviderMenu(
             expanded = showMenu,
             onDismissRequest = { showMenu = false },
-            onEditClick = {
+            onEditConfiguration = {
                 showMenu = false
                 onEditConfig()
             },
-            onDeleteClick = {
+            onDelete = {
                 showMenu = false
                 onDelete()
             },
@@ -357,8 +357,8 @@ private fun TorznabSearchProviderListItem(
 private fun TorznabSearchProviderMenu(
     expanded: Boolean,
     onDismissRequest: () -> Unit,
-    onEditClick: () -> Unit,
-    onDeleteClick: () -> Unit,
+    onEditConfiguration: () -> Unit,
+    onDelete: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     RoundedDropdownMenu(
@@ -368,7 +368,7 @@ private fun TorznabSearchProviderMenu(
         offset = DpOffset(x = MaterialTheme.spaces.large, y = 0.dp),
     ) {
         DropdownMenuItem(
-            onClick = onEditClick,
+            onClick = onEditConfiguration,
             leadingIcon = {
                 Icon(
                     painter = painterResource(R.drawable.ic_edit),
@@ -380,7 +380,7 @@ private fun TorznabSearchProviderMenu(
             },
         )
         DropdownMenuItem(
-            onClick = onDeleteClick,
+            onClick = onDelete,
             leadingIcon = {
                 Icon(
                     painter = painterResource(R.drawable.ic_delete),

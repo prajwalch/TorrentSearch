@@ -119,7 +119,7 @@ fun TorrentSearchApp(
             SearchResultsScreen(
                 onNavigateBack = { navController.navigateUp() },
                 onNavigateToSettings = { navController.navigate(Screens.Settings.ROOT) },
-                onResultSelect = { selectedTorrent = it },
+                onResultClick = { selectedTorrent = it },
                 snackbarHostState = snackbarHostState,
             )
         }
@@ -134,7 +134,7 @@ fun TorrentSearchApp(
             BookmarksScreen(
                 onNavigateBack = { navController.navigateUp() },
                 onNavigateToSettings = { navController.navigate(Screens.Settings.ROOT) },
-                onTorrentSelect = { selectedTorrent = it },
+                onBookmarkClick = { selectedTorrent = it },
                 snackbarHostState = snackbarHostState,
             )
         }

@@ -27,7 +27,7 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 
 import com.prajwalch.torrentsearch.R
-import com.prajwalch.torrentsearch.ui.components.NavigateBackIconButton
+import com.prajwalch.torrentsearch.ui.components.ArrowBackIconButton
 import com.prajwalch.torrentsearch.ui.components.TextUrl
 import com.prajwalch.torrentsearch.ui.components.TorznabSearchProviderConfigForm
 import com.prajwalch.torrentsearch.ui.settings.searchproviders.TorznabSearchProviderConfigViewModel
@@ -53,11 +53,9 @@ fun AddSearchProviderScreen(onNavigateBack: () -> Unit, modifier: Modifier = Mod
             .then(modifier),
         topBar = { AddSearchProviderScreenTopBar(onNavigateBack = onNavigateBack) },
     ) { innerPadding ->
-        val scrollState = rememberScrollState()
-
         Column(
             modifier = Modifier
-                .verticalScroll(state = scrollState)
+                .verticalScroll(state = rememberScrollState())
                 .fillMaxWidth()
                 .imePadding()
                 .padding(innerPadding)
@@ -66,11 +64,11 @@ fun AddSearchProviderScreen(onNavigateBack: () -> Unit, modifier: Modifier = Mod
         ) {
             TorznabSearchProviderConfigForm(
                 config = uiState.config,
-                onNameChange = viewModel::changeName,
-                onUrlChange = viewModel::changeUrl,
-                onApiKeyChange = viewModel::changeAPIKey,
-                onCategoryChange = viewModel::changeCategory,
-                onSafetyStatusChange = viewModel::changeSafetyStatus,
+                onNameChange = viewModel::setName,
+                onUrlChange = viewModel::setUrl,
+                onApiKeyChange = viewModel::setAPIKey,
+                onCategoryChange = viewModel::setCategory,
+                onSafetyStatusChange = viewModel::setSafetyStatus,
                 isUrlValid = uiState.isUrlValid,
                 confirmButton = {
                     Button(
@@ -105,9 +103,9 @@ private fun AddSearchProviderScreenTopBar(
         modifier = modifier,
         title = { Text(text = stringResource(R.string.add_search_provider_screen_title)) },
         navigationIcon = {
-            NavigateBackIconButton(
+            ArrowBackIconButton(
                 onClick = onNavigateBack,
-                contentDescriptionId = R.string.button_go_to_search_providers_screen,
+                contentDescription = R.string.button_go_to_search_providers_screen,
             )
         },
     )

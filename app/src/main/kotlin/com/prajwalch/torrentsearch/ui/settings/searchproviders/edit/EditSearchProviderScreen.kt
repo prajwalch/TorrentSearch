@@ -21,7 +21,7 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 
 import com.prajwalch.torrentsearch.R
-import com.prajwalch.torrentsearch.ui.components.NavigateBackIconButton
+import com.prajwalch.torrentsearch.ui.components.ArrowBackIconButton
 import com.prajwalch.torrentsearch.ui.components.TorznabSearchProviderConfigForm
 import com.prajwalch.torrentsearch.ui.settings.searchproviders.TorznabSearchProviderConfigViewModel
 import com.prajwalch.torrentsearch.ui.theme.spaces
@@ -53,11 +53,11 @@ fun EditSearchProviderScreen(onNavigateBack: () -> Unit, modifier: Modifier = Mo
                 .padding(innerPadding)
                 .padding(horizontal = MaterialTheme.spaces.large),
             config = uiState.config,
-            onNameChange = viewModel::changeName,
-            onUrlChange = viewModel::changeUrl,
-            onApiKeyChange = viewModel::changeAPIKey,
-            onCategoryChange = viewModel::changeCategory,
-            onSafetyStatusChange = viewModel::changeSafetyStatus,
+            onNameChange = viewModel::setName,
+            onUrlChange = viewModel::setUrl,
+            onApiKeyChange = viewModel::setAPIKey,
+            onCategoryChange = viewModel::setCategory,
+            onSafetyStatusChange = viewModel::setSafetyStatus,
             isUrlValid = uiState.isUrlValid,
             confirmButton = {
                 Button(
@@ -82,9 +82,9 @@ private fun EditSearchProviderScreenTopBar(
         modifier = modifier,
         title = { Text(text = stringResource(R.string.edit_search_provider_screen_title)) },
         navigationIcon = {
-            NavigateBackIconButton(
+            ArrowBackIconButton(
                 onClick = onNavigateBack,
-                contentDescriptionId = R.string.button_go_to_search_providers_screen,
+                contentDescription = R.string.button_go_to_search_providers_screen,
             )
         },
     )

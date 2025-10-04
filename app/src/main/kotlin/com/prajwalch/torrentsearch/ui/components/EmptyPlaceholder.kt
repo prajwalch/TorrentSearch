@@ -21,10 +21,11 @@ import com.prajwalch.torrentsearch.ui.theme.spaces
 
 @Composable
 fun EmptyPlaceholder(
-    @StringRes headlineTextId: Int,
+    @StringRes title: Int,
     modifier: Modifier = Modifier,
-    @DrawableRes overlineIconId: Int? = null,
-    @StringRes supportingTextId: Int? = null,
+    @DrawableRes icon: Int? = null,
+    @StringRes iconDescription: Int? = null,
+    @StringRes message: Int? = null,
     actions: @Composable (ColumnScope.() -> Unit)? = null,
 ) {
     Column(
@@ -35,11 +36,11 @@ fun EmptyPlaceholder(
             alignment = Alignment.CenterVertically,
         )
     ) {
-        overlineIconId?.let {
+        icon?.let {
             Icon(
                 modifier = Modifier.size(80.dp),
                 painter = painterResource(it),
-                contentDescription = null,
+                contentDescription = iconDescription?.let { desc -> stringResource(desc) },
             )
         }
 
@@ -51,18 +52,14 @@ fun EmptyPlaceholder(
             ),
         ) {
             Text(
-                text = stringResource(headlineTextId),
+                text = stringResource(title),
                 fontWeight = FontWeight.Bold,
                 style = MaterialTheme.typography.bodyLarge,
             )
 
-            supportingTextId?.let {
-                Text(text = stringResource(it))
-            }
+            message?.let { Text(text = stringResource(it)) }
         }
 
-        actions?.let {
-            it()
-        }
+        actions?.let { it() }
     }
 }

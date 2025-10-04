@@ -8,14 +8,19 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.RowScope
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
@@ -30,7 +35,6 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
@@ -52,15 +56,13 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 
 import com.prajwalch.torrentsearch.R
 import com.prajwalch.torrentsearch.models.Category
-import com.prajwalch.torrentsearch.models.SortCriteria
-import com.prajwalch.torrentsearch.models.SortOrder
 import com.prajwalch.torrentsearch.models.Torrent
 import com.prajwalch.torrentsearch.providers.SearchProviderId
-import com.prajwalch.torrentsearch.ui.components.NavigateBackIconButton
-import com.prajwalch.torrentsearch.ui.components.NoInternetConnection
-import com.prajwalch.torrentsearch.ui.components.ResultsNotFound
+import com.prajwalch.torrentsearch.ui.components.ArrowBackIconButton
+import com.prajwalch.torrentsearch.ui.components.EmptyPlaceholder
 import com.prajwalch.torrentsearch.ui.components.ScrollToTopFAB
 import com.prajwalch.torrentsearch.ui.components.SearchBar
+import com.prajwalch.torrentsearch.ui.components.SearchIconButton
 import com.prajwalch.torrentsearch.ui.components.SettingsIconButton
 import com.prajwalch.torrentsearch.ui.components.SortDropdownMenu
 import com.prajwalch.torrentsearch.ui.components.SortIconButton
@@ -74,7 +76,7 @@ import kotlinx.coroutines.launch
 fun SearchResultsScreen(
     onNavigateBack: () -> Unit,
     onNavigateToSettings: () -> Unit,
-    onResultSelect: (Torrent) -> Unit,
+    onResultClick: (Torrent) -> Unit,
     snackbarHostState: SnackbarHostState,
     modifier: Modifier = Modifier,
 ) {
@@ -83,8 +85,18 @@ fun SearchResultsScreen(
 
     val coroutineScope = rememberCoroutineScope()
     val lazyListState = rememberLazyListState()
+    val searchBarFocusRequester = remember { FocusRequester() }
+    val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
 
+    var showSearchBar by remember { mutableStateOf(false) }
+    var showSortMenu by remember(uiState.currentSortCriteria, uiState.currentSortOrder) {
+        mutableStateOf(false)
+    }
     var showFilterOptions by remember { mutableStateOf(false) }
+    val showScrollToTopButton by remember {
+        derivedStateOf { lazyListState.firstVisibleItemIndex > 1 }
+    }
+
     if (showFilterOptions) {
         FilterOptionsBottomSheet(
             onDismissRequest = { showFilterOptions = false },
@@ -94,84 +106,39 @@ fun SearchResultsScreen(
         )
     }
 
-    val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
-
-    Scaffold(
-        modifier = Modifier
-            .fillMaxSize()
-            .nestedScroll(scrollBehavior.nestedScrollConnection)
-            .then(modifier),
-        topBar = {
-            SearchResultsScreenTopBar(
-                onNavigateBack = onNavigateBack,
-                filterQuery = uiState.filterQuery,
-                onFilterQueryChange = viewModel::updateFilterQuery,
-                currentSortCriteria = uiState.currentSortCriteria,
-                currentSortOrder = uiState.currentSortOrder,
-                onSortSearchResults = viewModel::sortSearchResults,
-                onShowFilterOptions = { showFilterOptions = true },
-                onNavigateToSettings = onNavigateToSettings,
-                scrollBehavior = scrollBehavior,
-            )
-        },
-        floatingActionButton = {
-            val isFirstResultVisible by remember {
-                derivedStateOf { lazyListState.firstVisibleItemIndex <= 1 }
-            }
-
-            ScrollToTopFAB(
-                visible = !isFirstResultVisible,
-                onClick = {
-                    coroutineScope.launch { lazyListState.animateScrollToItem(0) }
-                },
-            )
-        },
-        snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
-    ) { innerPadding ->
-        Column(modifier = Modifier.padding(innerPadding)) {
-            AnimatedVisibility(
-                modifier = Modifier.fillMaxWidth(),
-                visible = uiState.isSearching,
-            ) {
-                LinearProgressIndicator()
-            }
-
-            SearchResultsScreenContent(
-                modifier = Modifier.fillMaxHeight(),
-                searchQuery = uiState.searchQuery,
-                searchCategory = uiState.searchCategory,
-                searchResults = uiState.searchResults,
-                filteredSearchResults = uiState.filteredSearchResults,
-                onResultSelect = onResultSelect,
-                lazyListState = lazyListState,
-                resultsNotFound = uiState.resultsNotFound,
-                isLoading = uiState.isLoading,
-                isInternetError = uiState.isInternetError,
-                onRetry = { viewModel.performSearch() },
+    val topBarTitle: @Composable () -> Unit = @Composable {
+        if (showSearchBar) {
+            SearchBar(
+                modifier = Modifier.focusRequester(searchBarFocusRequester),
+                query = uiState.filterQuery,
+                onQueryChange = viewModel::updateFilterQuery,
+                placeholder = { Text(text = stringResource(R.string.search_results)) },
             )
         }
     }
-}
+    val topBarActions: @Composable RowScope.() -> Unit = @Composable {
+        if (!showSearchBar) {
+            SearchIconButton(onClick = { showSearchBar = true })
+            SortIconButton(onClick = { showSortMenu = true })
+            SortDropdownMenu(
+                expanded = showSortMenu,
+                onDismissRequest = { showSortMenu = false },
+                currentSortCriteria = uiState.currentSortCriteria,
+                currentSortOrder = uiState.currentSortOrder,
+                onSortRequest = viewModel::sortSearchResults,
+            )
+            IconButton(onClick = { showFilterOptions = true }) {
+                Icon(
+                    painter = painterResource(R.drawable.ic_filter_alt),
+                    contentDescription = null,
+                )
+            }
+        }
+        SettingsIconButton(onClick = onNavigateToSettings)
+    }
 
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-private fun SearchResultsScreenTopBar(
-    onNavigateBack: () -> Unit,
-    filterQuery: String,
-    onFilterQueryChange: (String) -> Unit,
-    currentSortCriteria: SortCriteria,
-    currentSortOrder: SortOrder,
-    onSortSearchResults: (SortCriteria, SortOrder) -> Unit,
-    onShowFilterOptions: () -> Unit,
-    onNavigateToSettings: () -> Unit,
-    modifier: Modifier = Modifier,
-    scrollBehavior: TopAppBarScrollBehavior? = null,
-) {
-    var showSearchBar by remember { mutableStateOf(false) }
-    val searchBarFocusRequester = remember { FocusRequester() }
-
-    var showSortMenu by remember(currentSortCriteria, currentSortOrder) {
-        mutableStateOf(false)
+    BackHandler(enabled = showSearchBar) {
+        showSearchBar = false
     }
 
     LaunchedEffect(showSearchBar) {
@@ -180,56 +147,140 @@ private fun SearchResultsScreenTopBar(
         }
     }
 
-    BackHandler(enabled = showSearchBar) {
-        showSearchBar = false
+    Scaffold(
+        modifier = Modifier
+            .fillMaxSize()
+            .nestedScroll(scrollBehavior.nestedScrollConnection)
+            .then(modifier),
+        topBar = {
+            TopAppBar(
+                navigationIcon = {
+                    ArrowBackIconButton(onClick = {
+                        if (showSearchBar) showSearchBar = false else onNavigateBack()
+                    })
+                },
+                title = topBarTitle,
+                actions = topBarActions,
+                scrollBehavior = scrollBehavior,
+            )
+        },
+        floatingActionButton = {
+            ScrollToTopFAB(
+                visible = showScrollToTopButton,
+                onClick = { coroutineScope.launch { lazyListState.animateScrollToItem(0) } },
+            )
+        },
+        snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
+    ) { innerPadding ->
+        when {
+            uiState.isLoading -> {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(innerPadding),
+                    contentAlignment = Alignment.Center,
+                ) {
+                    CircularProgressIndicator()
+                }
+            }
+
+            uiState.isInternetError && uiState.searchResults.isEmpty() -> {
+                NoInternetConnection(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(innerPadding),
+                    onTryAgain = viewModel::performSearch,
+                )
+            }
+
+            uiState.resultsNotFound -> {
+                ResultsNotFound(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(innerPadding),
+                )
+            }
+
+            uiState.filteredSearchResults != null || uiState.searchResults.isNotEmpty() -> {
+                SearchResults(
+                    modifier = Modifier.padding(innerPadding),
+                    searchResults = uiState.filteredSearchResults ?: uiState.searchResults,
+                    onResultClick = onResultClick,
+                    searchQuery = uiState.searchQuery,
+                    searchCategory = uiState.searchCategory,
+                    isSearching = uiState.isSearching,
+                    lazyListState = lazyListState,
+                )
+            }
+        }
     }
+}
 
-    TopAppBar(
+@Composable
+private fun NoInternetConnection(onTryAgain: () -> Unit, modifier: Modifier = Modifier) {
+    EmptyPlaceholder(
         modifier = modifier,
-        navigationIcon = {
-            NavigateBackIconButton(onClick = {
-                if (showSearchBar) showSearchBar = false else onNavigateBack()
-            })
-        },
-        title = {
-            if (showSearchBar) {
-                SearchBar(
-                    modifier = Modifier.focusRequester(searchBarFocusRequester),
-                    query = filterQuery,
-                    onQueryChange = onFilterQueryChange,
-                    placeholder = { Text(text = stringResource(R.string.search_results)) },
-                )
-            }
-        },
+        icon = R.drawable.ic_signal_wifi_off,
+        title = R.string.msg_no_internet_connection,
         actions = {
-            if (!showSearchBar) {
-                IconButton(onClick = { showSearchBar = true }) {
-                    Icon(
-                        painter = painterResource(R.drawable.ic_search),
-                        contentDescription = null,
-                    )
-                }
-
-                SortIconButton(onClick = { showSortMenu = true })
-                SortDropdownMenu(
-                    expanded = showSortMenu,
-                    onDismissRequest = { showSortMenu = false },
-                    currentSortCriteria = currentSortCriteria,
-                    currentSortOrder = currentSortOrder,
-                    onSortRequest = onSortSearchResults,
+            Button(onClick = onTryAgain) {
+                Icon(
+                    modifier = Modifier.size(ButtonDefaults.IconSize),
+                    painter = painterResource(R.drawable.ic_refresh),
+                    contentDescription = stringResource(R.string.desc_retry_connection),
                 )
-
-                IconButton(onClick = onShowFilterOptions) {
-                    Icon(
-                        painter = painterResource(R.drawable.ic_filter_alt),
-                        contentDescription = null,
-                    )
-                }
+                Spacer(modifier = Modifier.width(ButtonDefaults.IconSpacing))
+                Text(text = stringResource(R.string.button_try_again))
             }
-            SettingsIconButton(onClick = onNavigateToSettings)
-        },
-        scrollBehavior = scrollBehavior,
+        }
     )
+}
+
+@Composable
+private fun ResultsNotFound(modifier: Modifier = Modifier) {
+    EmptyPlaceholder(
+        modifier = modifier,
+        icon = R.drawable.ic_results_not_found,
+        title = R.string.msg_no_results_found,
+    )
+}
+
+@Composable
+private fun SearchResults(
+    searchResults: List<Torrent>,
+    onResultClick: (Torrent) -> Unit,
+    searchQuery: String,
+    searchCategory: Category,
+    isSearching: Boolean,
+    modifier: Modifier = Modifier,
+    lazyListState: LazyListState = rememberLazyListState(),
+) {
+    Column(modifier = modifier) {
+        AnimatedVisibility(
+            modifier = Modifier.fillMaxWidth(),
+            visible = isSearching,
+        ) {
+            LinearProgressIndicator()
+        }
+
+        TorrentList(
+            torrents = searchResults,
+            onTorrentClick = onResultClick,
+            headerContent = {
+                Text(
+                    text = stringResource(
+                        R.string.hint_results_count,
+                        searchResults.size,
+                        searchQuery,
+                        searchCategory,
+                    ),
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    style = MaterialTheme.typography.bodyMedium,
+                )
+            },
+            lazyListState = lazyListState,
+        )
+    }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -287,13 +338,16 @@ private fun SearchProvidersChipsRow(
     modifier: Modifier = Modifier,
     contentPadding: PaddingValues = PaddingValues(0.dp),
 ) {
+    // TODO: Sort this on ViewModel.
     val searchProviders = remember(searchProviders) {
         searchProviders.sortedBy { it.searchProviderName }
     }
 
     LazyRow(
         modifier = modifier,
-        horizontalArrangement = Arrangement.spacedBy(space = MaterialTheme.spaces.small),
+        horizontalArrangement = Arrangement.spacedBy(
+            space = MaterialTheme.spaces.small,
+        ),
         contentPadding = contentPadding,
     ) {
         items(items = searchProviders, key = { it.searchProviderId }) {
@@ -304,63 +358,5 @@ private fun SearchProvidersChipsRow(
                 enabled = it.enabled,
             )
         }
-    }
-}
-
-@Composable
-private fun SearchResultsScreenContent(
-    searchQuery: String,
-    searchCategory: Category,
-    searchResults: List<Torrent>,
-    filteredSearchResults: List<Torrent>?,
-    onResultSelect: (Torrent) -> Unit,
-    lazyListState: LazyListState,
-    resultsNotFound: Boolean,
-    isLoading: Boolean,
-    isInternetError: Boolean,
-    onRetry: () -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    Column(modifier = modifier, horizontalAlignment = Alignment.CenterHorizontally) {
-        when {
-            isLoading -> LoadingIndicator(modifier = Modifier.fillMaxSize())
-
-            isInternetError && searchResults.isEmpty() -> NoInternetConnection(
-                modifier = Modifier.fillMaxSize(),
-                onRetry = onRetry,
-            )
-
-            resultsNotFound -> ResultsNotFound(modifier = Modifier.fillMaxSize())
-
-            filteredSearchResults != null || searchResults.isNotEmpty() -> {
-                TorrentList(
-                    torrents = filteredSearchResults ?: searchResults,
-                    onTorrentSelect = onResultSelect,
-                    headerContent = {
-                        Text(
-                            text = stringResource(
-                                R.string.hint_results_count,
-                                filteredSearchResults?.size ?: searchResults.size,
-                                searchQuery,
-                                searchCategory,
-                            ),
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                            style = MaterialTheme.typography.bodyMedium,
-                        )
-                    },
-                    lazyListState = lazyListState,
-                )
-            }
-        }
-    }
-}
-
-@Composable
-private fun LoadingIndicator(modifier: Modifier = Modifier) {
-    Box(
-        modifier = modifier,
-        contentAlignment = Alignment.Center,
-    ) {
-        CircularProgressIndicator()
     }
 }

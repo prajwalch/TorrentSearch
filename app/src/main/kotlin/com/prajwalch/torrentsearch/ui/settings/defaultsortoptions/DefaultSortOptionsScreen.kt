@@ -2,9 +2,10 @@ package com.prajwalch.torrentsearch.ui.settings.defaultsortoptions
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.RadioButton
@@ -18,19 +19,19 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 
 import com.prajwalch.torrentsearch.R
 import com.prajwalch.torrentsearch.models.SortCriteria
 import com.prajwalch.torrentsearch.models.SortOrder
-import com.prajwalch.torrentsearch.ui.activityScopedViewModel
-import com.prajwalch.torrentsearch.ui.components.NavigateBackIconButton
+import com.prajwalch.torrentsearch.ui.components.ArrowBackIconButton
 import com.prajwalch.torrentsearch.ui.components.SettingsSectionTitle
 import com.prajwalch.torrentsearch.ui.settings.SettingsViewModel
 
 @Composable
 fun DefaultSortOptionsScreen(onNavigateBack: () -> Unit, modifier: Modifier = Modifier) {
-    val viewModel = activityScopedViewModel<SettingsViewModel>()
+    val viewModel = hiltViewModel<SettingsViewModel>()
     val searchSettings by viewModel.searchSettingsUiState.collectAsStateWithLifecycle()
 
     val defaultSortOptions by remember { derivedStateOf { searchSettings.defaultSortOptions } }
@@ -43,23 +44,19 @@ fun DefaultSortOptionsScreen(onNavigateBack: () -> Unit, modifier: Modifier = Mo
             DefaultSortOptionsScreenTopBar(onNavigateBack = onNavigateBack)
         },
     ) { innerPadding ->
-        LazyColumn(
-            modifier = Modifier.consumeWindowInsets(innerPadding),
-            contentPadding = innerPadding,
+        Column(
+            modifier = Modifier
+                .verticalScroll(state = rememberScrollState())
+                .padding(innerPadding),
         ) {
-            item {
-                SortCriteriaSection(
-                    selectedCriteria = defaultSortOptions.sortCriteria,
-                    onCriteriaSelect = viewModel::setDefaultSortCriteria,
-                )
-            }
-
-            item {
-                SortOrderSection(
-                    selectedOrder = defaultSortOptions.sortOrder,
-                    onOrderSelect = viewModel::setDefaultSortOrder,
-                )
-            }
+            SortCriteriaSection(
+                selectedCriteria = defaultSortOptions.sortCriteria,
+                onCriteriaSelect = viewModel::setDefaultSortCriteria,
+            )
+            SortOrderSection(
+                selectedOrder = defaultSortOptions.sortOrder,
+                onOrderSelect = viewModel::setDefaultSortOrder,
+            )
         }
     }
 }
@@ -74,9 +71,9 @@ private fun DefaultSortOptionsScreenTopBar(
         modifier = modifier,
         title = { Text(text = stringResource(R.string.setting_default_sort_options)) },
         navigationIcon = {
-            NavigateBackIconButton(
+            ArrowBackIconButton(
                 onClick = onNavigateBack,
-                contentDescriptionId = R.string.button_go_to_settings_screen,
+                contentDescription = R.string.button_go_to_settings_screen,
             )
         },
     )
@@ -89,7 +86,7 @@ private fun SortCriteriaSection(
     modifier: Modifier = Modifier,
 ) {
     Column(modifier = modifier) {
-        SettingsSectionTitle(titleId = R.string.settings_section_sort_criteria)
+        SettingsSectionTitle(title = R.string.settings_section_sort_criteria)
 
         for (criteria in SortCriteria.entries) {
             ListItem(
@@ -117,7 +114,7 @@ private fun SortOrderSection(
     modifier: Modifier = Modifier,
 ) {
     Column(modifier = modifier) {
-        SettingsSectionTitle(titleId = R.string.settings_section_sort_order)
+        SettingsSectionTitle(title = R.string.settings_section_sort_order)
 
         for (order in SortOrder.entries) {
             ListItem(

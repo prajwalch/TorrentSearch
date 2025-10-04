@@ -33,7 +33,7 @@ import my.nanihadesuka.compose.ScrollbarSettings
 @Composable
 fun TorrentList(
     torrents: List<Torrent>,
-    onTorrentSelect: (Torrent) -> Unit,
+    onTorrentClick: (Torrent) -> Unit,
     modifier: Modifier = Modifier,
     headerContent: @Composable (RowScope.() -> Unit)? = null,
     lazyListState: LazyListState = rememberLazyListState(),
@@ -76,7 +76,7 @@ fun TorrentList(
                 TorrentListItem(
                     modifier = Modifier
                         .animateItem()
-                        .clickable { onTorrentSelect(it) },
+                        .clickable { onTorrentClick(it) },
                     torrent = it,
                 )
             }
@@ -98,7 +98,7 @@ private fun TorrentListHeader(
 }
 
 @Composable
-fun TorrentListItem(torrent: Torrent, modifier: Modifier = Modifier) {
+private fun TorrentListItem(torrent: Torrent, modifier: Modifier = Modifier) {
     ListItem(
         modifier = modifier,
         overlineContent = { Text(text = torrent.uploadDate) },
@@ -155,4 +155,9 @@ private fun TorrentMetadataText(text: String, modifier: Modifier = Modifier) {
         text = text,
         color = MaterialTheme.colorScheme.secondary,
     )
+}
+
+@Composable
+private fun BulletPoint(modifier: Modifier = Modifier) {
+    Text(modifier = modifier, text = "\u2022")
 }

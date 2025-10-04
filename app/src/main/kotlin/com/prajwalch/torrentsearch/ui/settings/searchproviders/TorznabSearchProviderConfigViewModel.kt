@@ -58,31 +58,31 @@ class TorznabSearchProviderConfigViewModel @Inject constructor(
         _uiState.update { it.copy(config = existingConfig) }
     }
 
-    fun changeName(name: String) {
+    fun setName(name: String) {
         _uiState.update {
             it.copy(config = it.config.copy(name = name))
         }
     }
 
-    fun changeUrl(url: String) {
+    fun setUrl(url: String) {
         _uiState.update {
             it.copy(config = it.config.copy(url = url))
         }
     }
 
-    fun changeAPIKey(apiKey: String) {
+    fun setAPIKey(apiKey: String) {
         _uiState.update {
             it.copy(config = it.config.copy(apiKey = apiKey))
         }
     }
 
-    fun changeCategory(category: Category) {
+    fun setCategory(category: Category) {
         _uiState.update {
             it.copy(config = it.config.copy(category = category))
         }
     }
 
-    fun changeSafetyStatus(safetyStatus: SearchProviderSafetyStatus) {
+    fun setSafetyStatus(safetyStatus: SearchProviderSafetyStatus) {
         _uiState.update {
             it.copy(config = it.config.copy(safetyStatus = safetyStatus))
         }

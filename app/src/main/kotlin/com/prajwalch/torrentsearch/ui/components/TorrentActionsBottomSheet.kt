@@ -1,13 +1,15 @@
 package com.prajwalch.torrentsearch.ui.components
 
 import androidx.annotation.DrawableRes
+import androidx.annotation.StringRes
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -58,47 +60,68 @@ fun TorrentActionsBottomSheet(
         onDismissRequest = onDismissRequest,
         sheetState = sheetState,
     ) {
-        TorrentActionsBottomSheetHeader(
-            modifier = Modifier
-                .padding(
-                    horizontal = MaterialTheme.spaces.large,
-                ),
-            title = title,
-            isNSFW = isNSFW,
-        )
+        Column(modifier = Modifier.verticalScroll(state = rememberScrollState())) {
+            TorrentActionsBottomSheetHeader(
+                modifier = Modifier
+                    .padding(horizontal = MaterialTheme.spaces.large),
+                title = title,
+                isNSFW = isNSFW,
+            )
 
-        LazyColumn {
-            item {
-                BookmarkAction(
-                    isBookmarked = isBookmarked,
-                    onBookmarkTorrent = actionWithDismiss(onBookmarkTorrent),
-                    onDeleteBookmark = actionWithDismiss(onDeleteBookmark),
+            Spacer(modifier = Modifier.height(MaterialTheme.spaces.small))
+            HorizontalDivider()
+
+            Spacer(modifier = Modifier.height(MaterialTheme.spaces.small))
+            if (isBookmarked) {
+                Action(
+                    icon = R.drawable.ic_star_filled,
+                    label = R.string.action_delete_bookmark,
+                    onClick = actionWithDismiss(onDeleteBookmark),
+                )
+            } else {
+                Action(
+                    icon = R.drawable.ic_star,
+                    label = R.string.action_bookmark_torrent,
+                    onClick = actionWithDismiss(onBookmarkTorrent),
                 )
             }
-            item { DownloadTorrent(onClick = actionWithDismiss(onDownloadTorrent)) }
-            item { ShareMagnetLink(onClick = actionWithDismiss(onShareMagnetLink)) }
-            item { CopyMagnetLink(onClick = actionWithDismiss(onCopyMagnetLink)) }
-            item { Spacer(modifier = Modifier.height(MaterialTheme.spaces.small)) }
+            Action(
+                icon = R.drawable.ic_download,
+                label = R.string.action_download_torrent,
+                onClick = actionWithDismiss(onDownloadTorrent),
+            )
+            Action(
+                modifier = modifier,
+                icon = R.drawable.ic_copy,
+                label = R.string.action_copy_magnet_link,
+                onClick = actionWithDismiss(onCopyMagnetLink),
+            )
+            Action(
+                icon = R.drawable.ic_share,
+                label = R.string.action_share_magnet_link,
+                onClick = actionWithDismiss(onShareMagnetLink),
+            )
+            Spacer(modifier = Modifier.height(MaterialTheme.spaces.small))
 
             if (hasDescriptionPage) {
-                item { HorizontalDivider() }
-                item { Spacer(modifier = Modifier.height(MaterialTheme.spaces.small)) }
-                item {
-                    OpenDescriptionPage(
-                        onClick = actionWithDismiss(onOpenDescriptionPage)
-                    )
-                }
-                item {
-                    CopyDescriptionPageUrl(
-                        onClick = actionWithDismiss(onCopyDescriptionPageUrl)
-                    )
-                }
-                item {
-                    ShareDescriptionPageUrl(
-                        onClick = actionWithDismiss(onShareDescriptionPageUrl)
-                    )
-                }
-                item { Spacer(modifier = Modifier.height(MaterialTheme.spaces.small)) }
+                HorizontalDivider()
+                Spacer(modifier = Modifier.height(MaterialTheme.spaces.small))
+                Action(
+                    icon = R.drawable.ic_public,
+                    label = R.string.action_open_description_page,
+                    onClick = actionWithDismiss(onOpenDescriptionPage),
+                )
+                Action(
+                    icon = R.drawable.ic_copy,
+                    label = R.string.action_copy_description_page_url,
+                    onClick = actionWithDismiss(onCopyDescriptionPageUrl),
+                )
+                Action(
+                    icon = R.drawable.ic_share,
+                    label = R.string.action_share_description_page_url,
+                    onClick = actionWithDismiss(onShareDescriptionPageUrl),
+                )
+                Spacer(modifier = Modifier.height(MaterialTheme.spaces.small))
             }
         }
     }
@@ -120,112 +143,16 @@ private fun TorrentActionsBottomSheetHeader(
             style = MaterialTheme.typography.bodyLarge,
         )
     }
-    Spacer(modifier = Modifier.height(MaterialTheme.spaces.small))
-    HorizontalDivider()
-    Spacer(modifier = Modifier.height(MaterialTheme.spaces.small))
-}
-
-@Composable
-private fun BookmarkAction(
-    isBookmarked: Boolean,
-    onBookmarkTorrent: () -> Unit,
-    onDeleteBookmark: () -> Unit,
-) {
-    if (!isBookmarked) {
-        BookmarkTorrent(onClick = onBookmarkTorrent)
-    } else {
-        DeleteBookmark(onClick = onDeleteBookmark)
-    }
-}
-
-@Composable
-private fun BookmarkTorrent(onClick: () -> Unit, modifier: Modifier = Modifier) {
-    Action(
-        modifier = modifier,
-        leadingIconId = R.drawable.ic_star,
-        label = stringResource(R.string.action_bookmark_torrent),
-        onClick = onClick,
-    )
-}
-
-@Composable
-private fun DeleteBookmark(onClick: () -> Unit, modifier: Modifier = Modifier) {
-    Action(
-        modifier = modifier,
-        leadingIconId = R.drawable.ic_star_filled,
-        label = stringResource(R.string.action_delete_bookmark),
-        onClick = onClick,
-    )
-}
-
-@Composable
-private fun DownloadTorrent(onClick: () -> Unit, modifier: Modifier = Modifier) {
-    Action(
-        modifier = modifier,
-        leadingIconId = R.drawable.ic_download,
-        label = stringResource(R.string.action_download_torrent),
-        onClick = onClick,
-    )
-}
-
-@Composable
-private fun CopyMagnetLink(onClick: () -> Unit, modifier: Modifier = Modifier) {
-    Action(
-        modifier = modifier,
-        leadingIconId = R.drawable.ic_copy,
-        label = stringResource(R.string.action_copy_magnet_link),
-        onClick = onClick,
-    )
-}
-
-@Composable
-private fun ShareMagnetLink(onClick: () -> Unit, modifier: Modifier = Modifier) {
-    Action(
-        modifier = modifier,
-        leadingIconId = R.drawable.ic_share,
-        label = stringResource(R.string.action_share_magnet_link),
-        onClick = onClick,
-    )
-}
-
-@Composable
-private fun OpenDescriptionPage(onClick: () -> Unit, modifier: Modifier = Modifier) {
-    Action(
-        modifier = modifier,
-        leadingIconId = R.drawable.ic_public,
-        label = stringResource(R.string.action_open_description_page),
-        onClick = onClick,
-    )
-}
-
-@Composable
-private fun CopyDescriptionPageUrl(onClick: () -> Unit, modifier: Modifier = Modifier) {
-    Action(
-        modifier = modifier,
-        leadingIconId = R.drawable.ic_copy,
-        label = stringResource(R.string.action_copy_description_page_url),
-        onClick = onClick,
-    )
-}
-
-@Composable
-private fun ShareDescriptionPageUrl(onClick: () -> Unit, modifier: Modifier = Modifier) {
-    Action(
-        modifier = modifier,
-        leadingIconId = R.drawable.ic_share,
-        label = stringResource(R.string.action_share_description_page_url),
-        onClick = onClick,
-    )
 }
 
 @Composable
 private fun Action(
-    @DrawableRes leadingIconId: Int,
-    label: String,
+    @DrawableRes icon: Int,
+    @StringRes label: Int,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
     colors: ListItemColors = ListItemDefaults.colors(
-        containerColor = Color.Transparent
+        containerColor = Color.Transparent,
     ),
 ) {
     ListItem(
@@ -234,11 +161,11 @@ private fun Action(
             .then(modifier),
         leadingContent = {
             Icon(
-                painter = painterResource(leadingIconId),
-                contentDescription = label,
+                painter = painterResource(icon),
+                contentDescription = stringResource(label),
             )
         },
-        headlineContent = { Text(text = label) },
+        headlineContent = { Text(text = stringResource(label)) },
         colors = colors,
     )
 }

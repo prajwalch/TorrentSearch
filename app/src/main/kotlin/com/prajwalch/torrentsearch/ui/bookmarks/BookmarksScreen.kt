@@ -1,7 +1,7 @@
 package com.prajwalch.torrentsearch.ui.bookmarks
 
 import androidx.activity.compose.BackHandler
-import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -16,7 +16,6 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
@@ -32,17 +31,16 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 
 import com.prajwalch.torrentsearch.R
-import com.prajwalch.torrentsearch.models.SortCriteria
-import com.prajwalch.torrentsearch.models.SortOrder
 import com.prajwalch.torrentsearch.models.Torrent
-import com.prajwalch.torrentsearch.ui.activityScopedViewModel
+import com.prajwalch.torrentsearch.ui.components.ArrowBackIconButton
 import com.prajwalch.torrentsearch.ui.components.EmptyPlaceholder
-import com.prajwalch.torrentsearch.ui.components.NavigateBackIconButton
 import com.prajwalch.torrentsearch.ui.components.ScrollToTopFAB
 import com.prajwalch.torrentsearch.ui.components.SearchBar
+import com.prajwalch.torrentsearch.ui.components.SearchIconButton
 import com.prajwalch.torrentsearch.ui.components.SettingsIconButton
 import com.prajwalch.torrentsearch.ui.components.SortDropdownMenu
 import com.prajwalch.torrentsearch.ui.components.SortIconButton
@@ -56,24 +54,80 @@ import kotlinx.coroutines.launch
 fun BookmarksScreen(
     onNavigateBack: () -> Unit,
     onNavigateToSettings: () -> Unit,
-    onTorrentSelect: (Torrent) -> Unit,
+    onBookmarkClick: (Torrent) -> Unit,
     snackbarHostState: SnackbarHostState,
     modifier: Modifier = Modifier,
 ) {
-    val viewModel = activityScopedViewModel<BookmarksViewModel>()
+    val viewModel = hiltViewModel<BookmarksViewModel>()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+
+    val coroutineScope = rememberCoroutineScope()
+    val lazyListState = rememberLazyListState()
+    val textFieldState = rememberTextFieldState()
+    val searchBarFocusRequester = remember { FocusRequester() }
+    val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
 
     val showDeleteAllAction by remember {
         derivedStateOf { uiState.bookmarks.isNotEmpty() }
     }
-    // Scroll to top button related.
-    val coroutineScope = rememberCoroutineScope()
-    val lazyListState = rememberLazyListState()
+    var showSearchBar by remember { mutableStateOf(false) }
+    var showSortMenu by remember(uiState.currentSortCriteria, uiState.currentSortOrder) {
+        mutableStateOf(false)
+    }
     val showScrollToTopButton by remember {
         derivedStateOf { lazyListState.firstVisibleItemIndex > 1 }
     }
 
-    val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
+    val topBarTitle: @Composable () -> Unit = @Composable {
+        if (showSearchBar) {
+            SearchBar(
+                modifier = Modifier.focusRequester(searchBarFocusRequester),
+                textFieldState = textFieldState,
+                placeholder = { Text(text = stringResource(R.string.search_bookmarks)) },
+            )
+        } else {
+            Text(text = stringResource(R.string.bookmarks_screen_title))
+        }
+    }
+    val topBarActions: @Composable RowScope.() -> Unit = @Composable {
+        if (!showSearchBar) {
+            if (showDeleteAllAction) {
+                IconButton(onClick = { viewModel.deleteAllBookmarks() }) {
+                    Icon(
+                        painter = painterResource(R.drawable.ic_delete_forever),
+                        contentDescription = stringResource(
+                            R.string.button_delete_all_bookmarks
+                        ),
+                    )
+                }
+            }
+            SearchIconButton(onClick = { showSearchBar = true })
+            SortIconButton(onClick = { showSortMenu = true })
+            SortDropdownMenu(
+                expanded = showSortMenu,
+                onDismissRequest = { showSortMenu = false },
+                currentSortCriteria = uiState.currentSortCriteria,
+                currentSortOrder = uiState.currentSortOrder,
+                onSortRequest = viewModel::sortBookmarks,
+            )
+        }
+        SettingsIconButton(onClick = onNavigateToSettings)
+    }
+
+    BackHandler(enabled = showSearchBar) {
+        showSearchBar = false
+    }
+
+    LaunchedEffect(showSearchBar) {
+        if (showSearchBar) {
+            searchBarFocusRequester.requestFocus()
+        }
+    }
+
+    LaunchedEffect(Unit) {
+        snapshotFlow { textFieldState.text }
+            .collectLatest { viewModel.filterBookmarks(query = it.toString()) }
+    }
 
     Scaffold(
         modifier = Modifier
@@ -82,15 +136,15 @@ fun BookmarksScreen(
             .then(modifier),
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
         topBar = {
-            BookmarksScreenTopBar(
-                onNavigateBack = onNavigateBack,
-                onDeleteAllBookmarks = viewModel::deleteAllBookmarks,
-                onFilterBookmarks = viewModel::filterBookmarks,
-                onNavigateToSettings = onNavigateToSettings,
-                showDeleteAllAction = showDeleteAllAction,
-                currentSortCriteria = uiState.currentSortCriteria,
-                currentSortOrder = uiState.currentSortOrder,
-                onSortRequest = viewModel::sortBookmarks,
+            TopAppBar(
+                title = topBarTitle,
+                navigationIcon = {
+                    ArrowBackIconButton(
+                        onClick = onNavigateBack,
+                        contentDescription = R.string.button_go_back_to_search_screen,
+                    )
+                },
+                actions = topBarActions,
                 scrollBehavior = scrollBehavior,
             )
         },
@@ -108,7 +162,7 @@ fun BookmarksScreen(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(innerPadding),
-                headlineTextId = R.string.msg_no_bookmarks,
+                title = R.string.msg_no_bookmarks,
             )
         } else {
             val bookmarks = uiState.filteredBookmarks ?: uiState.bookmarks
@@ -116,101 +170,10 @@ fun BookmarksScreen(
             TorrentList(
                 modifier = Modifier.consumeWindowInsets(innerPadding),
                 torrents = bookmarks,
-                onTorrentSelect = onTorrentSelect,
+                onTorrentClick = onBookmarkClick,
                 contentPadding = innerPadding,
                 lazyListState = lazyListState,
             )
         }
     }
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-private fun BookmarksScreenTopBar(
-    onNavigateBack: () -> Unit,
-    onDeleteAllBookmarks: () -> Unit,
-    onFilterBookmarks: (String) -> Unit,
-    onNavigateToSettings: () -> Unit,
-    showDeleteAllAction: Boolean,
-    currentSortCriteria: SortCriteria,
-    currentSortOrder: SortOrder,
-    onSortRequest: (SortCriteria, SortOrder) -> Unit,
-    modifier: Modifier = Modifier,
-    scrollBehavior: TopAppBarScrollBehavior? = null,
-) {
-    var showSearchBar by remember { mutableStateOf(false) }
-    val searchBarFocusRequester = remember { FocusRequester() }
-
-    LaunchedEffect(showSearchBar) {
-        if (showSearchBar) {
-            searchBarFocusRequester.requestFocus()
-        }
-    }
-
-    BackHandler(enabled = showSearchBar) {
-        showSearchBar = false
-    }
-
-    val textFieldState = rememberTextFieldState()
-
-    LaunchedEffect(Unit) {
-        snapshotFlow { textFieldState.text }
-            .collectLatest { onFilterBookmarks(it.toString()) }
-    }
-
-    TopAppBar(
-        modifier = modifier,
-        title = {
-            if (showSearchBar) {
-                SearchBar(
-                    modifier = Modifier.focusRequester(searchBarFocusRequester),
-                    textFieldState = textFieldState,
-                    placeholder = { Text(text = stringResource(R.string.search_bookmarks)) },
-                )
-            } else {
-                Text(stringResource(R.string.bookmarks_screen_title))
-            }
-        },
-        navigationIcon = {
-            NavigateBackIconButton(
-                onClick = onNavigateBack,
-                contentDescriptionId = R.string.button_go_back_to_search_screen,
-            )
-        },
-        actions = {
-            if (!showSearchBar) {
-                if (showDeleteAllAction) {
-                    IconButton(onClick = onDeleteAllBookmarks) {
-                        Icon(
-                            painter = painterResource(R.drawable.ic_delete_forever),
-                            contentDescription = stringResource(R.string.button_delete_all_bookmarks),
-                        )
-                    }
-                }
-                IconButton(onClick = { showSearchBar = true }) {
-                    Icon(
-                        painter = painterResource(R.drawable.ic_search),
-                        contentDescription = null,
-                    )
-                }
-
-                Box {
-                    var showSortMenu by remember(currentSortCriteria, currentSortOrder) {
-                        mutableStateOf(false)
-                    }
-
-                    SortIconButton(onClick = { showSortMenu = true })
-                    SortDropdownMenu(
-                        expanded = showSortMenu,
-                        onDismissRequest = { showSortMenu = false },
-                        currentSortCriteria = currentSortCriteria,
-                        currentSortOrder = currentSortOrder,
-                        onSortRequest = onSortRequest,
-                    )
-                }
-            }
-            SettingsIconButton(onClick = onNavigateToSettings)
-        },
-        scrollBehavior = scrollBehavior,
-    )
 }

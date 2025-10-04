@@ -17,17 +17,18 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.Role
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 
 import com.prajwalch.torrentsearch.R
 import com.prajwalch.torrentsearch.models.Category
-import com.prajwalch.torrentsearch.ui.activityScopedViewModel
-import com.prajwalch.torrentsearch.ui.components.NavigateBackIconButton
+import com.prajwalch.torrentsearch.ui.components.ArrowBackIconButton
 import com.prajwalch.torrentsearch.ui.settings.SettingsViewModel
 
 @Composable
 fun DefaultCategoryScreen(onNavigateBack: () -> Unit, modifier: Modifier = Modifier) {
-    val viewModel = activityScopedViewModel<SettingsViewModel>()
+    val viewModel = hiltViewModel<SettingsViewModel>()
     val settings by viewModel.searchSettingsUiState.collectAsStateWithLifecycle()
 
     val defaultCategory by remember { derivedStateOf { settings.defaultCategory } }
@@ -65,9 +66,9 @@ private fun DefaultCategoryScreenTopBar(
         modifier = modifier,
         title = { Text(text = stringResource(R.string.setting_default_category)) },
         navigationIcon = {
-            NavigateBackIconButton(
+            ArrowBackIconButton(
                 onClick = onNavigateBack,
-                contentDescriptionId = R.string.button_go_to_settings_screen,
+                contentDescription = R.string.button_go_to_settings_screen,
             )
         }
     )
@@ -82,7 +83,10 @@ private fun CategoryListItem(
 ) {
     ListItem(
         modifier = Modifier
-            .clickable(onClick = onClick)
+            .clickable(
+                role = Role.RadioButton,
+                onClick = onClick,
+            )
             .then(modifier),
         leadingContent = { RadioButton(selected = selected, onClick = onClick) },
         headlineContent = { Text(text = name) },

@@ -12,12 +12,15 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.foundation.text.input.setTextAndPlaceCursorAtEnd
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -32,12 +35,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 
 import com.prajwalch.torrentsearch.R
+import com.prajwalch.torrentsearch.data.database.entities.SearchHistoryId
 import com.prajwalch.torrentsearch.models.Category
-import com.prajwalch.torrentsearch.ui.components.CategoryChipsRow
 import com.prajwalch.torrentsearch.ui.components.SearchBar
 import com.prajwalch.torrentsearch.ui.components.SearchHistoryList
 import com.prajwalch.torrentsearch.ui.components.SearchHistoryListItem
@@ -106,28 +110,20 @@ fun SearchScreen(
             ) {
                 SearchHistoryList(
                     histories = uiState.histories,
-                    historyListItem = {
-                        SearchHistoryListItem(
-                            modifier = Modifier
-                                .animateItem()
-                                .clickable {
-                                    onSearch(it.query, uiState.selectedCategory)
-                                    textFieldState.setTextAndPlaceCursorAtEnd(it.query)
-                                    coroutineScope.launch { searchBarState.animateToCollapsed() }
-                                },
-                            query = it.query,
-                            onInsertClick = { textFieldState.setTextAndPlaceCursorAtEnd(it.query) },
-                            onDeleteClick = { viewModel.deleteSearchHistory(it.id) },
-                        )
+                    onSearchQueryClick = {
+                        onSearch(it, uiState.selectedCategory)
+                        textFieldState.setTextAndPlaceCursorAtEnd(it)
+                        coroutineScope.launch { searchBarState.animateToCollapsed() }
                     },
-                    key = { it.id },
+                    onChangeSearchQuery = textFieldState::setTextAndPlaceCursorAtEnd,
+                    onDeleteSearchHistory = viewModel::deleteSearchHistory,
                 )
             }
 
             CategoryChipsRow(
                 categories = uiState.categories,
                 selectedCategory = uiState.selectedCategory,
-                onCategorySelect = viewModel::setCategory,
+                onCategoryClick = viewModel::setCategory,
                 contentPadding = PaddingValues(
                     horizontal = MaterialTheme.spaces.large
                 ),
@@ -169,4 +165,59 @@ private fun SearchScreenTopBar(
             SettingsIconButton(onClick = onNavigateToSettings)
         }
     )
+}
+
+@Composable
+private fun SearchHistoryList(
+    histories: List<SearchHistoryItemUiState>,
+    onSearchQueryClick: (String) -> Unit,
+    onChangeSearchQuery: (String) -> Unit,
+    onDeleteSearchHistory: (SearchHistoryId) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    SearchHistoryList(
+        modifier = modifier,
+        histories = histories,
+        historyListItem = {
+            SearchHistoryListItem(
+                modifier = Modifier
+                    .animateItem()
+                    .clickable(onClick = { onSearchQueryClick(it.query) }),
+                query = it.query,
+                onInsertClick = { onChangeSearchQuery(it.query) },
+                onDeleteClick = { onDeleteSearchHistory(it.id) },
+            )
+        },
+        key = { it.id },
+    )
+}
+
+@Composable
+private fun CategoryChipsRow(
+    categories: List<Category>,
+    selectedCategory: Category,
+    onCategoryClick: (Category) -> Unit,
+    modifier: Modifier = Modifier,
+    contentPadding: PaddingValues = PaddingValues(0.dp),
+) {
+    LazyRow(
+        modifier = modifier,
+        horizontalArrangement = Arrangement.spacedBy(
+            space = MaterialTheme.spaces.small,
+            alignment = Alignment.CenterHorizontally,
+        ),
+        verticalAlignment = Alignment.CenterVertically,
+        contentPadding = contentPadding,
+    ) {
+        items(items = categories, contentType = { it }) {
+            val selected = selectedCategory == it
+
+            FilterChip(
+                modifier = Modifier.animateItem(),
+                selected = selected,
+                onClick = { onCategoryClick(it) },
+                label = { Text(text = it.name) },
+            )
+        }
+    }
 }

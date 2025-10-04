@@ -178,13 +178,13 @@ private fun LeadingIcon(
         modifier = modifier,
         targetState = isSearchBarExpanded,
     ) { searchBarExpanded ->
-        when {
-            searchBarExpanded -> NavigateBackIconButton(
+        if (searchBarExpanded) {
+            ArrowBackIconButton(
                 onClick = onBack,
-                contentDescriptionId = R.string.desc_unfocus_search_bar,
+                contentDescription = R.string.desc_unfocus_search_bar,
             )
-
-            else -> Icon(
+        } else {
+            Icon(
                 painter = painterResource(R.drawable.ic_search),
                 contentDescription = null,
             )

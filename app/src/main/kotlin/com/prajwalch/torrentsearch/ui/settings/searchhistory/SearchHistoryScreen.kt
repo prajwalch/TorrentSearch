@@ -19,8 +19,8 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 
 import com.prajwalch.torrentsearch.R
+import com.prajwalch.torrentsearch.ui.components.ArrowBackIconButton
 import com.prajwalch.torrentsearch.ui.components.EmptyPlaceholder
-import com.prajwalch.torrentsearch.ui.components.NavigateBackIconButton
 import com.prajwalch.torrentsearch.ui.components.SearchHistoryList
 import com.prajwalch.torrentsearch.ui.components.SearchHistoryListItem
 
@@ -46,7 +46,7 @@ fun SearchHistoryScreen(onNavigateBack: () -> Unit, modifier: Modifier = Modifie
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(innerPadding),
-                headlineTextId = R.string.msg_no_search_history,
+                title = R.string.msg_no_search_history,
             )
         } else {
             SearchHistoryList(
@@ -77,9 +77,9 @@ private fun SearchHistoryScreenTopBar(
     TopAppBar(
         modifier = modifier,
         navigationIcon = {
-            NavigateBackIconButton(
+            ArrowBackIconButton(
                 onClick = onNavigateBack,
-                contentDescriptionId = R.string.button_go_to_settings_screen,
+                contentDescription = R.string.button_go_to_settings_screen,
             )
         },
         title = { Text(text = stringResource(R.string.search_history_screen_title)) },
