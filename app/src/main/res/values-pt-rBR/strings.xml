@@ -6,7 +6,6 @@
     <string name="button_done">Concluído</string>
     <string name="search">Pesquisa…</string>
     <string name="desc_clear_search_query">Limpar dados de pesquisa</string>
-    <string name="desc_selected_category">Categorias selecionadas</string>
     <string name="button_go_to_settings_screen">Ir para as configurações</string>
     <string name="button_delete_search_history">Deletar histórico de pesquisa</string>
     <string name="button_select_search_history">Selecionar histórico de pesquisa</string>

@@ -6,7 +6,6 @@
     <string name="button_done">പൂർത്തിയായി</string>
     <string name="desc_unfocus_search_bar">സേർച്ച് ബാർ അടച്ച് കീബോർഡ് മറയ്ക്കുക</string>
     <string name="desc_clear_search_query">സേർച്ച് ക്വറി മായ്ക്കുക</string>
-    <string name="desc_selected_category">തിരഞ്ഞെടുത്ത വിഭാഗം</string>
     <string name="button_go_to_settings_screen">സെറ്റിംഗ്‌സ് സ്ക്രീനിലേക്ക് പോകുക</string>
     <string name="button_delete_search_history">സേർച്ച് ഹിസ്റ്ററി മായ്ക്കുക</string>
     <string name="button_select_search_history">സേർച്ച് ഹിസ്റ്ററി തിരഞ്ഞെടുക്കുക</string>
