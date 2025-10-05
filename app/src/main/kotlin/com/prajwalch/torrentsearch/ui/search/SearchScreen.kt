@@ -7,10 +7,8 @@ import androidx.compose.foundation.focusable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
@@ -23,16 +21,21 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.LargeTopAppBar
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.material3.rememberSearchBarState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -61,18 +64,18 @@ fun SearchScreen(
     val viewModel = hiltViewModel<SearchViewModel>()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
-    val searchBarState = rememberSearchBarState()
-    val textFieldState = rememberTextFieldState()
-    val coroutineScope = rememberCoroutineScope()
+    val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
 
     Scaffold(
         modifier = Modifier
             .fillMaxSize()
+            .nestedScroll(connection = scrollBehavior.nestedScrollConnection)
             .then(modifier),
         topBar = {
             SearchScreenTopBar(
                 onNavigateToBookmarks = onNavigateToBookmarks,
                 onNavigateToSettings = onNavigateToSettings,
+                scrollBehavior = scrollBehavior,
             )
         },
     ) { innerPadding ->
@@ -83,25 +86,31 @@ fun SearchScreen(
         } else {
             Modifier
         }
+
         Column(
             modifier = Modifier
+                .fillMaxSize()
                 .verticalScroll(state = rememberScrollState())
                 .padding(innerPadding)
-                .padding(vertical = MaterialTheme.spaces.extraLarge)
+                .padding(
+                    horizontal = MaterialTheme.spaces.large,
+                    vertical = MaterialTheme.spaces.extraLarge,
+                )
                 .then(focusableModifier),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(
                 space = MaterialTheme.spaces.large,
             ),
         ) {
-            Text(
-                modifier = Modifier.padding(vertical = MaterialTheme.spaces.extraLarge),
-                text = stringResource(R.string.app_name),
-                style = MaterialTheme.typography.headlineMedium,
-            )
+            val coroutineScope = rememberCoroutineScope()
+            val searchBarState = rememberSearchBarState()
+            val textFieldState = rememberTextFieldState()
+
+            val enableSearchButton by remember {
+                derivedStateOf { textFieldState.text.isNotBlank() }
+            }
 
             SearchBar(
-                modifier = Modifier.padding(horizontal = MaterialTheme.spaces.large),
                 searchBarState = searchBarState,
                 textFieldState = textFieldState,
                 onSearch = {
@@ -124,20 +133,14 @@ fun SearchScreen(
                 categories = uiState.categories,
                 selectedCategory = uiState.selectedCategory,
                 onCategoryClick = viewModel::setCategory,
-                contentPadding = PaddingValues(
-                    horizontal = MaterialTheme.spaces.large
-                ),
             )
 
-            Spacer(modifier = Modifier.height(MaterialTheme.spaces.small))
             Button(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = MaterialTheme.spaces.large),
+                modifier = Modifier.fillMaxWidth(),
                 onClick = {
                     onSearch(textFieldState.text.toString(), uiState.selectedCategory)
                 },
-                enabled = textFieldState.text.isNotBlank(),
+                enabled = enableSearchButton,
             ) {
                 Text(text = stringResource(R.string.button_search))
             }
@@ -151,10 +154,11 @@ private fun SearchScreenTopBar(
     onNavigateToBookmarks: () -> Unit,
     onNavigateToSettings: () -> Unit,
     modifier: Modifier = Modifier,
+    scrollBehavior: TopAppBarScrollBehavior? = null,
 ) {
-    TopAppBar(
+    LargeTopAppBar(
         modifier = modifier,
-        title = {},
+        title = { Text(text = stringResource(R.string.app_name)) },
         actions = {
             IconButton(onClick = onNavigateToBookmarks) {
                 Icon(
@@ -163,7 +167,8 @@ private fun SearchScreenTopBar(
                 )
             }
             SettingsIconButton(onClick = onNavigateToSettings)
-        }
+        },
+        scrollBehavior = scrollBehavior,
     )
 }
 
@@ -210,11 +215,9 @@ private fun CategoryChipsRow(
         contentPadding = contentPadding,
     ) {
         items(items = categories, contentType = { it }) {
-            val selected = selectedCategory == it
-
             FilterChip(
                 modifier = Modifier.animateItem(),
-                selected = selected,
+                selected = selectedCategory == it,
                 onClick = { onCategoryClick(it) },
                 label = { Text(text = it.name) },
             )
