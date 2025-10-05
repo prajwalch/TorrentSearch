@@ -117,7 +117,10 @@ fun SearchResultsScreen(
         }
     }
     val topBarActions: @Composable RowScope.() -> Unit = @Composable {
-        if (!showSearchBar) {
+        val isResultsEmpty =
+            uiState.filteredSearchResults == null && uiState.searchResults.isEmpty()
+
+        if (!showSearchBar && !isResultsEmpty) {
             SearchIconButton(onClick = { showSearchBar = true })
             SortIconButton(onClick = { showSortMenu = true })
             SortDropdownMenu(
