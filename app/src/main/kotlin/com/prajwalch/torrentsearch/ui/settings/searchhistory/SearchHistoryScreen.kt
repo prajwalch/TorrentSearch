@@ -52,7 +52,8 @@ fun SearchHistoryScreen(onNavigateBack: () -> Unit, modifier: Modifier = Modifie
                             contentDescription = R.string.desc_delete_all_search_history,
                         )
                     }
-                }
+                },
+                scrollBehavior = scrollBehavior,
             )
         },
     ) { innerPadding ->
