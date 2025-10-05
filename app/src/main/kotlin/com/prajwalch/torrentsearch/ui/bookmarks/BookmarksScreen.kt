@@ -1,6 +1,7 @@
 package com.prajwalch.torrentsearch.ui.bookmarks
 
 import androidx.activity.compose.BackHandler
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
@@ -10,6 +11,7 @@ import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
@@ -86,7 +88,17 @@ fun BookmarksScreen(
                 placeholder = { Text(text = stringResource(R.string.search_bookmarks)) },
             )
         } else {
-            Text(text = stringResource(R.string.bookmarks_screen_title))
+            Column {
+                Text(text = stringResource(R.string.bookmarks_screen_title))
+
+                if (uiState.bookmarks.isNotEmpty()) {
+                    Text(
+                        text = stringResource(R.string.bookmarks_count, uiState.bookmarks.size),
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        style = MaterialTheme.typography.labelMedium,
+                    )
+                }
+            }
         }
     }
     val topBarActions: @Composable RowScope.() -> Unit = @Composable {

@@ -60,6 +60,7 @@
 
     <!-- Bookmarks Screen -->
     <string name="bookmarks_screen_title">Bookmarks</string>
+    <string name="bookmarks_count">%1$d bookmarks</string>
     <string name="button_delete_all_bookmarks">Delete all bookmarks</string>
     <string name="search_bookmarks">Search bookmarks</string>
     <string name="msg_no_bookmarks">No bookmarks</string>
