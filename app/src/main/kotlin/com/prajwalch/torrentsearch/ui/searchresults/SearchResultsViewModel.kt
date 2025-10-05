@@ -204,7 +204,7 @@ class SearchResultsViewModel @Inject constructor(
                 torrentsRepository
                     .getSearchResultsCache()
                     .filter { it.providerId in selectedSearchProvidersId }
-                    .filter { filterOptions.deadTorrents || (it.seeders != 0u && it.peers != 0u) }
+                    .filter { filterOptions.deadTorrents || !(it.seeders == 0u && it.peers == 0u) }
                     // Global filter option.
                     .filterNSFW(isNSFWModeEnabled = showNSFWResults)
                     .customSort(
