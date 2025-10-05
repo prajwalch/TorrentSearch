@@ -9,8 +9,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
@@ -31,7 +29,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.input.nestedscroll.nestedScroll
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -39,6 +36,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.prajwalch.torrentsearch.R
 import com.prajwalch.torrentsearch.models.Torrent
 import com.prajwalch.torrentsearch.ui.components.ArrowBackIconButton
+import com.prajwalch.torrentsearch.ui.components.DeleteForeverIconButton
 import com.prajwalch.torrentsearch.ui.components.EmptyPlaceholder
 import com.prajwalch.torrentsearch.ui.components.ScrollToTopFAB
 import com.prajwalch.torrentsearch.ui.components.SearchBar
@@ -109,12 +107,10 @@ fun BookmarksScreen(
                 currentSortOrder = uiState.currentSortOrder,
                 onSortRequest = viewModel::sortBookmarks,
             )
-            IconButton(onClick = { viewModel.deleteAllBookmarks() }) {
-                Icon(
-                    painter = painterResource(R.drawable.ic_delete_forever),
-                    contentDescription = stringResource(R.string.button_delete_all_bookmarks),
-                )
-            }
+            DeleteForeverIconButton(
+                onClick = { viewModel.deleteAllBookmarks() },
+                contentDescription = R.string.button_delete_all_bookmarks,
+            )
         }
         SettingsIconButton(onClick = onNavigateToSettings)
     }

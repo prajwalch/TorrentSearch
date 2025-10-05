@@ -10,9 +10,11 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
@@ -20,20 +22,42 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 
 import com.prajwalch.torrentsearch.R
 import com.prajwalch.torrentsearch.ui.components.ArrowBackIconButton
+import com.prajwalch.torrentsearch.ui.components.DeleteForeverIconButton
 import com.prajwalch.torrentsearch.ui.components.EmptyPlaceholder
 import com.prajwalch.torrentsearch.ui.components.SearchHistoryList
 import com.prajwalch.torrentsearch.ui.components.SearchHistoryListItem
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SearchHistoryScreen(onNavigateBack: () -> Unit, modifier: Modifier = Modifier) {
     val viewModel = hiltViewModel<SearchHistoryViewModel>()
     val searchHistoryList by viewModel.uiState.collectAsStateWithLifecycle()
 
+    val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
+
     Scaffold(
         modifier = Modifier
             .fillMaxSize()
+            .nestedScroll(connection = scrollBehavior.nestedScrollConnection)
             .then(modifier),
         topBar = {
+            TopAppBar(
+                navigationIcon = {
+                    ArrowBackIconButton(
+                        onClick = onNavigateBack,
+                        contentDescription = R.string.button_go_to_settings_screen,
+                    )
+                },
+                title = { Text(text = stringResource(R.string.search_history_screen_title)) },
+                actions = {
+                    if (searchHistoryList.isNotEmpty()) {
+                        DeleteForeverIconButton(
+                            onClick = { viewModel.deleteAllSearchHistory() },
+                            contentDescription = R.string.desc_delete_all_search_history,
+                        )
+                    }
+                }
+            )
             SearchHistoryScreenTopBar(
                 onNavigateBack = onNavigateBack,
                 onDeleteAll = viewModel::deleteAllSearchHistory,
