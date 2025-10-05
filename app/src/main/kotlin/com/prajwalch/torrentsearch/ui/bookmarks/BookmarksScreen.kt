@@ -69,9 +69,6 @@ fun BookmarksScreen(
     val searchBarFocusRequester = remember { FocusRequester() }
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
 
-    val showDeleteAllAction by remember {
-        derivedStateOf { uiState.bookmarks.isNotEmpty() }
-    }
     var showSearchBar by remember { mutableStateOf(false) }
     var showSortMenu by remember(uiState.currentSortCriteria, uiState.currentSortOrder) {
         mutableStateOf(false)
@@ -102,17 +99,7 @@ fun BookmarksScreen(
         }
     }
     val topBarActions: @Composable RowScope.() -> Unit = @Composable {
-        if (!showSearchBar) {
-            if (showDeleteAllAction) {
-                IconButton(onClick = { viewModel.deleteAllBookmarks() }) {
-                    Icon(
-                        painter = painterResource(R.drawable.ic_delete_forever),
-                        contentDescription = stringResource(
-                            R.string.button_delete_all_bookmarks
-                        ),
-                    )
-                }
-            }
+        if (!showSearchBar && uiState.bookmarks.isNotEmpty()) {
             SearchIconButton(onClick = { showSearchBar = true })
             SortIconButton(onClick = { showSortMenu = true })
             SortDropdownMenu(
@@ -122,6 +109,12 @@ fun BookmarksScreen(
                 currentSortOrder = uiState.currentSortOrder,
                 onSortRequest = viewModel::sortBookmarks,
             )
+            IconButton(onClick = { viewModel.deleteAllBookmarks() }) {
+                Icon(
+                    painter = painterResource(R.drawable.ic_delete_forever),
+                    contentDescription = stringResource(R.string.button_delete_all_bookmarks),
+                )
+            }
         }
         SettingsIconButton(onClick = onNavigateToSettings)
     }
