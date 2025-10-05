@@ -193,7 +193,7 @@ fun SearchResultsScreen(
                 )
             }
 
-            uiState.resultsNotFound -> {
+            uiState.searchResults.isEmpty() -> {
                 ResultsNotFound(
                     modifier = Modifier
                         .fillMaxSize()
@@ -201,7 +201,7 @@ fun SearchResultsScreen(
                 )
             }
 
-            uiState.filteredSearchResults != null || uiState.searchResults.isNotEmpty() -> {
+            else -> {
                 SearchResults(
                     modifier = Modifier.padding(innerPadding),
                     searchResults = uiState.filteredSearchResults ?: uiState.searchResults,

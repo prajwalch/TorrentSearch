@@ -54,8 +54,7 @@ data class SearchResultsUiState(
     val currentSortCriteria: SortCriteria = SortCriteria.Default,
     val currentSortOrder: SortOrder = SortOrder.Default,
     val filterOptions: FilterOptionsUiState = FilterOptionsUiState(),
-    val resultsNotFound: Boolean = false,
-    val isLoading: Boolean = false,
+    val isLoading: Boolean = true,
     val isSearching: Boolean = false,
     val isInternetError: Boolean = false,
 )
@@ -248,7 +247,6 @@ class SearchResultsViewModel @Inject constructor(
                     filterOptions = FilterOptionsUiState(),
                     currentSortCriteria = defaultSortOptions.sortCriteria,
                     currentSortOrder = defaultSortOptions.sortOrder,
-                    resultsNotFound = false,
                     isLoading = true,
                     isSearching = false,
                     isInternetError = false,
@@ -274,7 +272,6 @@ class SearchResultsViewModel @Inject constructor(
                 _uiState.update {
                     it.copy(
                         searchResults = emptyList(),
-                        resultsNotFound = false,
                         isLoading = false,
                         isSearching = false,
                         isInternetError = true,
@@ -291,7 +288,6 @@ class SearchResultsViewModel @Inject constructor(
                 _uiState.update {
                     it.copy(
                         searchResults = emptyList(),
-                        resultsNotFound = true,
                         isLoading = false,
                         isSearching = false,
                         isInternetError = false,
@@ -402,7 +398,6 @@ class SearchResultsViewModel @Inject constructor(
                         searchProviderFilterUiState,
                     )
                 ),
-                resultsNotFound = false,
                 isLoading = false,
                 isSearching = true,
                 isInternetError = false,
@@ -421,13 +416,7 @@ class SearchResultsViewModel @Inject constructor(
         Log.d(TAG, "cause = $cause")
         Log.i(TAG, "Search completed")
 
-        _uiState.update {
-            it.copy(
-                resultsNotFound = it.searchResults.isEmpty(),
-                isLoading = false,
-                isSearching = false,
-            )
-        }
+        _uiState.update { it.copy(isLoading = false, isSearching = false) }
     }
 
     private fun observeNSFWMode() = viewModelScope.launch {
