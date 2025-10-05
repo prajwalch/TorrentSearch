@@ -12,11 +12,14 @@ import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
@@ -29,23 +32,30 @@ import com.prajwalch.torrentsearch.ui.components.ArrowBackIconButton
 import com.prajwalch.torrentsearch.ui.components.SettingsSectionTitle
 import com.prajwalch.torrentsearch.ui.settings.SettingsViewModel
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DefaultSortOptionsScreen(onNavigateBack: () -> Unit, modifier: Modifier = Modifier) {
     val viewModel = hiltViewModel<SettingsViewModel>()
     val searchSettings by viewModel.searchSettingsUiState.collectAsStateWithLifecycle()
 
     val defaultSortOptions by remember { derivedStateOf { searchSettings.defaultSortOptions } }
+    val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
 
     Scaffold(
         modifier = Modifier
             .fillMaxSize()
+            .nestedScroll(connection = scrollBehavior.nestedScrollConnection)
             .then(modifier),
         topBar = {
-            DefaultSortOptionsScreenTopBar(onNavigateBack = onNavigateBack)
+            DefaultSortOptionsScreenTopBar(
+                onNavigateBack = onNavigateBack,
+                scrollBehavior = scrollBehavior,
+            )
         },
     ) { innerPadding ->
         Column(
             modifier = Modifier
+                .fillMaxSize()
                 .verticalScroll(state = rememberScrollState())
                 .padding(innerPadding),
         ) {
@@ -66,6 +76,7 @@ fun DefaultSortOptionsScreen(onNavigateBack: () -> Unit, modifier: Modifier = Mo
 private fun DefaultSortOptionsScreenTopBar(
     onNavigateBack: () -> Unit,
     modifier: Modifier = Modifier,
+    scrollBehavior: TopAppBarScrollBehavior? = null,
 ) {
     TopAppBar(
         modifier = modifier,
@@ -76,6 +87,7 @@ private fun DefaultSortOptionsScreenTopBar(
                 contentDescription = R.string.button_go_to_settings_screen,
             )
         },
+        scrollBehavior = scrollBehavior,
     )
 }
 

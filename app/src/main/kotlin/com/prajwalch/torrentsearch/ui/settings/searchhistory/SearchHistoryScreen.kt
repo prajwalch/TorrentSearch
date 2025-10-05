@@ -66,7 +66,9 @@ fun SearchHistoryScreen(onNavigateBack: () -> Unit, modifier: Modifier = Modifie
             )
         } else {
             SearchHistoryList(
-                modifier = Modifier.consumeWindowInsets(innerPadding),
+                modifier = Modifier
+                    .fillMaxSize()
+                    .consumeWindowInsets(innerPadding),
                 histories = searchHistoryList,
                 historyListItem = {
                     SearchHistoryListItem(

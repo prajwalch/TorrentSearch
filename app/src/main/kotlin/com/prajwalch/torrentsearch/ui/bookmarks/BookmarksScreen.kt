@@ -169,7 +169,9 @@ fun BookmarksScreen(
             val bookmarks = uiState.filteredBookmarks ?: uiState.bookmarks
 
             TorrentList(
-                modifier = Modifier.consumeWindowInsets(innerPadding),
+                modifier = Modifier
+                    .fillMaxSize()
+                    .consumeWindowInsets(innerPadding),
                 torrents = bookmarks,
                 onTorrentClick = onBookmarkClick,
                 contentPadding = innerPadding,
