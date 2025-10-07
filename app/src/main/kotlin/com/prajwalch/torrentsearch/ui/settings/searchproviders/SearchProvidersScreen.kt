@@ -167,19 +167,14 @@ private fun SearchProvidersScreenTopBar(
 ) {
     TopAppBar(
         modifier = modifier,
-        title = { Text(text = stringResource(R.string.setting_search_providers)) },
-        navigationIcon = {
-            ArrowBackIconButton(
-                onClick = onNavigateBack,
-                contentDescription = R.string.button_go_to_settings_screen,
-            )
-        },
+        title = { Text(text = stringResource(R.string.search_providers_screen_title)) },
+        navigationIcon = { ArrowBackIconButton(onClick = onNavigateBack) },
         actions = {
             IconButton(onClick = onEnableAllSearchProviders) {
                 Icon(
                     painter = painterResource(R.drawable.ic_select_all),
                     contentDescription = stringResource(
-                        R.string.button_enable_all_search_providers,
+                        R.string.search_providers_action_enable_all,
                     ),
                 )
             }
@@ -187,7 +182,7 @@ private fun SearchProvidersScreenTopBar(
                 Icon(
                     painter = painterResource(R.drawable.ic_deselect_all),
                     contentDescription = stringResource(
-                        R.string.button_disable_all_search_providers,
+                        R.string.search_providers_action_disable_all,
                     ),
                 )
             }
@@ -195,7 +190,7 @@ private fun SearchProvidersScreenTopBar(
                 Icon(
                     painter = painterResource(R.drawable.ic_refresh),
                     contentDescription = stringResource(
-                        R.string.button_reset_search_providers,
+                        R.string.search_providers_action_reset,
                     ),
                 )
             }
@@ -376,7 +371,7 @@ private fun TorznabSearchProviderMenu(
                 )
             },
             text = {
-                Text(text = stringResource(R.string.action_edit_configuration))
+                Text(text = stringResource(R.string.search_providers_list_action_edit))
             },
         )
         DropdownMenuItem(
@@ -388,7 +383,7 @@ private fun TorznabSearchProviderMenu(
                 )
             },
             text = {
-                Text(text = stringResource(R.string.action_delete_search_provider))
+                Text(text = stringResource(R.string.search_providers_list_action_delete))
             },
         )
     }

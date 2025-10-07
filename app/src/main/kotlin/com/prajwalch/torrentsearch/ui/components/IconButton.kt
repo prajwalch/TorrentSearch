@@ -53,7 +53,7 @@ fun SortIconButton(onClick: () -> Unit, modifier: Modifier = Modifier) {
     IconButton(modifier = modifier, onClick = onClick) {
         Icon(
             painter = painterResource(R.drawable.ic_sort),
-            contentDescription = stringResource(R.string.button_open_sort_options),
+            contentDescription = stringResource(R.string.action_sort),
         )
     }
 }
@@ -63,7 +63,7 @@ fun SettingsIconButton(onClick: () -> Unit, modifier: Modifier = Modifier) {
     IconButton(modifier = modifier, onClick = onClick) {
         Icon(
             painter = painterResource(R.drawable.ic_settings),
-            contentDescription = stringResource(R.string.button_go_to_settings_screen),
+            contentDescription = null,
         )
     }
 }

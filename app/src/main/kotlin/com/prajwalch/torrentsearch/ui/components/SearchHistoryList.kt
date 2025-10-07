@@ -18,7 +18,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 
 import com.prajwalch.torrentsearch.R
@@ -101,7 +100,7 @@ private fun InsertIconButton(onClick: () -> Unit, modifier: Modifier = Modifier)
     IconButton(modifier = modifier, onClick = onClick) {
         Icon(
             painter = painterResource(R.drawable.ic_arrow_insert),
-            contentDescription = stringResource(R.string.button_select_search_history),
+            contentDescription = null,
         )
     }
 }
@@ -111,7 +110,7 @@ private fun DeleteIconButton(onClick: () -> Unit, modifier: Modifier = Modifier)
     IconButton(modifier = modifier, onClick = onClick) {
         Icon(
             painter = painterResource(R.drawable.ic_delete),
-            contentDescription = stringResource(R.string.button_delete_search_history),
+            contentDescription = null,
         )
     }
 }

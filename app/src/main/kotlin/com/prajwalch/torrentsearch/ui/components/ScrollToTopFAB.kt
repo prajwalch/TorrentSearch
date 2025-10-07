@@ -11,7 +11,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
+
 import com.prajwalch.torrentsearch.R
 
 @Composable
@@ -29,7 +29,7 @@ fun ScrollToTopFAB(
         FloatingActionButton(modifier = Modifier.imePadding(), onClick = onClick) {
             Icon(
                 painter = painterResource(R.drawable.ic_arrow_up),
-                contentDescription = stringResource(R.string.button_scroll_to_top)
+                contentDescription = null,
             )
         }
     }

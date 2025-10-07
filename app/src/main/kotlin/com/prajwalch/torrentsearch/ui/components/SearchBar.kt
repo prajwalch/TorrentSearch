@@ -90,7 +90,7 @@ private fun SearchBarInputField(
             coroutineScope.launch { searchBarState.animateToCollapsed() }
             onSearch(it)
         },
-        placeholder = { Text(stringResource(R.string.search)) },
+        placeholder = { Text(stringResource(R.string.search_query_hint)) },
         leadingIcon = {
             LeadingIcon(
                 isSearchBarExpanded = searchBarState.currentValue == SearchBarValue.Expanded,
@@ -179,10 +179,7 @@ private fun LeadingIcon(
         targetState = isSearchBarExpanded,
     ) { searchBarExpanded ->
         if (searchBarExpanded) {
-            ArrowBackIconButton(
-                onClick = onBack,
-                contentDescription = R.string.desc_unfocus_search_bar,
-            )
+            ArrowBackIconButton(onClick = onBack)
         } else {
             Icon(
                 painter = painterResource(R.drawable.ic_search),
@@ -197,7 +194,7 @@ private fun ClearIconButton(onClick: () -> Unit, modifier: Modifier = Modifier) 
     IconButton(modifier = modifier, onClick = onClick) {
         Icon(
             painter = painterResource(R.drawable.ic_close),
-            contentDescription = stringResource(R.string.desc_clear_search_query),
+            contentDescription = null,
         )
     }
 }

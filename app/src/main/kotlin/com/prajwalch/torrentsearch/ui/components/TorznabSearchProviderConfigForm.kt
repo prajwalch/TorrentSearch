@@ -55,7 +55,7 @@ fun TorznabSearchProviderConfigForm(
             modifier = Modifier.fillMaxWidth(),
             value = config.name,
             onValueChange = onNameChange,
-            label = { Text(text = stringResource(R.string.label_name)) },
+            label = { Text(text = stringResource(R.string.search_providers_label_name)) },
             singleLine = true,
         )
         OutlinedUrlTextField(
@@ -68,13 +68,13 @@ fun TorznabSearchProviderConfigForm(
             modifier = Modifier.fillMaxWidth(),
             value = config.apiKey,
             onValueChange = onApiKeyChange,
-            label = { Text(text = stringResource(R.string.label_api_key)) },
+            label = { Text(text = stringResource(R.string.search_providers_label_api_key)) },
             singleLine = true,
         )
 
         Text(
             modifier = Modifier.padding(vertical = MaterialTheme.spaces.large),
-            text = stringResource(R.string.additional_options),
+            text = stringResource(R.string.search_providers_section_additional_options),
             color = MaterialTheme.colorScheme.primary,
             style = MaterialTheme.typography.titleSmall,
         )
@@ -126,7 +126,7 @@ private fun OutlinedUrlTextField(
     val supportingText = if (isError) {
         @Composable {
             Text(
-                text = stringResource(R.string.error_not_a_valid_url),
+                text = stringResource(R.string.search_providers_url_validation_error),
                 color = MaterialTheme.colorScheme.error,
                 style = MaterialTheme.typography.bodyMedium,
             )
@@ -139,7 +139,7 @@ private fun OutlinedUrlTextField(
         modifier = modifier,
         value = url,
         onValueChange = onUrlChange,
-        label = { Text(text = stringResource(R.string.label_url)) },
+        label = { Text(text = stringResource(R.string.search_providers_label_url)) },
         trailingIcon = trailingIcon,
         supportingText = supportingText,
         isError = isError,
@@ -169,7 +169,7 @@ private fun OutlinedCategoryField(
             onValueChange = {},
             readOnly = true,
             singleLine = true,
-            label = { Text(stringResource(R.string.label_category)) },
+            label = { Text(stringResource(R.string.search_providers_label_category)) },
             trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
         )
 
@@ -214,7 +214,7 @@ private fun OutlinedSafetyStatusField(
             onValueChange = {},
             readOnly = true,
             singleLine = true,
-            label = { Text(stringResource(R.string.label_safety_status)) },
+            label = { Text(stringResource(R.string.search_providers_label_safety_status)) },
             trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
         )
 

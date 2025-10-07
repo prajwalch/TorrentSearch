@@ -30,7 +30,7 @@ import com.prajwalch.torrentsearch.ui.theme.spaces
 
 private val torrentClients = listOf(
     TorrentClient(
-        name = R.string.libretorrent,
+        name = R.string.torrent_client_libretorrent,
         isRecommended = true,
         sources = listOf(
             Source(
@@ -44,7 +44,7 @@ private val torrentClients = listOf(
         )
     ),
     TorrentClient(
-        name = R.string.aria2,
+        name = R.string.torrent_client_aria2,
         sources = listOf(
             Source(
                 logo = R.drawable.fdroid,
@@ -53,7 +53,7 @@ private val torrentClients = listOf(
         )
     ),
     TorrentClient(
-        name = R.string.gopeed,
+        name = R.string.torrent_client_gopeed,
         sources = listOf(
             Source(
                 logo = R.drawable.github,
@@ -62,7 +62,7 @@ private val torrentClients = listOf(
         )
     ),
     TorrentClient(
-        name = R.string.pikatorrent,
+        name = R.string.torrent_client_pikatorrent,
         sources = listOf(
             Source(
                 logo = R.drawable.googleplay,
@@ -75,7 +75,7 @@ private val torrentClients = listOf(
         )
     ),
     TorrentClient(
-        name = R.string.torrserve,
+        name = R.string.torrent_client_torrserve,
         sources = listOf(
             Source(
                 logo = R.drawable.fdroid,
@@ -130,7 +130,7 @@ private fun DialogLeadingIcon(modifier: Modifier = Modifier) {
 private fun DialogTitle(modifier: Modifier = Modifier) {
     Text(
         modifier = modifier,
-        text = stringResource(R.string.torrent_client_not_found)
+        text = stringResource(R.string.torrent_client_not_found_title)
     )
 }
 
@@ -142,7 +142,7 @@ private fun DialogContent(modifier: Modifier = Modifier) {
             space = MaterialTheme.spaces.extraLarge,
         ),
     ) {
-        Text(stringResource(R.string.torrent_client_not_found_main_content))
+        Text(stringResource(R.string.torrent_client_not_found_content))
         TorrentClientList(clients = torrentClients)
     }
 }
@@ -199,7 +199,7 @@ private fun TorrentClientListItem(client: TorrentClient, modifier: Modifier = Mo
         supportingContent = {
             if (client.isRecommended) {
                 Text(
-                    text = stringResource(R.string.recommended_client),
+                    text = stringResource(R.string.torrent_client_not_found_recommended_client_hint),
                     style = MaterialTheme.typography.bodySmall,
                 )
             }

@@ -122,12 +122,7 @@ private fun SettingsScreenTopBar(
     TopAppBar(
         modifier = modifier,
         title = { Text(stringResource(R.string.settings_screen_title)) },
-        navigationIcon = {
-            ArrowBackIconButton(
-                onClick = onNavigateBack,
-                contentDescription = R.string.button_go_back_to_search_screen,
-            )
-        },
+        navigationIcon = { ArrowBackIconButton(onClick = onNavigateBack) },
         scrollBehavior = scrollBehavior,
     )
 }
@@ -153,7 +148,7 @@ private fun AppearanceSettings(modifier: Modifier = Modifier) {
             SettingsListItem(
                 onClick = { viewModel.enableDynamicTheme(!settings.enableDynamicTheme) },
                 icon = R.drawable.ic_palette,
-                headline = R.string.setting_enable_dynamic_theme,
+                headline = R.string.settings_enable_dynamic_theme,
                 trailingContent = {
                     Switch(
                         checked = settings.enableDynamicTheme,
@@ -169,7 +164,7 @@ private fun AppearanceSettings(modifier: Modifier = Modifier) {
             SettingsListItem(
                 onClick = { menuExpanded = true },
                 icon = R.drawable.ic_dark_mode,
-                headline = R.string.setting_dark_theme,
+                headline = R.string.settings_dark_theme,
                 supportingContent = settings.darkTheme.toString(),
             )
 
@@ -199,7 +194,7 @@ private fun AppearanceSettings(modifier: Modifier = Modifier) {
             SettingsListItem(
                 onClick = { viewModel.enablePureBlackTheme(!settings.pureBlack) },
                 icon = R.drawable.ic_contrast,
-                headline = R.string.setting_pure_black,
+                headline = R.string.settings_pure_black,
                 trailingContent = {
                     Switch(
                         checked = settings.pureBlack,
@@ -225,7 +220,7 @@ private fun GeneralSettings(modifier: Modifier = Modifier) {
             SettingsListItem(
                 onClick = { context.openAppLocaleSettings() },
                 icon = R.drawable.ic_language,
-                headline = R.string.setting_language,
+                headline = R.string.settings_language,
                 trailingContent = {
                     Icon(
                         painter = painterResource(R.drawable.ic_arrow_forward),
@@ -238,7 +233,7 @@ private fun GeneralSettings(modifier: Modifier = Modifier) {
         SettingsListItem(
             onClick = { viewModel.enableNSFWMode(!settings.enableNSFWMode) },
             icon = R.drawable.ic_18_up_rating,
-            headline = R.string.setting_enable_nsfw_mode,
+            headline = R.string.settings_enable_nsfw_mode,
             trailingContent = {
                 Switch(
                     checked = settings.enableNSFWMode,
@@ -278,30 +273,28 @@ private fun SearchSettings(
         SettingsListItem(
             onClick = onNavigateToSearchProviders,
             icon = R.drawable.ic_travel_explore,
-            headline = R.string.setting_search_providers,
+            headline = R.string.settings_search_providers,
             supportingContent = stringResource(
-                R.string.x_of_x_enabled,
+                R.string.settings_search_providers_summary_format,
                 settings.searchProvidersStat.enabledSearchProvidersCount,
                 settings.searchProvidersStat.totalSearchProvidersCount
             ),
             trailingContent = {
                 Icon(
                     painter = painterResource(R.drawable.ic_arrow_forward),
-                    contentDescription = stringResource(
-                        R.string.button_go_to_search_providers_screen
-                    ),
+                    contentDescription = null,
                 )
             },
         )
         SettingsListItem(
             onClick = onNavigateToDefaultCategory,
             icon = R.drawable.ic_category_search,
-            headline = R.string.setting_default_category,
+            headline = R.string.settings_default_category,
             supportingContent = settings.defaultCategory.name,
             trailingContent = {
                 Icon(
                     painter = painterResource(R.drawable.ic_arrow_forward),
-                    contentDescription = stringResource(R.string.button_go_to_category_list_screen),
+                    contentDescription = null,
                 )
             }
         )
@@ -311,23 +304,21 @@ private fun SearchSettings(
         SettingsListItem(
             onClick = onNavigateToDefaultSortOptions,
             icon = R.drawable.ic_sort,
-            headline = R.string.setting_default_sort_options,
+            headline = R.string.settings_default_sort_options,
             supportingContent = "$defaultSortCriteria / $defaultSortOrder",
             trailingContent = {
                 Icon(
                     painter = painterResource(R.drawable.ic_arrow_forward),
-                    contentDescription = stringResource(
-                        R.string.button_go_to_default_sort_options_screen,
-                    ),
+                    contentDescription = null,
                 )
             },
         )
         SettingsListItem(
             onClick = { showMaxNumResultsDialog = true },
             icon = R.drawable.ic_format_list_numbered,
-            headline = R.string.setting_max_num_results,
+            headline = R.string.settings_max_num_results,
             supportingContent = if (settings.maxNumResults.isUnlimited()) {
-                stringResource(R.string.unlimited)
+                stringResource(R.string.settings_max_num_results_button_unlimited)
             } else {
                 settings.maxNumResults.n.toString()
             },
@@ -348,7 +339,7 @@ private fun SearchHistorySettings(
         SettingsListItem(
             onClick = { viewModel.enableSaveSearchHistory(!settings.saveSearchHistory) },
             icon = R.drawable.ic_search_activity,
-            headline = R.string.setting_save_search_history,
+            headline = R.string.settings_save_search_history,
             trailingContent = {
                 Switch(
                     checked = settings.saveSearchHistory,
@@ -359,8 +350,8 @@ private fun SearchHistorySettings(
         SettingsListItem(
             onClick = { viewModel.enableShowSearchHistory(!settings.showSearchHistory) },
             icon = R.drawable.ic_history_toggle_off,
-            headline = R.string.setting_show_search_history,
-            supportingContent = stringResource(R.string.setting_show_search_history_desc),
+            headline = R.string.settings_show_search_history,
+            supportingContent = stringResource(R.string.settings_show_search_history_summary),
             trailingContent = {
                 Switch(
                     checked = settings.showSearchHistory,
@@ -371,11 +362,11 @@ private fun SearchHistorySettings(
         SettingsListItem(
             onClick = onNavigateToSearchHistory,
             icon = R.drawable.ic_manage_history,
-            headline = R.string.setting_manage_search_history,
+            headline = R.string.settings_manage_search_history,
             trailingContent = {
                 Icon(
                     painter = painterResource(R.drawable.ic_arrow_forward),
-                    contentDescription = stringResource(R.string.desc_go_to_search_history_screen),
+                    contentDescription = null,
                 )
             },
         )
@@ -401,9 +392,9 @@ private fun AdvancedSettings(modifier: Modifier = Modifier) {
                 )
             },
             icon = R.drawable.ic_share,
-            headline = R.string.setting_enable_share_integration,
+            headline = R.string.settings_enable_share_integration,
             supportingContent = stringResource(
-                R.string.setting_enable_share_integration_supporting_text,
+                R.string.settings_enable_share_integration_summary,
             ),
             trailingContent = {
                 Switch(
@@ -425,9 +416,9 @@ private fun AdvancedSettings(modifier: Modifier = Modifier) {
                 )
             },
             icon = R.drawable.ic_search,
-            headline = R.string.setting_enable_quick_search,
+            headline = R.string.settings_enable_quick_search,
             supportingContent = stringResource(
-                R.string.setting_enable_quick_search_supporting_text,
+                R.string.settings_enable_quick_search_summary,
             ),
             trailingContent = {
                 Switch(
@@ -456,7 +447,7 @@ private fun About(modifier: Modifier = Modifier) {
         SettingsListItem(
             onClick = { uriHandler.openUri(uri = currentReleaseUrl) },
             icon = R.drawable.ic_info,
-            headline = R.string.setting_version,
+            headline = R.string.settings_version,
             supportingContent = "${BuildConfig.VERSION_NAME} (${BuildConfig.VERSION_CODE})",
             trailingContent = {
                 Icon(
@@ -468,7 +459,7 @@ private fun About(modifier: Modifier = Modifier) {
         SettingsListItem(
             onClick = { uriHandler.openUri(uri = repoUrl) },
             icon = R.drawable.ic_code,
-            headline = R.string.setting_source_code,
+            headline = R.string.settings_source_code,
             supportingContent = repoUrl.removePrefix("https://"),
             trailingContent = {
                 Icon(
@@ -497,7 +488,7 @@ private fun MaxNumResultsDialog(
     SettingsDialog(
         modifier = modifier,
         onDismissRequest = onDismissRequest,
-        title = R.string.setting_max_num_results,
+        title = R.string.settings_max_num_results,
         confirmButton = {
             TextButton(onClick = {
                 onDismissRequest()
@@ -512,7 +503,10 @@ private fun MaxNumResultsDialog(
             verticalArrangement = Arrangement.Center,
         ) {
             Text(
-                text = stringResource(R.string.max_n_results, sliderValue.toInt()),
+                text = stringResource(
+                    R.string.settings_max_num_results_summary_format,
+                    sliderValue.toInt()
+                ),
                 style = MaterialTheme.typography.bodyLarge,
             )
             Spacer(modifier = Modifier.height(MaterialTheme.spaces.large))
@@ -523,7 +517,7 @@ private fun MaxNumResultsDialog(
                 steps = ((sliderRange.endInclusive - sliderRange.start) / incrementBy).toInt() - 1,
             )
             OutlinedButton(onClick = onUnlimitedClick) {
-                Text(text = stringResource(R.string.unlimited))
+                Text(text = stringResource(R.string.settings_max_num_results_button_unlimited))
             }
         }
     }

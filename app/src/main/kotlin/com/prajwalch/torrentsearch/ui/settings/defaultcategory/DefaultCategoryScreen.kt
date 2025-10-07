@@ -76,13 +76,8 @@ private fun DefaultCategoryScreenTopBar(
 ) {
     TopAppBar(
         modifier = modifier,
-        title = { Text(text = stringResource(R.string.setting_default_category)) },
-        navigationIcon = {
-            ArrowBackIconButton(
-                onClick = onNavigateBack,
-                contentDescription = R.string.button_go_to_settings_screen,
-            )
-        },
+        title = { Text(text = stringResource(R.string.settings_default_category)) },
+        navigationIcon = { ArrowBackIconButton(onClick = onNavigateBack) },
         scrollBehavior = scrollBehavior,
     )
 }

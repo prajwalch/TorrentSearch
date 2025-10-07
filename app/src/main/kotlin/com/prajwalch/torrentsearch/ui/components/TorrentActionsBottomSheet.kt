@@ -75,30 +75,30 @@ fun TorrentActionsBottomSheet(
             if (isBookmarked) {
                 Action(
                     icon = R.drawable.ic_star_filled,
-                    label = R.string.action_delete_bookmark,
+                    label = R.string.torrent_list_action_delete_bookmark,
                     onClick = actionWithDismiss(onDeleteBookmark),
                 )
             } else {
                 Action(
                     icon = R.drawable.ic_star,
-                    label = R.string.action_bookmark_torrent,
+                    label = R.string.torrent_list_action_bookmark_torrent,
                     onClick = actionWithDismiss(onBookmarkTorrent),
                 )
             }
             Action(
                 icon = R.drawable.ic_download,
-                label = R.string.action_download_torrent,
+                label = R.string.torrent_list_action_download_torrent,
                 onClick = actionWithDismiss(onDownloadTorrent),
             )
             Action(
                 modifier = modifier,
                 icon = R.drawable.ic_copy,
-                label = R.string.action_copy_magnet_link,
+                label = R.string.torrent_list_action_copy_magnet_link,
                 onClick = actionWithDismiss(onCopyMagnetLink),
             )
             Action(
                 icon = R.drawable.ic_share,
-                label = R.string.action_share_magnet_link,
+                label = R.string.torrent_list_action_share_magnet_link,
                 onClick = actionWithDismiss(onShareMagnetLink),
             )
             Spacer(modifier = Modifier.height(MaterialTheme.spaces.small))
@@ -108,17 +108,17 @@ fun TorrentActionsBottomSheet(
                 Spacer(modifier = Modifier.height(MaterialTheme.spaces.small))
                 Action(
                     icon = R.drawable.ic_public,
-                    label = R.string.action_open_description_page,
+                    label = R.string.torrent_list_action_open_description_page,
                     onClick = actionWithDismiss(onOpenDescriptionPage),
                 )
                 Action(
                     icon = R.drawable.ic_copy,
-                    label = R.string.action_copy_description_page_url,
+                    label = R.string.torrent_list_action_copy_description_page_url,
                     onClick = actionWithDismiss(onCopyDescriptionPageUrl),
                 )
                 Action(
                     icon = R.drawable.ic_share,
-                    label = R.string.action_share_description_page_url,
+                    label = R.string.torrent_list_action_share_description_page_url,
                     onClick = actionWithDismiss(onShareDescriptionPageUrl),
                 )
                 Spacer(modifier = Modifier.height(MaterialTheme.spaces.small))

@@ -73,7 +73,7 @@ fun SettingsDialog(
         onDismissRequest = onDismissRequest,
         dismissButton = {
             TextButton(onClick = onDismissRequest) {
-                Text(stringResource(R.string.settings_dialog_button_cancel))
+                Text(stringResource(R.string.button_cancel))
             }
         },
         confirmButton = confirmButton ?: {},

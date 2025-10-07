@@ -80,7 +80,7 @@ fun BookmarksScreen(
             SearchBar(
                 modifier = Modifier.focusRequester(searchBarFocusRequester),
                 textFieldState = textFieldState,
-                placeholder = { Text(text = stringResource(R.string.search_bookmarks)) },
+                placeholder = { Text(text = stringResource(R.string.bookmarks_search_query_hint)) },
             )
         } else {
             Column {
@@ -88,7 +88,10 @@ fun BookmarksScreen(
 
                 if (uiState.bookmarks.isNotEmpty()) {
                     Text(
-                        text = stringResource(R.string.bookmarks_count, uiState.bookmarks.size),
+                        text = stringResource(
+                            R.string.bookmarks_count_format,
+                            uiState.bookmarks.size,
+                        ),
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                         style = MaterialTheme.typography.labelMedium,
                     )
@@ -109,7 +112,7 @@ fun BookmarksScreen(
             )
             DeleteForeverIconButton(
                 onClick = { viewModel.deleteAllBookmarks() },
-                contentDescription = R.string.button_delete_all_bookmarks,
+                contentDescription = R.string.bookmarks_action_delete_all,
             )
         }
         SettingsIconButton(onClick = onNavigateToSettings)
@@ -139,12 +142,7 @@ fun BookmarksScreen(
         topBar = {
             TopAppBar(
                 title = topBarTitle,
-                navigationIcon = {
-                    ArrowBackIconButton(
-                        onClick = onNavigateBack,
-                        contentDescription = R.string.button_go_back_to_search_screen,
-                    )
-                },
+                navigationIcon = { ArrowBackIconButton(onClick = onNavigateBack) },
                 actions = topBarActions,
                 scrollBehavior = scrollBehavior,
             )
@@ -163,7 +161,7 @@ fun BookmarksScreen(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(innerPadding),
-                title = R.string.msg_no_bookmarks,
+                title = R.string.bookmarks_empty_msg,
             )
         } else {
             val bookmarks = uiState.filteredBookmarks ?: uiState.bookmarks

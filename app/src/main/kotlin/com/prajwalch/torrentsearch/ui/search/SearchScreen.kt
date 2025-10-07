@@ -142,7 +142,7 @@ fun SearchScreen(
                 },
                 enabled = enableSearchButton,
             ) {
-                Text(text = stringResource(R.string.button_search))
+                Text(text = stringResource(R.string.search_button_search))
             }
         }
     }

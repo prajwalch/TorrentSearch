@@ -80,13 +80,8 @@ private fun DefaultSortOptionsScreenTopBar(
 ) {
     TopAppBar(
         modifier = modifier,
-        title = { Text(text = stringResource(R.string.setting_default_sort_options)) },
-        navigationIcon = {
-            ArrowBackIconButton(
-                onClick = onNavigateBack,
-                contentDescription = R.string.button_go_to_settings_screen,
-            )
-        },
+        title = { Text(text = stringResource(R.string.settings_default_sort_options)) },
+        navigationIcon = { ArrowBackIconButton(onClick = onNavigateBack) },
         scrollBehavior = scrollBehavior,
     )
 }

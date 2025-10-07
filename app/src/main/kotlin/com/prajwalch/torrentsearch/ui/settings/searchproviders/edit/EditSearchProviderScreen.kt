@@ -65,7 +65,7 @@ fun EditSearchProviderScreen(onNavigateBack: () -> Unit, modifier: Modifier = Mo
                     enabled = uiState.isConfigNotBlank(),
                     onClick = { viewModel.saveConfig() },
                 ) {
-                    Text(text = stringResource(R.string.button_update))
+                    Text(text = stringResource(R.string.search_providers_button_update))
                 }
             }
         )
@@ -80,12 +80,7 @@ private fun EditSearchProviderScreenTopBar(
 ) {
     TopAppBar(
         modifier = modifier,
-        title = { Text(text = stringResource(R.string.edit_search_provider_screen_title)) },
-        navigationIcon = {
-            ArrowBackIconButton(
-                onClick = onNavigateBack,
-                contentDescription = R.string.button_go_to_search_providers_screen,
-            )
-        },
+        title = { Text(text = stringResource(R.string.search_providers_edit_screen_title)) },
+        navigationIcon = { ArrowBackIconButton(onClick = onNavigateBack) },
     )
 }

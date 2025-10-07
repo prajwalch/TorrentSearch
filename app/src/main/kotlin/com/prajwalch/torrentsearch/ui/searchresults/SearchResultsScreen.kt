@@ -112,7 +112,7 @@ fun SearchResultsScreen(
                 modifier = Modifier.focusRequester(searchBarFocusRequester),
                 query = uiState.filterQuery,
                 onQueryChange = viewModel::updateFilterQuery,
-                placeholder = { Text(text = stringResource(R.string.search_results)) },
+                placeholder = { Text(text = stringResource(R.string.search_results_query_hint)) },
             )
         }
     }
@@ -133,7 +133,9 @@ fun SearchResultsScreen(
             IconButton(onClick = { showFilterOptions = true }) {
                 Icon(
                     painter = painterResource(R.drawable.ic_filter_alt),
-                    contentDescription = null,
+                    contentDescription = stringResource(
+                        R.string.search_results_action_filter,
+                    ),
                 )
             }
         }
@@ -224,16 +226,16 @@ private fun NoInternetConnection(onTryAgain: () -> Unit, modifier: Modifier = Mo
     EmptyPlaceholder(
         modifier = modifier,
         icon = R.drawable.ic_signal_wifi_off,
-        title = R.string.msg_no_internet_connection,
+        title = R.string.search_results_internet_connection_error,
         actions = {
             Button(onClick = onTryAgain) {
                 Icon(
                     modifier = Modifier.size(ButtonDefaults.IconSize),
                     painter = painterResource(R.drawable.ic_refresh),
-                    contentDescription = stringResource(R.string.desc_retry_connection),
+                    contentDescription = null,
                 )
                 Spacer(modifier = Modifier.width(ButtonDefaults.IconSpacing))
-                Text(text = stringResource(R.string.button_try_again))
+                Text(text = stringResource(R.string.search_results_button_try_again))
             }
         }
     )
@@ -244,7 +246,7 @@ private fun ResultsNotFound(modifier: Modifier = Modifier) {
     EmptyPlaceholder(
         modifier = modifier,
         icon = R.drawable.ic_results_not_found,
-        title = R.string.msg_no_results_found,
+        title = R.string.search_results_empty_message,
     )
 }
 
@@ -272,7 +274,7 @@ private fun SearchResults(
             headerContent = {
                 Text(
                     text = stringResource(
-                        R.string.hint_results_count,
+                        R.string.search_results_count_format,
                         searchResults.size,
                         searchQuery,
                         searchCategory,
@@ -297,14 +299,14 @@ private fun FilterOptionsBottomSheet(
 ) {
     ModalBottomSheet(modifier = modifier, onDismissRequest = onDismissRequest) {
         Column(modifier = Modifier.padding(bottom = MaterialTheme.spaces.large)) {
-            FiltersSectionTitle(titleId = R.string.filters_section_search_providers)
+            FiltersSectionTitle(titleId = R.string.search_results_filters_section_search_providers)
             SearchProvidersChipsRow(
                 searchProviders = filterOptions.searchProviders,
                 onToggleSearchProvider = onToggleSearchProvider,
                 contentPadding = PaddingValues(horizontal = MaterialTheme.spaces.large),
             )
 
-            FiltersSectionTitle(titleId = R.string.filters_section_additional_options)
+            FiltersSectionTitle(titleId = R.string.search_results_filters_section_additional_options)
             FlowRow(
                 modifier = Modifier.padding(horizontal = MaterialTheme.spaces.large),
                 itemVerticalAlignment = Alignment.CenterVertically,
@@ -312,7 +314,7 @@ private fun FilterOptionsBottomSheet(
                 FilterChip(
                     selected = filterOptions.deadTorrents,
                     onClick = onToggleDeadTorrents,
-                    label = { Text(text = stringResource(R.string.filter_dead_torrents)) },
+                    label = { Text(text = stringResource(R.string.search_results_filters_dead_torrents)) },
                 )
             }
         }

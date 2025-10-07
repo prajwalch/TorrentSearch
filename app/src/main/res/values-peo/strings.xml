@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="torrent_client_not_found_main_content">برای استفاده از قابلیت دانلود یک برنامه دانلود از تورنت نصب کنید آن را تنظیم کنید و به این برنامه برگردید</string>
-    <string name="search">جستجو …</string>
-    <string name="settings_dialog_button_cancel">لغو</string>
-    <string name="recommended_client">برنامه دانلود پیشنهادی</string>
+    <string name="torrent_client_not_found_content">برای استفاده از قابلیت دانلود یک برنامه دانلود از تورنت نصب کنید آن را تنظیم کنید و به این برنامه برگردید</string>
+    <string name="search_query_hint">جستجو …</string>
+    <string name="button_cancel">لغو</string>
+    <string name="torrent_client_not_found_recommended_client_hint">برنامه دانلود پیشنهادی</string>
     <string name="button_done">انجام شد</string>
     <string name="desc_unfocus_search_bar">نوار جستجو را از حالت تمرکز خارج کرده و صفحه کلید را پنهان کنید</string>
     <string name="desc_clear_search_query">پاک کردن جستجوی پرسش و پاسخ</string>
-    <string name="button_go_to_settings_screen">رفتن به صفحه تنظیمات</string>
-    <string name="button_delete_search_history">حذف تاریخچه جستجو</string>
-    <string name="button_select_search_history">انتخاب تاریخچه جستجو</string>
-    <string name="msg_no_internet_connection">بدون اتصال به اینترنت</string>
+    <string name="desc_go_to_settings_screen">رفتن به صفحه تنظیمات</string>
+    <string name="desc_delete_search_history">حذف تاریخچه جستجو</string>
+    <string name="search_desc_change_search_query">انتخاب تاریخچه جستجو</string>
+    <string name="search_results_internet_connection_error">بدون اتصال به اینترنت</string>
 </resources>

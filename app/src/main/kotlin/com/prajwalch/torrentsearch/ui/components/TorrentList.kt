@@ -142,9 +142,9 @@ private fun TorrentMetadata(
     ) {
         TorrentMetadataText(text = size)
         BulletPoint()
-        TorrentMetadataText(text = stringResource(R.string.seeders, seeders))
+        TorrentMetadataText(text = stringResource(R.string.torrent_list_seeders_format, seeders))
         BulletPoint()
-        TorrentMetadataText(text = stringResource(R.string.peers, peers))
+        TorrentMetadataText(text = stringResource(R.string.torrent_list_peers_format, peers))
     }
 }
 

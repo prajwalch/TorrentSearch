@@ -35,7 +35,7 @@ fun NSFWBadge(modifier: Modifier = Modifier) {
     ) {
         Text(
             modifier = modifier,
-            text = stringResource(R.string.nsfw),
+            text = stringResource(R.string.badge_nsfw),
         )
     }
 }

@@ -38,18 +38,13 @@ fun SearchHistoryScreen(onNavigateBack: () -> Unit, modifier: Modifier = Modifie
             .then(modifier),
         topBar = {
             TopAppBar(
-                navigationIcon = {
-                    ArrowBackIconButton(
-                        onClick = onNavigateBack,
-                        contentDescription = R.string.button_go_to_settings_screen,
-                    )
-                },
+                navigationIcon = { ArrowBackIconButton(onClick = onNavigateBack) },
                 title = { Text(text = stringResource(R.string.search_history_screen_title)) },
                 actions = {
                     if (searchHistoryList.isNotEmpty()) {
                         DeleteForeverIconButton(
                             onClick = { viewModel.deleteAllSearchHistory() },
-                            contentDescription = R.string.desc_delete_all_search_history,
+                            contentDescription = R.string.search_history_action_delete_all,
                         )
                     }
                 },
@@ -62,7 +57,7 @@ fun SearchHistoryScreen(onNavigateBack: () -> Unit, modifier: Modifier = Modifie
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(innerPadding),
-                title = R.string.msg_no_search_history,
+                title = R.string.search_history_empty_message,
             )
         } else {
             SearchHistoryList(

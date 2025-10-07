@@ -76,14 +76,14 @@ fun AddSearchProviderScreen(onNavigateBack: () -> Unit, modifier: Modifier = Mod
                         enabled = uiState.isConfigNotBlank(),
                         onClick = { viewModel.saveConfig() },
                     ) {
-                        Text(text = stringResource(R.string.button_add))
+                        Text(text = stringResource(R.string.search_providers_button_add))
                     }
                 },
             )
 
             val uriHandler = LocalUriHandler.current
             TextUrl(
-                text = stringResource(R.string.learn_how_to_add),
+                text = stringResource(R.string.search_providers_learn_how_to_add),
                 onClick = { uriHandler.openUri(HOW_TO_WIKI_URL) },
                 color = MaterialTheme.colorScheme.primary,
                 style = MaterialTheme.typography.bodyMedium,
@@ -101,12 +101,7 @@ private fun AddSearchProviderScreenTopBar(
 ) {
     TopAppBar(
         modifier = modifier,
-        title = { Text(text = stringResource(R.string.add_search_provider_screen_title)) },
-        navigationIcon = {
-            ArrowBackIconButton(
-                onClick = onNavigateBack,
-                contentDescription = R.string.button_go_to_search_providers_screen,
-            )
-        },
+        title = { Text(text = stringResource(R.string.search_providers_add_screen_title)) },
+        navigationIcon = { ArrowBackIconButton(onClick = onNavigateBack) },
     )
 }
