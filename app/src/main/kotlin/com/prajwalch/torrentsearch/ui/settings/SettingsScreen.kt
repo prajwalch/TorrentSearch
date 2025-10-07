@@ -234,6 +234,7 @@ private fun GeneralSettings(modifier: Modifier = Modifier) {
             onClick = { viewModel.enableNSFWMode(!settings.enableNSFWMode) },
             icon = R.drawable.ic_18_up_rating,
             headline = R.string.settings_enable_nsfw_mode,
+            supportingContent = stringResource(R.string.settings_enable_nsfw_mode_summary),
             trailingContent = {
                 Switch(
                     checked = settings.enableNSFWMode,

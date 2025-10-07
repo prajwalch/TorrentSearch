@@ -59,6 +59,7 @@
     <string name="settings_section_general">General</string>
     <string name="settings_language">Language</string>
     <string name="settings_enable_nsfw_mode">Enable NSFW mode</string>
+    <string name="settings_enable_nsfw_mode_summary">When disabled, hides NSFW categories and search results.</string>
     <string name="settings_section_search">Search</string>
     <string name="settings_search_providers">Search providers</string>
     <string name="settings_search_providers_summary_format">%1$d of %2$d enabled</string>
