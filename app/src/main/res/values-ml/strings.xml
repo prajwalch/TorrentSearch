@@ -33,7 +33,6 @@
     <string name="settings_enable_nsfw_mode">NSFW മോഡ് ആക്റ്റീവ് ചെയ്യുക</string>
     <string name="settings_section_search">സേർച്ച്</string>
     <string name="settings_search_providers">സേർച്ച് പ്രൊവൈഡേഴ്‌സ്</string>
-    <string name="settings_desc_go_to_search_providers_screen">സേർച്ച് പ്രൊവൈഡേഴ്‌സ് സ്ക്രീനിലേക്ക് പോകുക</string>
     <string name="settings_search_providers_summary_format">%1$d / %2$d സജീവമാണ്</string>
     <string name="settings_default_category">ഡീഫാൾട്ട് വിഭാഗം</string>
     <string name="search_query_hint">സേർച്ച്…</string>

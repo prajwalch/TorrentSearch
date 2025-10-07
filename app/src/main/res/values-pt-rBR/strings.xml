@@ -5,15 +5,10 @@
     <string name="torrent_client_not_found_recommended_client_hint">Aplicativos Recomendados</string>
     <string name="button_done">Concluído</string>
     <string name="search_query_hint">Pesquisa…</string>
-    <string name="desc_clear_search_query">Limpar dados de pesquisa</string>
-    <string name="desc_go_to_settings_screen">Ir para as configurações</string>
-    <string name="desc_delete_search_history">Deletar histórico de pesquisa</string>
-    <string name="search_desc_change_search_query">Selecionar histórico de pesquisa</string>
     <string name="search_results_internet_connection_error">Sem conexão de internet</string>
     <string name="search_results_button_try_again">Tente novamente</string>
     <string name="search_results_empty_message">Nenhum resultado encontrado</string>
     <string name="action_sort">Abrir opções de ordenação</string>
-    <string name="desc_scroll_to_top">Rolar para o topo</string>
     <string name="torrent_list_action_bookmark_torrent">Favoritar torrent</string>
     <string name="torrent_list_action_delete_bookmark">Deletar favorito</string>
     <string name="torrent_list_action_download_torrent">Baixar torrent</string>
@@ -27,7 +22,6 @@
     <string name="bookmarks_screen_title">Favoritos</string>
     <string name="bookmarks_action_delete_all">Deletar todos os favoritos</string>
     <string name="settings_screen_title">Configurações</string>
-    <string name="desc_go_back_to_search_screen">Voltar para a aba de pesquisa</string>
     <string name="settings_section_appearance">Aparência</string>
     <string name="settings_enable_dynamic_theme">Habilitar tema dinâmico</string>
     <string name="settings_dark_theme">Tema escuro</string>

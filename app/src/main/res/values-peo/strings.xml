@@ -5,10 +5,5 @@
     <string name="button_cancel">لغو</string>
     <string name="torrent_client_not_found_recommended_client_hint">برنامه دانلود پیشنهادی</string>
     <string name="button_done">انجام شد</string>
-    <string name="desc_unfocus_search_bar">نوار جستجو را از حالت تمرکز خارج کرده و صفحه کلید را پنهان کنید</string>
-    <string name="desc_clear_search_query">پاک کردن جستجوی پرسش و پاسخ</string>
-    <string name="desc_go_to_settings_screen">رفتن به صفحه تنظیمات</string>
-    <string name="desc_delete_search_history">حذف تاریخچه جستجو</string>
-    <string name="search_desc_change_search_query">انتخاب تاریخچه جستجو</string>
     <string name="search_results_internet_connection_error">بدون اتصال به اینترنت</string>
 </resources>
