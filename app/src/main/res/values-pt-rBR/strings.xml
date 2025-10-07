@@ -65,4 +65,25 @@
     <string name="search_providers_section_additional_options">Configurações adicionais</string>
     <string name="settings_section_sort_criteria">Critério de ordenação</string>
     <string name="button_cancel">Cancelar</string>
+    <string name="badge_nsfw">NSFW</string>
+    <string name="torrent_list_seeders_format">%1$s Semeadores</string>
+    <string name="torrent_list_peers_format">%1$s Pares</string>
+    <string name="search_button_search">Busca</string>
+    <string name="search_results_query_hint">Resultados da pesquisa</string>
+    <string name="search_results_filters_section_search_providers">Provedores de busca</string>
+    <string name="search_results_filters_section_additional_options">Opções adicionais</string>
+    <string name="search_results_filters_dead_torrents">Torrents mortos</string>
+    <string name="search_results_count_format">%1$s resultados para \\\'%2$s\\\'(%3$s)</string>
+    <string name="bookmarks_count_format">%1$d marcadores</string>
+    <string name="bookmarks_search_query_hint">Buscar marcadores</string>
+    <string name="bookmarks_empty_msg">Nenhum marcador</string>
+    <string name="settings_language">Idioma</string>
+    <string name="settings_section_advanced">Avançado</string>
+    <string name="settings_enable_share_integration">Ativar compartilhamento integrado</string>
+    <string name="settings_enable_share_integration_summary">Quando ativado, adicionar esse aplicativo no menu de compartilhamento.</string>
+    <string name="settings_enable_quick_search">Ativar busca rápida</string>
+    <string name="settings_enable_quick_search_summary">Quando ativado, adiciona este aplicativo ao menu de seleção de texto (como Copiar ou Recortar).</string>
+    <string name="settings_section_sort_order">Ordem de classificação</string>
+    <string name="search_providers_label_url">URL</string>
+    <string name="search_history_empty_message">Sem histórico de pesquisa</string>
 </resources>
