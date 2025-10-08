@@ -50,6 +50,7 @@ import com.prajwalch.torrentsearch.ui.components.SearchHistoryList
 import com.prajwalch.torrentsearch.ui.components.SearchHistoryListItem
 import com.prajwalch.torrentsearch.ui.components.SettingsIconButton
 import com.prajwalch.torrentsearch.ui.theme.spaces
+import com.prajwalch.torrentsearch.utils.categoryStringResource
 
 import kotlinx.coroutines.launch
 
@@ -219,7 +220,7 @@ private fun CategoryChipsRow(
                 modifier = Modifier.animateItem(),
                 selected = selectedCategory == it,
                 onClick = { onCategoryClick(it) },
-                label = { Text(text = it.name) },
+                label = { Text(text = categoryStringResource(it)) },
             )
         }
     }

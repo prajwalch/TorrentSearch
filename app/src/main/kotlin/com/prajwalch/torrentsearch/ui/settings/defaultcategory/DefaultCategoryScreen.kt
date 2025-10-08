@@ -28,6 +28,7 @@ import com.prajwalch.torrentsearch.R
 import com.prajwalch.torrentsearch.models.Category
 import com.prajwalch.torrentsearch.ui.components.ArrowBackIconButton
 import com.prajwalch.torrentsearch.ui.settings.SettingsViewModel
+import com.prajwalch.torrentsearch.utils.categoryStringResource
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -56,11 +57,11 @@ fun DefaultCategoryScreen(onNavigateBack: () -> Unit, modifier: Modifier = Modif
                 .consumeWindowInsets(innerPadding),
             contentPadding = innerPadding,
         ) {
-            items(items = Category.entries, contentType = { it }) { category ->
+            items(items = Category.entries, contentType = { it }) {
                 CategoryListItem(
-                    onClick = { viewModel.setDefaultCategory(category) },
-                    selected = category == defaultCategory,
-                    name = category.name,
+                    onClick = { viewModel.setDefaultCategory(it) },
+                    selected = it == defaultCategory,
+                    name = categoryStringResource(it),
                 )
             }
         }

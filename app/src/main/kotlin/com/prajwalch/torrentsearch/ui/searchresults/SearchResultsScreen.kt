@@ -68,6 +68,7 @@ import com.prajwalch.torrentsearch.ui.components.SortDropdownMenu
 import com.prajwalch.torrentsearch.ui.components.SortIconButton
 import com.prajwalch.torrentsearch.ui.components.TorrentList
 import com.prajwalch.torrentsearch.ui.theme.spaces
+import com.prajwalch.torrentsearch.utils.categoryStringResource
 
 import kotlinx.coroutines.launch
 
@@ -277,7 +278,7 @@ private fun SearchResults(
                         R.string.search_results_count_format,
                         searchResults.size,
                         searchQuery,
-                        searchCategory,
+                        categoryStringResource(searchCategory),
                     ),
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     style = MaterialTheme.typography.bodyMedium,

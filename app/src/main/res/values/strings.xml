@@ -8,6 +8,17 @@
     <string name="badge_unsafe">Unsafe</string>
     <string name="badge_torznab" translatable="false">Torznab</string>
 
+    <string name="category_all">All</string>
+    <string name="category_anime">Anime</string>
+    <string name="category_apps">Apps</string>
+    <string name="category_books">Books</string>
+    <string name="category_games">Games</string>
+    <string name="category_movies">Movies</string>
+    <string name="category_music">Music</string>
+    <string name="category_porn">Porn</string>
+    <string name="category_series">Series</string>
+    <string name="category_other">Other</string>
+
     <string name="torrent_client_not_found_title">Torrent client not found</string>
     <string name="torrent_client_not_found_content">
         To use the download feature, install a torrent client, set it up, and return to this app.

@@ -61,6 +61,7 @@ import com.prajwalch.torrentsearch.ui.components.SettingsDialog
 import com.prajwalch.torrentsearch.ui.components.SettingsListItem
 import com.prajwalch.torrentsearch.ui.components.SettingsSectionTitle
 import com.prajwalch.torrentsearch.ui.theme.spaces
+import com.prajwalch.torrentsearch.utils.categoryStringResource
 
 private val LocalSettingsViewModel = compositionLocalOf<SettingsViewModel> {
     error("Local SettingsViewModel not provided")
@@ -291,7 +292,7 @@ private fun SearchSettings(
             onClick = onNavigateToDefaultCategory,
             icon = R.drawable.ic_category_search,
             headline = R.string.settings_default_category,
-            supportingContent = settings.defaultCategory.name,
+            supportingContent = categoryStringResource(settings.defaultCategory),
             trailingContent = {
                 Icon(
                     painter = painterResource(R.drawable.ic_arrow_forward),

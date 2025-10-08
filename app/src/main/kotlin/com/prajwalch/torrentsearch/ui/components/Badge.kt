@@ -14,6 +14,7 @@ import androidx.compose.ui.res.stringResource
 import com.prajwalch.torrentsearch.R
 import com.prajwalch.torrentsearch.models.Category
 import com.prajwalch.torrentsearch.ui.theme.spaces
+import com.prajwalch.torrentsearch.utils.categoryStringResource
 
 @Composable
 fun CategoryBadge(category: Category, modifier: Modifier = Modifier) {
@@ -22,7 +23,7 @@ fun CategoryBadge(category: Category, modifier: Modifier = Modifier) {
         containerColor = MaterialTheme.colorScheme.secondaryContainer,
         contentColor = MaterialTheme.colorScheme.onSecondaryContainer,
     ) {
-        Text(text = category.name)
+        Text(text = categoryStringResource(category))
     }
 }
 
@@ -33,10 +34,7 @@ fun NSFWBadge(modifier: Modifier = Modifier) {
         containerColor = MaterialTheme.colorScheme.errorContainer,
         contentColor = MaterialTheme.colorScheme.onErrorContainer,
     ) {
-        Text(
-            modifier = modifier,
-            text = stringResource(R.string.badge_nsfw),
-        )
+        Text(text = stringResource(R.string.badge_nsfw))
     }
 }
 

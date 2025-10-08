@@ -31,6 +31,7 @@ import com.prajwalch.torrentsearch.models.Category
 import com.prajwalch.torrentsearch.providers.SearchProviderSafetyStatus
 import com.prajwalch.torrentsearch.providers.TorznabSearchProviderConfig
 import com.prajwalch.torrentsearch.ui.theme.spaces
+import com.prajwalch.torrentsearch.utils.categoryStringResource
 
 @Composable
 fun TorznabSearchProviderConfigForm(
@@ -180,7 +181,7 @@ private fun OutlinedCategoryField(
         ) {
             Category.entries.forEach {
                 DropdownMenuItem(
-                    text = { Text(text = it.name) },
+                    text = { Text(text = categoryStringResource(it)) },
                     onClick = {
                         onValueChange(it)
                         expanded = false
