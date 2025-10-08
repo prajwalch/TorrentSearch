@@ -62,6 +62,8 @@ import com.prajwalch.torrentsearch.ui.components.SettingsListItem
 import com.prajwalch.torrentsearch.ui.components.SettingsSectionTitle
 import com.prajwalch.torrentsearch.ui.theme.spaces
 import com.prajwalch.torrentsearch.utils.categoryStringResource
+import com.prajwalch.torrentsearch.utils.sortCriteriaStringResource
+import com.prajwalch.torrentsearch.utils.sortOrderStringResource
 
 private val LocalSettingsViewModel = compositionLocalOf<SettingsViewModel> {
     error("Local SettingsViewModel not provided")
@@ -301,8 +303,12 @@ private fun SearchSettings(
             }
         )
 
-        val defaultSortCriteria = settings.defaultSortOptions.sortCriteria
-        val defaultSortOrder = settings.defaultSortOptions.sortOrder
+        val defaultSortCriteria = sortCriteriaStringResource(
+            settings.defaultSortOptions.sortCriteria,
+        )
+        val defaultSortOrder = sortOrderStringResource(
+            settings.defaultSortOptions.sortOrder,
+        )
         SettingsListItem(
             onClick = onNavigateToDefaultSortOptions,
             icon = R.drawable.ic_sort,

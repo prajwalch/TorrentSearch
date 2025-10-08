@@ -23,6 +23,8 @@ import androidx.compose.ui.unit.dp
 import com.prajwalch.torrentsearch.R
 import com.prajwalch.torrentsearch.models.SortCriteria
 import com.prajwalch.torrentsearch.models.SortOrder
+import com.prajwalch.torrentsearch.utils.sortCriteriaStringResource
+import com.prajwalch.torrentsearch.utils.sortOrderStringResource
 
 @Composable
 fun RoundedDropdownMenu(
@@ -77,7 +79,7 @@ fun SortDropdownMenu(
     ) {
         for (criteria in SortCriteria.entries) {
             DropdownMenuItem(
-                text = { Text(text = criteria.toString()) },
+                text = { Text(text = sortCriteriaStringResource(criteria)) },
                 onClick = { onSortRequest(criteria, currentSortOrder) },
                 trailingIcon = { if (criteria == currentSortCriteria) checkIcon() },
             )
@@ -87,7 +89,7 @@ fun SortDropdownMenu(
 
         for (order in SortOrder.entries) {
             DropdownMenuItem(
-                text = { Text(text = order.toString()) },
+                text = { Text(text = sortOrderStringResource(order)) },
                 onClick = { onSortRequest(currentSortCriteria, order) },
                 trailingIcon = { if (order == currentSortOrder) checkIcon() },
             )

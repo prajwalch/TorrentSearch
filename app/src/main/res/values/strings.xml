@@ -3,10 +3,18 @@
 
     <string name="button_done">Done</string>
     <string name="button_cancel">Cancel</string>
-    <string name="action_sort">Sort</string>
     <string name="badge_nsfw">NSFW</string>
     <string name="badge_unsafe">Unsafe</string>
     <string name="badge_torznab" translatable="false">Torznab</string>
+
+    <string name="action_sort">Sort</string>
+    <string name="action_sort_criteria_name">Name</string>
+    <string name="action_sort_criteria_seeders">Seeders</string>
+    <string name="action_sort_criteria_peers">Peers</string>
+    <string name="action_sort_criteria_file_size">File size</string>
+    <string name="action_sort_criteria_date">Date</string>
+    <string name="action_sort_order_ascending">Ascending</string>
+    <string name="action_sort_order_descending">Descending</string>
 
     <string name="category_all">All</string>
     <string name="category_anime">Anime</string>

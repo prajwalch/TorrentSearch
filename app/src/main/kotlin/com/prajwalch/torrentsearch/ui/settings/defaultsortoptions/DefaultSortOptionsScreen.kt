@@ -31,6 +31,8 @@ import com.prajwalch.torrentsearch.models.SortOrder
 import com.prajwalch.torrentsearch.ui.components.ArrowBackIconButton
 import com.prajwalch.torrentsearch.ui.components.SettingsSectionTitle
 import com.prajwalch.torrentsearch.ui.settings.SettingsViewModel
+import com.prajwalch.torrentsearch.utils.sortCriteriaStringResource
+import com.prajwalch.torrentsearch.utils.sortOrderStringResource
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -108,7 +110,7 @@ private fun SortCriteriaSection(
                         onClick = { onCriteriaSelect(criteria) },
                     )
                 },
-                headlineContent = { Text(text = criteria.toString()) }
+                headlineContent = { Text(text = sortCriteriaStringResource(criteria)) },
             )
         }
     }
@@ -136,7 +138,7 @@ private fun SortOrderSection(
                         onClick = { onOrderSelect(order) },
                     )
                 },
-                headlineContent = { Text(text = order.toString()) }
+                headlineContent = { Text(text = sortOrderStringResource(order)) },
             )
         }
     }
