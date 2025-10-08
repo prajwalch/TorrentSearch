@@ -74,6 +74,9 @@
     <string name="settings_section_appearance">Appearance</string>
     <string name="settings_enable_dynamic_theme">Enable dynamic theme</string>
     <string name="settings_dark_theme">Dark theme</string>
+    <string name="settings_dark_theme_on">On</string>
+    <string name="settings_dark_theme_off">Off</string>
+    <string name="settings_dark_theme_follow_system">Follow system</string>
     <string name="settings_pure_black">Pure black</string>
     <string name="settings_section_general">General</string>
     <string name="settings_language">Language</string>
