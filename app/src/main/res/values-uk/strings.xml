@@ -38,7 +38,6 @@
     <string name="search_results_button_try_again">Повторити спробу</string>
     <string name="search_results_empty_message">Результатів не знайдено</string>
     <string name="search_results_count_format">%1$s результатів для «%2$s» (%3$s)</string>
-    <string name="bookmarks_count_format">%1$d Вподобано</string>
     <string name="bookmarks_search_query_hint">Пошук вподобаного</string>
     <string name="bookmarks_action_delete_all">Скасувати всі</string>
     <string name="bookmarks_empty_msg">Вподобаного нема</string>

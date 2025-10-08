@@ -65,7 +65,10 @@
     <string name="search_results_count_format">%1$s results for \'%2$s\' (%3$s)</string>
 
     <string name="bookmarks_screen_title">Bookmarks</string>
-    <string name="bookmarks_count_format">%1$d bookmarks</string>
+    <plurals name="bookmarks_count_format">
+        <item quantity="one">%1$d bookmark</item>
+        <item quantity="other">%1$d bookmarks</item>
+    </plurals>
     <string name="bookmarks_search_query_hint">Search bookmarks</string>
     <string name="bookmarks_action_delete_all">Delete all</string>
     <string name="bookmarks_empty_msg">No bookmarks</string>

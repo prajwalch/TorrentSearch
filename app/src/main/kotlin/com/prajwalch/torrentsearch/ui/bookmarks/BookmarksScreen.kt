@@ -29,6 +29,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -88,8 +89,9 @@ fun BookmarksScreen(
 
                 if (uiState.bookmarks.isNotEmpty()) {
                     Text(
-                        text = stringResource(
-                            R.string.bookmarks_count_format,
+                        text = pluralStringResource(
+                            R.plurals.bookmarks_count_format,
+                            uiState.bookmarks.size,
                             uiState.bookmarks.size,
                         ),
                         color = MaterialTheme.colorScheme.onSurfaceVariant,

@@ -74,7 +74,6 @@
     <string name="search_results_filters_section_additional_options">Opções adicionais</string>
     <string name="search_results_filters_dead_torrents">Torrents mortos</string>
     <string name="search_results_count_format">%1$s resultados para \\\'%2$s\\\'(%3$s)</string>
-    <string name="bookmarks_count_format">%1$d marcadores</string>
     <string name="bookmarks_search_query_hint">Buscar marcadores</string>
     <string name="bookmarks_empty_msg">Nenhum marcador</string>
     <string name="settings_language">Idioma</string>
