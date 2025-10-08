@@ -4,9 +4,7 @@ package com.prajwalch.torrentsearch.models
 enum class DarkTheme {
     On,
     Off,
-    FollowSystem {
-        override fun toString() = "Follow System"
-    };
+    FollowSystem
 }
 
 /** Results sort criteria. */
@@ -14,9 +12,7 @@ enum class SortCriteria {
     Name,
     Seeders,
     Peers,
-    FileSize {
-        override fun toString() = "File size"
-    },
+    FileSize,
     Date;
 
     companion object {
@@ -29,12 +25,6 @@ enum class SortCriteria {
 enum class SortOrder {
     Ascending,
     Descending;
-
-    /** Returns the opposite order. */
-    fun opposite() = when (this) {
-        Ascending -> Descending
-        Descending -> Ascending
-    }
 
     companion object {
         /** The default sort order. */
