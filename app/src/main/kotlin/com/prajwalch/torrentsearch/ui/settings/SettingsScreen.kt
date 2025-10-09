@@ -168,7 +168,7 @@ private fun AppearanceSettings(modifier: Modifier = Modifier) {
                 onClick = { menuExpanded = true },
                 icon = R.drawable.ic_dark_mode,
                 headline = R.string.settings_dark_theme,
-                supportingContent = settings.darkTheme.toString(),
+                supportingContent = darkThemeStringResource(settings.darkTheme),
             )
 
             RoundedDropdownMenu(
