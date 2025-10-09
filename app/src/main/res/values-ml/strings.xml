@@ -44,7 +44,6 @@
     <string name="settings_save_search_history">സേർച്ച് ഹിസ്റ്ററി സേവ് ചെയ്യുക</string>
     <string name="settings_show_search_history">സേർച്ച് ഹിസ്റ്ററി കാണിക്കുക</string>
     <string name="settings_show_search_history_summary">സേർച്ച് ബാറിൽ സേർച്ച് ഹിസ്റ്ററി കാണിക്കുക</string>
-    <string name="settings_manage_search_history">സേർച്ച് ഹിസ്റ്ററി നിയന്ത്രിക്കുക</string>
     <string name="search_history_screen_title">സേർച്ച് ഹിസ്റ്ററി</string>
     <string name="search_history_action_delete_all">എല്ലാ സേർച്ച് ഹിസ്റ്ററിയും മായ്ക്കുക</string>
     <string name="settings_section_about">വിവരം</string>

@@ -58,6 +58,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun SearchScreen(
     onNavigateToBookmarks: () -> Unit,
+    onNavigateToSearchHistory: () -> Unit,
     onNavigateToSettings: () -> Unit,
     onSearch: (String, Category) -> Unit,
     modifier: Modifier = Modifier,
@@ -75,6 +76,7 @@ fun SearchScreen(
         topBar = {
             SearchScreenTopBar(
                 onNavigateToBookmarks = onNavigateToBookmarks,
+                onNavigateToSearchHistory = onNavigateToSearchHistory,
                 onNavigateToSettings = onNavigateToSettings,
                 scrollBehavior = scrollBehavior,
             )
@@ -153,6 +155,7 @@ fun SearchScreen(
 @Composable
 private fun SearchScreenTopBar(
     onNavigateToBookmarks: () -> Unit,
+    onNavigateToSearchHistory: () -> Unit,
     onNavigateToSettings: () -> Unit,
     modifier: Modifier = Modifier,
     scrollBehavior: TopAppBarScrollBehavior? = null,
@@ -164,6 +167,12 @@ private fun SearchScreenTopBar(
             IconButton(onClick = onNavigateToBookmarks) {
                 Icon(
                     painter = painterResource(R.drawable.ic_star_filled),
+                    contentDescription = null,
+                )
+            }
+            IconButton(onClick = onNavigateToSearchHistory) {
+                Icon(
+                    painter = painterResource(R.drawable.ic_history),
                     contentDescription = null,
                 )
             }

@@ -1,4 +1,4 @@
-package com.prajwalch.torrentsearch.ui.settings.searchhistory
+package com.prajwalch.torrentsearch.ui.searchhistory
 
 import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize

@@ -1,4 +1,4 @@
-package com.prajwalch.torrentsearch.ui.settings.searchhistory
+package com.prajwalch.torrentsearch.ui.searchhistory
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope

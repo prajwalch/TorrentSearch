@@ -76,7 +76,6 @@ fun SettingsScreen(
     onNavigateToDefaultCategory: () -> Unit,
     onNavigateToSearchProviders: () -> Unit,
     onNavigateToDefaultSortOptions: () -> Unit,
-    onNavigateToSearchHistory: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val viewModel = activityScopedViewModel<SettingsViewModel>()
@@ -107,7 +106,7 @@ fun SettingsScreen(
                     onNavigateToDefaultCategory = onNavigateToDefaultCategory,
                     onNavigateToDefaultSortOptions = onNavigateToDefaultSortOptions,
                 )
-                SearchHistorySettings(onNavigateToSearchHistory = onNavigateToSearchHistory)
+                SearchHistorySettings()
                 AdvancedSettings()
                 About()
             }
@@ -335,10 +334,7 @@ private fun SearchSettings(
 }
 
 @Composable
-private fun SearchHistorySettings(
-    onNavigateToSearchHistory: () -> Unit,
-    modifier: Modifier = Modifier,
-) {
+private fun SearchHistorySettings(modifier: Modifier = Modifier) {
     val viewModel = LocalSettingsViewModel.current
     val settings by viewModel.searchHistorySettingsUiState.collectAsStateWithLifecycle()
 
@@ -364,17 +360,6 @@ private fun SearchHistorySettings(
                 Switch(
                     checked = settings.showSearchHistory,
                     onCheckedChange = { viewModel.enableShowSearchHistory(it) },
-                )
-            },
-        )
-        SettingsListItem(
-            onClick = onNavigateToSearchHistory,
-            icon = R.drawable.ic_manage_history,
-            headline = R.string.settings_manage_search_history,
-            trailingContent = {
-                Icon(
-                    painter = painterResource(R.drawable.ic_arrow_forward),
-                    contentDescription = null,
                 )
             },
         )

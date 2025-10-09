@@ -73,6 +73,29 @@
     <string name="bookmarks_action_delete_all">Delete all</string>
     <string name="bookmarks_empty_msg">No bookmarks</string>
 
+    <string name="search_history_screen_title">Search history</string>
+    <string name="search_history_action_delete_all">Delete all</string>
+    <string name="search_history_empty_message">No search history</string>
+
+    <string name="search_providers_screen_title">Search providers</string>
+    <string name="search_providers_action_enable_all">Enable all</string>
+    <string name="search_providers_action_disable_all">Disable all</string>
+    <string name="search_providers_action_reset">Reset to default</string>
+    <string name="search_providers_list_action_edit">Edit configuration</string>
+    <string name="search_providers_list_action_delete">Delete</string>
+    <string name="search_providers_add_screen_title">Add search provider</string>
+    <string name="search_providers_button_add">Add</string>
+    <string name="search_providers_learn_how_to_add">Learn how to add</string>
+    <string name="search_providers_edit_screen_title">Edit search provider</string>
+    <string name="search_providers_button_update">Update</string>
+    <string name="search_providers_label_name">Name</string>
+    <string name="search_providers_label_url">URL</string>
+    <string name="search_providers_url_validation_error">Not a valid URL</string>
+    <string name="search_providers_label_api_key">API key</string>
+    <string name="search_providers_label_category">Category</string>
+    <string name="search_providers_label_safety_status">Safety status</string>
+    <string name="search_providers_section_additional_options">Additional options</string>
+
     <string name="settings_screen_title">Settings</string>
     <string name="settings_section_appearance">Appearance</string>
     <string name="settings_enable_dynamic_theme">Enable dynamic theme</string>
@@ -97,7 +120,6 @@
     <string name="settings_save_search_history">Save search history</string>
     <string name="settings_show_search_history">Show search history</string>
     <string name="settings_show_search_history_summary">Show search history in search bar</string>
-    <string name="settings_manage_search_history">Manage search history</string>
     <string name="settings_section_advanced">Advanced</string>
     <string name="settings_enable_share_integration">Enable share integration</string>
     <string name="settings_enable_share_integration_summary">
@@ -112,27 +134,4 @@
     <string name="settings_source_code">Source code</string>
     <string name="settings_section_sort_criteria">Sort criteria</string>
     <string name="settings_section_sort_order">Sort order</string>
-
-    <string name="search_providers_screen_title">Search providers</string>
-    <string name="search_providers_action_enable_all">Enable all</string>
-    <string name="search_providers_action_disable_all">Disable all</string>
-    <string name="search_providers_action_reset">Reset to default</string>
-    <string name="search_providers_list_action_edit">Edit configuration</string>
-    <string name="search_providers_list_action_delete">Delete</string>
-    <string name="search_providers_add_screen_title">Add search provider</string>
-    <string name="search_providers_button_add">Add</string>
-    <string name="search_providers_learn_how_to_add">Learn how to add</string>
-    <string name="search_providers_edit_screen_title">Edit search provider</string>
-    <string name="search_providers_button_update">Update</string>
-    <string name="search_providers_label_name">Name</string>
-    <string name="search_providers_label_url">URL</string>
-    <string name="search_providers_url_validation_error">Not a valid URL</string>
-    <string name="search_providers_label_api_key">API key</string>
-    <string name="search_providers_label_category">Category</string>
-    <string name="search_providers_label_safety_status">Safety status</string>
-    <string name="search_providers_section_additional_options">Additional options</string>
-
-    <string name="search_history_screen_title">Search history</string>
-    <string name="search_history_action_delete_all">Delete all</string>
-    <string name="search_history_empty_message">No search history</string>
 </resources>

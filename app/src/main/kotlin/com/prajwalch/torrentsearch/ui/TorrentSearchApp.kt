@@ -28,6 +28,7 @@ import com.prajwalch.torrentsearch.ui.bookmarks.BookmarksViewModel
 import com.prajwalch.torrentsearch.ui.components.TorrentActionsBottomSheet
 import com.prajwalch.torrentsearch.ui.components.TorrentClientNotFoundDialog
 import com.prajwalch.torrentsearch.ui.search.SearchScreen
+import com.prajwalch.torrentsearch.ui.searchhistory.SearchHistoryScreen
 import com.prajwalch.torrentsearch.ui.searchresults.SearchResultsScreen
 import com.prajwalch.torrentsearch.ui.settings.settingsNavigation
 
@@ -101,6 +102,7 @@ fun TorrentSearchApp(
         ) {
             SearchScreen(
                 onNavigateToBookmarks = { navController.navigate(Screens.BOOKMARKS) },
+                onNavigateToSearchHistory = { navController.navigate(Screens.SEARCH_HISTORY) },
                 onNavigateToSettings = { navController.navigate(Screens.Settings.ROOT) },
                 onSearch = { query, category ->
                     navController.navigate(
@@ -138,6 +140,14 @@ fun TorrentSearchApp(
                 onBookmarkClick = { selectedTorrent = it },
                 snackbarHostState = snackbarHostState,
             )
+        }
+
+        composable(
+            route = Screens.SEARCH_HISTORY,
+            enterTransition = { slideIntoContainer(SlideDirection.Start) },
+            popExitTransition = { slideOutOfContainer(SlideDirection.End) },
+        ) {
+            SearchHistoryScreen(onNavigateBack = { navController.navigateUp() })
         }
 
         settingsNavigation(navController = navController)

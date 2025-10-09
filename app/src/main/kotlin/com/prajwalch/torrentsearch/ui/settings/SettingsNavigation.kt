@@ -9,7 +9,6 @@ import androidx.navigation.navigation
 import com.prajwalch.torrentsearch.ui.Screens
 import com.prajwalch.torrentsearch.ui.settings.defaultcategory.DefaultCategoryScreen
 import com.prajwalch.torrentsearch.ui.settings.defaultsortoptions.DefaultSortOptionsScreen
-import com.prajwalch.torrentsearch.ui.settings.searchhistory.SearchHistoryScreen
 import com.prajwalch.torrentsearch.ui.settings.searchproviders.searchProvidersNavigation
 
 fun NavGraphBuilder.settingsNavigation(navController: NavHostController) {
@@ -32,9 +31,6 @@ fun NavGraphBuilder.settingsNavigation(navController: NavHostController) {
                 onNavigateToDefaultSortOptions = {
                     navController.navigate(Screens.Settings.DEFAULT_SORT_OPTIONS)
                 },
-                onNavigateToSearchHistory = {
-                    navController.navigate(Screens.Settings.SEARCH_HISTORY)
-                },
             )
         }
 
@@ -52,14 +48,6 @@ fun NavGraphBuilder.settingsNavigation(navController: NavHostController) {
             popExitTransition = { slideOutOfContainer(SlideDirection.End) },
         ) {
             DefaultSortOptionsScreen(onNavigateBack = { navController.navigateUp() })
-        }
-
-        composable(
-            route = Screens.Settings.SEARCH_HISTORY,
-            enterTransition = { slideIntoContainer(SlideDirection.Start) },
-            popExitTransition = { slideOutOfContainer(SlideDirection.End) },
-        ) {
-            SearchHistoryScreen(onNavigateBack = { navController.navigateUp() })
         }
 
         searchProvidersNavigation(navController = navController)
