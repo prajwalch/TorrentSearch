@@ -83,4 +83,35 @@
     <string name="search_providers_section_additional_options">Додаткові параметри</string>
     <string name="search_history_action_delete_all">Стерти всю</string>
     <string name="search_history_empty_message">Нема історії пошуку</string>
+    <string name="button_cancel">Скасувати</string>
+    <string name="badge_nsfw">Чутливе</string>
+    <string name="action_sort">Порядок</string>
+    <string name="action_sort_criteria_name">Назва</string>
+    <string name="action_sort_criteria_seeders">Сіди</string>
+    <string name="action_sort_criteria_peers">Піри</string>
+    <string name="action_sort_criteria_file_size">Розмір</string>
+    <string name="action_sort_criteria_date">Дата</string>
+    <string name="action_sort_order_ascending">Зростання</string>
+    <string name="action_sort_order_descending">Спадання</string>
+    <string name="category_all">Усе</string>
+    <string name="category_anime">Аніме</string>
+    <string name="category_apps">Програми</string>
+    <string name="category_books">Книги</string>
+    <string name="category_games">Ігри</string>
+    <string name="category_movies">Фільми</string>
+    <string name="category_music">Музика</string>
+    <string name="category_porn">Порно</string>
+    <string name="category_series">Серіали</string>
+    <string name="category_other">Інше</string>
+    <string name="search_results_action_filter">Фільтр</string>
+    <plurals name="bookmarks_count_format">
+        <item quantity="one">%1$d вподобане</item>
+        <item quantity="few">%1$d вподобані</item>
+        <item quantity="many">%1$d вподобаних</item>
+        <item quantity="other">%1$d вподобаних</item>
+    </plurals>
+    <string name="settings_dark_theme_on">Увімкнена</string>
+    <string name="settings_dark_theme_off">Вимкнена</string>
+    <string name="settings_dark_theme_follow_system">Системна</string>
+    <string name="settings_enable_nsfw_mode_summary">Вимкніть, щоб сховати чутливі категорії й результати пошуку.</string>
 </resources>
