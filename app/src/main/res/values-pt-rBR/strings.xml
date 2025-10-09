@@ -40,7 +40,6 @@
     <string name="settings_save_search_history">Salvar histórico de pesquisa</string>
     <string name="settings_show_search_history">Mostrar histórico de pesquisa</string>
     <string name="settings_show_search_history_summary">Mostrar histórico de pesquisa na barra de pesquisa</string>
-    <string name="settings_manage_search_history">Configurar histórico de pesquisa</string>
     <string name="search_history_screen_title">Histórico de pesquisa</string>
     <string name="search_history_action_delete_all">Deletar todo histórico de pesquisa</string>
     <string name="settings_section_about">Sobre</string>

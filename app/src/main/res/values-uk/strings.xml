@@ -56,7 +56,6 @@
     <string name="settings_save_search_history">Зберегти історію пошуку</string>
     <string name="settings_show_search_history">Показати історію пошуку</string>
     <string name="settings_show_search_history_summary">Показати історію в панелі пошуку</string>
-    <string name="settings_manage_search_history">Керувати історією пошуку</string>
     <string name="settings_enable_share_integration">Інтеграція поширення</string>
     <string name="settings_enable_share_integration_summary">Додає програму в меню поширення.</string>
     <string name="settings_enable_quick_search">Швидкий пошук</string>
