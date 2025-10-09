@@ -52,7 +52,7 @@
     <string name="search_providers_action_enable_all">എല്ലാ സേർച്ച് പ്രൊവൈഡറുകളും ഓണാക്കുക</string>
     <string name="search_providers_action_disable_all">എല്ലാ സേർച്ച് പ്രൊവൈഡറുകളും ഓഫാക്കുക</string>
     <string name="search_providers_action_reset">സേർച്ച് പ്രൊവൈഡർ സജ്ജീകരണങ്ങൾ ഡീഫാൾട്ടിലേക്ക് റീസെറ്റ് ചെയ്യുക</string>
-    <string name="badge_unsafe">അസുരക്ഷിതം</string>
+    <string name="safety_status_unsafe">അസുരക്ഷിതം</string>
     <string name="search_providers_list_action_edit">കോൺഫിഗറേഷൻ എഡിറ്റ് ചെയ്യുക</string>
     <string name="search_providers_list_action_delete">മായ്ക്കുക</string>
     <string name="search_providers_add_screen_title">സേർച്ച് പ്രൊവൈഡർ ചേർക്കുക</string>
@@ -69,7 +69,7 @@
     <string name="settings_section_sort_criteria">സോർട്ട് ക്രൈറ്റീരിയ</string>
     <string name="settings_section_sort_order">സോർട്ട് ഓർഡർ</string>
     <string name="button_cancel">റദ്ദാക്കുക</string>
-    <string name="badge_nsfw">NSFW</string>
+    <string name="nsfw">NSFW</string>
     <string name="search_providers_label_url">URL</string>
     <string name="search_button_search">സേർച്ച്</string>
     <string name="bookmarks_empty_msg">ബുക്ക്മാർക്കുകളൊന്നുമില്ല</string>

@@ -34,7 +34,7 @@ fun NSFWBadge(modifier: Modifier = Modifier) {
         containerColor = MaterialTheme.colorScheme.errorContainer,
         contentColor = MaterialTheme.colorScheme.onErrorContainer,
     ) {
-        Text(text = stringResource(R.string.badge_nsfw))
+        Text(text = stringResource(R.string.nsfw))
     }
 }
 
@@ -56,7 +56,7 @@ fun TorznabBadge(modifier: Modifier = Modifier) {
         containerColor = MaterialTheme.colorScheme.tertiaryContainer,
         contentColor = MaterialTheme.colorScheme.onTertiaryContainer,
     ) {
-        Text(text = stringResource(R.string.badge_torznab))
+        Text(text = stringResource(R.string.torznab))
     }
 }
 
@@ -67,7 +67,7 @@ fun UnsafeBadge(modifier: Modifier = Modifier) {
         containerColor = MaterialTheme.colorScheme.errorContainer,
         contentColor = MaterialTheme.colorScheme.onErrorContainer,
     ) {
-        Text(text = stringResource(R.string.badge_unsafe))
+        Text(text = stringResource(R.string.safety_status_unsafe))
     }
 }
 

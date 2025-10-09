@@ -10,7 +10,7 @@
     <string name="search_history_screen_title">Історія пошуку</string>
     <string name="settings_section_advanced">Додаткове</string>
     <string name="settings_section_about">Про програму</string>
-    <string name="badge_unsafe">Небезпечно</string>
+    <string name="safety_status_unsafe">Небезпечно</string>
     <string name="settings_section_sort_criteria">Ознака сортування</string>
     <string name="settings_section_sort_order">Порядок сортування</string>
     <string name="torrent_client_not_found_title">Торент-клієнта не знайдено</string>
@@ -83,7 +83,7 @@
     <string name="search_history_action_delete_all">Стерти всю</string>
     <string name="search_history_empty_message">Нема історії пошуку</string>
     <string name="button_cancel">Скасувати</string>
-    <string name="badge_nsfw">Чутливе</string>
+    <string name="nsfw">Чутливе</string>
     <string name="action_sort">Порядок</string>
     <string name="action_sort_criteria_name">Назва</string>
     <string name="action_sort_criteria_seeders">Сіди</string>

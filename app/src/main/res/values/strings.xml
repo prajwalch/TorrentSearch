@@ -3,9 +3,10 @@
 
     <string name="button_done">Done</string>
     <string name="button_cancel">Cancel</string>
-    <string name="badge_nsfw">NSFW</string>
-    <string name="badge_unsafe">Unsafe</string>
-    <string name="badge_torznab" translatable="false">Torznab</string>
+    <string name="nsfw">NSFW</string>
+    <string name="torznab" translatable="false">Torznab</string>
+    <string name="safety_status_safe">Safe</string>
+    <string name="safety_status_unsafe">Unsafe</string>
 
     <string name="action_sort">Sort</string>
     <string name="action_sort_criteria_name">Name</string>

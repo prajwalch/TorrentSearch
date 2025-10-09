@@ -200,7 +200,9 @@ private fun OutlinedSafetyStatusField(
     onValueChange: (SearchProviderSafetyStatus) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val values = listOf("Safe", "Unsafe")
+    val safeStatus = stringResource(R.string.safety_status_safe)
+    val unsafeStatus = stringResource(R.string.safety_status_unsafe)
+
     var expanded by remember { mutableStateOf(false) }
 
     ExposedDropdownMenuBox(
@@ -211,7 +213,7 @@ private fun OutlinedSafetyStatusField(
             modifier = modifier.menuAnchor(
                 type = ExposedDropdownMenuAnchorType.PrimaryNotEditable,
             ),
-            value = if (value.isUnsafe()) "Unsafe" else "Safe",
+            value = if (value.isUnsafe()) unsafeStatus else safeStatus,
             onValueChange = {},
             readOnly = true,
             singleLine = true,
@@ -224,21 +226,22 @@ private fun OutlinedSafetyStatusField(
             onDismissRequest = { expanded = false },
             shape = MaterialTheme.shapes.medium,
         ) {
-            values.forEach {
-                DropdownMenuItem(
-                    text = { Text(text = it) },
-                    onClick = {
-                        val safetyStatus = if (it == "Safe") {
-                            SearchProviderSafetyStatus.Safe
-                        } else {
-                            SearchProviderSafetyStatus.Unsafe(reason = "")
-                        }
-                        onValueChange(safetyStatus)
-                        expanded = false
-                    },
-                    contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding,
-                )
-            }
+            DropdownMenuItem(
+                text = { Text(text = safeStatus) },
+                onClick = {
+                    onValueChange(SearchProviderSafetyStatus.Safe)
+                    expanded = false
+                },
+                contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding,
+            )
+            DropdownMenuItem(
+                text = { Text(text = unsafeStatus) },
+                onClick = {
+                    onValueChange(SearchProviderSafetyStatus.Unsafe(reason = ""))
+                    expanded = false
+                },
+                contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding,
+            )
         }
     }
 }

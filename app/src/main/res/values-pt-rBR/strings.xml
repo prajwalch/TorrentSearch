@@ -48,7 +48,7 @@
     <string name="search_providers_action_enable_all">Habilitar todos os repositórios de pesquisa</string>
     <string name="search_providers_action_disable_all">Desabilitar todos os repositórios de pesquisa</string>
     <string name="search_providers_action_reset">Resetar configuração de repositório de pesquisa para o padrão</string>
-    <string name="badge_unsafe">Inseguro</string>
+    <string name="safety_status_unsafe">Inseguro</string>
     <string name="search_providers_list_action_edit">Editar configuração</string>
     <string name="search_providers_list_action_delete">Deletar</string>
     <string name="search_providers_add_screen_title">Adicionar repositório de pesquisa</string>
@@ -64,7 +64,7 @@
     <string name="search_providers_section_additional_options">Configurações adicionais</string>
     <string name="settings_section_sort_criteria">Critério de ordenação</string>
     <string name="button_cancel">Cancelar</string>
-    <string name="badge_nsfw">NSFW</string>
+    <string name="nsfw">NSFW</string>
     <string name="torrent_list_seeders_format">%1$s Semeadores</string>
     <string name="torrent_list_peers_format">%1$s Pares</string>
     <string name="search_button_search">Busca</string>
