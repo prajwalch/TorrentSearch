@@ -85,4 +85,32 @@
     <string name="settings_section_sort_order">Ordem de classificação</string>
     <string name="search_providers_label_url">URL</string>
     <string name="search_history_empty_message">Sem histórico de pesquisa</string>
+    <string name="action_sort_criteria_name">Nome</string>
+    <string name="action_sort_criteria_seeders">Semeadores</string>
+    <string name="action_sort_criteria_peers">Pares</string>
+    <string name="action_sort_criteria_file_size">Tamanho do arquivo</string>
+    <string name="action_sort_criteria_date">Data</string>
+    <string name="action_sort_order_ascending">Ascendente</string>
+    <string name="action_sort_order_descending">Descende</string>
+    <string name="category_all">Todos</string>
+    <string name="category_anime">Anime</string>
+    <string name="category_apps">Aplicativos</string>
+    <string name="category_books">Livros</string>
+    <string name="category_games">Jogos</string>
+    <string name="category_movies">Filmes</string>
+    <string name="category_music">Música</string>
+    <string name="category_porn">Pornografia</string>
+    <string name="category_series">Séries</string>
+    <string name="category_other">Outros</string>
+    <string name="search_results_action_filter">Filtro</string>
+    <plurals name="bookmarks_count_format">
+        <item quantity="one">%1$d Marcador</item>
+        <item quantity="many">%1$d Marcadores</item>
+        <item quantity="other">%1$d Marcadores</item>
+    </plurals>
+    <string name="settings_dark_theme_on">Ativado</string>
+    <string name="settings_dark_theme_off">Desativado</string>
+    <string name="settings_dark_theme_follow_system">Conforme sistema</string>
+    <string name="settings_enable_nsfw_mode_summary">Quando desativado, oculta categorias +18 e resultados de pesquisa.</string>
+    <string name="search_providers_screen_title">Provedores de busca</string>
 </resources>
