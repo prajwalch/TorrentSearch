@@ -166,7 +166,7 @@ private fun OutlinedCategoryField(
             modifier = modifier.menuAnchor(
                 type = ExposedDropdownMenuAnchorType.PrimaryNotEditable
             ),
-            value = value.name,
+            value = categoryStringResource(value),
             onValueChange = {},
             readOnly = true,
             singleLine = true,
