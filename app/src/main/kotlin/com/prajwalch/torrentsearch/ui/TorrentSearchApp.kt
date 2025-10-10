@@ -60,9 +60,9 @@ fun TorrentSearchApp(
     selectedTorrent?.let { torrent ->
         val clipboard = LocalClipboard.current
 
-        val magnetLinkCopiedMsg = stringResource(R.string.torrent_list_magnet_link_copied_msg)
+        val magnetLinkCopiedMsg = stringResource(R.string.torrent_list_magnet_link_copied_message)
         val descriptionPageUrlCopiedMsg = stringResource(
-            R.string.torrent_list_description_page_url_copied_msg
+            R.string.torrent_list_url_copied_message
         )
 
         TorrentActionsBottomSheet(

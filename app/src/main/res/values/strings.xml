@@ -49,8 +49,8 @@
     <string name="torrent_list_action_open_description_page">Open description page</string>
     <string name="torrent_list_action_copy_description_page_url">Copy description page URL</string>
     <string name="torrent_list_action_share_description_page_url">Share description page URL</string>
-    <string name="torrent_list_magnet_link_copied_msg">Magnet link copied to clipboard!</string>
-    <string name="torrent_list_description_page_url_copied_msg">Url copied to clipboard!</string>
+    <string name="torrent_list_magnet_link_copied_message">Magnet link copied to clipboard!</string>
+    <string name="torrent_list_url_copied_message">Url copied to clipboard!</string>
 
     <string name="search_query_hint">Search…</string>
     <string name="search_button_search">Search</string>
@@ -72,7 +72,7 @@
     </plurals>
     <string name="bookmarks_search_query_hint">Search bookmarks</string>
     <string name="bookmarks_action_delete_all">Delete all</string>
-    <string name="bookmarks_empty_msg">No bookmarks</string>
+    <string name="bookmarks_empty_message">No bookmarks</string>
 
     <string name="search_history_screen_title">Search history</string>
     <string name="search_history_action_delete_all">Delete all</string>
@@ -114,6 +114,8 @@
     <string name="settings_search_providers_summary_format">%1$d of %2$d enabled</string>
     <string name="settings_default_category">Default category</string>
     <string name="settings_default_sort_options">Default sort options</string>
+    <string name="settings_section_sort_criteria">Sort criteria</string>
+    <string name="settings_section_sort_order">Sort order</string>
     <string name="settings_max_num_results">Maximum number of results</string>
     <string name="settings_max_num_results_summary_format">%1$d results</string>
     <string name="settings_max_num_results_button_unlimited">Unlimited</string>
@@ -133,6 +135,4 @@
     <string name="settings_section_about">About</string>
     <string name="settings_version">Version</string>
     <string name="settings_source_code">Source code</string>
-    <string name="settings_section_sort_criteria">Sort criteria</string>
-    <string name="settings_section_sort_order">Sort order</string>
 </resources>

@@ -26,8 +26,8 @@
     <string name="torrent_list_action_open_description_page">Сторінка опису</string>
     <string name="torrent_list_action_copy_description_page_url">Копіювати URL-адресу сторінки опису</string>
     <string name="torrent_list_action_share_description_page_url">Поширити URL-адресу сторінки опису</string>
-    <string name="torrent_list_magnet_link_copied_msg">Magnet-посилання скопійовано!</string>
-    <string name="torrent_list_description_page_url_copied_msg">URL-адресу скопійовано!</string>
+    <string name="torrent_list_magnet_link_copied_message">Magnet-посилання скопійовано!</string>
+    <string name="torrent_list_url_copied_message">URL-адресу скопійовано!</string>
     <string name="search_query_hint">Пошук…</string>
     <string name="search_button_search">Пошук</string>
     <string name="search_results_query_hint">Результати пошуку</string>
@@ -40,7 +40,7 @@
     <string name="search_results_count_format">%1$s результатів для «%2$s» (%3$s)</string>
     <string name="bookmarks_search_query_hint">Пошук вподобаного</string>
     <string name="bookmarks_action_delete_all">Скасувати всі</string>
-    <string name="bookmarks_empty_msg">Вподобаного нема</string>
+    <string name="bookmarks_empty_message">Вподобаного нема</string>
     <string name="settings_enable_dynamic_theme">Динамічна тема</string>
     <string name="settings_dark_theme">Темна тема</string>
     <string name="settings_pure_black">Чистий чорний</string>

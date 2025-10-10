@@ -163,7 +163,7 @@ fun BookmarksScreen(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(innerPadding),
-                title = R.string.bookmarks_empty_msg,
+                title = R.string.bookmarks_empty_message,
             )
         } else {
             val bookmarks = uiState.filteredBookmarks ?: uiState.bookmarks

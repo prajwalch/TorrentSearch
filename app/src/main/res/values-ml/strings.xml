@@ -19,8 +19,8 @@
     <string name="torrent_list_action_open_description_page">ഡിസ്ക്രിപ്ഷൻ പേജ് തുറക്കുക</string>
     <string name="torrent_list_action_copy_description_page_url">ഡിസ്ക്രിപ്ഷൻ പേജ് URL കോപ്പി ചെയ്യുക</string>
     <string name="torrent_list_action_share_description_page_url">ഡിസ്ക്രിപ്ഷൻ പേജ് URL ഷെയർ ചെയ്യുക</string>
-    <string name="torrent_list_magnet_link_copied_msg">മാഗ്നറ്റ് ലിങ്ക് ക്ലിപ്പ്ബോർഡിലേക്ക് കോപ്പി ചെയ്തു!</string>
-    <string name="torrent_list_description_page_url_copied_msg">URL ക്ലിപ്പ്ബോർഡിലേക്ക് കോപ്പി ചെയ്തു!</string>
+    <string name="torrent_list_magnet_link_copied_message">മാഗ്നറ്റ് ലിങ്ക് ക്ലിപ്പ്ബോർഡിലേക്ക് കോപ്പി ചെയ്തു!</string>
+    <string name="torrent_list_url_copied_message">URL ക്ലിപ്പ്ബോർഡിലേക്ക് കോപ്പി ചെയ്തു!</string>
     <string name="bookmarks_screen_title">ബുക്ക്‌മാർക്കുകൾ</string>
     <string name="bookmarks_action_delete_all">എല്ലാ ബുക്ക്‌മാർക്കുകളും മായ്ക്കുക</string>
     <string name="settings_screen_title">സെറ്റിംഗ്‌സ്</string>
@@ -72,6 +72,6 @@
     <string name="nsfw">NSFW</string>
     <string name="search_providers_label_url">URL</string>
     <string name="search_button_search">സേർച്ച്</string>
-    <string name="bookmarks_empty_msg">ബുക്ക്മാർക്കുകളൊന്നുമില്ല</string>
+    <string name="bookmarks_empty_message">ബുക്ക്മാർക്കുകളൊന്നുമില്ല</string>
     <string name="search_history_empty_message">സേർച്ച് ഹിസ്റ്ററിയൊന്നുമില്ല</string>
 </resources>
