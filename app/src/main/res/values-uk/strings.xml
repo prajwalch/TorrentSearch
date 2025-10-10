@@ -113,4 +113,5 @@
     <string name="settings_dark_theme_off">Вимкнена</string>
     <string name="settings_dark_theme_follow_system">Системна</string>
     <string name="settings_enable_nsfw_mode_summary">Вимкніть, щоб сховати чутливі категорії й результати пошуку.</string>
+    <string name="safety_status_safe">Безпечний</string>
 </resources>
