@@ -60,9 +60,10 @@ fun TorrentSearchApp(
     selectedTorrent?.let { torrent ->
         val clipboard = LocalClipboard.current
 
-        val magnetLinkCopiedHint = stringResource(R.string.torrent_list_magnet_link_copied_msg)
-        val descriptionPageUrlCopiedHint =
-            stringResource(R.string.torrent_list_description_page_url_copied_msg)
+        val magnetLinkCopiedMsg = stringResource(R.string.torrent_list_magnet_link_copied_msg)
+        val descriptionPageUrlCopiedMsg = stringResource(
+            R.string.torrent_list_description_page_url_copied_msg
+        )
 
         TorrentActionsBottomSheet(
             onDismissRequest = { selectedTorrent = null },
@@ -75,7 +76,7 @@ fun TorrentSearchApp(
             onCopyMagnetLink = {
                 coroutineScope.launch {
                     clipboard.copyText(text = torrent.magnetUri())
-                    snackbarHostState.showSnackbar(magnetLinkCopiedHint)
+                    snackbarHostState.showSnackbar(magnetLinkCopiedMsg)
                 }
             },
             onShareMagnetLink = { onShareMagnetLink(torrent.magnetUri()) },
@@ -83,7 +84,7 @@ fun TorrentSearchApp(
             onCopyDescriptionPageUrl = {
                 coroutineScope.launch {
                     clipboard.copyText(text = torrent.descriptionPageUrl)
-                    snackbarHostState.showSnackbar(descriptionPageUrlCopiedHint)
+                    snackbarHostState.showSnackbar(descriptionPageUrlCopiedMsg)
                 }
             },
             onShareDescriptionPageUrl = { onShareDescriptionPageUrl(torrent.descriptionPageUrl) },
