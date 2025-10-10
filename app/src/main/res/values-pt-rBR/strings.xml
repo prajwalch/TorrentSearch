@@ -112,4 +112,5 @@
     <string name="settings_dark_theme_follow_system">Conforme sistema</string>
     <string name="settings_enable_nsfw_mode_summary">Quando desativado, oculta categorias +18 e resultados de pesquisa.</string>
     <string name="search_providers_screen_title">Provedores de busca</string>
+    <string name="safety_status_safe">Seguro</string>
 </resources>
