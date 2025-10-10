@@ -160,11 +160,7 @@ fun SearchResultsScreen(
             .then(modifier),
         topBar = {
             TopAppBar(
-                navigationIcon = {
-                    ArrowBackIconButton(onClick = {
-                        if (showSearchBar) showSearchBar = false else onNavigateBack()
-                    })
-                },
+                navigationIcon = { ArrowBackIconButton(onClick = onNavigateBack) },
                 title = topBarTitle,
                 actions = topBarActions,
                 scrollBehavior = scrollBehavior,
