@@ -8,8 +8,8 @@ import io.ktor.client.network.sockets.ConnectTimeoutException
 import io.ktor.client.network.sockets.SocketTimeoutException
 import io.ktor.client.plugins.HttpRequestRetry
 import io.ktor.client.plugins.HttpRequestTimeoutException
+import io.ktor.client.plugins.HttpTimeout
 import io.ktor.client.plugins.ResponseException
-import io.ktor.client.plugins.timeout
 import io.ktor.client.request.get
 import io.ktor.client.request.header
 import io.ktor.client.request.post
@@ -28,6 +28,23 @@ import kotlinx.serialization.json.JsonElement
 /** Primary object for making network request. */
 object HttpClient {
     private const val TAG = "TorrentSearchHttpClient"
+
+    /** Time period required to process an HTTP call: from sending a request to
+     * receiving a response.
+     */
+    private const val REQUEST_TIMEOUT_MS = 20_000L
+
+    /** Time period in which a client should establish a connection with a
+     * server.
+     */
+    private const val CONNECT_TIMEOUT_MS = 10_000L
+
+    /** Maximum time of inactivity between two data packets when exchanging
+     * data with a server.
+     */
+    private const val SOCKET_TIMEOUT_MS = 15_000L
+
+    /** The underlying client. */
     private val innerClient by lazy { createClient() }
 
     /** Creates and configures the inner/underlying http client. */
@@ -41,6 +58,11 @@ object HttpClient {
                     else -> false
                 }
             }
+        }
+        install(HttpTimeout) {
+            requestTimeoutMillis = REQUEST_TIMEOUT_MS
+            connectTimeoutMillis = CONNECT_TIMEOUT_MS
+            socketTimeoutMillis = SOCKET_TIMEOUT_MS
         }
     }
 
@@ -75,7 +97,7 @@ object HttpClient {
     }
 
     /**
-     * Makes a GET request and returns the response as is.
+     * Makes a GET request and returns the response as raw text.
      *
      * This function throws an exception therefore it is recommended to wrap
      * the calling function inside the [HttpClient.withExceptionHandler], as shown in the
@@ -102,19 +124,15 @@ object HttpClient {
      */
     suspend fun get(url: String, headers: Map<String, String> = emptyMap()): String {
         Log.i(TAG, "Making a request to $url (headers=$headers)")
+
         return innerClient.get(urlString = url) {
-            for ((key, value) in headers) header(key = key, value = value)
-            timeout {
-                requestTimeoutMillis = 20_000
-                connectTimeoutMillis = 10_000
-                socketTimeoutMillis = 15_000
-            }
+            headers.forEach { (key, value) -> header(key = key, value = value) }
         }.bodyAsText()
     }
 
     /**
-     * Makes a GET request, parses the response body as Json and returns it,
-     * if no any parsing error occurs, otherwise returns `null`.
+     * Makes a GET request and returns the response parsed as Json or `null`
+     * if parsing fails.
      */
     suspend fun getJson(url: String): JsonElement? {
         val response = get(url)
@@ -129,53 +147,40 @@ object HttpClient {
     }
 
     /**
-     * Makes a POST request with the given JSON payload and returns the response as raw text.
+     * Makes a POST request with the given Json payload and returns the
+     * response parsed as Json or `null` if parsing fails or response is empty.
      */
-    private suspend fun post(
-        url: String,
-        payload: JsonElement,
-        headers: Map<String, String> = emptyMap(),
-    ): String {
+    suspend fun postJson(url: String, payload: JsonElement): JsonElement? {
+        val response = post(url = url, payload = payload)
+
+        if (response.isEmpty()) {
+            return null
+        }
+
+        Log.i(TAG, "Parsing POST response as JSON: $response")
+        return parseJson(response)
+    }
+
+    /**
+     * Makes a POST request with the given JSON payload and returns the response
+     * as raw text.
+     */
+    private suspend fun post(url: String, payload: JsonElement): String {
         val payloadString = payload.toString()
         Log.i(TAG, "Making POST request to $url with payload: $payloadString")
+
         return innerClient.post(url) {
-            headers.forEach { (key, value) ->
-                header(key, value)
-            }
-            timeout {
-                requestTimeoutMillis = 20_000
-                connectTimeoutMillis = 10_000
-                socketTimeoutMillis = 15_000
-            }
             contentType(ContentType.Application.Json)
             setBody(payloadString)
         }.bodyAsText()
     }
 
     /**
-     * Makes a POST request with the given JSON payload and returns the response parsed as Json.
-     * Returns null if parsing fails or response is empty.
+     * Parses and returns the given string as Json or `null` if parsing fails.
      */
-    suspend fun postJson(
-        url: String,
-        payload: JsonElement,
-        headers: Map<String, String> = emptyMap(),
-    ): JsonElement? {
-        val response = post(url = url, payload = payload, headers = headers)
-        if (response.isEmpty()) {
-            return null
-        }
-        Log.i(TAG, "Parsing POST response as JSON: $response")
-        return parseJson(response)
-    }
-
-    /**
-     * Parses teh given string as json and returns it, if parsing error
-     * doesn't occurs, otherwise returns `null`.
-     */
-    private suspend fun parseJson(string: String) = withContext(Dispatchers.Default) {
+    private suspend fun parseJson(jsonString: String) = withContext(Dispatchers.Default) {
         try {
-            val json = Json.parseToJsonElement(string)
+            val json = Json.parseToJsonElement(jsonString)
             Log.i(TAG, "Json parsed successfully")
             json
         } catch (e: SerializationException) {
