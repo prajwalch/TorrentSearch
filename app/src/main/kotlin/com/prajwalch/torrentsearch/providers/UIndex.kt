@@ -21,9 +21,14 @@ class UIndex : SearchProvider {
     )
 
     override suspend fun search(query: String, context: SearchContext): List<Torrent> {
-        val categoryIndex = getCategoryIndex(category = context.category)
-        val queryParams = "?search=$query&c=$categoryIndex"
-        val requestUrl = "${info.url}/search.php$queryParams"
+        val requestUrl = buildString {
+            append(info.url)
+            append("/search.php")
+            append("?search=$query")
+
+            val categoryIndex = getCategoryIndex(category = context.category)
+            append("&c=$categoryIndex")
+        }
 
         val responseHtml = context.httpClient.get(url = requestUrl)
         val torrents = withContext(Dispatchers.Default) {
