@@ -22,8 +22,14 @@ class Sukebei : SearchProvider {
     )
 
     override suspend fun search(query: String, context: SearchContext): List<Torrent> {
-        val queryParams = "?f=0&c=0_0&q=$query"
-        val requestUrl = "${info.url}/$queryParams"
+        val requestUrl = buildString {
+            append("${info.url}/")
+            // Filter = No filter (0)
+            append("?f=0")
+            // Category = All categories (0_0)
+            append("&c=0_0")
+            append("&q=$query")
+        }
 
         val responseHtml = context.httpClient.get(url = requestUrl)
         val torrents = withContext(Dispatchers.Default) {
