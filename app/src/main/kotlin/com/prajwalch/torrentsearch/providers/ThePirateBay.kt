@@ -26,9 +26,13 @@ class ThePirateBay : SearchProvider {
     )
 
     override suspend fun search(query: String, context: SearchContext): List<Torrent> {
-        val categoryIndex = categoryIndex(context.category)
-        val queryParams = "?q=$query&cat=$categoryIndex"
-        val requestUrl = "$URL$queryParams"
+        val requestUrl = buildString {
+            append(URL)
+            append("?q=$query")
+
+            val categoryIndex = categoryIndex(context.category)
+            append("&cat=$categoryIndex")
+        }
 
         val responseJson = context.httpClient.getJson(requestUrl) ?: return emptyList()
         val torrents = withContext(Dispatchers.Default) {
