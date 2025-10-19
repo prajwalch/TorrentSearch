@@ -51,9 +51,13 @@ class Yts : SearchProvider {
      * @see [parseMovieObject]
      */
     private suspend fun singleMovieLinks(imdbId: String, context: SearchContext): List<Torrent> {
-        val path = "/api/v2/movie_details.json"
-        val queryParams = "?imdb_id=$imdbId"
-        val requestUrl = "${info.url}$path$queryParams"
+        val requestUrl = buildString {
+            append(info.url)
+            append("/api")
+            append("/v2")
+            append("/movie_details.json")
+            append("?imdb_id=$imdbId")
+        }
 
         val responseJson = context.httpClient.getJson(url = requestUrl) ?: return emptyList()
         val torrents = withContext(Dispatchers.Default) {
@@ -86,9 +90,13 @@ class Yts : SearchProvider {
      * @see [parseMovieObject]
      */
     private suspend fun multipleMovieLinks(query: String, context: SearchContext): List<Torrent> {
-        val path = "/api/v2/list_movies.json"
-        val queryParams = "?query_term=$query"
-        val requestUrl = "${info.url}$path$queryParams"
+        val requestUrl = buildString {
+            append(info.url)
+            append("/api")
+            append("/v2")
+            append("/list_movies.json")
+            append("?query_term=$query")
+        }
 
         val responseJson = context.httpClient.getJson(url = requestUrl) ?: return emptyList()
         val torrents = withContext(Dispatchers.Default) {
