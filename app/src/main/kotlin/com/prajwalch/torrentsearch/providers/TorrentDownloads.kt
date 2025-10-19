@@ -22,9 +22,14 @@ class TorrentDownloads : SearchProvider {
     )
 
     override suspend fun search(query: String, context: SearchContext): List<Torrent> {
-        val categoryId = getCategoryId(category = context.category)
-        val queryParams = "?s_cat=$categoryId&search=$query"
-        val requestUrl = "${info.url}/search/$queryParams"
+        val requestUrl = buildString {
+            append(info.url)
+            append("/search")
+
+            val categoryId = getCategoryId(category = context.category)
+            append("/?s_cat=$categoryId")
+            append("&search=$query")
+        }
 
         val responseHtml = context.httpClient.get(url = requestUrl)
         val torrents = withContext(Dispatchers.Default) {
