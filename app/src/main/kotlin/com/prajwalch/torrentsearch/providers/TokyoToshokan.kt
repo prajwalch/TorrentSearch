@@ -22,8 +22,15 @@ class TokyoToshokan : SearchProvider {
     )
 
     override suspend fun search(query: String, context: SearchContext): List<Torrent> {
-        val queryParams = "?terms=$query&type=1&searchName=true"
-        val requestUrl = "${info.url}/search.php$queryParams"
+        val requestUrl = buildString {
+            append(info.url)
+            append("/search.pho")
+            append("?terms=$query")
+            // Type = Anime (1)
+            append("&type=1")
+            // Match query with torrent name.
+            append("&searchName=true")
+        }
 
         val responseHtml = context.httpClient.get(url = requestUrl)
         val torrents = withContext(Dispatchers.Default) {
