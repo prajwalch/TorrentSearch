@@ -146,15 +146,19 @@ class TorznabSearchProvider(private val config: TorznabSearchProviderConfig) : S
             capabilities = fetchCapabilities(apiUrl = apiUrl, httpClient = context.httpClient)
         }
 
-        var queryParams =
-            "?apikey=${config.apiKey}&extended=1&t=${TorznabFunctions.SEARCH}&q=$query"
+        val requestUrl = buildString {
+            append(apiUrl)
+            append("?apikey=${config.apiKey}")
+            // Force client to include all attributes.
+            append("&extended=1")
+            append("&t=${TorznabFunctions.SEARCH}")
+            append("&q=$query")
 
-        if (context.category != Category.All) {
-            val categoriesId = getCategoriesId(category = context.category)
-            queryParams += "&cat=$categoriesId"
+            if (context.category != Category.All) {
+                val categoriesId = getCategoriesId(category = context.category)
+                append("&cat=$categoriesId")
+            }
         }
-
-        val requestUrl = "$apiUrl$queryParams"
         Log.d(TAG, "Requesting $requestUrl")
 
         val responseXml = context.httpClient.get(url = requestUrl)
