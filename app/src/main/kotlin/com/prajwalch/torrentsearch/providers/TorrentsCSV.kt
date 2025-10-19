@@ -26,8 +26,12 @@ class TorrentsCSV : SearchProvider {
     )
 
     override suspend fun search(query: String, context: SearchContext): List<Torrent> {
-        val queryParams = "?q=$query"
-        val requestUrl = "${info.url}/service/search$queryParams"
+        val requestUrl = buildString {
+            append(info.url)
+            append("/service")
+            append("/search")
+            append("?q=$query")
+        }
 
         val responseJson = context.httpClient.getJson(url = requestUrl) ?: return emptyList()
 
