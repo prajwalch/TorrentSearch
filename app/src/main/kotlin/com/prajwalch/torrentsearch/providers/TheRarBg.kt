@@ -49,11 +49,15 @@ class TheRarBg : SearchProvider {
     )
 
     override suspend fun search(query: String, context: SearchContext): List<Torrent> {
-        var requestUrl = "${info.url}/get-posts/keywords:$query"
+        val requestUrl = buildString {
+            append(info.url)
+            append("/get-posts")
+            append("/keywords:$query")
 
-        if (context.category != Category.All) {
-            val category = getCategoryString(category = context.category)
-            requestUrl = "$requestUrl:category:$category"
+            if (context.category != Category.All) {
+                val category = getCategoryString(category = context.category)
+                append(":category:$category")
+            }
         }
 
         val resultPageHtml = context.httpClient.get(requestUrl)
