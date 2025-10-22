@@ -57,7 +57,7 @@ class BookmarksViewModel @Inject constructor(
 
     /** Current bookmarks acquired from the repository. */
     private val bookmarks: StateFlow<List<Torrent>> = torrentsRepository
-        .bookmarkedTorrents
+        .observeAllBookmarks()
         .map { bookmarks ->
             bookmarks.customSort(
                 criteria = _uiState.value.currentSortCriteria,

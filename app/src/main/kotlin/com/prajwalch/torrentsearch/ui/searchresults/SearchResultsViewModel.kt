@@ -31,10 +31,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.takeWhile
@@ -259,10 +256,7 @@ class SearchResultsViewModel @Inject constructor(
                 searchHistoryRepository.createNewSearchHistory(query = query)
             }
 
-            val isInternetAvailable = withContext(Dispatchers.IO) {
-                connectivityChecker.isInternetAvailable()
-            }
-            if (!isInternetAvailable) {
+            if (!connectivityChecker.isInternetAvailable()) {
                 Log.w(TAG, "Internet is not available. Returning...")
 
                 _uiState.update {
@@ -277,7 +271,6 @@ class SearchResultsViewModel @Inject constructor(
             }
 
             val enabledSearchProviders = getEnabledSearchProviders()
-
             if (enabledSearchProviders.isEmpty()) {
                 Log.i(TAG, "All search providers are disabled. Returning...")
 
@@ -300,11 +293,7 @@ class SearchResultsViewModel @Inject constructor(
                     searchProviders = enabledSearchProviders,
                 )
                 .takeWhile { shouldContinueSearch(maxNumResults = settings.maxNumResults) }
-                .mapNotNull { repoResult -> repoResult.torrents }
-                .flowOn(Dispatchers.IO)
-                .map { filterSearchResultsBySettings(searchResults = it, settings = settings) }
-                .flowOn(Dispatchers.Default)
-                .onEach { onEachSearchResults(searchResults = it) }
+                .onEach { onEachResult(result = it, settings = settings) }
                 .onCompletion { onSearchCompletion(cause = it) }
                 .launchIn(scope = this)
         }
@@ -355,8 +344,20 @@ class SearchResultsViewModel @Inject constructor(
         }
     }
 
-    private suspend fun onEachSearchResults(searchResults: List<Torrent>) {
-        Log.i(TAG, "onEachSearchResults() called")
+    private fun onEachResult(result: Result<List<Torrent>>, settings: Settings) {
+        result.fold(
+            onSuccess = { onSuccessResult(searchResults = it, settings = settings) },
+            onFailure = { onFailureResult(cause = it) },
+        )
+    }
+
+    private fun onSuccessResult(searchResults: List<Torrent>, settings: Settings) {
+        Log.i(TAG, "onSuccessResult() called")
+
+        val searchResults = filterSearchResultsBySettings(
+            searchResults = searchResults,
+            settings = settings,
+        )
 
         if (searchResults.isEmpty()) {
             Log.i(TAG, "Received empty or filtered out results. Returning")
@@ -366,15 +367,13 @@ class SearchResultsViewModel @Inject constructor(
         Log.i(TAG, "Received ${searchResults.size} results")
         Log.i(TAG, "Sorting search results")
 
-        val sortedSearchResults = withContext(Dispatchers.Default) {
-            with(_uiState.value) {
-                this.searchResults
-                    .plus(searchResults)
-                    .customSort(
-                        criteria = this.currentSortCriteria,
-                        order = this.currentSortOrder,
-                    )
-            }
+        val sortedSearchResults = with(_uiState.value) {
+            this.searchResults
+                .plus(searchResults)
+                .customSort(
+                    criteria = this.currentSortCriteria,
+                    order = this.currentSortOrder,
+                )
         }
 
         val searchProviderFilterUiState = with(searchResults.first()) {
@@ -401,6 +400,12 @@ class SearchResultsViewModel @Inject constructor(
         }
     }
 
+    private fun onFailureResult(cause: Throwable) {
+        Log.i(TAG, "onFailureResult() called")
+        // TODO: Create a report so that UI can display it.
+        Log.e(TAG, "Received failure result", cause)
+    }
+
     private fun onSearchCompletion(cause: Throwable?) {
         Log.i(TAG, "onSearchCompletion() called")
 
@@ -409,7 +414,7 @@ class SearchResultsViewModel @Inject constructor(
             return
         }
 
-        Log.d(TAG, "cause = $cause")
+        Log.d(TAG, "cause", cause)
         Log.i(TAG, "Search completed")
 
         _uiState.update { it.copy(isLoading = false, isSearching = false) }

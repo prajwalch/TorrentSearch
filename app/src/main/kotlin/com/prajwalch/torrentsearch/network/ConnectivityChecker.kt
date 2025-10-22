@@ -3,17 +3,20 @@ package com.prajwalch.torrentsearch.network
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+
 import javax.inject.Inject
 
 /** Provides internet connection status. */
 class ConnectivityChecker @Inject constructor(
     private val connectivityManager: ConnectivityManager,
 ) {
-    fun isInternetAvailable(): Boolean {
+    suspend fun isInternetAvailable(): Boolean = withContext(Dispatchers.IO) {
         val activeNetwork = connectivityManager.activeNetwork
         val activeNetworkCapabilities = connectivityManager
             .getNetworkCapabilities(activeNetwork)
-            ?: return false
+            ?: return@withContext false
 
         val hasInternet = activeNetworkCapabilities.hasCapability(
             NetworkCapabilities.NET_CAPABILITY_INTERNET
@@ -22,6 +25,6 @@ class ConnectivityChecker @Inject constructor(
             NetworkCapabilities.NET_CAPABILITY_VALIDATED
         )
 
-        return hasInternet && isValidated
+        hasInternet && isValidated
     }
 }
