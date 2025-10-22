@@ -6,7 +6,6 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 
-import com.prajwalch.torrentsearch.data.database.entities.SearchHistory
 import com.prajwalch.torrentsearch.data.repository.SearchHistoryRepository
 import com.prajwalch.torrentsearch.data.repository.SearchProvidersRepository
 import com.prajwalch.torrentsearch.data.repository.SettingsRepository
@@ -257,10 +256,7 @@ class SearchResultsViewModel @Inject constructor(
                 // Trim the query to prevent same query (e.g. 'one' and 'one ')
                 // from end upping into the database.
                 val query = searchQuery.trim()
-
-                searchHistoryRepository.add(
-                    searchHistory = SearchHistory(query = query),
-                )
+                searchHistoryRepository.createNewSearchHistory(query = query)
             }
 
             val isInternetAvailable = withContext(Dispatchers.IO) {

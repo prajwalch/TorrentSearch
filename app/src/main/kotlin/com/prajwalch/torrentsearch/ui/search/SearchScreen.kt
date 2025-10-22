@@ -43,8 +43,9 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 
 import com.prajwalch.torrentsearch.R
-import com.prajwalch.torrentsearch.data.database.entities.SearchHistoryId
 import com.prajwalch.torrentsearch.models.Category
+import com.prajwalch.torrentsearch.models.SearchHistory
+import com.prajwalch.torrentsearch.models.SearchHistoryId
 import com.prajwalch.torrentsearch.ui.components.SearchBar
 import com.prajwalch.torrentsearch.ui.components.SearchHistoryList
 import com.prajwalch.torrentsearch.ui.components.SearchHistoryListItem
@@ -184,7 +185,7 @@ private fun SearchScreenTopBar(
 
 @Composable
 private fun SearchHistoryList(
-    histories: List<SearchHistoryItemUiState>,
+    histories: List<SearchHistory>,
     onSearchQueryClick: (String) -> Unit,
     onChangeSearchQuery: (String) -> Unit,
     onDeleteSearchHistory: (SearchHistoryId) -> Unit,

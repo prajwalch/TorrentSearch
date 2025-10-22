@@ -6,21 +6,21 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 
-import com.prajwalch.torrentsearch.data.database.entities.SearchHistory
+import com.prajwalch.torrentsearch.data.database.entities.SearchHistoryEntity
 
 import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface SearchHistoryDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insert(searchHistory: SearchHistory)
+    suspend fun insert(searchHistory: SearchHistoryEntity)
 
     @Query("SELECT * from search_history ORDER by id DESC")
-    fun getAll(): Flow<List<SearchHistory>>
+    fun observeAll(): Flow<List<SearchHistoryEntity>>
 
     @Delete
-    suspend fun delete(searchHistory: SearchHistory)
+    suspend fun delete(searchHistory: SearchHistoryEntity)
 
     @Query("DELETE from search_history")
-    suspend fun clearAll()
+    suspend fun deleteAll()
 }

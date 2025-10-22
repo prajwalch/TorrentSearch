@@ -11,14 +11,14 @@ import com.prajwalch.torrentsearch.data.database.dao.BookmarkedTorrentDao
 import com.prajwalch.torrentsearch.data.database.dao.SearchHistoryDao
 import com.prajwalch.torrentsearch.data.database.dao.TorznabSearchProviderDao
 import com.prajwalch.torrentsearch.data.database.entities.BookmarkedTorrent
-import com.prajwalch.torrentsearch.data.database.entities.SearchHistory
+import com.prajwalch.torrentsearch.data.database.entities.SearchHistoryEntity
 import com.prajwalch.torrentsearch.data.database.entities.TorznabSearchProviderEntity
 
 /** Application database. */
 @Database(
     entities = [
         BookmarkedTorrent::class,
-        SearchHistory::class,
+        SearchHistoryEntity::class,
         TorznabSearchProviderEntity::class,
     ],
     version = 2,

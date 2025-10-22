@@ -3,11 +3,11 @@ package com.prajwalch.torrentsearch.ui.search
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 
-import com.prajwalch.torrentsearch.data.database.entities.SearchHistory
-import com.prajwalch.torrentsearch.data.database.entities.SearchHistoryId
 import com.prajwalch.torrentsearch.data.repository.SearchHistoryRepository
 import com.prajwalch.torrentsearch.data.repository.SettingsRepository
 import com.prajwalch.torrentsearch.models.Category
+import com.prajwalch.torrentsearch.models.SearchHistory
+import com.prajwalch.torrentsearch.models.SearchHistoryId
 
 import dagger.hilt.android.lifecycle.HiltViewModel
 
@@ -21,13 +21,10 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 data class SearchUiState(
-    val histories: List<SearchHistoryItemUiState> = emptyList(),
+    val histories: List<SearchHistory> = emptyList(),
     val categories: List<Category> = Category.entries,
     val selectedCategory: Category = Category.All,
 )
-
-/** Convenient wrapper around the search history entity. */
-data class SearchHistoryItemUiState(val id: SearchHistoryId, val query: String)
 
 @HiltViewModel
 class SearchViewModel @Inject constructor(
@@ -51,12 +48,11 @@ class SearchViewModel @Inject constructor(
     /** Deletes the search history associated with given id. */
     fun deleteSearchHistory(id: SearchHistoryId) {
         viewModelScope.launch {
-            val searchHistoryItemState = _uiState.value.histories.find { it.id == id }
-
-            searchHistoryItemState?.let {
-                val searchHistory = SearchHistory(id = it.id, query = it.query)
-                searchHistoryRepository.remove(searchHistory = searchHistory)
-            }
+            _uiState.value.histories
+                .find { it.id == id }
+                ?.let {
+                    searchHistoryRepository.deleteSearchHistory(searchHistory = it)
+                }
         }
     }
 
@@ -93,13 +89,10 @@ class SearchViewModel @Inject constructor(
     private fun observeSearchHistory() = viewModelScope.launch {
         combine(
             settingsRepository.showSearchHistory,
-            searchHistoryRepository.getAll(),
+            searchHistoryRepository.observeAllSearchHistories(),
         ) { showSearchHistory, histories ->
             if (showSearchHistory) histories else emptyList()
         }.collect { histories ->
-            val histories = histories.map {
-                SearchHistoryItemUiState(id = it.id, query = it.query)
-            }
             _uiState.update { it.copy(histories = histories) }
         }
     }
