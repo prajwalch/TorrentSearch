@@ -2,8 +2,8 @@ package com.prajwalch.torrentsearch.data.repository
 
 import android.util.Log
 
-import com.prajwalch.torrentsearch.data.database.dao.BookmarkedTorrentDao
-import com.prajwalch.torrentsearch.data.database.entities.BookmarkedTorrent
+import com.prajwalch.torrentsearch.data.local.dao.BookmarkedTorrentDao
+import com.prajwalch.torrentsearch.data.local.entities.BookmarkedTorrent
 import com.prajwalch.torrentsearch.models.Category
 import com.prajwalch.torrentsearch.models.InfoHashOrMagnetUri
 import com.prajwalch.torrentsearch.models.Torrent

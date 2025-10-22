@@ -1,8 +1,8 @@
 package com.prajwalch.torrentsearch.data.repository
 
-import com.prajwalch.torrentsearch.data.database.dao.SearchHistoryDao
-import com.prajwalch.torrentsearch.data.database.entities.toDomain
-import com.prajwalch.torrentsearch.data.database.entities.toEntity
+import com.prajwalch.torrentsearch.data.local.dao.SearchHistoryDao
+import com.prajwalch.torrentsearch.data.local.entities.toDomain
+import com.prajwalch.torrentsearch.data.local.entities.toEntity
 import com.prajwalch.torrentsearch.models.SearchHistory
 
 import kotlinx.coroutines.flow.Flow

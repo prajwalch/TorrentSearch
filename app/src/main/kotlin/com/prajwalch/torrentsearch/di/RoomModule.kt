@@ -2,10 +2,10 @@ package com.prajwalch.torrentsearch.di
 
 import android.content.Context
 
-import com.prajwalch.torrentsearch.data.database.TorrentSearchDatabase
-import com.prajwalch.torrentsearch.data.database.dao.BookmarkedTorrentDao
-import com.prajwalch.torrentsearch.data.database.dao.SearchHistoryDao
-import com.prajwalch.torrentsearch.data.database.dao.TorznabSearchProviderDao
+import com.prajwalch.torrentsearch.data.local.TorrentSearchDatabase
+import com.prajwalch.torrentsearch.data.local.dao.BookmarkedTorrentDao
+import com.prajwalch.torrentsearch.data.local.dao.SearchHistoryDao
+import com.prajwalch.torrentsearch.data.local.dao.TorznabSearchProviderDao
 
 import dagger.Module
 import dagger.Provides

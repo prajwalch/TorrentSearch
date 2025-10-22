@@ -1,7 +1,7 @@
 package com.prajwalch.torrentsearch.data.repository
 
-import com.prajwalch.torrentsearch.data.database.dao.TorznabSearchProviderDao
-import com.prajwalch.torrentsearch.data.database.entities.TorznabSearchProviderEntity
+import com.prajwalch.torrentsearch.data.local.dao.TorznabSearchProviderDao
+import com.prajwalch.torrentsearch.data.local.entities.TorznabSearchProviderEntity
 import com.prajwalch.torrentsearch.models.Category
 import com.prajwalch.torrentsearch.providers.AnimeTosho
 import com.prajwalch.torrentsearch.providers.Eztv

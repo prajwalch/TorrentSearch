@@ -1,4 +1,4 @@
-package com.prajwalch.torrentsearch.data.database
+package com.prajwalch.torrentsearch.data.local
 
 import android.content.Context
 import androidx.room.AutoMigration
@@ -7,12 +7,12 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 
-import com.prajwalch.torrentsearch.data.database.dao.BookmarkedTorrentDao
-import com.prajwalch.torrentsearch.data.database.dao.SearchHistoryDao
-import com.prajwalch.torrentsearch.data.database.dao.TorznabSearchProviderDao
-import com.prajwalch.torrentsearch.data.database.entities.BookmarkedTorrent
-import com.prajwalch.torrentsearch.data.database.entities.SearchHistoryEntity
-import com.prajwalch.torrentsearch.data.database.entities.TorznabSearchProviderEntity
+import com.prajwalch.torrentsearch.data.local.dao.BookmarkedTorrentDao
+import com.prajwalch.torrentsearch.data.local.dao.SearchHistoryDao
+import com.prajwalch.torrentsearch.data.local.dao.TorznabSearchProviderDao
+import com.prajwalch.torrentsearch.data.local.entities.BookmarkedTorrent
+import com.prajwalch.torrentsearch.data.local.entities.SearchHistoryEntity
+import com.prajwalch.torrentsearch.data.local.entities.TorznabSearchProviderEntity
 
 /** Application database. */
 @Database(

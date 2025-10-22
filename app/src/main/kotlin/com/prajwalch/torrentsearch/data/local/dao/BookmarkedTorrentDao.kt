@@ -1,4 +1,4 @@
-package com.prajwalch.torrentsearch.data.database.dao
+package com.prajwalch.torrentsearch.data.local.dao
 
 import androidx.room.Dao
 import androidx.room.Delete
@@ -6,7 +6,7 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 
-import com.prajwalch.torrentsearch.data.database.entities.BookmarkedTorrent
+import com.prajwalch.torrentsearch.data.local.entities.BookmarkedTorrent
 
 import kotlinx.coroutines.flow.Flow
 

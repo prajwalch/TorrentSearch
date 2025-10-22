@@ -1,11 +1,13 @@
-package com.prajwalch.torrentsearch.data.database.dao
+package com.prajwalch.torrentsearch.data.local.dao
 
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Update
-import com.prajwalch.torrentsearch.data.database.entities.TorznabSearchProviderEntity
+
+import com.prajwalch.torrentsearch.data.local.entities.TorznabSearchProviderEntity
+
 import kotlinx.coroutines.flow.Flow
 
 @Dao
