@@ -15,6 +15,8 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
@@ -51,34 +53,6 @@ class SearchProvidersViewModel @Inject constructor(
         initialValue = emptyList(),
     )
 
-
-    /** Information of all search providers. */
-    private val allSearchProvidersInfo = searchProvidersRepository
-        .getSearchProvidersInfo()
-        .stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.Eagerly,
-            initialValue = emptyList(),
-        )
-
-    /**
-     * Currently enabled search providers.
-     *
-     * Settings screen receives all the providers with enable/disable
-     * state instead of only enabled ones and reports state change event
-     * for only one at a time through [enableSearchProvider].
-     *
-     * Only then we will create a set of enabled providers and pass them to
-     * repository like how it expects.
-     */
-    private val enabledSearchProvidersId = settingsRepository
-        .enabledSearchProvidersId
-        .stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.Eagerly,
-            initialValue = emptySet(),
-        )
-
     /** Converts list of search providers info to list of UI states. */
     private fun createSearchProvidersUiState(
         enabledSearchProvidersId: Set<SearchProviderId>,
@@ -97,13 +71,18 @@ class SearchProvidersViewModel @Inject constructor(
 
     /** Enables/disables search provider matching the specified ID. */
     fun enableSearchProvider(providerId: SearchProviderId, enable: Boolean) {
-        val newEnabledSearchProvidersId = if (enable) {
-            enabledSearchProvidersId.value + providerId
-        } else {
-            enabledSearchProvidersId.value - providerId
-        }
-
         viewModelScope.launch {
+            val enabledSearchProvidersId = settingsRepository
+                .enabledSearchProvidersId
+                .firstOrNull()
+                .orEmpty()
+
+            val newEnabledSearchProvidersId = if (enable) {
+                enabledSearchProvidersId + providerId
+            } else {
+                enabledSearchProvidersId - providerId
+            }
+
             settingsRepository.setEnabledSearchProvidersId(
                 providersId = newEnabledSearchProvidersId,
             )
@@ -112,11 +91,15 @@ class SearchProvidersViewModel @Inject constructor(
 
     /** Enables all search providers. */
     fun enableAllSearchProviders() {
-        val allSearchProvidersId = allSearchProvidersInfo.value.map { it.id }.toSet()
-
         viewModelScope.launch {
+            val allSearchProvidersId = searchProvidersRepository
+                .getSearchProvidersInfo()
+                .map { infos -> infos.map { it.id } }
+                .firstOrNull()
+                ?: return@launch
+
             settingsRepository.setEnabledSearchProvidersId(
-                providersId = allSearchProvidersId,
+                providersId = allSearchProvidersId.toSet(),
             )
         }
     }
