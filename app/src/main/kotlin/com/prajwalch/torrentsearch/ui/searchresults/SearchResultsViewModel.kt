@@ -316,12 +316,10 @@ class SearchResultsViewModel @Inject constructor(
     }
 
     private suspend fun getEnabledSearchProviders(): List<SearchProvider> {
-        return combine(
-            searchProvidersRepository.getSearchProvidersInstance(),
-            settingsRepository.enabledSearchProvidersId,
-        ) { searchProviders, enabledSearchProvidersId ->
-            searchProviders.filter { it.info.id in enabledSearchProvidersId }
-        }.first()
+        val searchProviders = searchProvidersRepository.getSearchProvidersInstance()
+        val enabledSearchProvidersId = settingsRepository.enabledSearchProvidersId.first()
+
+        return searchProviders.filter { it.info.id in enabledSearchProvidersId }
     }
 
     private fun shouldContinueSearch(maxNumResults: MaxNumResults): Boolean {

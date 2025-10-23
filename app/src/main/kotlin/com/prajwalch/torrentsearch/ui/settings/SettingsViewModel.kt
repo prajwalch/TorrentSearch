@@ -95,7 +95,7 @@ class SettingsViewModel @Inject constructor(
 
     private val searchProvidersStatFlow = combine(
         settingsRepository.enabledSearchProvidersId.map { it.size },
-        searchProvidersRepository.getSearchProvidersCount(),
+        searchProvidersRepository.observeSearchProvidersCount(),
         ::SearchProvidersStat,
     )
 
@@ -177,7 +177,7 @@ class SettingsViewModel @Inject constructor(
     /** Disables NSFW and Unsafe search providers which are currently enabled. */
     private suspend fun disableRestrictedSearchProviders() {
         val enabledSearchProvidersInfo = combine(
-            searchProvidersRepository.getSearchProvidersInfo(),
+            searchProvidersRepository.observeSearchProvidersInfo(),
             settingsRepository.enabledSearchProvidersId,
         ) { searchProvidersInfo, enabledSearchProvidersId ->
             searchProvidersInfo.filter { it.id in enabledSearchProvidersId }

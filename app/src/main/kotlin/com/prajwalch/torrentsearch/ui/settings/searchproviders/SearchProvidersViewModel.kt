@@ -40,9 +40,9 @@ class SearchProvidersViewModel @Inject constructor(
     private val settingsRepository: SettingsRepository,
 ) : ViewModel() {
     val uiState = combine(
+        searchProvidersRepository.observeSearchProvidersInfo(),
         settingsRepository.enabledSearchProvidersId,
-        searchProvidersRepository.getSearchProvidersInfo(),
-    ) { enabledSearchProvidersId, searchProvidersInfo ->
+    ) { searchProvidersInfo, enabledSearchProvidersId ->
         createSearchProvidersUiState(
             searchProvidersInfo = searchProvidersInfo,
             enabledSearchProvidersId = enabledSearchProvidersId,
@@ -93,7 +93,7 @@ class SearchProvidersViewModel @Inject constructor(
     fun enableAllSearchProviders() {
         viewModelScope.launch {
             val allSearchProvidersId = searchProvidersRepository
-                .getSearchProvidersInfo()
+                .observeSearchProvidersInfo()
                 .map { infos -> infos.map { it.id } }
                 .firstOrNull()
                 ?: return@launch

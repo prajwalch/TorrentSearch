@@ -16,13 +16,13 @@ interface TorznabSearchProviderDao {
     suspend fun insert(searchProvider: TorznabSearchProviderEntity)
 
     @Query("SELECT * from torznab_search_providers")
-    fun getAll(): Flow<List<TorznabSearchProviderEntity>>
+    fun observeAll(): Flow<List<TorznabSearchProviderEntity>>
 
     @Query("SELECT * from torznab_search_providers where id=:id")
     suspend fun findById(id: String): TorznabSearchProviderEntity?
 
     @Query("SELECT COUNT(id) from TORZNAB_SEARCH_PROVIDERS")
-    fun getCount(): Flow<Int>
+    fun observeCount(): Flow<Int>
 
     @Update
     suspend fun update(searchProvider: TorznabSearchProviderEntity)

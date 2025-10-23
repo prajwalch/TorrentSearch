@@ -1,8 +1,9 @@
 package com.prajwalch.torrentsearch.data.repository
 
 import com.prajwalch.torrentsearch.data.local.dao.TorznabSearchProviderDao
-import com.prajwalch.torrentsearch.data.local.entities.TorznabSearchProviderEntity
-import com.prajwalch.torrentsearch.models.Category
+import com.prajwalch.torrentsearch.data.local.entities.toEntity
+import com.prajwalch.torrentsearch.data.local.entities.toSearchProviderInfo
+import com.prajwalch.torrentsearch.data.local.entities.toTorznabConfig
 import com.prajwalch.torrentsearch.providers.AnimeTosho
 import com.prajwalch.torrentsearch.providers.Eztv
 import com.prajwalch.torrentsearch.providers.Knaben
@@ -12,7 +13,6 @@ import com.prajwalch.torrentsearch.providers.Nyaa
 import com.prajwalch.torrentsearch.providers.SearchProvider
 import com.prajwalch.torrentsearch.providers.SearchProviderId
 import com.prajwalch.torrentsearch.providers.SearchProviderInfo
-import com.prajwalch.torrentsearch.providers.SearchProviderSafetyStatus
 import com.prajwalch.torrentsearch.providers.Sukebei
 import com.prajwalch.torrentsearch.providers.ThePirateBay
 import com.prajwalch.torrentsearch.providers.TheRarBg
@@ -26,17 +26,17 @@ import com.prajwalch.torrentsearch.providers.XXXClub
 import com.prajwalch.torrentsearch.providers.Yts
 
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 
 import javax.inject.Inject
 
-class SearchProvidersRepository @Inject constructor(private val dao: TorznabSearchProviderDao) {
-    /**
-     * Instances of built-in search providers.
-     *
-     * Make sure they're sorted.
-     */
-    private val builtins = setOf(
+class SearchProvidersRepository @Inject constructor(
+    private val dao: TorznabSearchProviderDao,
+) {
+    private val builtins = listOf(
         AnimeTosho(),
         Eztv(),
         Knaben(),
@@ -54,92 +54,57 @@ class SearchProvidersRepository @Inject constructor(private val dao: TorznabSear
         Yts(),
     )
 
-    /** Returns a list containing the info of all search providers. */
-    fun getSearchProvidersInfo(): Flow<List<SearchProviderInfo>> =
-        getSearchProvidersInstance().map { searchProviders -> searchProviders.map { it.info } }
-
-    /** Returns the getSearchProvidersCount of search providers. */
-    fun getSearchProvidersCount(): Flow<Int> = dao.getCount().map { it + builtins.size }
-
-    /**
-     * Returns a set containing the ID of search providers that are enabled
-     * by default.
-     */
-    fun getEnabledSearchProvidersId(): Set<SearchProviderId> =
-        builtins.filter { it.info.enabledByDefault }.map { it.info.id }.toSet()
-
-    /** Returns the instance of search providers. */
-    fun getSearchProvidersInstance(): Flow<List<SearchProvider>> =
-        dao.getAll().map { entities ->
-            entities
-                .map { TorznabSearchProvider(config = it.toConfig()) }
-                .plus(builtins)
-                .sortedBy { it.info.name }
-        }
-
-    /** Adds a new Torznab API compatible search provider. */
-    suspend fun addTorznabSearchProvider(config: TorznabSearchProviderConfig) {
-        val url = config.url.trimEnd { it == '/' }
-        val unsafeReason = when (config.safetyStatus) {
-            is SearchProviderSafetyStatus.Safe -> null
-            is SearchProviderSafetyStatus.Unsafe -> config.safetyStatus.reason
-        }
-
-        val dbEntity = TorznabSearchProviderEntity(
-            name = config.name,
-            url = url,
-            apiKey = config.apiKey,
-            category = config.category.name,
-            unsafeReason = unsafeReason,
-        )
-        dao.insert(searchProvider = dbEntity)
+    // TODO: Remove this or handle enabled by default search providers properly.
+    fun getEnabledSearchProvidersId(): Set<SearchProviderId> {
+        return builtins.filter { it.info.enabledByDefault }.map { it.info.id }.toSet()
     }
 
-    /**
-     * Returns the config of Torznab search provider that matches the specified
-     * ID, if exists.
-     */
+    fun observeSearchProvidersInfo(): Flow<List<SearchProviderInfo>> {
+        val builtinSearchProvidersInfoFlow = flowOf(builtins.map { it.info })
+        val torznabSearchProvidersInfoFlow = dao.observeAll().map { it.toSearchProviderInfo() }
+
+        return combine(
+            builtinSearchProvidersInfoFlow,
+            torznabSearchProvidersInfoFlow
+        ) { builtinInfos, torznabInfos ->
+            builtinInfos + torznabInfos
+        }
+    }
+
+    fun observeSearchProvidersCount(): Flow<Int> {
+        return dao.observeCount().map { it + builtins.size }
+    }
+
+    suspend fun getSearchProvidersInstance(): List<SearchProvider> {
+        val builtinSearchProvidersFlow = flowOf(builtins)
+        val torznabSearchProvidersFlow = dao.observeAll().map { entities ->
+            entities.map { TorznabSearchProvider(config = it.toTorznabConfig()) }
+        }
+
+        return combine(
+            builtinSearchProvidersFlow,
+            torznabSearchProvidersFlow,
+        ) { builtins, externals ->
+            builtins + externals
+        }.firstOrNull().orEmpty()
+    }
+
+    suspend fun addTorznabSearchProvider(config: TorznabSearchProviderConfig) {
+        val config = config.copy(url = config.url.trimEnd { it == '/' })
+        dao.insert(searchProvider = config.toEntity())
+    }
+
     suspend fun findTorznabSearchProviderConfig(
         id: SearchProviderId,
-    ): TorznabSearchProviderConfig? = dao.findById(id = id)?.toConfig()
-
-    /**
-     * Updates the Torznab search provider that matches the specified ID
-     * with the given configuration.
-     */
-    suspend fun updateTorznabSearchProvider(config: TorznabSearchProviderConfig) {
-        val unsafeReason = when (config.safetyStatus) {
-            is SearchProviderSafetyStatus.Safe -> null
-            is SearchProviderSafetyStatus.Unsafe -> config.safetyStatus.reason
-        }
-        val dbEntity = TorznabSearchProviderEntity(
-            id = config.id,
-            name = config.name,
-            url = config.url,
-            apiKey = config.apiKey,
-            category = config.category.name,
-            unsafeReason = unsafeReason,
-        )
-        dao.update(searchProvider = dbEntity)
+    ): TorznabSearchProviderConfig? {
+        return dao.findById(id = id)?.toTorznabConfig()
     }
 
-    /** Deletes the Torznab search provider that matches the specified ID. */
+    suspend fun updateTorznabSearchProvider(config: TorznabSearchProviderConfig) {
+        dao.update(searchProvider = config.toEntity())
+    }
+
     suspend fun deleteTorznabSearchProvider(id: String) {
         dao.deleteById(id = id)
     }
-}
-
-private fun TorznabSearchProviderEntity.toConfig(): TorznabSearchProviderConfig {
-    val safetyStatus = this.unsafeReason
-        ?.let { SearchProviderSafetyStatus.Unsafe(reason = it) }
-        ?: SearchProviderSafetyStatus.Safe
-
-    return TorznabSearchProviderConfig(
-        id = this.id,
-        name = this.name,
-        url = this.url,
-        apiKey = this.apiKey,
-        category = Category.valueOf(this.category),
-        safetyStatus = safetyStatus
-    )
 }
