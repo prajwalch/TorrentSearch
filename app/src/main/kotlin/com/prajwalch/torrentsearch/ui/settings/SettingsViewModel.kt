@@ -19,6 +19,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
@@ -70,7 +71,7 @@ data class AdvanceSettingsUiState(
 @HiltViewModel
 class SettingsViewModel @Inject constructor(
     private val settingsRepository: SettingsRepository,
-    searchProvidersRepository: SearchProvidersRepository,
+    private val searchProvidersRepository: SearchProvidersRepository,
 ) : ViewModel() {
     val appearanceSettingsUiState = combine(
         settingsRepository.enableDynamicTheme,
@@ -137,24 +138,6 @@ class SettingsViewModel @Inject constructor(
             initialValue = AdvanceSettingsUiState()
         )
 
-    /** Information of all search providers. */
-    private val allSearchProvidersInfo = searchProvidersRepository
-        .getSearchProvidersInfo()
-        .stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.Eagerly,
-            initialValue = emptyList(),
-        )
-
-    /** Currently enabled search providers. */
-    private val enabledSearchProvidersId = settingsRepository
-        .enabledSearchProvidersId
-        .stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.Eagerly,
-            initialValue = emptySet(),
-        )
-
     /** Enables/disables dynamic theme. */
     fun enableDynamicTheme(enable: Boolean) {
         viewModelScope.launch {
@@ -193,18 +176,21 @@ class SettingsViewModel @Inject constructor(
 
     /** Disables NSFW and Unsafe search providers which are currently enabled. */
     private suspend fun disableRestrictedSearchProviders() {
-        val newEnabledSearchProvidersId = allSearchProvidersInfo
-            .value
-            .filter { it.id in enabledSearchProvidersId.value }
+        val enabledSearchProvidersInfo = combine(
+            searchProvidersRepository.getSearchProvidersInfo(),
+            settingsRepository.enabledSearchProvidersId,
+        ) { searchProvidersInfo, enabledSearchProvidersId ->
+            searchProvidersInfo.filter { it.id in enabledSearchProvidersId }
+        }.firstOrNull() ?: return
+
+        val newEnabledSearchProvidersId = enabledSearchProvidersInfo
             .filterNot { it.specializedCategory.isNSFW || it.safetyStatus.isUnsafe() }
             .map { it.id }
             .toSet()
 
-        if (newEnabledSearchProvidersId != enabledSearchProvidersId.value) {
-            settingsRepository.setEnabledSearchProvidersId(
-                providersId = newEnabledSearchProvidersId.toSet(),
-            )
-        }
+        settingsRepository.setEnabledSearchProvidersId(
+            providersId = newEnabledSearchProvidersId,
+        )
     }
 
     /** Changes the default sort criteria. */
