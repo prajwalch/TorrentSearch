@@ -4,6 +4,7 @@ import com.prajwalch.torrentsearch.data.local.dao.TorznabSearchProviderDao
 import com.prajwalch.torrentsearch.data.local.entities.toEntity
 import com.prajwalch.torrentsearch.data.local.entities.toSearchProviderInfo
 import com.prajwalch.torrentsearch.data.local.entities.toTorznabConfig
+import com.prajwalch.torrentsearch.models.Category
 import com.prajwalch.torrentsearch.providers.AnimeTosho
 import com.prajwalch.torrentsearch.providers.Eztv
 import com.prajwalch.torrentsearch.providers.Knaben
@@ -73,6 +74,30 @@ class SearchProvidersRepository @Inject constructor(
 
     fun observeSearchProvidersCount(): Flow<Int> {
         return dao.observeCount().map { it + builtins.size }
+    }
+
+    suspend fun getSearchProvidersInstance(category: Category): List<SearchProvider> {
+        val searchProviders = getSearchProvidersInstance()
+
+        if (category == Category.All) {
+            return searchProviders
+        }
+
+        return searchProviders.filter {
+            // NOTE: Currently, if the search provider's specialized is set to
+            //       `All` we can't surely know whether the underlying server
+            //       supports setting specific category or not.
+            //
+            //       For example: TorrentCSV does allow to search any type of
+            //       torrent but it doesn't support setting specific category
+            //       explicitly. Meaning, we can't ask it to search torrents
+            //       of specific category.
+            //
+            //       To address this issue, force each and every search provider
+            //       to list out all categories they allow or support to set
+            //       explicitly instead of single `specializedCategory`.
+            (it.info.specializedCategory == Category.All) || (category == it.info.specializedCategory)
+        }
     }
 
     suspend fun getSearchProvidersInstance(): List<SearchProvider> {

@@ -272,7 +272,7 @@ class SearchResultsViewModel @Inject constructor(
 
             val enabledSearchProviders = getEnabledSearchProviders()
             if (enabledSearchProviders.isEmpty()) {
-                Log.i(TAG, "All search providers are disabled. Returning...")
+                Log.i(TAG, "Search providers are empty. Cancelling search")
 
                 _uiState.update {
                     it.copy(
@@ -316,7 +316,11 @@ class SearchResultsViewModel @Inject constructor(
     }
 
     private suspend fun getEnabledSearchProviders(): List<SearchProvider> {
-        val searchProviders = searchProvidersRepository.getSearchProvidersInstance()
+        val searchProviders = if (searchCategory == null) {
+            searchProvidersRepository.getSearchProvidersInstance()
+        } else {
+            searchProvidersRepository.getSearchProvidersInstance(category = searchCategory)
+        }
         val enabledSearchProvidersId = settingsRepository.enabledSearchProvidersId.first()
 
         return searchProviders.filter { it.info.id in enabledSearchProvidersId }
