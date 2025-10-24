@@ -1,7 +1,6 @@
 package com.prajwalch.torrentsearch.data.local.dao
 
 import androidx.room.Dao
-import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
@@ -17,9 +16,6 @@ interface SearchHistoryDao {
 
     @Query("SELECT * from search_history ORDER by id DESC")
     fun observeAll(): Flow<List<SearchHistoryEntity>>
-
-    @Delete
-    suspend fun delete(searchHistory: SearchHistoryEntity)
 
     @Query("DElETE from search_history where id=:id")
     suspend fun deleteById(id: Long)

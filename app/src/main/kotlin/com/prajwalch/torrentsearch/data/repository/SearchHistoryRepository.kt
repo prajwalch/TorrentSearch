@@ -26,11 +26,6 @@ class SearchHistoryRepository @Inject constructor(private val dao: SearchHistory
         dao.insert(searchHistory.toEntity())
     }
 
-    /** Removes the given search history. */
-    suspend fun deleteSearchHistory(searchHistory: SearchHistory) {
-        dao.delete(searchHistory.toEntity())
-    }
-
     /** Deletes the search history which matches the specified id. */
     suspend fun deleteSearchHistoryById(id: SearchHistoryId) {
         dao.deleteById(id = id)

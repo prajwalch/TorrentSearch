@@ -9,10 +9,12 @@ import com.prajwalch.torrentsearch.models.SearchHistoryId
 import dagger.hilt.android.lifecycle.HiltViewModel
 
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.WhileSubscribed
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 import javax.inject.Inject
+import kotlin.time.Duration.Companion.seconds
 
 /** ViewModel which handles the business logic of Search history screen. */
 @HiltViewModel
@@ -23,23 +25,21 @@ class SearchHistoryViewModel @Inject constructor(
         .observeAllSearchHistories()
         .stateIn(
             scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5000),
+            started = SharingStarted.WhileSubscribed(5.seconds),
             initialValue = emptyList(),
         )
 
     /** Deletes the search history associated with given id. */
     fun deleteSearchHistory(id: SearchHistoryId) {
         viewModelScope.launch {
-            uiState.value
-                .find { it.id == id }
-                ?.let {
-                    searchHistoryRepository.deleteSearchHistory(searchHistory = it)
-                }
+            searchHistoryRepository.deleteSearchHistoryById(id = id)
         }
     }
 
     /** Deletes all search history. */
     fun deleteAllSearchHistory() {
-        viewModelScope.launch { searchHistoryRepository.deleteAllSearchHistories() }
+        viewModelScope.launch {
+            searchHistoryRepository.deleteAllSearchHistories()
+        }
     }
 }
