@@ -18,6 +18,7 @@ import com.prajwalch.torrentsearch.models.SortOrder
 import dagger.hilt.android.lifecycle.HiltViewModel
 
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.WhileSubscribed
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
@@ -25,6 +26,7 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 import javax.inject.Inject
+import kotlin.time.Duration.Companion.seconds
 
 /** State for the appearance settings. */
 data class AppearanceSettingsUiState(
@@ -80,7 +82,7 @@ class SettingsViewModel @Inject constructor(
         ::AppearanceSettingsUiState,
     ).stateIn(
         scope = viewModelScope,
-        started = SharingStarted.WhileSubscribed(5000),
+        started = SharingStarted.WhileSubscribed(5.seconds),
         initialValue = AppearanceSettingsUiState(),
     )
 
@@ -89,7 +91,7 @@ class SettingsViewModel @Inject constructor(
         .map(::GeneralSettingsUiState)
         .stateIn(
             scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5000),
+            started = SharingStarted.WhileSubscribed(5.seconds),
             initialValue = GeneralSettingsUiState(),
         )
 
@@ -113,7 +115,7 @@ class SettingsViewModel @Inject constructor(
         ::SearchSettingsUiState,
     ).stateIn(
         scope = viewModelScope,
-        started = SharingStarted.WhileSubscribed(5000),
+        started = SharingStarted.WhileSubscribed(5.seconds),
         initialValue = SearchSettingsUiState(),
     )
 
@@ -123,7 +125,7 @@ class SettingsViewModel @Inject constructor(
         ::SearchHistorySettingsUiState,
     ).stateIn(
         scope = viewModelScope,
-        started = SharingStarted.WhileSubscribed(5000),
+        started = SharingStarted.WhileSubscribed(5.seconds),
         initialValue = SearchHistorySettingsUiState(),
     )
 
@@ -131,12 +133,11 @@ class SettingsViewModel @Inject constructor(
         settingsRepository.enableShareIntegration,
         settingsRepository.enableQuickSearch,
         ::AdvanceSettingsUiState,
+    ).stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5.seconds),
+        initialValue = AdvanceSettingsUiState(),
     )
-        .stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5000),
-            initialValue = AdvanceSettingsUiState()
-        )
 
     /** Enables/disables dynamic theme. */
     fun enableDynamicTheme(enable: Boolean) {
