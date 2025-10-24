@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -24,7 +23,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
-import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
@@ -47,7 +45,6 @@ import com.prajwalch.torrentsearch.ui.components.SortDropdownMenu
 import com.prajwalch.torrentsearch.ui.components.SortIconButton
 import com.prajwalch.torrentsearch.ui.components.TorrentList
 
-import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -64,7 +61,6 @@ fun BookmarksScreen(
 
     val coroutineScope = rememberCoroutineScope()
     val lazyListState = rememberLazyListState()
-    val textFieldState = rememberTextFieldState()
     val searchBarFocusRequester = remember { FocusRequester() }
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
 
@@ -80,7 +76,8 @@ fun BookmarksScreen(
         if (showSearchBar) {
             SearchBar(
                 modifier = Modifier.focusRequester(searchBarFocusRequester),
-                textFieldState = textFieldState,
+                query = uiState.filterQuery,
+                onQueryChange = viewModel::updateFilterQuery,
                 placeholder = { Text(text = stringResource(R.string.bookmarks_search_query_hint)) },
             )
         } else {
@@ -130,11 +127,6 @@ fun BookmarksScreen(
         }
     }
 
-    LaunchedEffect(Unit) {
-        snapshotFlow { textFieldState.text }
-            .collectLatest { viewModel.filterBookmarks(query = it.toString()) }
-    }
-
     Scaffold(
         modifier = Modifier
             .fillMaxSize()
@@ -166,13 +158,11 @@ fun BookmarksScreen(
                 title = R.string.bookmarks_empty_message,
             )
         } else {
-            val bookmarks = uiState.filteredBookmarks ?: uiState.bookmarks
-
             TorrentList(
                 modifier = Modifier
                     .fillMaxSize()
                     .consumeWindowInsets(innerPadding),
-                torrents = bookmarks,
+                torrents = uiState.bookmarks,
                 onTorrentClick = onBookmarkClick,
                 contentPadding = innerPadding,
                 lazyListState = lazyListState,

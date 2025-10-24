@@ -6,7 +6,6 @@ import androidx.lifecycle.viewModelScope
 import com.prajwalch.torrentsearch.data.repository.SettingsRepository
 import com.prajwalch.torrentsearch.data.repository.TorrentsRepository
 import com.prajwalch.torrentsearch.extensions.customSort
-import com.prajwalch.torrentsearch.extensions.filterNSFW
 import com.prajwalch.torrentsearch.models.SortCriteria
 import com.prajwalch.torrentsearch.models.SortOrder
 import com.prajwalch.torrentsearch.models.Torrent
@@ -15,21 +14,25 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.WhileSubscribed
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
-import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 import javax.inject.Inject
+import kotlin.time.Duration.Companion.seconds
 
 /** UI state for the Bookmarks screen. */
 data class BookmarksUiState(
     val bookmarks: List<Torrent> = emptyList(),
-    val filteredBookmarks: List<Torrent>? = null,
+    val filterQuery: String = "",
     val currentSortCriteria: SortCriteria = SortCriteria.Default,
     val currentSortOrder: SortOrder = SortOrder.Default,
+)
+
+private data class SortOptions(
+    val criteria: SortCriteria = SortCriteria.Default,
+    val order: SortOrder = SortOrder.Default,
 )
 
 /** ViewModel that handles the business logic of Bookmarks screen. */
@@ -38,66 +41,31 @@ class BookmarksViewModel @Inject constructor(
     private val torrentsRepository: TorrentsRepository,
     settingsRepository: SettingsRepository,
 ) : ViewModel() {
-    /**
-     * Current UI state.
-     *
-     * Automatically updated when new bookmarks are added.
-     */
-    private val _uiState = MutableStateFlow(BookmarksUiState())
-    val uiState = _uiState.asStateFlow()
+    private val filterQuery = MutableStateFlow("")
+    private val sortOptions = MutableStateFlow(SortOptions())
 
-    /** Current NSFW mode setting. */
-    private val enableNSFWMode: StateFlow<Boolean> = settingsRepository
-        .enableNSFWMode
-        .stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5000),
-            initialValue = false,
+    val uiState = combine(
+        filterQuery,
+        sortOptions,
+        torrentsRepository.observeAllBookmarks(),
+        settingsRepository.enableNSFWMode,
+    ) { filterQuery, sortOptions, bookmarks, nsfwModeEnabled ->
+        val bookmarks = bookmarks
+            .filter { nsfwModeEnabled || !it.isNSFW() }
+            .filter { filterQuery.isBlank() || it.name.contains(filterQuery, ignoreCase = true) }
+            .customSort(criteria = sortOptions.criteria, order = sortOptions.order)
+
+        BookmarksUiState(
+            bookmarks = bookmarks,
+            filterQuery = filterQuery,
+            currentSortCriteria = sortOptions.criteria,
+            currentSortOrder = sortOptions.order,
         )
-
-    /** Current bookmarks acquired from the repository. */
-    private val bookmarks: StateFlow<List<Torrent>> = torrentsRepository
-        .observeAllBookmarks()
-        .map { bookmarks ->
-            bookmarks.customSort(
-                criteria = _uiState.value.currentSortCriteria,
-                order = _uiState.value.currentSortOrder,
-            )
-        }
-        .stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5000),
-            initialValue = emptyList(),
-        )
-
-    init {
-        observeBookmarks()
-        observeNSFWModeSetting()
-    }
-
-    /**
-     * Observes the new bookmarks and the automatically updates the UI state
-     * after processing them.
-     */
-    private fun observeBookmarks() = viewModelScope.launch {
-        bookmarks.collect { bookmarks ->
-            val nsfwFilteredBookmarks = bookmarks.filterNSFW(
-                isNSFWModeEnabled = enableNSFWMode.value,
-            )
-            _uiState.update { it.copy(bookmarks = nsfwFilteredBookmarks) }
-        }
-    }
-
-    /** Observes the NSFW settings and update the UI accordingly. */
-    private fun observeNSFWModeSetting() = viewModelScope.launch {
-        enableNSFWMode.collect { enableNSFWMode ->
-            val nsfwFilteredBookmarks = bookmarks.value.filterNSFW(
-                isNSFWModeEnabled = enableNSFWMode,
-            )
-
-            _uiState.update { it.copy(bookmarks = nsfwFilteredBookmarks) }
-        }
-    }
+    }.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5.seconds),
+        initialValue = BookmarksUiState(),
+    )
 
     /**
      * Bookmarks the given torrent.
@@ -134,29 +102,11 @@ class BookmarksViewModel @Inject constructor(
 
     /** Sorts the current bookmarks. */
     fun sortBookmarks(criteria: SortCriteria, order: SortOrder) {
-        val sortedBookmarks = _uiState.value.bookmarks.customSort(
-            criteria = criteria,
-            order = order,
-        )
-
-        _uiState.update {
-            it.copy(
-                bookmarks = sortedBookmarks,
-                currentSortCriteria = criteria,
-                currentSortOrder = order,
-            )
-        }
+        sortOptions.value = SortOptions(criteria = criteria, order = order)
     }
 
-    fun filterBookmarks(query: String) {
-        if (query.isEmpty()) {
-            _uiState.update { it.copy(filteredBookmarks = null) }
-            return
-        }
-
-        val filteredBookmarks = _uiState.value.bookmarks.filter {
-            it.name.contains(query, ignoreCase = true)
-        }
-        _uiState.update { it.copy(filteredBookmarks = filteredBookmarks) }
+    /** Updates the filter query and filters the current bookmarks. */
+    fun updateFilterQuery(query: String) {
+        filterQuery.value = query
     }
 }
