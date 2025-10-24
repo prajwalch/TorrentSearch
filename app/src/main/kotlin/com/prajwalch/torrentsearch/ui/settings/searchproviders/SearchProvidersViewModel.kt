@@ -14,6 +14,7 @@ import com.prajwalch.torrentsearch.providers.SearchProviderType
 import dagger.hilt.android.lifecycle.HiltViewModel
 
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.WhileSubscribed
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
@@ -21,6 +22,7 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 import javax.inject.Inject
+import kotlin.time.Duration.Companion.seconds
 
 /** State for the single search provider. */
 data class SearchProviderUiState(
@@ -49,7 +51,7 @@ class SearchProvidersViewModel @Inject constructor(
         )
     }.stateIn(
         scope = viewModelScope,
-        started = SharingStarted.WhileSubscribed(5000),
+        started = SharingStarted.WhileSubscribed(5.seconds),
         initialValue = emptyList(),
     )
 
