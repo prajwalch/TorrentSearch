@@ -12,13 +12,15 @@ import com.prajwalch.torrentsearch.models.SearchHistoryId
 import dagger.hilt.android.lifecycle.HiltViewModel
 
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.WhileSubscribed
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.firstOrNull
-import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 import javax.inject.Inject
+import kotlin.time.Duration.Companion.seconds
 
 data class SearchUiState(
     val histories: List<SearchHistory> = emptyList(),
@@ -31,69 +33,52 @@ class SearchViewModel @Inject constructor(
     private val searchHistoryRepository: SearchHistoryRepository,
     private val settingsRepository: SettingsRepository,
 ) : ViewModel() {
-    private val _uiState = MutableStateFlow(SearchUiState())
-    val uiState = _uiState.asStateFlow()
+    private val selectedCategory = MutableStateFlow(Category.All)
+
+    val uiState = combine(
+        searchHistoryRepository.observeAllSearchHistories(),
+        selectedCategory,
+        settingsRepository.enableNSFWMode,
+        settingsRepository.showSearchHistory,
+    ) { searchHistories, selectedCategory, nsfwModeEnabled, showSearchHistory ->
+        val histories = if (showSearchHistory) searchHistories else emptyList()
+
+        val categories = Category.entries.filter { nsfwModeEnabled || !it.isNSFW }
+        val selectedCategory = when {
+            selectedCategory in categories -> selectedCategory
+            else -> Category.All
+        }
+
+        SearchUiState(
+            histories = histories,
+            categories = categories,
+            selectedCategory = selectedCategory,
+        )
+    }.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5.seconds),
+        initialValue = SearchUiState(),
+    )
 
     init {
         loadDefaultCategory()
-        observeNSFWMode()
-        observeSearchHistory()
-    }
-
-    /** Changes the current category with the given category. */
-    fun setCategory(category: Category) {
-        _uiState.update { it.copy(selectedCategory = category) }
-    }
-
-    /** Deletes the search history associated with given id. */
-    fun deleteSearchHistory(id: SearchHistoryId) {
-        viewModelScope.launch {
-            _uiState.value.histories
-                .find { it.id == id }
-                ?.let {
-                    searchHistoryRepository.deleteSearchHistory(searchHistory = it)
-                }
-        }
     }
 
     private fun loadDefaultCategory() = viewModelScope.launch {
         val defaultCategory = settingsRepository.defaultCategory.firstOrNull()
 
         if (defaultCategory != null) {
-            _uiState.update {
-                it.copy(selectedCategory = defaultCategory)
-            }
+            selectedCategory.value = defaultCategory
         }
     }
 
-    private fun observeNSFWMode() = viewModelScope.launch {
-        settingsRepository.enableNSFWMode.collect { nsfwModeEnabled ->
-            val categories = Category.entries.filter { nsfwModeEnabled || !it.isNSFW }
-
-            val currentlySelectedCategory = _uiState.value.selectedCategory
-            val selectedCategory = when {
-                currentlySelectedCategory in categories -> currentlySelectedCategory
-                else -> Category.All
-            }
-
-            _uiState.update {
-                it.copy(
-                    categories = categories,
-                    selectedCategory = selectedCategory,
-                )
-            }
-        }
+    fun setCategory(category: Category) {
+        selectedCategory.value = category
     }
 
-    /** Observes search history changes and automatically updates the UI. */
-    private fun observeSearchHistory() = viewModelScope.launch {
-        combine(
-            settingsRepository.showSearchHistory,
-            searchHistoryRepository.observeAllSearchHistories(),
-        ) { showSearchHistory, histories ->
-            if (showSearchHistory) histories else emptyList()
-        }.collect { histories ->
-            _uiState.update { it.copy(histories = histories) }
+    fun deleteSearchHistory(id: SearchHistoryId) {
+        viewModelScope.launch {
+            searchHistoryRepository.deleteSearchHistoryById(id = id)
         }
     }
 }

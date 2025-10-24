@@ -4,6 +4,7 @@ import com.prajwalch.torrentsearch.data.local.dao.SearchHistoryDao
 import com.prajwalch.torrentsearch.data.local.entities.toDomain
 import com.prajwalch.torrentsearch.data.local.entities.toEntity
 import com.prajwalch.torrentsearch.models.SearchHistory
+import com.prajwalch.torrentsearch.models.SearchHistoryId
 
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
@@ -28,6 +29,11 @@ class SearchHistoryRepository @Inject constructor(private val dao: SearchHistory
     /** Removes the given search history. */
     suspend fun deleteSearchHistory(searchHistory: SearchHistory) {
         dao.delete(searchHistory.toEntity())
+    }
+
+    /** Deletes the search history which matches the specified id. */
+    suspend fun deleteSearchHistoryById(id: SearchHistoryId) {
+        dao.deleteById(id = id)
     }
 
     /** Clears all search history. */

@@ -21,6 +21,9 @@ interface SearchHistoryDao {
     @Delete
     suspend fun delete(searchHistory: SearchHistoryEntity)
 
+    @Query("DElETE from search_history where id=:id")
+    suspend fun deleteById(id: Long)
+
     @Query("DELETE from search_history")
     suspend fun deleteAll()
 }
