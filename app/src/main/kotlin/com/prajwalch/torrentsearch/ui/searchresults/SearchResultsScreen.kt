@@ -129,7 +129,7 @@ fun SearchResultsScreen(
                 onDismissRequest = { showSortMenu = false },
                 currentSortCriteria = uiState.currentSortCriteria,
                 currentSortOrder = uiState.currentSortOrder,
-                onSortRequest = viewModel::sortSearchResults,
+                onSortRequest = viewModel::updateSortOptions,
             )
             IconButton(onClick = { showFilterOptions = true }) {
                 Icon(
@@ -191,7 +191,7 @@ fun SearchResultsScreen(
                     modifier = Modifier
                         .fillMaxSize()
                         .padding(innerPadding),
-                    onTryAgain = viewModel::performSearch,
+                    onTryAgain = viewModel::refresh,
                 )
             }
 
@@ -289,7 +289,7 @@ private fun SearchResults(
 @Composable
 private fun FilterOptionsBottomSheet(
     onDismissRequest: () -> Unit,
-    filterOptions: FilterOptionsUiState,
+    filterOptions: FilterOptions,
     onToggleSearchProvider: (SearchProviderId) -> Unit,
     onToggleDeadTorrents: () -> Unit,
     modifier: Modifier = Modifier,
@@ -335,16 +335,11 @@ private fun FiltersSectionTitle(@StringRes titleId: Int, modifier: Modifier = Mo
 
 @Composable
 private fun SearchProvidersChipsRow(
-    searchProviders: List<SearchProviderFilterUiState>,
+    searchProviders: List<SearchProviderFilterOption>,
     onToggleSearchProvider: (SearchProviderId) -> Unit,
     modifier: Modifier = Modifier,
     contentPadding: PaddingValues = PaddingValues(0.dp),
 ) {
-    // TODO: Sort this on ViewModel.
-    val searchProviders = remember(searchProviders) {
-        searchProviders.sortedBy { it.searchProviderName }
-    }
-
     LazyRow(
         modifier = modifier,
         horizontalArrangement = Arrangement.spacedBy(

@@ -43,6 +43,9 @@ data class Torrent(
     /** Returns `true` if this torrent is NSFW. */
     fun isNSFW() = category?.isNSFW ?: true
 
+    /** Returns `true` if this torrent is dead. */
+    fun isDead() = (seeders == 0u && peers == 0u)
+
     /** Returns the magnet URI of this torrent. */
     fun magnetUri(): MagnetUri = when (infoHashOrMagnetUri) {
         is InfoHashOrMagnetUri.InfoHash -> createMagnetUri(infoHashOrMagnetUri.hash)

@@ -1,45 +1,293 @@
 package com.prajwalch.torrentsearch.ui.searchresults
 
 import android.util.Log
-
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 
 import com.prajwalch.torrentsearch.data.repository.SearchHistoryRepository
-import com.prajwalch.torrentsearch.data.repository.SearchProvidersRepository
+import com.prajwalch.torrentsearch.data.repository.SearchResult
 import com.prajwalch.torrentsearch.data.repository.SettingsRepository
-import com.prajwalch.torrentsearch.data.repository.TorrentsRepository
 import com.prajwalch.torrentsearch.extensions.customSort
 import com.prajwalch.torrentsearch.extensions.filterNSFW
 import com.prajwalch.torrentsearch.models.Category
-import com.prajwalch.torrentsearch.models.MaxNumResults
 import com.prajwalch.torrentsearch.models.SortCriteria
 import com.prajwalch.torrentsearch.models.SortOrder
 import com.prajwalch.torrentsearch.models.Torrent
 import com.prajwalch.torrentsearch.network.ConnectivityChecker
-import com.prajwalch.torrentsearch.providers.SearchProvider
 import com.prajwalch.torrentsearch.providers.SearchProviderId
+import com.prajwalch.torrentsearch.usecases.SearchTorrentsUseCase
 
 import dagger.hilt.android.lifecycle.HiltViewModel
 
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.WhileSubscribed
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onCompletion
-import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.flow.takeWhile
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 import javax.inject.Inject
+import kotlin.time.Duration.Companion.seconds
+
+/** ViewModel that handles the business logic of SearchResultsScreen. */
+@HiltViewModel
+class SearchResultsViewModel @Inject constructor(
+    private val searchTorrentsUseCase: SearchTorrentsUseCase,
+    private val settingsRepository: SettingsRepository,
+    private val searchHistoryRepository: SearchHistoryRepository,
+    private val connectivityChecker: ConnectivityChecker,
+    savedStateHandle: SavedStateHandle,
+) : ViewModel() {
+    // Let app crash if these two are not present.
+    private val searchQuery = savedStateHandle.get<String>("query")!!
+    private val searchCategory = savedStateHandle.get<String>("category")?.let(Category::valueOf)!!
+
+    /** The state which drives the logic and used for producing UI state. */
+    private val internalState = MutableStateFlow(InternalState())
+
+    /** The UI state. */
+    val uiState = combine(
+        internalState,
+        settingsRepository.enableNSFWMode,
+        ::createUiState,
+    ).stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5.seconds),
+        initialValue = SearchResultsUiState(isLoading = true),
+    )
+
+    init {
+        Log.i(TAG, "init is invoked")
+        Log.d(TAG, "query = $searchQuery, category = $searchCategory")
+
+        viewModelScope.launch {
+            // TODO: This ViewModel shouldn't be responsible for maintaining
+            //       search history.
+            if (settingsRepository.saveSearchHistory.first()) {
+                // Trim the query to prevent same query (e.g. 'one' and 'one ')
+                // from end upping into the database.
+                val query = searchQuery.trim()
+                searchHistoryRepository.createNewSearchHistory(query = query)
+            }
+            performSearch()
+        }
+    }
+
+    /** Returns the default sort options. */
+    private suspend fun getDefaultSortOptions(): SortOptions {
+        return combine(
+            settingsRepository.defaultSortCriteria,
+            settingsRepository.defaultSortOrder,
+            ::SortOptions
+        ).first()
+    }
+
+    /** Produces UI state from the given internal state and other parameters. */
+    private suspend fun createUiState(
+        internalState: InternalState,
+        nsfwModeEnabled: Boolean,
+    ): SearchResultsUiState {
+        val (
+            filterQuery,
+            sortOptions,
+            filterOptions,
+            searchResults,
+            isLoading,
+            isSearching,
+            isInternetError,
+        ) = internalState
+        Log.i(TAG, "Creating UI state")
+
+        if (isLoading) {
+            return SearchResultsUiState(isLoading = true)
+        }
+
+        if (isInternetError) {
+            return SearchResultsUiState(isInternetError = true)
+        }
+
+        val filteredSearchResults = withContext(Dispatchers.Default) {
+            searchResults
+                .filterNSFW(isNSFWModeEnabled = nsfwModeEnabled)
+                .run {
+                    // Don't apply filter options until search completes.
+                    if (isSearching) this else this.filterByOptions(filterOptions)
+                }
+                .filter {
+                    filterQuery.isBlank() || it.name.contains(filterQuery, ignoreCase = true)
+                }
+                .customSort(criteria = sortOptions.criteria, order = sortOptions.order)
+        }
+
+        return SearchResultsUiState(
+            searchQuery = searchQuery,
+            searchCategory = searchCategory,
+            searchResults = filteredSearchResults,
+            filterQuery = filterQuery,
+            currentSortCriteria = sortOptions.criteria,
+            currentSortOrder = sortOptions.order,
+            filterOptions = filterOptions,
+            isLoading = false,
+            isSearching = isSearching,
+            isInternetError = false,
+        )
+    }
+
+    // FIXME: We ran into text field synchronization issue.
+    /** Updates the current filter query by replacing it with the given one. */
+    fun updateFilterQuery(query: String) {
+        internalState.update { it.copy(filterQuery = query) }
+    }
+
+    /** Updates the current sort options with the given options. */
+    fun updateSortOptions(criteria: SortCriteria, order: SortOrder) {
+        internalState.update {
+            it.copy(sortOptions = SortOptions(criteria = criteria, order = order))
+        }
+    }
+
+    /**
+     * Shows or hides search results which are fetched from the search
+     * provider whose ID matches with the given one.
+     */
+    fun toggleSearchProviderResults(searchProviderId: SearchProviderId) {
+        val searchProviders = internalState.value.filterOptions.searchProviders.map {
+            if (it.searchProviderId == searchProviderId) {
+                it.copy(selected = !it.selected)
+            } else {
+                it
+            }
+        }
+        val filterOptions = internalState.value.filterOptions.copy(
+            searchProviders = searchProviders,
+        )
+
+        internalState.update { it.copy(filterOptions = filterOptions) }
+    }
+
+    /** Shows or hides dead torrents. */
+    fun toggleDeadTorrents() {
+        val filterOptions = with(internalState.value.filterOptions) {
+            this.copy(deadTorrents = !this.deadTorrents)
+        }
+        internalState.update {
+            it.copy(filterOptions = filterOptions)
+        }
+    }
+
+    /** Refreshes the data by performing a new search. */
+    fun refresh() {
+        viewModelScope.launch { performSearch() }
+    }
+
+    /** Performs the search job. */
+    private suspend fun performSearch() {
+        Log.i(TAG, "performSearch() called")
+
+        if (searchQuery.isBlank()) {
+            internalState.update {
+                it.copy(
+                    isLoading = false,
+                    isSearching = false,
+                    isInternetError = false,
+                )
+            }
+            return
+        }
+
+        if (!connectivityChecker.isInternetAvailable()) {
+            Log.w(TAG, "Internet connection not available. Returning")
+            internalState.update { it.copy(isLoading = false, isInternetError = true) }
+            return
+        }
+
+        // TODO: Do this inside the init block if possible because this
+        //       function is not supposed to load default value/s.
+        val defaultSortOptions = getDefaultSortOptions()
+        internalState.update { it.copy(sortOptions = defaultSortOptions) }
+
+        searchTorrentsUseCase(query = searchQuery, category = searchCategory)
+            .onCompletion { onSearchCompletion(cause = it) }
+            .collect { onSearchResultsReceived(searchResults = it) }
+    }
+
+    /** Invoked when search results are received. */
+    private fun onSearchResultsReceived(searchResults: List<SearchResult>) {
+        Log.i(TAG, "onSearchResultsReceived() called")
+
+        // TODO: Collect failures/errors as well and generate search results
+        //       summary which can be used to display on UI or for debugging
+        //       purpose.
+        val searchResults = searchResults.mapNotNull { it.getOrNull() }.flatten()
+
+        if (searchResults.isEmpty()) {
+            Log.i(TAG, "Received empty results. Returning")
+            return
+        }
+        Log.i(TAG, "Received ${searchResults.size} results")
+
+        val searchProviders = searchResults
+            .map { Pair(it.providerId, it.providerName) }
+            .distinct()
+            .sortedBy { (_, searchProviderName) -> searchProviderName }
+            .map { (searchProviderId, searchProviderName) ->
+                SearchProviderFilterOption(
+                    searchProviderId = searchProviderId,
+                    searchProviderName = searchProviderName,
+                    enabled = true,
+                    selected = true,
+                )
+            }
+
+        internalState.update {
+            it.copy(
+                filterOptions = it.filterOptions.copy(
+                    searchProviders = searchProviders,
+                ),
+                searchResults = searchResults,
+                isLoading = false,
+                isSearching = true,
+            )
+        }
+    }
+
+    /** Invoked when search completes or cancelled. */
+    private fun onSearchCompletion(cause: Throwable?) {
+        Log.i(TAG, "onSearchCompletion() called")
+
+        if (cause is CancellationException) {
+            Log.w(TAG, "Search is cancelled")
+            return
+        }
+
+        Log.i(TAG, "Search completed", cause)
+        internalState.update { it.copy(isLoading = false, isSearching = false) }
+    }
+
+    private companion object {
+        private const val TAG = "SearchResultsViewModel"
+    }
+}
+
+/** Applies the given filter options to this list. */
+private fun List<Torrent>.filterByOptions(options: FilterOptions): List<Torrent> {
+    val selectedSearchProvidersId = options.searchProviders.mapNotNull {
+        if (it.selected) it.searchProviderId else null
+    }
+
+    return this
+        .filter { options.deadTorrents || !it.isDead() }
+        .filter {
+            selectedSearchProvidersId.isEmpty() || it.providerId in selectedSearchProvidersId
+        }
+}
 
 data class SearchResultsUiState(
     val searchQuery: String = "",
@@ -49,386 +297,35 @@ data class SearchResultsUiState(
     val filteredSearchResults: List<Torrent>? = null,
     val currentSortCriteria: SortCriteria = SortCriteria.Default,
     val currentSortOrder: SortOrder = SortOrder.Default,
-    val filterOptions: FilterOptionsUiState = FilterOptionsUiState(),
+    val filterOptions: FilterOptions = FilterOptions(),
     val isLoading: Boolean = true,
     val isSearching: Boolean = false,
     val isInternetError: Boolean = false,
 )
 
-data class FilterOptionsUiState(
-    val searchProviders: List<SearchProviderFilterUiState> = emptyList(),
+private data class InternalState(
+    val filterQuery: String = "",
+    val sortOptions: SortOptions = SortOptions(),
+    val filterOptions: FilterOptions = FilterOptions(),
+    val searchResults: List<Torrent> = emptyList(),
+    val isLoading: Boolean = true,
+    val isSearching: Boolean = false,
+    val isInternetError: Boolean = false,
+)
+
+private data class SortOptions(
+    val criteria: SortCriteria = SortCriteria.Default,
+    val order: SortOrder = SortOrder.Default,
+)
+
+data class FilterOptions(
+    val searchProviders: List<SearchProviderFilterOption> = emptyList(),
     val deadTorrents: Boolean = true,
 )
 
-data class SearchProviderFilterUiState(
+data class SearchProviderFilterOption(
     val searchProviderId: SearchProviderId,
     val searchProviderName: String,
     val enabled: Boolean = false,
     val selected: Boolean = false,
 )
-
-private data class Settings(
-    val enableNSFWMode: Boolean,
-    val defaultSortOptions: DefaultSortOptions,
-    val maxNumResults: MaxNumResults,
-    val saveSearchHistory: Boolean,
-) {
-    data class DefaultSortOptions(
-        val sortCriteria: SortCriteria = SortCriteria.Default,
-        val sortOrder: SortOrder = SortOrder.Default,
-    )
-}
-
-@HiltViewModel
-class SearchResultsViewModel @Inject constructor(
-    private val torrentsRepository: TorrentsRepository,
-    private val searchProvidersRepository: SearchProvidersRepository,
-    private val settingsRepository: SettingsRepository,
-    private val searchHistoryRepository: SearchHistoryRepository,
-    private val connectivityChecker: ConnectivityChecker,
-    savedStateHandle: SavedStateHandle,
-) : ViewModel() {
-    private val _uiState = MutableStateFlow(SearchResultsUiState())
-    val uiState = _uiState.asStateFlow()
-
-    private val searchQuery = savedStateHandle.get<String>("query")
-    private val searchCategory = savedStateHandle.get<String>("category")?.let(Category::valueOf)
-
-    /**
-     * On-going search.
-     *
-     * Before initiating a new search, on-going search must be canceled
-     * even if it's not completed.
-     */
-    private var searchJob: Job? = null
-
-    init {
-        Log.i(TAG, "init is invoked")
-        Log.d(TAG, "Query = $searchQuery, Category = $searchCategory")
-
-        performSearch()
-        observeNSFWMode()
-    }
-
-    fun updateFilterQuery(query: String) {
-        _uiState.update { it.copy(filterQuery = query) }
-        filterSearchResultsByQuery(searchResults = _uiState.value.searchResults)
-    }
-
-    fun sortSearchResults(criteria: SortCriteria, order: SortOrder) {
-        viewModelScope.launch {
-            val sortedResults = withContext(Dispatchers.Default) {
-                _uiState.value.searchResults.customSort(
-                    criteria = criteria,
-                    order = order,
-                )
-            }
-
-            _uiState.update {
-                it.copy(
-                    searchResults = sortedResults,
-                    currentSortCriteria = criteria,
-                    currentSortOrder = order,
-                )
-            }
-        }
-    }
-
-    fun toggleSearchProviderResults(searchProviderId: SearchProviderId) {
-        val searchProvidersFilterUiState = _uiState.value.filterOptions.searchProviders.map {
-            if (it.searchProviderId == searchProviderId) {
-                it.copy(selected = !it.selected)
-            } else {
-                it
-            }
-        }
-
-        _uiState.update {
-            it.copy(
-                filterOptions = it.filterOptions.copy(
-                    searchProviders = searchProvidersFilterUiState,
-                )
-            )
-        }
-        filterSearchResultsByOptions()
-    }
-
-    fun toggleDeadTorrents() {
-        _uiState.update {
-            it.copy(
-                filterOptions = it.filterOptions.copy(
-                    deadTorrents = !it.filterOptions.deadTorrents,
-                )
-            )
-        }
-        filterSearchResultsByOptions()
-    }
-
-    private fun filterSearchResultsByQuery(searchResults: List<Torrent>) {
-        viewModelScope.launch {
-            val filterQuery = _uiState.value.filterQuery
-
-            if (filterQuery.isBlank()) {
-                _uiState.update { it.copy(filteredSearchResults = null) }
-                return@launch
-            }
-
-            val filteredSearchResults = withContext(Dispatchers.Default) {
-                searchResults.filter { it.name.contains(filterQuery, ignoreCase = true) }
-            }
-
-            _uiState.update {
-                it.copy(
-                    searchResults = searchResults,
-                    filteredSearchResults = filteredSearchResults,
-                )
-            }
-        }
-    }
-
-    private fun filterSearchResultsByOptions(showNSFWResults: Boolean? = null) {
-        viewModelScope.launch {
-            val filterOptions = _uiState.value.filterOptions
-
-            val selectedSearchProvidersId = filterOptions.searchProviders.mapNotNull {
-                if (it.selected) it.searchProviderId else null
-            }
-            val showNSFWResults = showNSFWResults ?: settingsRepository.enableNSFWMode.first()
-
-            val filteredSearchResults = withContext(Dispatchers.Default) {
-                torrentsRepository
-                    .getSearchResultsCache()
-                    .filter { it.providerId in selectedSearchProvidersId }
-                    .filter { filterOptions.deadTorrents || !(it.seeders == 0u && it.peers == 0u) }
-                    // Global filter option.
-                    .filterNSFW(isNSFWModeEnabled = showNSFWResults)
-                    .customSort(
-                        criteria = _uiState.value.currentSortCriteria,
-                        order = _uiState.value.currentSortOrder,
-                    )
-            }
-
-            if (_uiState.value.filterQuery.isBlank()) {
-                _uiState.update { it.copy(searchResults = filteredSearchResults) }
-            } else {
-                filterSearchResultsByQuery(searchResults = filteredSearchResults)
-            }
-        }
-    }
-
-    fun performSearch() {
-        Log.i(TAG, "performSearch() called")
-
-        val searchQuery = searchQuery ?: return
-        val searchCategory = searchCategory ?: return
-
-        if (searchQuery.isBlank()) {
-            return
-        }
-
-        Log.i(TAG, "Cancelling on-going search")
-        searchJob?.cancel()
-
-        Log.i(TAG, "Creating new job")
-        searchJob = viewModelScope.launch {
-            val settings = getLatestSettings()
-            Log.d(TAG, "Settings loaded. $settings")
-
-            val defaultSortOptions = settings.defaultSortOptions
-            _uiState.update {
-                it.copy(
-                    searchQuery = searchQuery,
-                    searchCategory = searchCategory,
-                    searchResults = emptyList(),
-                    filterOptions = FilterOptionsUiState(),
-                    currentSortCriteria = defaultSortOptions.sortCriteria,
-                    currentSortOrder = defaultSortOptions.sortOrder,
-                    isLoading = true,
-                    isSearching = false,
-                    isInternetError = false,
-                )
-            }
-
-            if (settings.saveSearchHistory) {
-                // Trim the query to prevent same query (e.g. 'one' and 'one ')
-                // from end upping into the database.
-                val query = searchQuery.trim()
-                searchHistoryRepository.createNewSearchHistory(query = query)
-            }
-
-            if (!connectivityChecker.isInternetAvailable()) {
-                Log.w(TAG, "Internet is not available. Returning...")
-
-                _uiState.update {
-                    it.copy(
-                        searchResults = emptyList(),
-                        isLoading = false,
-                        isSearching = false,
-                        isInternetError = true,
-                    )
-                }
-                return@launch
-            }
-
-            val enabledSearchProviders = getEnabledSearchProviders()
-            if (enabledSearchProviders.isEmpty()) {
-                Log.i(TAG, "Search providers are empty. Cancelling search")
-
-                _uiState.update {
-                    it.copy(
-                        searchResults = emptyList(),
-                        isLoading = false,
-                        isSearching = false,
-                        isInternetError = false,
-                    )
-                }
-                return@launch
-            }
-            Log.i(TAG, "Num enabled search providers = ${enabledSearchProviders.size}")
-
-            torrentsRepository
-                .search(
-                    query = searchQuery,
-                    category = searchCategory,
-                    searchProviders = enabledSearchProviders,
-                )
-                .takeWhile { shouldContinueSearch(maxNumResults = settings.maxNumResults) }
-                .onEach { onEachResult(result = it, settings = settings) }
-                .onCompletion { onSearchCompletion(cause = it) }
-                .launchIn(scope = this)
-        }
-    }
-
-    private suspend fun getLatestSettings(): Settings {
-        val defaultSortOptionsFlow = combine(
-            settingsRepository.defaultSortCriteria,
-            settingsRepository.defaultSortOrder,
-            Settings::DefaultSortOptions,
-        )
-
-        return combine(
-            settingsRepository.enableNSFWMode,
-            defaultSortOptionsFlow,
-            settingsRepository.maxNumResults,
-            settingsRepository.saveSearchHistory,
-            ::Settings,
-        ).first()
-    }
-
-    private suspend fun getEnabledSearchProviders(): List<SearchProvider> {
-        val searchProviders = if (searchCategory == null) {
-            searchProvidersRepository.getSearchProvidersInstance()
-        } else {
-            searchProvidersRepository.getSearchProvidersInstance(category = searchCategory)
-        }
-        val enabledSearchProvidersId = settingsRepository.enabledSearchProvidersId.first()
-
-        return searchProviders.filter { it.info.id in enabledSearchProvidersId }
-    }
-
-    private fun shouldContinueSearch(maxNumResults: MaxNumResults): Boolean {
-        return maxNumResults.isUnlimited() || _uiState.value.searchResults.size < maxNumResults.n
-    }
-
-    private fun filterSearchResultsBySettings(
-        searchResults: List<Torrent>,
-        settings: Settings,
-    ): List<Torrent> {
-        val nsfwFilteredResults = searchResults.filterNSFW(
-            isNSFWModeEnabled = settings.enableNSFWMode,
-        )
-
-        return if (settings.maxNumResults.isUnlimited()) {
-            nsfwFilteredResults
-        } else {
-            val numResultsLeft = settings.maxNumResults.n - _uiState.value.searchResults.size
-            nsfwFilteredResults.take(numResultsLeft)
-        }
-    }
-
-    private fun onEachResult(result: Result<List<Torrent>>, settings: Settings) {
-        result.fold(
-            onSuccess = { onSuccessResult(searchResults = it, settings = settings) },
-            onFailure = { onFailureResult(cause = it) },
-        )
-    }
-
-    private fun onSuccessResult(searchResults: List<Torrent>, settings: Settings) {
-        Log.i(TAG, "onSuccessResult() called")
-
-        val searchResults = filterSearchResultsBySettings(
-            searchResults = searchResults,
-            settings = settings,
-        )
-
-        if (searchResults.isEmpty()) {
-            Log.i(TAG, "Received empty or filtered out results. Returning")
-            return
-        }
-
-        Log.i(TAG, "Received ${searchResults.size} results")
-        Log.i(TAG, "Sorting search results")
-
-        val sortedSearchResults = with(_uiState.value) {
-            this.searchResults
-                .plus(searchResults)
-                .customSort(
-                    criteria = this.currentSortCriteria,
-                    order = this.currentSortOrder,
-                )
-        }
-
-        val searchProviderFilterUiState = with(searchResults.first()) {
-            SearchProviderFilterUiState(
-                searchProviderId = this.providerId,
-                searchProviderName = this.providerName,
-                enabled = true,
-                selected = true,
-            )
-        }
-
-        _uiState.update {
-            it.copy(
-                searchResults = sortedSearchResults,
-                filterOptions = it.filterOptions.copy(
-                    searchProviders = it.filterOptions.searchProviders.plus(
-                        searchProviderFilterUiState,
-                    )
-                ),
-                isLoading = false,
-                isSearching = true,
-                isInternetError = false,
-            )
-        }
-    }
-
-    private fun onFailureResult(cause: Throwable) {
-        Log.i(TAG, "onFailureResult() called")
-        // TODO: Create a report so that UI can display it.
-        Log.e(TAG, "Received failure result", cause)
-    }
-
-    private fun onSearchCompletion(cause: Throwable?) {
-        Log.i(TAG, "onSearchCompletion() called")
-
-        if (cause is CancellationException) {
-            Log.w(TAG, "Search is cancelled. Returning...")
-            return
-        }
-
-        Log.d(TAG, "cause", cause)
-        Log.i(TAG, "Search completed")
-
-        _uiState.update { it.copy(isLoading = false, isSearching = false) }
-    }
-
-    private fun observeNSFWMode() = viewModelScope.launch {
-        settingsRepository.enableNSFWMode.distinctUntilChanged().collect {
-            filterSearchResultsByOptions(showNSFWResults = it)
-        }
-    }
-
-    private companion object {
-        private const val TAG = "SearchResultsViewModel"
-    }
-}
