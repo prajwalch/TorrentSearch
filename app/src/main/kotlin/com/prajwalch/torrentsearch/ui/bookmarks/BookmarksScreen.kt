@@ -99,7 +99,10 @@ fun BookmarksScreen(
         }
     }
     val topBarActions: @Composable RowScope.() -> Unit = @Composable {
-        if (!showSearchBar && uiState.bookmarks.isNotEmpty()) {
+        val isResultsNotEmpty = uiState.bookmarks.isNotEmpty()
+        val isFilterQueryNotBlank = uiState.filterQuery.isNotBlank()
+
+        if (!showSearchBar && (isResultsNotEmpty || isFilterQueryNotBlank)) {
             SearchIconButton(onClick = { showSearchBar = true })
             SortIconButton(onClick = { showSortMenu = true })
             SortDropdownMenu(
