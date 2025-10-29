@@ -19,6 +19,7 @@ import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -43,6 +44,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
@@ -70,6 +72,8 @@ import com.prajwalch.torrentsearch.ui.components.TorrentList
 import com.prajwalch.torrentsearch.ui.theme.spaces
 import com.prajwalch.torrentsearch.utils.categoryStringResource
 
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -86,6 +90,7 @@ fun SearchResultsScreen(
 
     val coroutineScope = rememberCoroutineScope()
     val lazyListState = rememberLazyListState()
+    val textFieldState = rememberTextFieldState("")
     val searchBarFocusRequester = remember { FocusRequester() }
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
 
@@ -111,8 +116,7 @@ fun SearchResultsScreen(
         if (showSearchBar) {
             SearchBar(
                 modifier = Modifier.focusRequester(searchBarFocusRequester),
-                query = uiState.filterQuery,
-                onQueryChange = viewModel::updateFilterQuery,
+                textFieldState = textFieldState,
                 placeholder = { Text(text = stringResource(R.string.search_results_query_hint)) },
             )
         }
@@ -150,6 +154,14 @@ fun SearchResultsScreen(
     LaunchedEffect(showSearchBar) {
         if (showSearchBar) {
             searchBarFocusRequester.requestFocus()
+        }
+    }
+
+    if (showSearchBar) {
+        LaunchedEffect(Unit) {
+            snapshotFlow { textFieldState.text }
+                .distinctUntilChanged()
+                .collectLatest { viewModel.filterSearchResults(query = it.toString()) }
         }
     }
 

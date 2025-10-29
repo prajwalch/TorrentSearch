@@ -130,7 +130,6 @@ class SearchResultsViewModel @Inject constructor(
             searchQuery = searchQuery,
             searchCategory = searchCategory,
             searchResults = filteredSearchResults,
-            filterQuery = filterQuery,
             currentSortCriteria = sortOptions.criteria,
             currentSortOrder = sortOptions.order,
             filterOptions = filterOptions,
@@ -140,9 +139,9 @@ class SearchResultsViewModel @Inject constructor(
         )
     }
 
-    // FIXME: We ran into text field synchronization issue.
-    /** Updates the current filter query by replacing it with the given one. */
-    fun updateFilterQuery(query: String) {
+    /** Shows only those search results that contains the given query. */
+    fun filterSearchResults(query: String) {
+        val query = if (query.isNotBlank()) query.trim() else query
         internalState.update { it.copy(filterQuery = query) }
     }
 
@@ -293,7 +292,6 @@ data class SearchResultsUiState(
     val searchQuery: String = "",
     val searchCategory: Category = Category.All,
     val searchResults: List<Torrent> = emptyList(),
-    val filterQuery: String = "",
     val filteredSearchResults: List<Torrent>? = null,
     val currentSortCriteria: SortCriteria = SortCriteria.Default,
     val currentSortOrder: SortOrder = SortOrder.Default,
