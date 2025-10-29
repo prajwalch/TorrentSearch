@@ -2,9 +2,9 @@ package com.prajwalch.torrentsearch.ui.bookmarks
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.prajwalch.torrentsearch.data.repository.BookmarksRepository
 
 import com.prajwalch.torrentsearch.data.repository.SettingsRepository
-import com.prajwalch.torrentsearch.data.repository.TorrentsRepository
 import com.prajwalch.torrentsearch.extensions.customSort
 import com.prajwalch.torrentsearch.models.SortCriteria
 import com.prajwalch.torrentsearch.models.SortOrder
@@ -38,7 +38,7 @@ private data class SortOptions(
 /** ViewModel that handles the business logic of Bookmarks screen. */
 @HiltViewModel
 class BookmarksViewModel @Inject constructor(
-    private val torrentsRepository: TorrentsRepository,
+    private val bookmarksRepository: BookmarksRepository,
     settingsRepository: SettingsRepository,
 ) : ViewModel() {
     private val filterQuery = MutableStateFlow("")
@@ -47,7 +47,7 @@ class BookmarksViewModel @Inject constructor(
     val uiState = combine(
         filterQuery,
         sortOptions,
-        torrentsRepository.observeAllBookmarks(),
+        bookmarksRepository.observeAllBookmarks(),
         settingsRepository.enableNSFWMode,
     ) { filterQuery, sortOptions, bookmarks, nsfwModeEnabled ->
         val bookmarks = bookmarks
@@ -76,7 +76,7 @@ class BookmarksViewModel @Inject constructor(
      */
     fun bookmarkTorrent(torrent: Torrent) {
         viewModelScope.launch {
-            torrentsRepository.bookmarkTorrent(torrent)
+            bookmarksRepository.bookmarkTorrent(torrent)
         }
     }
 
@@ -89,14 +89,14 @@ class BookmarksViewModel @Inject constructor(
      */
     fun deleteBookmarkedTorrent(torrent: Torrent) {
         viewModelScope.launch {
-            torrentsRepository.deleteBookmarkedTorrent(torrent)
+            bookmarksRepository.deleteBookmarkedTorrent(torrent)
         }
     }
 
     /** Deletes all bookmarks. */
     fun deleteAllBookmarks() {
         viewModelScope.launch {
-            torrentsRepository.deleteAllBookmarks()
+            bookmarksRepository.deleteAllBookmarks()
         }
     }
 
