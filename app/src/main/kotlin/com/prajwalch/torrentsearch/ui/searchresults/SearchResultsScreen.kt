@@ -125,7 +125,7 @@ fun SearchResultsScreen(
         val isResultsEmpty =
             uiState.filteredSearchResults == null && uiState.searchResults.isEmpty()
 
-        if (!showSearchBar && !isResultsEmpty) {
+        if (!showSearchBar && (!isResultsEmpty || textFieldState.text.isNotBlank())) {
             SearchIconButton(onClick = { showSearchBar = true })
             SortIconButton(onClick = { showSortMenu = true })
             SortDropdownMenu(
