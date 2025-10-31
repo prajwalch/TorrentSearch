@@ -7,8 +7,6 @@ import android.os.Build
 import android.provider.Settings
 
 import androidx.annotation.RequiresApi
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -134,15 +132,6 @@ private fun AppearanceSettings(modifier: Modifier = Modifier) {
     val viewModel = LocalSettingsViewModel.current
     val settings by viewModel.appearanceSettingsUiState.collectAsStateWithLifecycle()
 
-    val isSystemInDarkTheme = isSystemInDarkTheme()
-    val showPureBlackSetting = remember(settings.darkTheme, isSystemInDarkTheme) {
-        when (settings.darkTheme) {
-            DarkTheme.On -> true
-            DarkTheme.Off -> false
-            DarkTheme.FollowSystem -> isSystemInDarkTheme
-        }
-    }
-
     Column(modifier = modifier) {
         SettingsSectionTitle(title = R.string.settings_section_appearance)
 
@@ -192,19 +181,17 @@ private fun AppearanceSettings(modifier: Modifier = Modifier) {
             }
         }
 
-        AnimatedVisibility(visible = showPureBlackSetting) {
-            SettingsListItem(
-                onClick = { viewModel.enablePureBlackTheme(!settings.pureBlack) },
-                icon = R.drawable.ic_contrast,
-                headline = R.string.settings_pure_black,
-                trailingContent = {
-                    Switch(
-                        checked = settings.pureBlack,
-                        onCheckedChange = { viewModel.enablePureBlackTheme(it) },
-                    )
-                },
-            )
-        }
+        SettingsListItem(
+            onClick = { viewModel.enablePureBlackTheme(!settings.pureBlack) },
+            icon = R.drawable.ic_contrast,
+            headline = R.string.settings_pure_black,
+            trailingContent = {
+                Switch(
+                    checked = settings.pureBlack,
+                    onCheckedChange = { viewModel.enablePureBlackTheme(it) },
+                )
+            },
+        )
     }
 }
 
