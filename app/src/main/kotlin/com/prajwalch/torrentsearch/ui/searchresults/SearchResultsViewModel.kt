@@ -292,7 +292,6 @@ data class SearchResultsUiState(
     val searchQuery: String = "",
     val searchCategory: Category = Category.All,
     val searchResults: List<Torrent> = emptyList(),
-    val filteredSearchResults: List<Torrent>? = null,
     val currentSortCriteria: SortCriteria = SortCriteria.Default,
     val currentSortOrder: SortOrder = SortOrder.Default,
     val filterOptions: FilterOptions = FilterOptions(),
