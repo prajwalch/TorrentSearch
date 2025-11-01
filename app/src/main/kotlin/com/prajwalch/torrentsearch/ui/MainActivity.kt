@@ -21,7 +21,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.prajwalch.torrentsearch.models.Category
 import com.prajwalch.torrentsearch.models.DarkTheme
 import com.prajwalch.torrentsearch.models.MagnetUri
-import com.prajwalch.torrentsearch.ui.settings.SettingsViewModel
 import com.prajwalch.torrentsearch.ui.theme.TorrentSearchTheme
 
 import dagger.hilt.android.AndroidEntryPoint
@@ -41,10 +40,10 @@ class MainActivity : ComponentActivity() {
 
         enableEdgeToEdge()
         setContent {
-            val settingsViewModel = hiltViewModel<SettingsViewModel>()
-            val appearanceSettings by settingsViewModel.appearanceSettingsUiState.collectAsStateWithLifecycle()
+            val mainViewModel = hiltViewModel<MainViewModel>()
+            val uiState by mainViewModel.uiState.collectAsStateWithLifecycle()
 
-            val darkTheme = when (appearanceSettings.darkTheme) {
+            val darkTheme = when (uiState.darkTheme) {
                 DarkTheme.On -> true
                 DarkTheme.Off -> false
                 DarkTheme.FollowSystem -> isSystemInDarkTheme()
@@ -52,8 +51,8 @@ class MainActivity : ComponentActivity() {
 
             TorrentSearchTheme(
                 darkTheme = darkTheme,
-                dynamicColor = appearanceSettings.enableDynamicTheme,
-                pureBlack = appearanceSettings.pureBlack,
+                dynamicColor = uiState.enableDynamicTheme,
+                pureBlack = uiState.pureBlack,
             ) {
                 TorrentSearchApp(
                     onDownloadTorrent = ::downloadTorrentViaClient,
