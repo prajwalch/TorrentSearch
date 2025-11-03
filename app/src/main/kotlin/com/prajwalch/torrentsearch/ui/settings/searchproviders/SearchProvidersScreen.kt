@@ -108,7 +108,7 @@ fun SearchProvidersScreen(
             searchProviders = searchProvidersUiState,
             listItem = { searchProviderUiState ->
                 when (searchProviderUiState.type) {
-                    is SearchProviderType.Builtin -> {
+                    SearchProviderType.Builtin -> {
                         BuiltinSearchProviderListItem(
                             modifier = Modifier.animateItem(),
                             name = searchProviderUiState.name,
@@ -125,7 +125,7 @@ fun SearchProvidersScreen(
                         )
                     }
 
-                    is SearchProviderType.Torznab -> {
+                    SearchProviderType.Torznab -> {
                         TorznabSearchProviderListItem(
                             modifier = Modifier.animateItem(),
                             name = searchProviderUiState.name,

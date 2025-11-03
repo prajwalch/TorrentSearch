@@ -50,15 +50,15 @@ sealed class SearchProviderSafetyStatus {
 }
 
 /** Specifies the type of search provider. */
-sealed class SearchProviderType {
+enum class SearchProviderType {
     /** Search provider is built-in. */
-    object Builtin : SearchProviderType()
+    Builtin,
 
     /**
      * Search provider is externally added Torznab API compatible search
      * provider.
      */
-    object Torznab : SearchProviderType()
+    Torznab
 }
 
 /** The search context. */
