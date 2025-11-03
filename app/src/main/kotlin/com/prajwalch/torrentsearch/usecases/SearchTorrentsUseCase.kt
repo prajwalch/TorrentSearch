@@ -1,11 +1,11 @@
 package com.prajwalch.torrentsearch.usecases
 
 import com.prajwalch.torrentsearch.data.repository.SearchProvidersRepository
-import com.prajwalch.torrentsearch.data.repository.SearchResult
 import com.prajwalch.torrentsearch.data.repository.SettingsRepository
 import com.prajwalch.torrentsearch.data.repository.TorrentsRepository
 import com.prajwalch.torrentsearch.models.Category
 import com.prajwalch.torrentsearch.models.MaxNumResults
+import com.prajwalch.torrentsearch.models.SearchResults
 import com.prajwalch.torrentsearch.providers.SearchProvider
 
 import kotlinx.coroutines.flow.Flow
@@ -21,7 +21,7 @@ class SearchTorrentsUseCase @Inject constructor(
     private val searchProvidersRepository: SearchProvidersRepository,
     private val settingsRepository: SettingsRepository,
 ) {
-    operator fun invoke(query: String, category: Category): Flow<List<SearchResult>> = flow {
+    operator fun invoke(query: String, category: Category): Flow<SearchResults> = flow {
         val enabledSearchProviders = getEnabledSearchProviders(category = category)
         val limit = getSearchResultsLimit()
 
@@ -31,7 +31,7 @@ class SearchTorrentsUseCase @Inject constructor(
                 category = category,
                 searchProviders = enabledSearchProviders,
             )
-            .takeWhile { limit.isUnlimited() || it.size < limit.n }
+            .takeWhile { limit.isUnlimited() || it.successes.size < limit.n }
             .collect { emit(it) }
     }
 

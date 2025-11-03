@@ -6,11 +6,11 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 
 import com.prajwalch.torrentsearch.data.repository.SearchHistoryRepository
-import com.prajwalch.torrentsearch.data.repository.SearchResult
 import com.prajwalch.torrentsearch.data.repository.SettingsRepository
 import com.prajwalch.torrentsearch.extensions.customSort
 import com.prajwalch.torrentsearch.extensions.filterNSFW
 import com.prajwalch.torrentsearch.models.Category
+import com.prajwalch.torrentsearch.models.SearchResults
 import com.prajwalch.torrentsearch.models.SortCriteria
 import com.prajwalch.torrentsearch.models.SortOrder
 import com.prajwalch.torrentsearch.models.Torrent
@@ -218,13 +218,13 @@ class SearchResultsViewModel @Inject constructor(
     }
 
     /** Invoked when search results are received. */
-    private fun onSearchResultsReceived(searchResults: List<SearchResult>) {
+    private fun onSearchResultsReceived(searchResults: SearchResults) {
         Log.i(TAG, "onSearchResultsReceived() called")
 
         // TODO: Collect failures/errors as well and generate search results
         //       summary which can be used to display on UI or for debugging
         //       purpose.
-        val searchResults = searchResults.mapNotNull { it.getOrNull() }.flatten()
+        val searchResults = searchResults.successes
 
         if (searchResults.isEmpty()) {
             Log.i(TAG, "Received empty results. Returning")

@@ -2,6 +2,7 @@ package com.prajwalch.torrentsearch.data.repository
 
 import com.prajwalch.torrentsearch.data.remote.TorrentsRemoteDataSource
 import com.prajwalch.torrentsearch.models.Category
+import com.prajwalch.torrentsearch.models.SearchResults
 import com.prajwalch.torrentsearch.models.Torrent
 import com.prajwalch.torrentsearch.providers.SearchProvider
 
@@ -12,8 +13,6 @@ import kotlinx.coroutines.flow.flowOn
 
 import javax.inject.Inject
 
-typealias SearchResult = Result<List<Torrent>>
-
 class TorrentsRepository @Inject constructor(
     private val remoteDataSource: TorrentsRemoteDataSource,
 ) {
@@ -21,8 +20,9 @@ class TorrentsRepository @Inject constructor(
         query: String,
         category: Category,
         searchProviders: List<SearchProvider>,
-    ): Flow<List<SearchResult>> = flow {
-        val searchResults = mutableListOf<SearchResult>()
+    ): Flow<SearchResults> = flow {
+        val successes = mutableListOf<Torrent>()
+        val failures = mutableListOf<Throwable>()
 
         remoteDataSource
             .searchTorrents(
@@ -30,9 +30,12 @@ class TorrentsRepository @Inject constructor(
                 category = category,
                 searchProviders = searchProviders,
             )
-            .collect {
-                searchResults.add(it)
-                emit(searchResults.toList())
+            .collect { searchBatchResult ->
+                searchBatchResult
+                    .onSuccess { successes.addAll(it) }
+                    .onFailure { failures.add(it) }
+
+                emit(SearchResults(successes = successes, failures = failures))
             }
     }.flowOn(Dispatchers.IO)
 }

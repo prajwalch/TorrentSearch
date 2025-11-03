@@ -4,6 +4,7 @@ import android.net.Uri
 import android.util.Log
 
 import com.prajwalch.torrentsearch.models.Category
+import com.prajwalch.torrentsearch.models.SearchProviderException
 import com.prajwalch.torrentsearch.models.Torrent
 import com.prajwalch.torrentsearch.network.HttpClient
 import com.prajwalch.torrentsearch.providers.SearchContext
@@ -32,14 +33,25 @@ class TorrentsRemoteDataSource @Inject constructor(private val httpClient: HttpC
         Log.d(TAG, "Encoded query = $encodedQuery")
 
         for (searchProvider in searchProviders) {
-            Log.i(TAG, "Launching ${searchProvider.info.name} (${searchProvider.info.id})")
+            val searchProviderInfo = searchProvider.info
+            Log.i(TAG, "Launching ${searchProviderInfo.name} (${searchProviderInfo.id})")
 
             launch {
-                val result = runCatching {
-                    searchProvider.search(query = encodedQuery, context = searchContext)
+                try {
+                    val searchBatchResult = searchProvider.search(
+                        query = encodedQuery,
+                        context = searchContext,
+                    )
+                    send(Result.success(searchBatchResult))
+                } catch (cause: Throwable) {
+                    val searchProviderException = SearchProviderException(
+                        id = searchProviderInfo.id,
+                        name = searchProviderInfo.name,
+                        url = searchProviderInfo.url,
+                        cause = cause,
+                    )
+                    send(Result.failure(searchProviderException))
                 }
-                Log.d(TAG, "Got ${searchProvider.info.name} result: success = ${result.isSuccess}")
-                send(result)
             }
         }
     }
