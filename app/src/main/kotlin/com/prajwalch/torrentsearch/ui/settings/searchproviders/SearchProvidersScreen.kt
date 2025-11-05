@@ -7,7 +7,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.RowScope
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -17,6 +17,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FilledTonalIconButton
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -246,15 +247,13 @@ private fun BuiltinSearchProviderListItem(
         url = url,
         checked = checked,
         onCheckedChange = onCheckedChange,
-        badges = {
-            CategoryBadge(category = specializedCategory)
-
-            if (safetyStatus is SearchProviderSafetyStatus.Unsafe) {
-                UnsafeBadge(modifier = Modifier.clickable {
-                    showUnsafeReason = safetyStatus.reason
-                })
-            }
-        },
+        category = specializedCategory,
+        isTorznab = false,
+        isUnsafe = safetyStatus.isUnsafe(),
+        onShowUnsafeReason = {
+            require(safetyStatus is SearchProviderSafetyStatus.Unsafe)
+            showUnsafeReason = safetyStatus.reason
+        }
     )
 }
 
@@ -326,11 +325,10 @@ private fun TorznabSearchProviderListItem(
             url = url,
             checked = checked,
             onCheckedChange = onCheckedChange,
-            badges = {
-                CategoryBadge(category = specializedCategory)
-                TorznabBadge()
-                if (safetyStatus.isUnsafe()) UnsafeBadge()
-            },
+            category = specializedCategory,
+            isTorznab = true,
+            isUnsafe = safetyStatus.isUnsafe(),
+            onShowUnsafeReason = {},
         )
 
         TorznabSearchProviderMenu(
@@ -395,8 +393,11 @@ private fun SearchProviderListItem(
     url: String,
     checked: Boolean,
     onCheckedChange: (Boolean) -> Unit,
+    category: Category,
+    isTorznab: Boolean,
+    isUnsafe: Boolean,
+    onShowUnsafeReason: () -> Unit,
     modifier: Modifier = Modifier,
-    badges: @Composable (RowScope.() -> Unit) = {},
 ) {
     ListItem(
         modifier = modifier,
@@ -409,11 +410,30 @@ private fun SearchProviderListItem(
                 ),
             ) {
                 SearchProviderUrl(url = url)
-                BadgesRow(badges = badges)
+                BadgesRow {
+                    CategoryBadge(category = category)
+                    if (isTorznab) TorznabBadge()
+                    if (isUnsafe) UnsafeBadge()
+                }
             }
         },
         trailingContent = {
-            Switch(checked = checked, onCheckedChange = onCheckedChange)
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(
+                    space = MaterialTheme.spaces.extraSmall,
+                ),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                if (isUnsafe) {
+                    FilledTonalIconButton(onClick = onShowUnsafeReason) {
+                        Icon(
+                            painter = painterResource(R.drawable.ic_question_mark),
+                            contentDescription = null,
+                        )
+                    }
+                }
+                Switch(checked = checked, onCheckedChange = onCheckedChange)
+            }
         },
     )
 }
