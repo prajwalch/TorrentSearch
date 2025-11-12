@@ -7,12 +7,14 @@ import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
@@ -68,6 +70,7 @@ fun BookmarksScreen(
     var showSortMenu by remember(uiState.currentSortCriteria, uiState.currentSortOrder) {
         mutableStateOf(false)
     }
+    var showDeleteAllConfirmationDialog by remember { mutableStateOf(false) }
     val showScrollToTopButton by remember {
         derivedStateOf { lazyListState.firstVisibleItemIndex > 1 }
     }
@@ -113,7 +116,7 @@ fun BookmarksScreen(
                 onSortRequest = viewModel::sortBookmarks,
             )
             DeleteForeverIconButton(
-                onClick = { viewModel.deleteAllBookmarks() },
+                onClick = { showDeleteAllConfirmationDialog = true },
                 contentDescription = R.string.bookmarks_action_delete_all,
             )
         }
@@ -128,6 +131,16 @@ fun BookmarksScreen(
         if (showSearchBar) {
             searchBarFocusRequester.requestFocus()
         }
+    }
+
+    if (showDeleteAllConfirmationDialog) {
+        DeleteAllConfirmationDialog(
+            onDismiss = { showDeleteAllConfirmationDialog = false },
+            onConfirm = {
+                viewModel.deleteAllBookmarks()
+                showDeleteAllConfirmationDialog = false
+            },
+        )
     }
 
     Scaffold(
@@ -172,4 +185,32 @@ fun BookmarksScreen(
             )
         }
     }
+}
+
+@Composable
+private fun DeleteAllConfirmationDialog(
+    onDismiss: () -> Unit,
+    onConfirm: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    AlertDialog(
+        modifier = modifier,
+        onDismissRequest = onDismiss,
+        title = {
+            Text(text = stringResource(R.string.bookmarks_dialog_title_delete_all))
+        },
+        confirmButton = {
+            TextButton(onClick = onConfirm) {
+                Text(text = stringResource(R.string.bookmarks_button_delete))
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text(text = stringResource(R.string.button_cancel))
+            }
+        },
+        text = {
+            Text(text = stringResource(R.string.bookmarks_dialog_message_delete_all))
+        },
+    )
 }

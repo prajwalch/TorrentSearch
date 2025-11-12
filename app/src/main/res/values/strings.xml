@@ -72,6 +72,9 @@
     </plurals>
     <string name="bookmarks_search_query_hint">Search bookmarks</string>
     <string name="bookmarks_action_delete_all">Delete all</string>
+    <string name="bookmarks_dialog_title_delete_all">Delete all bookmarks?</string>
+    <string name="bookmarks_dialog_message_delete_all">Bookmarks will be permanently removed</string>
+    <string name="bookmarks_button_delete">Delete</string>
     <string name="bookmarks_empty_message">No bookmarks</string>
 
     <string name="search_history_screen_title">Search history</string>
