@@ -115,4 +115,7 @@
     <string name="settings_enable_nsfw_mode_summary">Вимкніть, щоб сховати чутливі категорії й результати пошуку.</string>
     <string name="safety_status_safe">Безпечний</string>
     <string name="search_history_query_copied_message">Запит скопійовано в буфер обміну!</string>
+    <string name="bookmarks_dialog_title_delete_all">Видалити всі закладки?</string>
+    <string name="bookmarks_dialog_message_delete_all">Закладки будуть вилучені назавжди</string>
+    <string name="bookmarks_button_delete">Видалити</string>
 </resources>
