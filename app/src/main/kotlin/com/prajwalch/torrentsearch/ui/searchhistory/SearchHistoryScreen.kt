@@ -1,35 +1,58 @@
 package com.prajwalch.torrentsearch.ui.searchhistory
 
+import androidx.compose.foundation.LocalIndication
+import androidx.compose.foundation.combinedClickable
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.platform.LocalClipboard
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 
 import com.prajwalch.torrentsearch.R
+import com.prajwalch.torrentsearch.extensions.copyText
+import com.prajwalch.torrentsearch.models.SearchHistory
+import com.prajwalch.torrentsearch.models.SearchHistoryId
 import com.prajwalch.torrentsearch.ui.components.ArrowBackIconButton
 import com.prajwalch.torrentsearch.ui.components.DeleteForeverIconButton
 import com.prajwalch.torrentsearch.ui.components.EmptyPlaceholder
 import com.prajwalch.torrentsearch.ui.components.SearchHistoryList
 import com.prajwalch.torrentsearch.ui.components.SearchHistoryListItem
 
+import kotlinx.coroutines.launch
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SearchHistoryScreen(onNavigateBack: () -> Unit, modifier: Modifier = Modifier) {
+fun SearchHistoryScreen(
+    onNavigateBack: () -> Unit,
+    onPerformSearch: (String) -> Unit,
+    modifier: Modifier = Modifier,
+) {
     val viewModel = hiltViewModel<SearchHistoryViewModel>()
     val searchHistoryList by viewModel.uiState.collectAsStateWithLifecycle()
 
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
+    val clipboard = LocalClipboard.current
+
+    val snackbarHostState = remember { SnackbarHostState() }
+    val coroutineScope = rememberCoroutineScope()
+    val queryCopiedMessage = stringResource(R.string.search_history_query_copied_message)
 
     Scaffold(
         modifier = Modifier
@@ -51,6 +74,7 @@ fun SearchHistoryScreen(onNavigateBack: () -> Unit, modifier: Modifier = Modifie
                 scrollBehavior = scrollBehavior,
             )
         },
+        snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
     ) { innerPadding ->
         if (searchHistoryList.isEmpty()) {
             EmptyPlaceholder(
@@ -65,16 +89,64 @@ fun SearchHistoryScreen(onNavigateBack: () -> Unit, modifier: Modifier = Modifie
                     .fillMaxSize()
                     .consumeWindowInsets(innerPadding),
                 histories = searchHistoryList,
-                historyListItem = {
-                    SearchHistoryListItem(
-                        modifier = Modifier.animateItem(),
-                        query = it.query,
-                        onDeleteClick = { viewModel.deleteSearchHistory(id = it.id) },
-                    )
+                onPerformSearch = onPerformSearch,
+                onCopyQueryToClipboard = {
+                    coroutineScope.launch {
+                        clipboard.copyText(text = it)
+                        snackbarHostState.showSnackbar(message = queryCopiedMessage)
+                    }
                 },
-                key = { it.id },
+                onDelete = { viewModel.deleteSearchHistory(id = it) },
                 contentPadding = innerPadding,
             )
         }
     }
+}
+
+@Composable
+private fun SearchHistoryList(
+    histories: List<SearchHistory>,
+    onPerformSearch: (String) -> Unit,
+    onCopyQueryToClipboard: (String) -> Unit,
+    onDelete: (SearchHistoryId) -> Unit,
+    modifier: Modifier = Modifier,
+    contentPadding: PaddingValues = PaddingValues(0.dp),
+) {
+    SearchHistoryList(
+        modifier = modifier,
+        histories = histories,
+        historyListItem = { searchHistory ->
+            SearchHistoryListItem(
+                modifier = Modifier.animateItem(),
+                searchHistory = searchHistory,
+                onPerformSearch = onPerformSearch,
+                onCopyQueryToClipboard = onCopyQueryToClipboard,
+                onDelete = onDelete,
+            )
+        },
+        key = { it.id },
+        contentPadding = contentPadding,
+    )
+}
+
+@Composable
+private fun SearchHistoryListItem(
+    searchHistory: SearchHistory,
+    onPerformSearch: (String) -> Unit,
+    onCopyQueryToClipboard: (String) -> Unit,
+    onDelete: (SearchHistoryId) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    SearchHistoryListItem(
+        modifier = Modifier
+            .combinedClickable(
+                interactionSource = null,
+                indication = LocalIndication.current,
+                onClick = { onPerformSearch(searchHistory.query) },
+                onLongClick = { onCopyQueryToClipboard(searchHistory.query) },
+            )
+            .then(modifier),
+        query = searchHistory.query,
+        onDeleteClick = { onDelete(searchHistory.id) },
+    )
 }

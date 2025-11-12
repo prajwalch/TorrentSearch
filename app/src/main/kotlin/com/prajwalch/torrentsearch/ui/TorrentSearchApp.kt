@@ -1,7 +1,5 @@
 package com.prajwalch.torrentsearch.ui
 
-import android.content.ClipData
-
 import androidx.compose.animation.AnimatedContentTransitionScope.SlideDirection
 import androidx.compose.animation.fadeIn
 import androidx.compose.material3.SnackbarHostState
@@ -11,8 +9,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.platform.ClipEntry
-import androidx.compose.ui.platform.Clipboard
 import androidx.compose.ui.platform.LocalClipboard
 import androidx.compose.ui.res.stringResource
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
@@ -21,6 +17,8 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 
 import com.prajwalch.torrentsearch.R
+import com.prajwalch.torrentsearch.extensions.copyText
+import com.prajwalch.torrentsearch.models.Category
 import com.prajwalch.torrentsearch.models.MagnetUri
 import com.prajwalch.torrentsearch.models.Torrent
 import com.prajwalch.torrentsearch.ui.bookmarks.BookmarksScreen
@@ -146,24 +144,23 @@ fun TorrentSearchApp(
         composable(
             route = Screens.SEARCH_HISTORY,
             enterTransition = { slideIntoContainer(SlideDirection.Start) },
+            exitTransition = { slideOutOfContainer(SlideDirection.Start) },
             popExitTransition = { slideOutOfContainer(SlideDirection.End) },
         ) {
-            SearchHistoryScreen(onNavigateBack = { navController.navigateUp() })
+            SearchHistoryScreen(
+                onNavigateBack = { navController.navigateUp() },
+                onPerformSearch = {
+                    val searchResultsRoute = Screens.createSearchResultsRoute(
+                        query = it,
+                        category = Category.All,
+                    )
+                    navController.navigate(searchResultsRoute) {
+                        popUpTo(route = Screens.SEARCH)
+                    }
+                }
+            )
         }
 
         settingsNavigation(navController = navController)
     }
-}
-
-/** Copies the text into the clipboard. */
-private suspend fun Clipboard.copyText(text: String) {
-    val clipData = ClipData.newPlainText(
-        /* label = */
-        null,
-        /* text = */
-        text,
-    )
-    val clipEntry = ClipEntry(clipData = clipData)
-
-    this@copyText.setClipEntry(clipEntry = clipEntry)
 }
