@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
@@ -29,6 +30,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
@@ -196,8 +198,17 @@ private fun DeleteAllConfirmationDialog(
     AlertDialog(
         modifier = modifier,
         onDismissRequest = onDismiss,
+        icon = {
+            Icon(
+                painter = painterResource(R.drawable.ic_delete_forever),
+                contentDescription = null,
+            )
+        },
         title = {
             Text(text = stringResource(R.string.bookmarks_dialog_title_delete_all))
+        },
+        text = {
+            Text(text = stringResource(R.string.bookmarks_dialog_message_delete_all))
         },
         confirmButton = {
             TextButton(onClick = onConfirm) {
@@ -208,9 +219,6 @@ private fun DeleteAllConfirmationDialog(
             TextButton(onClick = onDismiss) {
                 Text(text = stringResource(R.string.button_cancel))
             }
-        },
-        text = {
-            Text(text = stringResource(R.string.bookmarks_dialog_message_delete_all))
         },
     )
 }
