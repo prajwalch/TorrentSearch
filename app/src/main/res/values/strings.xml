@@ -81,6 +81,9 @@
     <string name="search_history_action_delete_all">Delete all</string>
     <string name="search_history_empty_message">No search history</string>
     <string name="search_history_query_copied_message">Query copied to clipboard!</string>
+    <string name="search_history_dialog_title_clear_history">Clear search history?</string>
+    <string name="search_history_dialog_message_clear_history">Search history will be permanently removed</string>
+    <string name="search_history_button_clear">Clear</string>
 
     <string name="search_providers_screen_title">Search providers</string>
     <string name="search_providers_action_enable_all">Enable all</string>
