@@ -118,4 +118,7 @@
     <string name="bookmarks_dialog_title_delete_all">Видалити всі закладки?</string>
     <string name="bookmarks_dialog_message_delete_all">Закладки будуть вилучені назавжди</string>
     <string name="bookmarks_button_delete">Видалити</string>
+    <string name="search_history_dialog_title_clear_history">Очистити історію пошуку?</string>
+    <string name="search_history_dialog_message_clear_history">Історію пошуку буде вилучена назавжди</string>
+    <string name="search_history_button_clear">Очистити</string>
 </resources>
