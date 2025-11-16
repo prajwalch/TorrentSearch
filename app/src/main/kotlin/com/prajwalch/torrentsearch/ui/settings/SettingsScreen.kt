@@ -5,6 +5,7 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Build
 import android.provider.Settings
+
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -47,6 +48,7 @@ import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+
 import com.prajwalch.torrentsearch.BuildConfig
 import com.prajwalch.torrentsearch.R
 import com.prajwalch.torrentsearch.models.DarkTheme
@@ -138,6 +140,7 @@ private fun AppearanceSettings(modifier: Modifier = Modifier) {
                 onClick = { viewModel.enableDynamicTheme(!settings.enableDynamicTheme) },
                 icon = R.drawable.ic_palette,
                 headline = R.string.settings_enable_dynamic_theme,
+                supportingContent = stringResource(R.string.settings_enable_dynamic_theme_summary),
                 trailingContent = {
                     Switch(
                         checked = settings.enableDynamicTheme,

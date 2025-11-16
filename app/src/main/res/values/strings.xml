@@ -107,6 +107,7 @@
     <string name="settings_screen_title">Settings</string>
     <string name="settings_section_appearance">Appearance</string>
     <string name="settings_enable_dynamic_theme">Enable dynamic theme</string>
+    <string name="settings_enable_dynamic_theme_summary">Generates app theme based on device wallpaper</string>
     <string name="settings_dark_theme">Dark theme</string>
     <string name="settings_dark_theme_on">On</string>
     <string name="settings_dark_theme_off">Off</string>
