@@ -186,6 +186,7 @@ private fun AppearanceSettings(modifier: Modifier = Modifier) {
             onClick = { viewModel.enablePureBlackTheme(!settings.pureBlack) },
             icon = R.drawable.ic_contrast,
             headline = R.string.settings_pure_black,
+            supportingContent = stringResource(R.string.settings_pure_black_summary),
             trailingContent = {
                 Switch(
                     checked = settings.pureBlack,
