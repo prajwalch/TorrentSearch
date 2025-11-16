@@ -1,6 +1,7 @@
 package com.prajwalch.torrentsearch.ui.bookmarks
 
 import androidx.activity.compose.BackHandler
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -8,6 +9,7 @@ import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -18,10 +20,13 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.SwipeToDismissBox
+import androidx.compose.material3.SwipeToDismissBoxValue
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.rememberSwipeToDismissBoxState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
@@ -30,6 +35,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
@@ -54,6 +60,7 @@ import com.prajwalch.torrentsearch.ui.components.SettingsIconButton
 import com.prajwalch.torrentsearch.ui.components.SortDropdownMenu
 import com.prajwalch.torrentsearch.ui.components.SortIconButton
 import com.prajwalch.torrentsearch.ui.components.TorrentListItem
+import com.prajwalch.torrentsearch.ui.theme.spaces
 
 import kotlinx.coroutines.launch
 
@@ -182,12 +189,13 @@ fun BookmarksScreen(
                 title = R.string.bookmarks_empty_message,
             )
         } else {
-            TorrentList(
+            BookmarkList(
                 modifier = Modifier
                     .fillMaxSize()
                     .consumeWindowInsets(innerPadding),
-                torrents = uiState.bookmarks,
-                onTorrentClick = onBookmarkClick,
+                bookmarks = uiState.bookmarks,
+                onBookmarkClick = onBookmarkClick,
+                onDeleteBookmark = viewModel::deleteBookmarkedTorrent,
                 contentPadding = innerPadding,
                 lazyListState = lazyListState,
             )
@@ -230,9 +238,10 @@ private fun DeleteAllConfirmationDialog(
 }
 
 @Composable
-private fun TorrentList(
-    torrents: List<Torrent>,
-    onTorrentClick: (Torrent) -> Unit,
+private fun BookmarkList(
+    bookmarks: List<Torrent>,
+    onBookmarkClick: (Torrent) -> Unit,
+    onDeleteBookmark: (Torrent) -> Unit,
     modifier: Modifier = Modifier,
     contentPadding: PaddingValues = PaddingValues(0.dp),
     lazyListState: LazyListState,
@@ -242,13 +251,54 @@ private fun TorrentList(
         state = lazyListState,
         contentPadding = contentPadding,
     ) {
-        items(items = torrents, contentType = { it.category }) {
-            TorrentListItem(
-                modifier = Modifier
-                    .animateItem()
-                    .clickable { onTorrentClick(it) },
-                torrent = it,
+        items(items = bookmarks, key = { it.id }, contentType = { it.category }) {
+            BookmarkListItem(
+                modifier = Modifier.animateItem(),
+                bookmark = it,
+                onClick = { onBookmarkClick(it) },
+                onDelete = { onDeleteBookmark(it) },
             )
         }
+    }
+}
+
+@Composable
+private fun BookmarkListItem(
+    bookmark: Torrent,
+    onClick: () -> Unit,
+    onDelete: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    val swipeToDismissBoxState = rememberSwipeToDismissBoxState()
+    val coroutineScope = rememberCoroutineScope()
+
+    SwipeToDismissBox(
+        modifier = modifier,
+        state = swipeToDismissBoxState,
+        backgroundContent = {
+            Icon(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(color = MaterialTheme.colorScheme.errorContainer)
+                    .wrapContentSize(align = Alignment.CenterEnd)
+                    .padding(horizontal = MaterialTheme.spaces.large),
+                painter = painterResource(R.drawable.ic_delete),
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.onErrorContainer,
+            )
+        },
+        enableDismissFromStartToEnd = false,
+        onDismiss = { direction ->
+            if (direction == SwipeToDismissBoxValue.EndToStart) {
+                onDelete()
+            } else {
+                coroutineScope.launch { swipeToDismissBoxState.reset() }
+            }
+        },
+    ) {
+        TorrentListItem(
+            modifier = Modifier.clickable(onClick = onClick),
+            torrent = bookmark,
+        )
     }
 }
