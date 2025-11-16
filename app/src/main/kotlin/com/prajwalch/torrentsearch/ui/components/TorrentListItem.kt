@@ -3,7 +3,6 @@ package com.prajwalch.torrentsearch.ui.components
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -42,7 +41,6 @@ fun TorrentListItem(torrent: Torrent, modifier: Modifier = Modifier) {
             }
         },
     )
-    HorizontalDivider()
 }
 
 @Composable
