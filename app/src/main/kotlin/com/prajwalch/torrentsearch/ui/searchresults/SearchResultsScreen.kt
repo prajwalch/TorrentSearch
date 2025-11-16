@@ -3,6 +3,7 @@ package com.prajwalch.torrentsearch.ui.searchresults
 import androidx.activity.compose.BackHandler
 import androidx.annotation.StringRes
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -62,13 +63,14 @@ import com.prajwalch.torrentsearch.models.Torrent
 import com.prajwalch.torrentsearch.providers.SearchProviderId
 import com.prajwalch.torrentsearch.ui.components.ArrowBackIconButton
 import com.prajwalch.torrentsearch.ui.components.EmptyPlaceholder
+import com.prajwalch.torrentsearch.ui.components.LazyColumnWithScrollbar
 import com.prajwalch.torrentsearch.ui.components.ScrollToTopFAB
 import com.prajwalch.torrentsearch.ui.components.SearchBar
 import com.prajwalch.torrentsearch.ui.components.SearchIconButton
 import com.prajwalch.torrentsearch.ui.components.SettingsIconButton
 import com.prajwalch.torrentsearch.ui.components.SortDropdownMenu
 import com.prajwalch.torrentsearch.ui.components.SortIconButton
-import com.prajwalch.torrentsearch.ui.components.TorrentList
+import com.prajwalch.torrentsearch.ui.components.TorrentListItem
 import com.prajwalch.torrentsearch.ui.theme.spaces
 import com.prajwalch.torrentsearch.utils.categoryStringResource
 
@@ -277,24 +279,49 @@ private fun SearchResults(
             LinearProgressIndicator()
         }
 
-        TorrentList(
-            torrents = searchResults,
-            onTorrentClick = onResultClick,
-            headerContent = {
-                Text(
-                    text = stringResource(
-                        R.string.search_results_count_format,
-                        searchResults.size,
-                        searchQuery,
-                        categoryStringResource(searchCategory),
+        LazyColumnWithScrollbar(state = lazyListState) {
+            item {
+                SearchResultsCount(
+                    modifier = Modifier.padding(
+                        horizontal = MaterialTheme.spaces.large,
+                        vertical = MaterialTheme.spaces.small,
                     ),
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    style = MaterialTheme.typography.bodyMedium,
+                    searchResultsSize = searchResults.size,
+                    searchQuery = searchQuery,
+                    searchCategory = searchCategory,
                 )
-            },
-            lazyListState = lazyListState,
-        )
+            }
+
+            items(items = searchResults, contentType = { it.category }) {
+                TorrentListItem(
+                    modifier = Modifier
+                        .animateItem()
+                        .clickable { onResultClick(it) },
+                    torrent = it,
+                )
+            }
+        }
     }
+}
+
+@Composable
+private fun SearchResultsCount(
+    searchResultsSize: Int,
+    searchQuery: String,
+    searchCategory: Category,
+    modifier: Modifier = Modifier,
+) {
+    Text(
+        modifier = modifier,
+        text = stringResource(
+            R.string.search_results_count_format,
+            searchResultsSize,
+            searchQuery,
+            categoryStringResource(searchCategory),
+        ),
+        color = MaterialTheme.colorScheme.onSurfaceVariant,
+        style = MaterialTheme.typography.bodyMedium,
+    )
 }
 
 @OptIn(ExperimentalMaterial3Api::class)

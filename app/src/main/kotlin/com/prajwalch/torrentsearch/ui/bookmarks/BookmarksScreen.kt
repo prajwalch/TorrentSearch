@@ -1,11 +1,15 @@
 package com.prajwalch.torrentsearch.ui.bookmarks
 
 import androidx.activity.compose.BackHandler
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyListState
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -33,6 +37,7 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 
@@ -41,13 +46,14 @@ import com.prajwalch.torrentsearch.models.Torrent
 import com.prajwalch.torrentsearch.ui.components.ArrowBackIconButton
 import com.prajwalch.torrentsearch.ui.components.DeleteForeverIconButton
 import com.prajwalch.torrentsearch.ui.components.EmptyPlaceholder
+import com.prajwalch.torrentsearch.ui.components.LazyColumnWithScrollbar
 import com.prajwalch.torrentsearch.ui.components.ScrollToTopFAB
 import com.prajwalch.torrentsearch.ui.components.SearchBar
 import com.prajwalch.torrentsearch.ui.components.SearchIconButton
 import com.prajwalch.torrentsearch.ui.components.SettingsIconButton
 import com.prajwalch.torrentsearch.ui.components.SortDropdownMenu
 import com.prajwalch.torrentsearch.ui.components.SortIconButton
-import com.prajwalch.torrentsearch.ui.components.TorrentList
+import com.prajwalch.torrentsearch.ui.components.TorrentListItem
 
 import kotlinx.coroutines.launch
 
@@ -221,4 +227,28 @@ private fun DeleteAllConfirmationDialog(
             }
         },
     )
+}
+
+@Composable
+private fun TorrentList(
+    torrents: List<Torrent>,
+    onTorrentClick: (Torrent) -> Unit,
+    modifier: Modifier = Modifier,
+    contentPadding: PaddingValues = PaddingValues(0.dp),
+    lazyListState: LazyListState,
+) {
+    LazyColumnWithScrollbar(
+        modifier = modifier,
+        state = lazyListState,
+        contentPadding = contentPadding,
+    ) {
+        items(items = torrents, contentType = { it.category }) {
+            TorrentListItem(
+                modifier = Modifier
+                    .animateItem()
+                    .clickable { onTorrentClick(it) },
+                torrent = it,
+            )
+        }
+    }
 }
