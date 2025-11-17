@@ -57,6 +57,7 @@ fun TorrentSearchApp(
     selectedTorrent?.let { torrent ->
         val clipboard = LocalClipboard.current
 
+        val torrentBookmarkedMessage = stringResource(R.string.bookmarked_message)
         val magnetLinkCopiedMsg = stringResource(R.string.torrent_list_magnet_link_copied_message)
         val descriptionPageUrlCopiedMsg = stringResource(
             R.string.torrent_list_url_copied_message
@@ -65,7 +66,12 @@ fun TorrentSearchApp(
         TorrentActionsBottomSheet(
             onDismissRequest = { selectedTorrent = null },
             title = torrent.name,
-            onBookmarkTorrent = { viewModel.bookmarkTorrent(torrent) },
+            onBookmarkTorrent = {
+                viewModel.bookmarkTorrent(torrent)
+                coroutineScope.launch {
+                    snackbarHostState.showSnackbar(torrentBookmarkedMessage)
+                }
+            },
             onDeleteBookmark = { viewModel.deleteBookmarkedTorrent(torrent) },
             onDownloadTorrent = {
                 showTorrentClientNotFoundDialog = !onDownloadTorrent(torrent.magnetUri())

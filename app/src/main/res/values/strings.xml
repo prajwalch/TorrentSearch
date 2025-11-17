@@ -7,6 +7,7 @@
     <string name="torznab" translatable="false">Torznab</string>
     <string name="safety_status_safe">Safe</string>
     <string name="safety_status_unsafe">Unsafe</string>
+    <string name="bookmarked_message">Bookmarked</string>
 
     <string name="action_sort">Sort</string>
     <string name="action_sort_criteria_name">Name</string>
