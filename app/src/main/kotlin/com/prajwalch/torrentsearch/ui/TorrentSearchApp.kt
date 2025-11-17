@@ -17,7 +17,6 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 
 import com.prajwalch.torrentsearch.R
-import com.prajwalch.torrentsearch.extensions.childComposable
 import com.prajwalch.torrentsearch.extensions.copyText
 import com.prajwalch.torrentsearch.extensions.parentComposable
 import com.prajwalch.torrentsearch.models.Category
@@ -129,7 +128,7 @@ fun TorrentSearchApp(
             )
         }
 
-        childComposable(route = Screens.SEARCH_HISTORY) {
+        parentComposable(route = Screens.SEARCH_HISTORY) {
             SearchHistoryScreen(
                 onNavigateBack = { navController.navigateUp() },
                 onPerformSearch = {
