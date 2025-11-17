@@ -17,7 +17,9 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 
 import com.prajwalch.torrentsearch.R
+import com.prajwalch.torrentsearch.extensions.childComposable
 import com.prajwalch.torrentsearch.extensions.copyText
+import com.prajwalch.torrentsearch.extensions.parentComposable
 import com.prajwalch.torrentsearch.models.Category
 import com.prajwalch.torrentsearch.models.MagnetUri
 import com.prajwalch.torrentsearch.models.Torrent
@@ -109,13 +111,7 @@ fun TorrentSearchApp(
             )
         }
 
-        composable(
-            route = Screens.SEARCH_RESULTS,
-            enterTransition = { slideIntoContainer(SlideDirection.Start) },
-            exitTransition = { slideOutOfContainer(SlideDirection.Start) },
-            popEnterTransition = { slideIntoContainer(SlideDirection.End) },
-            popExitTransition = { slideOutOfContainer(SlideDirection.End) },
-        ) {
+        parentComposable(route = Screens.SEARCH_RESULTS) {
             SearchResultsScreen(
                 onNavigateBack = { navController.navigateUp() },
                 onNavigateToSettings = { navController.navigate(Screens.Settings.ROOT) },
@@ -124,13 +120,7 @@ fun TorrentSearchApp(
             )
         }
 
-        composable(
-            route = Screens.BOOKMARKS,
-            enterTransition = { slideIntoContainer(SlideDirection.Start) },
-            exitTransition = { slideOutOfContainer(SlideDirection.Start) },
-            popEnterTransition = { slideIntoContainer(SlideDirection.End) },
-            popExitTransition = { slideOutOfContainer(SlideDirection.End) },
-        ) {
+        parentComposable(route = Screens.BOOKMARKS) {
             BookmarksScreen(
                 onNavigateBack = { navController.navigateUp() },
                 onNavigateToSettings = { navController.navigate(Screens.Settings.ROOT) },
@@ -139,12 +129,7 @@ fun TorrentSearchApp(
             )
         }
 
-        composable(
-            route = Screens.SEARCH_HISTORY,
-            enterTransition = { slideIntoContainer(SlideDirection.Start) },
-            exitTransition = { slideOutOfContainer(SlideDirection.Start) },
-            popExitTransition = { slideOutOfContainer(SlideDirection.End) },
-        ) {
+        childComposable(route = Screens.SEARCH_HISTORY) {
             SearchHistoryScreen(
                 onNavigateBack = { navController.navigateUp() },
                 onPerformSearch = {

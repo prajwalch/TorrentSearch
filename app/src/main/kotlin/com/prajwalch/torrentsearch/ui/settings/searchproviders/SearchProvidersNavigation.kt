@@ -1,11 +1,11 @@
 package com.prajwalch.torrentsearch.ui.settings.searchproviders
 
-import androidx.compose.animation.AnimatedContentTransitionScope.SlideDirection
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
-import androidx.navigation.compose.composable
 import androidx.navigation.navigation
 
+import com.prajwalch.torrentsearch.extensions.childComposable
+import com.prajwalch.torrentsearch.extensions.parentComposable
 import com.prajwalch.torrentsearch.ui.Screens
 import com.prajwalch.torrentsearch.ui.settings.searchproviders.add.AddSearchProviderScreen
 import com.prajwalch.torrentsearch.ui.settings.searchproviders.edit.EditSearchProviderScreen
@@ -15,13 +15,7 @@ fun NavGraphBuilder.searchProvidersNavigation(navController: NavHostController) 
         startDestination = Screens.Settings.SearchProviders.HOME,
         route = Screens.Settings.SearchProviders.ROOT
     ) {
-        composable(
-            route = Screens.Settings.SearchProviders.HOME,
-            enterTransition = { slideIntoContainer(SlideDirection.Start) },
-            exitTransition = { slideOutOfContainer(SlideDirection.Start) },
-            popEnterTransition = { slideIntoContainer(SlideDirection.End) },
-            popExitTransition = { slideOutOfContainer(SlideDirection.End) },
-        ) {
+        parentComposable(route = Screens.Settings.SearchProviders.HOME) {
             SearchProvidersScreen(
                 onNavigateBack = { navController.navigateUp() },
                 onNavigateToAddSearchProvider = {
@@ -35,19 +29,11 @@ fun NavGraphBuilder.searchProvidersNavigation(navController: NavHostController) 
             )
         }
 
-        composable(
-            route = Screens.Settings.SearchProviders.ADD,
-            enterTransition = { slideIntoContainer(SlideDirection.Start) },
-            popExitTransition = { slideOutOfContainer(SlideDirection.End) },
-        ) {
+        childComposable(route = Screens.Settings.SearchProviders.ADD) {
             AddSearchProviderScreen(onNavigateBack = { navController.navigateUp() })
         }
 
-        composable(
-            route = Screens.Settings.SearchProviders.EDIT,
-            enterTransition = { slideIntoContainer(SlideDirection.Start) },
-            popExitTransition = { slideOutOfContainer(SlideDirection.End) },
-        ) {
+        childComposable(route = Screens.Settings.SearchProviders.EDIT) {
             EditSearchProviderScreen(onNavigateBack = { navController.navigateUp() })
         }
     }
