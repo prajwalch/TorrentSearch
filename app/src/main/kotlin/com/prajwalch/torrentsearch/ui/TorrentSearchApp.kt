@@ -22,7 +22,6 @@ import com.prajwalch.torrentsearch.models.Category
 import com.prajwalch.torrentsearch.models.MagnetUri
 import com.prajwalch.torrentsearch.models.Torrent
 import com.prajwalch.torrentsearch.ui.bookmarks.BookmarksScreen
-import com.prajwalch.torrentsearch.ui.bookmarks.BookmarksViewModel
 import com.prajwalch.torrentsearch.ui.components.TorrentActionsBottomSheet
 import com.prajwalch.torrentsearch.ui.components.TorrentClientNotFoundDialog
 import com.prajwalch.torrentsearch.ui.search.SearchScreen
@@ -39,19 +38,18 @@ fun TorrentSearchApp(
     onOpenDescriptionPage: (String) -> Unit,
     onShareDescriptionPageUrl: (String) -> Unit,
     startDestination: String = Screens.SEARCH,
+    viewModel: TorrentSearchAppViewModel = hiltViewModel(),
 ) {
-    val bookmarksViewModel = hiltViewModel<BookmarksViewModel>()
-
     val navController = rememberNavController()
     val coroutineScope = rememberCoroutineScope()
     val snackbarHostState = remember { SnackbarHostState() }
 
-    var isTorrentClientMissing by remember { mutableStateOf(false) }
+    var showTorrentClientNotFoundDialog by remember { mutableStateOf(false) }
     var selectedTorrent by remember { mutableStateOf<Torrent?>(null) }
 
-    if (isTorrentClientMissing) {
+    if (showTorrentClientNotFoundDialog) {
         TorrentClientNotFoundDialog(
-            onConfirmation = { isTorrentClientMissing = false },
+            onConfirmation = { showTorrentClientNotFoundDialog = false },
         )
     }
 
@@ -66,10 +64,10 @@ fun TorrentSearchApp(
         TorrentActionsBottomSheet(
             onDismissRequest = { selectedTorrent = null },
             title = torrent.name,
-            onBookmarkTorrent = { bookmarksViewModel.bookmarkTorrent(torrent) },
-            onDeleteBookmark = { bookmarksViewModel.deleteBookmarkedTorrent(torrent) },
+            onBookmarkTorrent = { viewModel.bookmarkTorrent(torrent) },
+            onDeleteBookmark = { viewModel.deleteBookmarkedTorrent(torrent) },
             onDownloadTorrent = {
-                isTorrentClientMissing = !onDownloadTorrent(torrent.magnetUri())
+                showTorrentClientNotFoundDialog = !onDownloadTorrent(torrent.magnetUri())
             },
             onCopyMagnetLink = {
                 coroutineScope.launch {

@@ -67,26 +67,7 @@ class BookmarksViewModel @Inject constructor(
         initialValue = BookmarksUiState(),
     )
 
-    /**
-     * Bookmarks the given torrent.
-     *
-     * TODO: This function is not used directly from the Bookmarks screen
-     *       instead it is being used by the root screen.
-     *
-     */
-    fun bookmarkTorrent(torrent: Torrent) {
-        viewModelScope.launch {
-            bookmarksRepository.bookmarkTorrent(torrent)
-        }
-    }
-
-    /**
-     * Deletes the given bookmarked torrent.
-     *
-     * TODO: This function is not used directly from the Bookmarks screen
-     *       instead it is being used by the root screen.
-     *
-     */
+    /** Deletes the given bookmarked torrent. */
     fun deleteBookmarkedTorrent(torrent: Torrent) {
         viewModelScope.launch {
             bookmarksRepository.deleteBookmarkedTorrent(torrent)
