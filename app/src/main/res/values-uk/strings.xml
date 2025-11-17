@@ -123,4 +123,5 @@
     <string name="search_history_button_clear">Очистити</string>
     <string name="settings_enable_dynamic_theme_summary">Генерує тему програми на основі шпалер пристрою</string>
     <string name="settings_pure_black_summary">Вмикає режим теми AMOLED</string>
+    <string name="bookmarked_message">Додано до закладок</string>
 </resources>
