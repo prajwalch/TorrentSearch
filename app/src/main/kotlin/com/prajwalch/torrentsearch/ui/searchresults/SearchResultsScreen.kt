@@ -210,7 +210,7 @@ fun SearchResultsScreen(
                 )
             }
 
-            uiState.searchResults.isEmpty() -> {
+            uiState.searchResults.isEmpty() && !uiState.isSearching -> {
                 ResultsNotFound(
                     modifier = Modifier
                         .fillMaxSize()
