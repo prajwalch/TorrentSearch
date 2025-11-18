@@ -12,7 +12,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.takeWhile
+import kotlinx.coroutines.flow.transformWhile
 
 import javax.inject.Inject
 
@@ -31,7 +31,32 @@ class SearchTorrentsUseCase @Inject constructor(
                 category = category,
                 searchProviders = enabledSearchProviders,
             )
-            .takeWhile { limit.isUnlimited() || it.successes.size < limit.n }
+            .transformWhile {
+                if (limit.isUnlimited()) {
+                    emit(it)
+                    return@transformWhile true
+                }
+
+                // If results already reached the limit, emit it and cancel the search.
+                if (it.successes.size == limit.n) {
+                    emit(it)
+                    return@transformWhile false
+                }
+
+                // If results is yet to reach the limit, emit it and continue the search.
+                if (it.successes.size < limit.n) {
+                    emit(it)
+                    // Continue search since we don't receive sufficient results yet.
+                    return@transformWhile true
+                }
+
+                // If results crossed the limit, take the number of results set
+                // by the limit, emit it and then cancel the search.
+                val searchResults = it.copy(successes = it.successes.take(limit.n))
+                emit(searchResults)
+
+                return@transformWhile false
+            }
             .collect { emit(it) }
     }
 
