@@ -110,7 +110,7 @@ class SearchResultsViewModel @Inject constructor(
         }
 
         if (isInternetError) {
-            return SearchResultsUiState(isInternetError = true)
+            return SearchResultsUiState(isLoading = false, isInternetError = true)
         }
 
         val filteredSearchResults = withContext(Dispatchers.Default) {
