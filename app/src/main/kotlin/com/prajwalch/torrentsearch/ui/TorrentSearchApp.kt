@@ -25,9 +25,9 @@ import com.prajwalch.torrentsearch.models.Torrent
 import com.prajwalch.torrentsearch.ui.bookmarks.BookmarksScreen
 import com.prajwalch.torrentsearch.ui.components.TorrentActionsBottomSheet
 import com.prajwalch.torrentsearch.ui.components.TorrentClientNotFoundDialog
+import com.prajwalch.torrentsearch.ui.home.HomeScreen
 import com.prajwalch.torrentsearch.ui.search.SearchScreen
 import com.prajwalch.torrentsearch.ui.searchhistory.SearchHistoryScreen
-import com.prajwalch.torrentsearch.ui.searchresults.SearchResultsScreen
 import com.prajwalch.torrentsearch.ui.settings.settingsNavigation
 
 import kotlinx.coroutines.launch
@@ -38,7 +38,7 @@ fun TorrentSearchApp(
     onShareMagnetLink: (MagnetUri) -> Unit,
     onOpenDescriptionPage: (String) -> Unit,
     onShareDescriptionPageUrl: (String) -> Unit,
-    startDestination: String = Screens.SEARCH,
+    startDestination: String = Screens.HOME,
     viewModel: TorrentSearchAppViewModel = hiltViewModel(),
 ) {
     val navController = rememberNavController()
@@ -99,25 +99,25 @@ fun TorrentSearchApp(
 
     NavHost(navController = navController, startDestination = startDestination) {
         composable(
-            route = Screens.SEARCH,
+            route = Screens.HOME,
             enterTransition = { fadeIn() },
             exitTransition = { slideOutOfContainer(SlideDirection.Start) },
             popEnterTransition = { slideIntoContainer(SlideDirection.End) },
         ) {
-            SearchScreen(
+            HomeScreen(
                 onNavigateToBookmarks = { navController.navigate(Screens.BOOKMARKS) },
                 onNavigateToSearchHistory = { navController.navigate(Screens.SEARCH_HISTORY) },
                 onNavigateToSettings = { navController.navigate(Screens.Settings.ROOT) },
                 onSearch = { query, category ->
                     navController.navigate(
-                        Screens.createSearchResultsRoute(query = query, category = category)
+                        Screens.createSearchRoute(query = query, category = category)
                     )
                 }
             )
         }
 
-        parentComposable(route = Screens.SEARCH_RESULTS) {
-            SearchResultsScreen(
+        parentComposable(route = Screens.SEARCH) {
+            SearchScreen(
                 onNavigateBack = { navController.navigateUp() },
                 onNavigateToSettings = { navController.navigate(Screens.Settings.ROOT) },
                 onResultClick = { selectedTorrent = it },
@@ -138,12 +138,12 @@ fun TorrentSearchApp(
             SearchHistoryScreen(
                 onNavigateBack = { navController.navigateUp() },
                 onPerformSearch = {
-                    val searchResultsRoute = Screens.createSearchResultsRoute(
+                    val searchRoute = Screens.createSearchRoute(
                         query = it,
                         category = Category.All,
                     )
-                    navController.navigate(searchResultsRoute) {
-                        popUpTo(route = Screens.SEARCH)
+                    navController.navigate(searchRoute) {
+                        popUpTo(route = Screens.HOME)
                     }
                 }
             )

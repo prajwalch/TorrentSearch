@@ -90,7 +90,7 @@ private fun SearchBarInputField(
             coroutineScope.launch { searchBarState.animateToCollapsed() }
             onSearch(it)
         },
-        placeholder = { Text(stringResource(R.string.search_query_hint)) },
+        placeholder = { Text(stringResource(R.string.home_search_query_hint)) },
         leadingIcon = {
             LeadingIcon(
                 isSearchBarExpanded = searchBarState.currentValue == SearchBarValue.Expanded,

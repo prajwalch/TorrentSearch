@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="torrent_client_not_found_content">برای استفاده از قابلیت دانلود یک برنامه دانلود از تورنت نصب کنید آن را تنظیم کنید و به این برنامه برگردید</string>
-    <string name="search_query_hint">جستجو …</string>
+    <string name="home_search_query_hint">جستجو …</string>
     <string name="button_cancel">لغو</string>
     <string name="torrent_client_not_found_recommended_client_hint">برنامه دانلود پیشنهادی</string>
     <string name="button_done">انجام شد</string>
-    <string name="search_results_internet_connection_error">بدون اتصال به اینترنت</string>
+    <string name="search_internet_connection_error">بدون اتصال به اینترنت</string>
 </resources>

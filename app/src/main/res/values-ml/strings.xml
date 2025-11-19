@@ -4,9 +4,9 @@
     <string name="torrent_client_not_found_content">ഡൗൺലോഡ് ഉപയോഗിക്കാൻ, ആദ്യം ഒരു ടോറന്റ് ക്ലയന്റ് ഇൻസ്റ്റാൾ ചെയ്ത് ക്രമീകരിക്കുക. പിന്നെ ഈ ആപ്പിലേക്ക് തിരികെ വരിക.</string>
     <string name="torrent_client_not_found_recommended_client_hint">പറ്റിയ ക്ലയന്റ്</string>
     <string name="button_done">പൂർത്തിയായി</string>
-    <string name="search_results_internet_connection_error">ഇന്റർനെറ്റ് കണക്ഷൻ ഇല്ല</string>
-    <string name="search_results_button_try_again">വീണ്ടും ശ്രമിക്കുക</string>
-    <string name="search_results_empty_message">ഫലങ്ങൾ ഒന്നും കണ്ടെത്തിയില്ല</string>
+    <string name="search_internet_connection_error">ഇന്റർനെറ്റ് കണക്ഷൻ ഇല്ല</string>
+    <string name="search_button_try_again">വീണ്ടും ശ്രമിക്കുക</string>
+    <string name="search_no_results_message">ഫലങ്ങൾ ഒന്നും കണ്ടെത്തിയില്ല</string>
     <string name="search_results_count_format">ഏകദേശം %1$d ഫലങ്ങൾ</string>
     <string name="action_sort">സോർട്ട് ഓപ്ഷനുകൾ തുറക്കുക</string>
     <string name="torrent_list_seeders_format">സീഡേഴ്‌സ് %1$s</string>
@@ -35,7 +35,7 @@
     <string name="settings_search_providers">സേർച്ച് പ്രൊവൈഡേഴ്‌സ്</string>
     <string name="settings_search_providers_summary_format">%1$d / %2$d സജീവമാണ്</string>
     <string name="settings_default_category">ഡീഫാൾട്ട് വിഭാഗം</string>
-    <string name="search_query_hint">സേർച്ച്…</string>
+    <string name="home_search_query_hint">സേർച്ച്…</string>
     <string name="settings_default_sort_options">ഡീഫാൾട്ട് സോർട്ട് ഓപ്ഷനുകൾ</string>
     <string name="settings_max_num_results">ഫലങ്ങളുടെ പരമാവധി എണ്ണം</string>
     <string name="settings_max_num_results_summary_format">%1$d ഫലങ്ങൾ</string>
@@ -71,7 +71,7 @@
     <string name="button_cancel">റദ്ദാക്കുക</string>
     <string name="nsfw">NSFW</string>
     <string name="search_providers_label_url">URL</string>
-    <string name="search_button_search">സേർച്ച്</string>
+    <string name="home_button_search">സേർച്ച്</string>
     <string name="bookmarks_empty_message">ബുക്ക്മാർക്കുകളൊന്നുമില്ല</string>
     <string name="search_history_empty_message">സേർച്ച് ഹിസ്റ്ററിയൊന്നുമില്ല</string>
 </resources>

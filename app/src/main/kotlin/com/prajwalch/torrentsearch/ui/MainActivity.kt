@@ -27,7 +27,7 @@ import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
-    private var startDestination = Screens.SEARCH
+    private var startDestination = Screens.HOME
 
     override fun onCreate(savedInstanceState: Bundle?) {
         Log.i(TAG, "onCreate() called")
@@ -124,7 +124,7 @@ class MainActivity : ComponentActivity() {
         val text = urlPatternMatcher.replaceAll("").trim().trim('"', '\n')
         Log.d(TAG, "Performing search; query = $text")
 
-        startDestination = Screens.createSearchResultsRoute(
+        startDestination = Screens.createSearchRoute(
             query = text,
             // FIXME: Default category is not respected.
             category = Category.All,

@@ -3,13 +3,13 @@ package com.prajwalch.torrentsearch.ui
 import com.prajwalch.torrentsearch.models.Category
 
 object Screens {
+    const val HOME = "home"
     const val BOOKMARKS = "bookmarks"
-    const val SEARCH = "search"
-    const val SEARCH_RESULTS = "search/{query}/{category}"
+    const val SEARCH = "search/{query}/{category}"
     const val SEARCH_HISTORY = "search_history"
 
-    fun createSearchResultsRoute(query: String, category: Category): String {
-        return SEARCH_RESULTS.replace("{query}", query).replace("{category}", category.name)
+    fun createSearchRoute(query: String, category: Category): String {
+        return "search/$query/${category.name}"
     }
 
     object Settings {
