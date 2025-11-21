@@ -5,7 +5,7 @@
     <string name="nsfw">NSFW</string>
     <string name="action_sort">Clasificar</string>
     <string name="action_sort_criteria_name">Nombre</string>
-    <string name="action_sort_criteria_seeders">Semillas</string>
+    <string name="action_sort_criteria_seeders">Sembradores</string>
     <string name="action_sort_criteria_peers">Pares</string>
     <string name="action_sort_criteria_file_size">Tamaño</string>
     <string name="action_sort_criteria_date">Fecha</string>
@@ -84,7 +84,7 @@
     <string name="settings_pure_black">Negro puro</string>
     <string name="settings_language">Idioma</string>
     <string name="settings_enable_nsfw_mode">Activar NSFW</string>
-    <string name="settings_enable_nsfw_mode_summary">Desactivado oculta categorías y resultados de búsqueda NSFW (Contenido explícito).</string>
+    <string name="settings_enable_nsfw_mode_summary">Estando desactivado, oculta categorías y resultados de búsqueda NSFW.</string>
     <string name="settings_section_search">Buscar</string>
     <string name="settings_search_providers">Proveedores de búsqueda</string>
     <string name="settings_default_category">Categoría predeterminada</string>
@@ -99,7 +99,7 @@
     <string name="settings_show_search_history_summary">Mostrar historial de búsqueda en la barra de búsqueda</string>
     <string name="settings_section_advanced">Avanzado</string>
     <string name="settings_source_code">Código fuente</string>
-    <string name="category_anime">Animación</string>
+    <string name="category_anime">Animation</string>
     <string name="category_apps">Aplicaciones</string>
     <string name="category_series">Series</string>
     <string name="search_results_count_format">%1$s resultados para \'%2$s\' (%3$s)</string>
@@ -110,7 +110,7 @@
     </plurals>
     <string name="search_history_query_copied_message">¡Consulta copiada al portapapeles!</string>
     <string name="search_providers_label_url">URL</string>
-    <string name="search_providers_label_api_key">Clave API</string>
+    <string name="search_providers_label_api_key">Llave API</string>
     <string name="settings_section_general">General</string>
     <string name="settings_search_providers_summary_format">%1$d de %2$d habilitado</string>
     <string name="settings_max_num_results_summary_format">%1$d resultados</string>
@@ -120,4 +120,7 @@
     <string name="settings_enable_quick_search_summary">Activado agrega esta aplicación al menú de selección de texto (como Copiar o Cortar).</string>
     <string name="settings_section_about">Sobre</string>
     <string name="settings_version">Versión</string>
+    <string name="bookmarked_message">Marcado</string>
+    <string name="settings_enable_dynamic_theme_summary">Genera un tema de aplicación basado en el salvapantallas del sistema</string>
+    <string name="settings_pure_black_summary">Habilitar tema AMOLED</string>
 </resources>
