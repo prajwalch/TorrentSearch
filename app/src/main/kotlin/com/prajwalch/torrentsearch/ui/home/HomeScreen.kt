@@ -76,6 +76,7 @@ fun HomeScreen(
         topBar = {
             HomeScreenTopBar(
                 onNavigateToBookmarks = onNavigateToBookmarks,
+                enableSearchHistory = uiState.searchHistoryEnabled,
                 onNavigateToSearchHistory = onNavigateToSearchHistory,
                 onNavigateToSettings = onNavigateToSettings,
                 scrollBehavior = scrollBehavior,
@@ -155,6 +156,7 @@ fun HomeScreen(
 @Composable
 private fun HomeScreenTopBar(
     onNavigateToBookmarks: () -> Unit,
+    enableSearchHistory: Boolean,
     onNavigateToSearchHistory: () -> Unit,
     onNavigateToSettings: () -> Unit,
     modifier: Modifier = Modifier,
@@ -170,11 +172,13 @@ private fun HomeScreenTopBar(
                     contentDescription = null,
                 )
             }
-            IconButton(onClick = onNavigateToSearchHistory) {
-                Icon(
-                    painter = painterResource(R.drawable.ic_history),
-                    contentDescription = null,
-                )
+            if (enableSearchHistory) {
+                IconButton(onClick = onNavigateToSearchHistory) {
+                    Icon(
+                        painter = painterResource(R.drawable.ic_history),
+                        contentDescription = null,
+                    )
+                }
             }
             SettingsIconButton(onClick = onNavigateToSettings)
         },
