@@ -131,6 +131,7 @@
     <string name="settings_max_num_results_button_unlimited">Unlimited</string>
     <string name="settings_section_search_history">Search history</string>
     <string name="settings_save_search_history">Save search history</string>
+    <string name="settings_save_search_history_summary">Stores recent searches locally for quick access and suggestions</string>
     <string name="settings_show_search_history">Show search history</string>
     <string name="settings_show_search_history_summary">Show search history in search bar</string>
     <string name="settings_section_advanced">Advanced</string>

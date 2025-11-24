@@ -333,6 +333,7 @@ private fun SearchHistorySettings(modifier: Modifier = Modifier) {
             onClick = { viewModel.enableSaveSearchHistory(!settings.saveSearchHistory) },
             icon = R.drawable.ic_search_activity,
             headline = R.string.settings_save_search_history,
+            supportingContent = stringResource(R.string.settings_save_search_history_summary),
             trailingContent = {
                 Switch(
                     checked = settings.saveSearchHistory,
