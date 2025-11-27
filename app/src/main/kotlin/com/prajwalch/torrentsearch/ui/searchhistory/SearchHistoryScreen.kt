@@ -49,8 +49,8 @@ fun SearchHistoryScreen(
     onNavigateBack: () -> Unit,
     onPerformSearch: (String) -> Unit,
     modifier: Modifier = Modifier,
+    viewModel: SearchHistoryViewModel = hiltViewModel(),
 ) {
-    val viewModel = hiltViewModel<SearchHistoryViewModel>()
     val searchHistoryList by viewModel.uiState.collectAsStateWithLifecycle()
 
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
