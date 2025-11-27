@@ -131,17 +131,17 @@ class BitSearch : SearchProvider {
         // <i> for icon and another <span> for actual text.
         val categoryAndStatsDiv = div.selectFirst("div:nth-child(2)") ?: return null
         val category = categoryAndStatsDiv
-            .selectFirst("span:nth-child(1)")
-            ?.text()
+            .selectFirst("> span:nth-child(1) > span")
+            ?.ownText()
             ?.let { getCategoryFromId(it) }
             ?: return null
         val size = categoryAndStatsDiv
-            .selectFirst("span:nth-child(2)")
-            ?.text()
+            .selectFirst("> span:nth-child(2) > span")
+            ?.ownText()
             ?: return null
         val uploadDate = categoryAndStatsDiv
-            .selectFirst("span:nth-child(3)")
-            ?.text()
+            .selectFirst("> span:nth-child(3) > span")
+            ?.ownText()
             ?: return null
 
         // Third child contains seeders, leechers and download count (no use for us)
