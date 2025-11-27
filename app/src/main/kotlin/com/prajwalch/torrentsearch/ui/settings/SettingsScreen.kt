@@ -75,8 +75,8 @@ fun SettingsScreen(
     onNavigateToSearchProviders: () -> Unit,
     onNavigateToDefaultSortOptions: () -> Unit,
     modifier: Modifier = Modifier,
+    viewModel: SettingsViewModel = hiltViewModel(),
 ) {
-    val viewModel = hiltViewModel<SettingsViewModel>()
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
 
     Scaffold(
