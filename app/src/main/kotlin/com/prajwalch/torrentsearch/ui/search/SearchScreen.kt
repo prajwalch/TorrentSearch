@@ -38,6 +38,7 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
@@ -206,7 +207,7 @@ fun SearchScreen(
                     modifier = Modifier
                         .fillMaxSize()
                         .padding(innerPadding),
-                    onTryAgain = viewModel::refresh,
+                    onTryAgain = viewModel::reload,
                 )
             }
 
@@ -215,6 +216,7 @@ fun SearchScreen(
                     modifier = Modifier
                         .fillMaxSize()
                         .padding(innerPadding),
+                    onTryAgain = viewModel::reload,
                 )
             }
 
@@ -226,6 +228,8 @@ fun SearchScreen(
                     searchQuery = uiState.searchQuery,
                     searchCategory = uiState.searchCategory,
                     isSearching = uiState.isSearching,
+                    isRefreshing = uiState.isRefreshing,
+                    onRefresh = viewModel::refreshSearchResults,
                     lazyListState = lazyListState,
                 )
             }
@@ -239,27 +243,31 @@ private fun NoInternetConnection(onTryAgain: () -> Unit, modifier: Modifier = Mo
         modifier = modifier,
         icon = R.drawable.ic_signal_wifi_off,
         title = R.string.search_internet_connection_error,
-        actions = {
-            Button(onClick = onTryAgain) {
-                Icon(
-                    modifier = Modifier.size(ButtonDefaults.IconSize),
-                    painter = painterResource(R.drawable.ic_refresh),
-                    contentDescription = null,
-                )
-                Spacer(modifier = Modifier.width(ButtonDefaults.IconSpacing))
-                Text(text = stringResource(R.string.search_button_try_again))
-            }
-        }
+        actions = { TryAgainButton(onClick = onTryAgain) }
     )
 }
 
 @Composable
-private fun ResultsNotFound(modifier: Modifier = Modifier) {
+private fun ResultsNotFound(onTryAgain: () -> Unit, modifier: Modifier = Modifier) {
     EmptyPlaceholder(
         modifier = modifier,
         icon = R.drawable.ic_results_not_found,
         title = R.string.search_no_results_message,
+        actions = { TryAgainButton(onClick = onTryAgain) }
     )
+}
+
+@Composable
+private fun TryAgainButton(onClick: () -> Unit, modifier: Modifier = Modifier) {
+    Button(modifier = modifier, onClick = onClick) {
+        Icon(
+            modifier = Modifier.size(ButtonDefaults.IconSize),
+            painter = painterResource(R.drawable.ic_refresh),
+            contentDescription = null,
+        )
+        Spacer(modifier = Modifier.width(ButtonDefaults.IconSpacing))
+        Text(text = stringResource(R.string.search_button_try_again))
+    }
 }
 
 @Composable
@@ -269,38 +277,46 @@ private fun SearchResults(
     searchQuery: String,
     searchCategory: Category,
     isSearching: Boolean,
+    isRefreshing: Boolean,
+    onRefresh: () -> Unit,
     modifier: Modifier = Modifier,
     lazyListState: LazyListState = rememberLazyListState(),
 ) {
-    Column(modifier = modifier) {
-        AnimatedVisibility(
-            modifier = Modifier.fillMaxWidth(),
-            visible = isSearching,
-        ) {
-            LinearProgressIndicator()
-        }
-
-        LazyColumnWithScrollbar(state = lazyListState) {
-            item {
-                SearchResultsCount(
-                    modifier = Modifier.padding(
-                        horizontal = MaterialTheme.spaces.large,
-                        vertical = MaterialTheme.spaces.small,
-                    ),
-                    searchResultsSize = searchResults.size,
-                    searchQuery = searchQuery,
-                    searchCategory = searchCategory,
-                )
+    PullToRefreshBox(
+        modifier = modifier,
+        isRefreshing = isRefreshing,
+        onRefresh = onRefresh,
+    ) {
+        Column {
+            AnimatedVisibility(
+                modifier = Modifier.fillMaxWidth(),
+                visible = isSearching,
+            ) {
+                LinearProgressIndicator()
             }
 
-            items(items = searchResults, contentType = { it.category }) {
-                TorrentListItem(
-                    modifier = Modifier
-                        .animateItem()
-                        .clickable { onResultClick(it) },
-                    torrent = it,
-                )
-                HorizontalDivider()
+            LazyColumnWithScrollbar(state = lazyListState) {
+                item {
+                    SearchResultsCount(
+                        modifier = Modifier.padding(
+                            horizontal = MaterialTheme.spaces.large,
+                            vertical = MaterialTheme.spaces.small,
+                        ),
+                        searchResultsSize = searchResults.size,
+                        searchQuery = searchQuery,
+                        searchCategory = searchCategory,
+                    )
+                }
+
+                items(items = searchResults, contentType = { it.category }) {
+                    TorrentListItem(
+                        modifier = Modifier
+                            .animateItem()
+                            .clickable { onResultClick(it) },
+                        torrent = it,
+                    )
+                    HorizontalDivider()
+                }
             }
         }
     }

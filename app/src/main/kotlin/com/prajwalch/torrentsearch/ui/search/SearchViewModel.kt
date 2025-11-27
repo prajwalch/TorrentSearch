@@ -76,7 +76,8 @@ class SearchViewModel @Inject constructor(
                 val query = searchQuery.trim()
                 searchHistoryRepository.createNewSearchHistory(query = query)
             }
-            performSearch()
+
+            loadResults()
         }
     }
 
@@ -101,6 +102,7 @@ class SearchViewModel @Inject constructor(
             searchResults,
             isLoading,
             isSearching,
+            isRefreshing,
             isInternetError,
         ) = internalState
         Log.i(TAG, "Creating UI state")
@@ -135,8 +137,37 @@ class SearchViewModel @Inject constructor(
             filterOptions = filterOptions,
             isLoading = false,
             isSearching = isSearching,
+            isRefreshing = isRefreshing,
             isInternetError = false,
         )
+    }
+
+    /**
+     * Refreshes only the search results without changing or resetting options
+     * currently set by the user to default.
+     */
+    fun refreshSearchResults() {
+        viewModelScope.launch {
+            internalState.update { it.copy(isRefreshing = true) }
+
+            if (!connectivityChecker.isInternetAvailable()) {
+                internalState.update { it.copy(isRefreshing = false) }
+                return@launch
+            }
+            
+            search(query = searchQuery, category = searchCategory)
+        }
+    }
+
+    /**
+     * Reloads everything by resetting options currently set by the user
+     * to default and performing a new search.
+     */
+    fun reload() {
+        viewModelScope.launch {
+            internalState.update { it.copy(isLoading = true) }
+            loadResults()
+        }
     }
 
     /** Shows only those search results that contains the given query. */
@@ -181,14 +212,9 @@ class SearchViewModel @Inject constructor(
         }
     }
 
-    /** Refreshes the data by performing a new search. */
-    fun refresh() {
-        viewModelScope.launch { performSearch() }
-    }
-
     /** Performs the search job. */
-    private suspend fun performSearch() {
-        Log.i(TAG, "performSearch() called")
+    private suspend fun loadResults() {
+        Log.i(TAG, "loadResults() called")
 
         if (searchQuery.isBlank()) {
             internalState.update {
@@ -207,12 +233,15 @@ class SearchViewModel @Inject constructor(
             return
         }
 
-        // TODO: Do this inside the init block if possible because this
-        //       function is not supposed to load default value/s.
         val defaultSortOptions = getDefaultSortOptions()
         internalState.update { it.copy(sortOptions = defaultSortOptions) }
 
-        searchTorrentsUseCase(query = searchQuery, category = searchCategory)
+        search(query = searchQuery, category = searchCategory)
+    }
+
+    /** Performs a new search. */
+    private suspend fun search(query: String, category: Category) {
+        searchTorrentsUseCase(query = query, category = category)
             .onCompletion { onSearchCompletion(cause = it) }
             .collect { onSearchResultsReceived(searchResults = it) }
     }
@@ -253,6 +282,7 @@ class SearchViewModel @Inject constructor(
                 searchResults = searchResults,
                 isLoading = false,
                 isSearching = true,
+                isRefreshing = false,
             )
         }
     }
@@ -271,7 +301,7 @@ class SearchViewModel @Inject constructor(
     }
 
     private companion object {
-        private const val TAG = "SearchResultsViewModel"
+        private const val TAG = "SearchViewModel"
     }
 }
 
@@ -297,6 +327,7 @@ data class SearchUiState(
     val filterOptions: FilterOptions = FilterOptions(),
     val isLoading: Boolean = true,
     val isSearching: Boolean = false,
+    val isRefreshing: Boolean = false,
     val isInternetError: Boolean = false,
 )
 
@@ -307,6 +338,7 @@ private data class InternalState(
     val searchResults: List<Torrent> = emptyList(),
     val isLoading: Boolean = true,
     val isSearching: Boolean = false,
+    val isRefreshing: Boolean = false,
     val isInternetError: Boolean = false,
 )
 
