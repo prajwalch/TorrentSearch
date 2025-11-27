@@ -69,8 +69,8 @@ fun SearchProvidersScreen(
     onNavigateToAddSearchProvider: () -> Unit,
     onNavigateToEditSearchProvider: (SearchProviderId) -> Unit,
     modifier: Modifier = Modifier,
+    viewModel: SearchProvidersViewModel = hiltViewModel(),
 ) {
-    val viewModel = hiltViewModel<SearchProvidersViewModel>()
     val searchProvidersUiState by viewModel.uiState.collectAsStateWithLifecycle()
 
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
