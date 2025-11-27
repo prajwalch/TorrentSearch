@@ -73,8 +73,8 @@ fun BookmarksScreen(
     onBookmarkClick: (Torrent) -> Unit,
     snackbarHostState: SnackbarHostState,
     modifier: Modifier = Modifier,
+    viewModel: BookmarksViewModel = hiltViewModel(),
 ) {
-    val viewModel = hiltViewModel<BookmarksViewModel>()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
     val coroutineScope = rememberCoroutineScope()
