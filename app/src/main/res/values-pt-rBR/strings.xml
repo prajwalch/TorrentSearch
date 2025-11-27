@@ -113,4 +113,15 @@
     <string name="settings_enable_nsfw_mode_summary">Quando desativado, oculta categorias +18 e resultados de pesquisa.</string>
     <string name="search_providers_screen_title">Provedores de busca</string>
     <string name="safety_status_safe">Seguro</string>
+    <string name="bookmarked_message">Adicionado aos favoritos</string>
+    <string name="bookmarks_dialog_title_delete_all">Apagar todos os favoritos?</string>
+    <string name="bookmarks_dialog_message_delete_all">Os favoritos serão removidos permanentemente</string>
+    <string name="bookmarks_button_delete">Deletar</string>
+    <string name="search_history_query_copied_message">Consulta copiada para a área de transferência!</string>
+    <string name="search_history_dialog_title_clear_history">Limpar histórico de pesquisa?</string>
+    <string name="search_history_dialog_message_clear_history">O histórico de pesquisa será removido permanentemente</string>
+    <string name="search_history_button_clear">Limpar</string>
+    <string name="settings_enable_dynamic_theme_summary">Gera um tema para o aplicativo com base no papel de parede do dispositivo</string>
+    <string name="settings_pure_black_summary">Ativa o modo de tema AMOLED</string>
+    <string name="settings_save_search_history_summary">Armazena pesquisas recentes localmente para acesso rápido e sugestões</string>
 </resources>
