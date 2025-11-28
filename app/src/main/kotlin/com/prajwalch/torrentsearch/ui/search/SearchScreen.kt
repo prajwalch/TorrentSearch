@@ -100,9 +100,7 @@ fun SearchScreen(
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
 
     var showSearchBar by remember { mutableStateOf(false) }
-    var showSortMenu by remember(uiState.currentSortCriteria, uiState.currentSortOrder) {
-        mutableStateOf(false)
-    }
+    var showSortOptions by remember(uiState.sortOptions) { mutableStateOf(false) }
     var showFilterOptions by remember { mutableStateOf(false) }
     val showScrollToTopButton by remember {
         derivedStateOf { lazyListState.firstVisibleItemIndex > 1 }
@@ -132,12 +130,12 @@ fun SearchScreen(
 
         if (!showSearchBar && (isSearchResultsNotEmpty || isFilterQueryNotBlank)) {
             SearchIconButton(onClick = { showSearchBar = true })
-            SortIconButton(onClick = { showSortMenu = true })
+            SortIconButton(onClick = { showSortOptions = true })
             SortDropdownMenu(
-                expanded = showSortMenu,
-                onDismissRequest = { showSortMenu = false },
-                currentSortCriteria = uiState.currentSortCriteria,
-                currentSortOrder = uiState.currentSortOrder,
+                expanded = showSortOptions,
+                onDismissRequest = { showSortOptions = false },
+                currentSortCriteria = uiState.sortOptions.criteria,
+                currentSortOrder = uiState.sortOptions.order,
                 onSortRequest = viewModel::updateSortOptions,
             )
             IconButton(onClick = { showFilterOptions = true }) {

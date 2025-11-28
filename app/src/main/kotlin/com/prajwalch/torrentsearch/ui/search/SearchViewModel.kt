@@ -136,8 +136,7 @@ class SearchViewModel @Inject constructor(
             searchQuery = searchQuery,
             searchCategory = searchCategory,
             searchResults = filteredSearchResults,
-            currentSortCriteria = sortOptions.criteria,
-            currentSortOrder = sortOptions.order,
+            sortOptions = sortOptions,
             filterOptions = filterOptions,
             isLoading = false,
             isSearching = isSearching,
@@ -316,8 +315,7 @@ data class SearchUiState(
     val searchQuery: String = "",
     val searchCategory: Category = Category.All,
     val searchResults: ImmutableList<Torrent> = persistentListOf(),
-    val currentSortCriteria: SortCriteria = SortCriteria.Default,
-    val currentSortOrder: SortOrder = SortOrder.Default,
+    val sortOptions: SortOptions = SortOptions(),
     val filterOptions: FilterOptions = FilterOptions(),
     val isLoading: Boolean = true,
     val isSearching: Boolean = false,
@@ -336,7 +334,7 @@ private data class InternalState(
     val isInternetError: Boolean = false,
 )
 
-private data class SortOptions(
+data class SortOptions(
     val criteria: SortCriteria = SortCriteria.Default,
     val order: SortOrder = SortOrder.Default,
 )
