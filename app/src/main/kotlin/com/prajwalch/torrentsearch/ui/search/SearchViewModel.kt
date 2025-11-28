@@ -117,7 +117,7 @@ class SearchViewModel @Inject constructor(
         }
 
         val enabledSearchProvidersId = filterOptions.searchProviders.mapNotNull {
-            if (it.enabled) it.searchProviderId else null
+            if (it.selected) it.searchProviderId else null
         }
         val sortComparator = createSortComparator(
             criteria = sortOptions.criteria,
