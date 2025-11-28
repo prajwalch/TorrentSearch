@@ -6,6 +6,7 @@ import com.prajwalch.torrentsearch.models.SearchResults
 import com.prajwalch.torrentsearch.models.Torrent
 import com.prajwalch.torrentsearch.providers.SearchProvider
 
+import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -31,11 +32,16 @@ class TorrentsRepository @Inject constructor(
                 searchProviders = searchProviders,
             )
             .collect { searchBatchResult ->
-                searchBatchResult
-                    .onSuccess { successes.addAll(it) }
-                    .onFailure { failures.add(it) }
+                searchBatchResult.fold(
+                    onSuccess = { successes.addAll(it) },
+                    onFailure = { failures.add(it) }
+                )
 
-                emit(SearchResults(successes = successes, failures = failures))
+                val searchResults = SearchResults(
+                    successes = successes.toImmutableList(),
+                    failures = failures.toImmutableList(),
+                )
+                emit(searchResults)
             }
     }.flowOn(Dispatchers.IO)
 }

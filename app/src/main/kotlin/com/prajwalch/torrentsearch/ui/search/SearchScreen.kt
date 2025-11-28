@@ -76,6 +76,7 @@ import com.prajwalch.torrentsearch.ui.components.TorrentListItem
 import com.prajwalch.torrentsearch.ui.theme.spaces
 import com.prajwalch.torrentsearch.utils.categoryStringResource
 
+import kotlinx.collections.immutable.ImmutableList
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
@@ -272,7 +273,7 @@ private fun TryAgainButton(onClick: () -> Unit, modifier: Modifier = Modifier) {
 
 @Composable
 private fun SearchResults(
-    searchResults: List<Torrent>,
+    searchResults: ImmutableList<Torrent>,
     onResultClick: (Torrent) -> Unit,
     searchQuery: String,
     searchCategory: Category,
@@ -392,7 +393,7 @@ private fun FiltersSectionTitle(@StringRes titleId: Int, modifier: Modifier = Mo
 
 @Composable
 private fun SearchProvidersChipsRow(
-    searchProviders: List<SearchProviderFilterOption>,
+    searchProviders: ImmutableList<SearchProviderFilterOption>,
     onToggleSearchProvider: (SearchProviderId) -> Unit,
     modifier: Modifier = Modifier,
     contentPadding: PaddingValues = PaddingValues(0.dp),

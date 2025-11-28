@@ -8,6 +8,7 @@ import com.prajwalch.torrentsearch.models.MaxNumResults
 import com.prajwalch.torrentsearch.models.SearchResults
 import com.prajwalch.torrentsearch.providers.SearchProvider
 
+import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.firstOrNull
@@ -52,7 +53,9 @@ class SearchTorrentsUseCase @Inject constructor(
 
                 // If results crossed the limit, take the number of results set
                 // by the limit, emit it and then cancel the search.
-                val searchResults = it.copy(successes = it.successes.take(limit.n))
+                val searchResults = it.copy(
+                    successes = it.successes.take(limit.n).toImmutableList()
+                )
                 emit(searchResults)
 
                 return@transformWhile false

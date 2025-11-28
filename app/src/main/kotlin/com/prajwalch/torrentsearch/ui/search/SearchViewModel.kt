@@ -1,14 +1,13 @@
 package com.prajwalch.torrentsearch.ui.search
 
 import android.util.Log
+
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 
 import com.prajwalch.torrentsearch.data.repository.SearchHistoryRepository
 import com.prajwalch.torrentsearch.data.repository.SettingsRepository
-import com.prajwalch.torrentsearch.extensions.customSort
-import com.prajwalch.torrentsearch.extensions.filterNSFW
 import com.prajwalch.torrentsearch.models.Category
 import com.prajwalch.torrentsearch.models.SearchResults
 import com.prajwalch.torrentsearch.models.SortCriteria
@@ -17,11 +16,14 @@ import com.prajwalch.torrentsearch.models.Torrent
 import com.prajwalch.torrentsearch.network.ConnectivityChecker
 import com.prajwalch.torrentsearch.providers.SearchProviderId
 import com.prajwalch.torrentsearch.usecases.SearchTorrentsUseCase
+import com.prajwalch.torrentsearch.utils.createSortComparator
 
 import dagger.hilt.android.lifecycle.HiltViewModel
 
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.persistentListOf
+import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.CancellationException
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.WhileSubscribed
@@ -31,7 +33,6 @@ import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 import javax.inject.Inject
 import kotlin.time.Duration.Companion.seconds
@@ -115,18 +116,21 @@ class SearchViewModel @Inject constructor(
             return SearchUiState(isLoading = false, isInternetError = true)
         }
 
-        val filteredSearchResults = withContext(Dispatchers.Default) {
-            searchResults
-                .filterNSFW(isNSFWModeEnabled = nsfwModeEnabled)
-                .run {
-                    // Don't apply filter options until search completes.
-                    if (isSearching) this else this.filterByOptions(filterOptions)
-                }
-                .filter {
-                    filterQuery.isBlank() || it.name.contains(filterQuery, ignoreCase = true)
-                }
-                .customSort(criteria = sortOptions.criteria, order = sortOptions.order)
+        val enabledSearchProvidersId = filterOptions.searchProviders.mapNotNull {
+            if (it.enabled) it.searchProviderId else null
         }
+        val sortComparator = createSortComparator(
+            criteria = sortOptions.criteria,
+            order = sortOptions.order,
+        )
+        val filteredSearchResults = searchResults
+            .asSequence()
+            .filter { nsfwModeEnabled || !it.isNSFW() }
+            .filter { filterOptions.deadTorrents || !it.isDead() }
+            .filter { isSearching || it.providerId in enabledSearchProvidersId }
+            .filter { filterQuery.isBlank() || it.name.contains(filterQuery, ignoreCase = true) }
+            .sortedWith(comparator = sortComparator)
+            .toImmutableList()
 
         return SearchUiState(
             searchQuery = searchQuery,
@@ -154,7 +158,7 @@ class SearchViewModel @Inject constructor(
                 internalState.update { it.copy(isRefreshing = false) }
                 return@launch
             }
-            
+
             search(query = searchQuery, category = searchCategory)
         }
     }
@@ -188,17 +192,19 @@ class SearchViewModel @Inject constructor(
      * provider whose ID matches with the given one.
      */
     fun toggleSearchProviderResults(searchProviderId: SearchProviderId) {
-        val searchProviders = internalState.value.filterOptions.searchProviders.map {
-            if (it.searchProviderId == searchProviderId) {
-                it.copy(selected = !it.selected)
-            } else {
-                it
-            }
-        }
-        val filterOptions = internalState.value.filterOptions.copy(
-            searchProviders = searchProviders,
-        )
+        val filterOptions = with(internalState.value.filterOptions) {
+            val searchProviders = this.searchProviders
+                .map {
+                    if (it.searchProviderId == searchProviderId) {
+                        it.copy(selected = !it.selected)
+                    } else {
+                        it
+                    }
+                }
+                .toImmutableList()
 
+            this.copy(searchProviders = searchProviders)
+        }
         internalState.update { it.copy(filterOptions = filterOptions) }
     }
 
@@ -273,6 +279,7 @@ class SearchViewModel @Inject constructor(
                     selected = true,
                 )
             }
+            .toImmutableList()
 
         internalState.update {
             it.copy(
@@ -305,23 +312,10 @@ class SearchViewModel @Inject constructor(
     }
 }
 
-/** Applies the given filter options to this list. */
-private fun List<Torrent>.filterByOptions(options: FilterOptions): List<Torrent> {
-    val selectedSearchProvidersId = options.searchProviders.mapNotNull {
-        if (it.selected) it.searchProviderId else null
-    }
-
-    return this
-        .filter { options.deadTorrents || !it.isDead() }
-        .filter {
-            selectedSearchProvidersId.isEmpty() || it.providerId in selectedSearchProvidersId
-        }
-}
-
 data class SearchUiState(
     val searchQuery: String = "",
     val searchCategory: Category = Category.All,
-    val searchResults: List<Torrent> = emptyList(),
+    val searchResults: ImmutableList<Torrent> = persistentListOf(),
     val currentSortCriteria: SortCriteria = SortCriteria.Default,
     val currentSortOrder: SortOrder = SortOrder.Default,
     val filterOptions: FilterOptions = FilterOptions(),
@@ -335,7 +329,7 @@ private data class InternalState(
     val filterQuery: String = "",
     val sortOptions: SortOptions = SortOptions(),
     val filterOptions: FilterOptions = FilterOptions(),
-    val searchResults: List<Torrent> = emptyList(),
+    val searchResults: ImmutableList<Torrent> = persistentListOf(),
     val isLoading: Boolean = true,
     val isSearching: Boolean = false,
     val isRefreshing: Boolean = false,
@@ -348,7 +342,7 @@ private data class SortOptions(
 )
 
 data class FilterOptions(
-    val searchProviders: List<SearchProviderFilterOption> = emptyList(),
+    val searchProviders: ImmutableList<SearchProviderFilterOption> = persistentListOf(),
     val deadTorrents: Boolean = true,
 )
 

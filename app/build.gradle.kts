@@ -92,6 +92,7 @@ dependencies {
     implementation(libs.lazycolumnscrollbar)
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.hilt.navigation.compose)
+    implementation(libs.kotlinx.collections.immutable)
 
     ksp(libs.androidx.room.compiler)
     ksp(libs.hilt.android.compiler)
