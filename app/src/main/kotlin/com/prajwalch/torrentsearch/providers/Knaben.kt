@@ -40,7 +40,7 @@ class Knaben : SearchProvider {
         val requestBody = buildRequestJson(query, context.category)
 
         val responseJson = context.httpClient.postJson(
-            url = "$BASE_URL/v1",
+            url = "$API_URL/v1",
             payload = requestBody,
         ) ?: return emptyList()
 
@@ -64,8 +64,12 @@ class Knaben : SearchProvider {
             put("order_direction", JsonPrimitive("desc"))
             put("hide_unsafe", JsonPrimitive(true))
             put("hide_xxx", JsonPrimitive(false)) // TODO: NSFW can be implemented here
-            putJsonArray("categories") {
-                getKnabenCategoryIds(category).forEach { add(JsonPrimitive(it)) }
+
+            val categoryIds = getKnabenCategoryIds(category = category)
+            if (categoryIds.isNotEmpty()) {
+                putJsonArray("categories") {
+                    categoryIds.forEach { add(JsonPrimitive(it)) }
+                }
             }
         }
     }
@@ -90,7 +94,7 @@ class Knaben : SearchProvider {
 
         val seeders = obj.getUInt("seeders") ?: 0u
         val peers = obj.getUInt("peers") ?: 0u
-        
+
         val uploadDateIso = obj.getString("date") ?: ""
         val uploadDate = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             formatIsoDateToPrettyDate(uploadDateIso)
@@ -192,6 +196,6 @@ class Knaben : SearchProvider {
     }
 
     private companion object {
-        private const val BASE_URL = "https://api.knaben.org"
+        private const val API_URL = "https://api.knaben.org"
     }
 }
