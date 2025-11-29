@@ -59,7 +59,7 @@ class Knaben : SearchProvider {
     private fun buildRequestJson(query: String, category: Category): JsonObject {
         return buildJsonObject {
             put("query", JsonPrimitive(query))
-            put("size", JsonPrimitive(50))
+            put("size", JsonPrimitive(300))
             put("order_by", JsonPrimitive("seeders"))
             put("order_direction", JsonPrimitive("desc"))
             put("hide_unsafe", JsonPrimitive(true))
