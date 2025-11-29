@@ -60,7 +60,7 @@ class Knaben : SearchProvider {
         return buildJsonObject {
             put("query", JsonPrimitive(query))
             put("size", JsonPrimitive(50))
-            put("order_by", JsonPrimitive("peers"))
+            put("order_by", JsonPrimitive("seeders"))
             put("order_direction", JsonPrimitive("desc"))
             put("hide_unsafe", JsonPrimitive(true))
             put("hide_xxx", JsonPrimitive(false)) // TODO: NSFW can be implemented here
