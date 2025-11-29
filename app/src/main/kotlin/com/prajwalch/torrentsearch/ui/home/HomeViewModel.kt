@@ -41,28 +41,16 @@ class HomeViewModel @Inject constructor(
     private val searchHistoryRepository: SearchHistoryRepository,
     private val settingsRepository: SettingsRepository,
 ) : ViewModel() {
+    private val searchQuery = MutableStateFlow("")
     private val selectedCategory = MutableStateFlow(Category.All)
 
     val uiState = combine(
-        searchHistoryRepository.observeAllSearchHistories(),
+        searchQuery,
         selectedCategory,
+        searchHistoryRepository.observeAllSearchHistories(),
         settingsRepository.getHomeSettings(),
-    ) { searchHistories, selectedCategory, settings ->
-        val histories = if (settings.showSearchHistory) searchHistories else emptyList()
-
-        val categories = Category.entries.filter { settings.enableNSFWMode || !it.isNSFW }
-        val selectedCategory = when {
-            selectedCategory in categories -> selectedCategory
-            else -> Category.All
-        }
-
-        HomeUiState(
-            histories = histories,
-            categories = categories,
-            selectedCategory = selectedCategory,
-            searchHistoryEnabled = settings.saveSearchHistory,
-        )
-    }.stateIn(
+        ::createUiState,
+    ).stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5.seconds),
         initialValue = HomeUiState(),
@@ -70,6 +58,32 @@ class HomeViewModel @Inject constructor(
 
     init {
         loadDefaultCategory()
+    }
+
+    private fun createUiState(
+        searchQuery: String,
+        selectedCategory: Category,
+        histories: List<SearchHistory>,
+        settings: HomeSettings,
+    ): HomeUiState {
+        val histories = when {
+            !settings.showSearchHistory -> emptyList()
+            searchQuery.isBlank() -> histories
+            else -> histories.filter { it.query.contains(searchQuery, ignoreCase = true) }
+        }
+
+        val categories = Category.entries.filter { settings.enableNSFWMode || !it.isNSFW }
+        val selectedCategory = when {
+            selectedCategory in categories -> selectedCategory
+            else -> Category.All
+        }
+
+        return HomeUiState(
+            histories = histories,
+            categories = categories,
+            selectedCategory = selectedCategory,
+            searchHistoryEnabled = settings.saveSearchHistory,
+        )
     }
 
     private fun loadDefaultCategory() = viewModelScope.launch {
@@ -82,6 +96,10 @@ class HomeViewModel @Inject constructor(
 
     fun setCategory(category: Category) {
         selectedCategory.value = category
+    }
+
+    fun filterSearchHistories(query: String) {
+        searchQuery.value = query
     }
 
     fun deleteSearchHistory(id: SearchHistoryId) {
