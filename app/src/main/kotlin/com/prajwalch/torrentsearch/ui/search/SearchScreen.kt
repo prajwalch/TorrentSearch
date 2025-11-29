@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -17,7 +16,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyListState
-import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.text.input.rememberTextFieldState
@@ -55,7 +53,6 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 
@@ -354,9 +351,9 @@ private fun FilterOptionsBottomSheet(
         Column(modifier = Modifier.padding(bottom = MaterialTheme.spaces.large)) {
             FiltersSectionTitle(titleId = R.string.search_filters_section_search_providers)
             SearchProvidersChipsRow(
+                modifier = Modifier.padding(horizontal = MaterialTheme.spaces.large),
                 searchProviders = filterOptions.searchProviders,
                 onToggleSearchProvider = onToggleSearchProvider,
-                contentPadding = PaddingValues(horizontal = MaterialTheme.spaces.large),
             )
 
             FiltersSectionTitle(titleId = R.string.search_filters_section_additional_options)
@@ -394,21 +391,19 @@ private fun SearchProvidersChipsRow(
     searchProviders: ImmutableList<SearchProviderFilterOption>,
     onToggleSearchProvider: (SearchProviderId) -> Unit,
     modifier: Modifier = Modifier,
-    contentPadding: PaddingValues = PaddingValues(0.dp),
 ) {
-    LazyRow(
+    FlowRow(
         modifier = modifier,
         horizontalArrangement = Arrangement.spacedBy(
             space = MaterialTheme.spaces.small,
         ),
-        contentPadding = contentPadding,
     ) {
-        items(items = searchProviders, key = { it.searchProviderId }) {
+        for (searchProvider in searchProviders) {
             FilterChip(
-                selected = it.selected,
-                onClick = { onToggleSearchProvider(it.searchProviderId) },
-                label = { Text(text = it.searchProviderName) },
-                enabled = it.enabled,
+                selected = searchProvider.selected,
+                onClick = { onToggleSearchProvider(searchProvider.searchProviderId) },
+                label = { Text(text = searchProvider.searchProviderName) },
+                enabled = searchProvider.enabled,
             )
         }
     }
