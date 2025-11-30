@@ -117,7 +117,7 @@ class SearchViewModel @Inject constructor(
         }
 
         val enabledSearchProvidersId = filterOptions.searchProviders.mapNotNull {
-            if (it.selected) it.searchProviderId else null
+            if (it.enabled && it.selected) it.searchProviderId else null
         }
         val sortComparator = createSortComparator(
             criteria = sortOptions.criteria,
@@ -127,7 +127,9 @@ class SearchViewModel @Inject constructor(
             .asSequence()
             .filter { nsfwModeEnabled || !it.isNSFW() }
             .filter { filterOptions.deadTorrents || !it.isDead() }
-            .filter { isSearching || it.providerId in enabledSearchProvidersId }
+            .filter {
+                enabledSearchProvidersId.isEmpty() || it.providerId in enabledSearchProvidersId
+            }
             .filter { filterQuery.isBlank() || it.name.contains(filterQuery, ignoreCase = true) }
             .sortedWith(comparator = sortComparator)
             .toImmutableList()
@@ -274,7 +276,7 @@ class SearchViewModel @Inject constructor(
                 SearchProviderFilterOption(
                     searchProviderId = searchProviderId,
                     searchProviderName = searchProviderName,
-                    enabled = true,
+                    enabled = false,
                     selected = true,
                 )
             }
@@ -303,11 +305,19 @@ class SearchViewModel @Inject constructor(
         }
 
         Log.i(TAG, "Search completed", cause)
+        val filterOptions = with(internalState.value.filterOptions) {
+            val searchProviders = this.searchProviders
+                .map { it.copy(enabled = true) }
+                .toImmutableList()
+
+            this.copy(searchProviders = searchProviders)
+        }
         internalState.update {
             it.copy(
+                filterOptions = filterOptions,
                 isLoading = false,
                 isRefreshing = false,
-                isSearching = false
+                isSearching = false,
             )
         }
     }
