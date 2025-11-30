@@ -281,28 +281,36 @@ class SearchViewModel @Inject constructor(
         }
         Log.i(TAG, "Received ${searchResults.size} results")
 
-        val searchProviders = searchResults
-            .map { Pair(it.providerId, it.providerName) }
-            .distinct()
-            .sortedBy { (_, searchProviderName) -> searchProviderName }
-            .map { (searchProviderId, searchProviderName) ->
-                SearchProviderFilterOption(
-                    searchProviderId = searchProviderId,
-                    searchProviderName = searchProviderName,
-                    enabled = false,
-                    selected = true,
-                )
-            }
-            .toImmutableList()
-
+        val searchProvidersFilterOption = createSearchProvidersFilterOption(
+            searchResults = searchResults,
+        )
         internalState.update {
             it.copy(
                 filterOptions = it.filterOptions.copy(
-                    searchProviders = searchProviders,
+                    searchProviders = searchProvidersFilterOption,
                 ),
                 searchResults = searchResults,
             )
         }
+    }
+
+    /** Creates search providers filter option from the given search results. */
+    private fun createSearchProvidersFilterOption(
+        searchResults: ImmutableList<Torrent>,
+    ): ImmutableList<SearchProviderFilterOption> {
+        return searchResults
+            .asSequence()
+            .distinctBy { it.providerId }
+            .sortedBy { it.providerName }
+            .map { Pair(it.providerId, it.providerName) }
+            .map { (searchProviderId, searchProviderName) ->
+                SearchProviderFilterOption(
+                    searchProviderId = searchProviderId,
+                    searchProviderName = searchProviderName,
+                    selected = true,
+                )
+            }
+            .toImmutableList()
     }
 
     /** Invoked when search completes or cancelled. */
