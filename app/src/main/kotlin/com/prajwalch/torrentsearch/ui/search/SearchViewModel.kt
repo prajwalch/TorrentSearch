@@ -30,6 +30,7 @@ import kotlinx.coroutines.flow.WhileSubscribed
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.onCompletion
+import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -249,8 +250,20 @@ class SearchViewModel @Inject constructor(
     /** Performs a new search. */
     private suspend fun search(query: String, category: Category) {
         searchTorrentsUseCase(query = query, category = category)
+            .onStart { onSearchStart() }
             .onCompletion { onSearchCompletion(cause = it) }
             .collect { onSearchResultsReceived(searchResults = it) }
+    }
+
+    /** Invoked when search is about to begin. */
+    private fun onSearchStart() {
+        internalState.update {
+            it.copy(
+                isLoading = false,
+                isSearching = true,
+                isRefreshing = false,
+            )
+        }
     }
 
     /** Invoked when search results are received. */
@@ -288,9 +301,6 @@ class SearchViewModel @Inject constructor(
                     searchProviders = searchProviders,
                 ),
                 searchResults = searchResults,
-                isLoading = false,
-                isSearching = true,
-                isRefreshing = false,
             )
         }
     }
@@ -313,12 +323,7 @@ class SearchViewModel @Inject constructor(
             this.copy(searchProviders = searchProviders)
         }
         internalState.update {
-            it.copy(
-                filterOptions = filterOptions,
-                isLoading = false,
-                isRefreshing = false,
-                isSearching = false,
-            )
+            it.copy(filterOptions = filterOptions, isSearching = false)
         }
     }
 
