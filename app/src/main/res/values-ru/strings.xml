@@ -114,4 +114,15 @@
     <string name="settings_enable_share_integration_summary">Включите, чтобы приложение отображалось в меню \"Поделиться\".</string>
     <string name="settings_enable_quick_search">Включить быстрый поиск</string>
     <string name="settings_enable_quick_search_summary">Включите, чтобы добавить приложение в меню выбора текста (рядом с \"Скопировать\" и \"Вставить\").</string>
+    <string name="bookmarked_message">Добавлен в закладки</string>
+    <string name="bookmarks_dialog_title_delete_all">Удалить все закладки?</string>
+    <string name="bookmarks_dialog_message_delete_all">Все закладки будут безвозвратно удалены</string>
+    <string name="bookmarks_button_delete">Удалить</string>
+    <string name="search_history_query_copied_message">Запрос скопирован в буфер обмена!</string>
+    <string name="search_history_dialog_title_clear_history">Очистить историю поиска?</string>
+    <string name="search_history_dialog_message_clear_history">Все поисковые запросы будут безвозвратно удалены</string>
+    <string name="search_history_button_clear">Очистить</string>
+    <string name="settings_enable_dynamic_theme_summary">Создает цветовую палитру темы, опираясь на обои устройства</string>
+    <string name="settings_pure_black_summary">Включает режим AMOLED</string>
+    <string name="settings_save_search_history_summary">Локально сохраняет недавние поисковые запросы для быстрого доступа</string>
 </resources>
