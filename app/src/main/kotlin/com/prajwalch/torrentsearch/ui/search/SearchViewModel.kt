@@ -303,7 +303,13 @@ class SearchViewModel @Inject constructor(
         }
 
         Log.i(TAG, "Search completed", cause)
-        internalState.update { it.copy(isLoading = false, isSearching = false) }
+        internalState.update {
+            it.copy(
+                isLoading = false,
+                isRefreshing = false,
+                isSearching = false
+            )
+        }
     }
 
     private companion object {
