@@ -10,6 +10,7 @@
     <string name="bookmarked_message">Bookmarked</string>
 
     <string name="main_cannot_search_using_url_message">Cannot search using a URL</string>
+    <string name="main_cannot_search_blank_query_message">Cannot search using a blank query</string>
 
     <string name="action_sort">Sort</string>
     <string name="action_sort_criteria_name">Name</string>

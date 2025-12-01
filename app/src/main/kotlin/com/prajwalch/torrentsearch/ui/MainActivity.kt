@@ -113,6 +113,15 @@ class MainActivity : ComponentActivity() {
 
     /** Changes the start destination to search after validating search query. */
     private fun changeStartDestinationToSearch(searchQuery: String) {
+        if (searchQuery.isBlank()) {
+            val cannotSearchUsingBlankQueryMessage = getString(
+                R.string.main_cannot_search_blank_query_message,
+            )
+            showToast(message = cannotSearchUsingBlankQueryMessage)
+
+            return
+        }
+
         val urlPatternMatcher = Patterns.WEB_URL.matcher(searchQuery)
 
         if (urlPatternMatcher.matches()) {
@@ -121,7 +130,7 @@ class MainActivity : ComponentActivity() {
             val cannotSearchUsingUrlMessage = getString(
                 R.string.main_cannot_search_using_url_message,
             )
-            Toast.makeText(this, cannotSearchUsingUrlMessage, Toast.LENGTH_LONG).show()
+            showToast(message = cannotSearchUsingUrlMessage)
 
             return
         }
@@ -134,6 +143,11 @@ class MainActivity : ComponentActivity() {
             // FIXME: Default category is not respected.
             category = Category.All,
         )
+    }
+
+    /** Shows a toast with a given message. */
+    private fun showToast(message: String) {
+        Toast.makeText(this, message, Toast.LENGTH_LONG).show()
     }
 
     /**
