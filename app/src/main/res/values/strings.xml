@@ -9,6 +9,8 @@
     <string name="safety_status_unsafe">Unsafe</string>
     <string name="bookmarked_message">Bookmarked</string>
 
+    <string name="main_cannot_search_using_url_message">Cannot search using a URL</string>
+
     <string name="action_sort">Sort</string>
     <string name="action_sort_criteria_name">Name</string>
     <string name="action_sort_criteria_seeders">Seeders</string>

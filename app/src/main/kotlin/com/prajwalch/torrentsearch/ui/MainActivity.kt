@@ -18,6 +18,7 @@ import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 
+import com.prajwalch.torrentsearch.R
 import com.prajwalch.torrentsearch.models.Category
 import com.prajwalch.torrentsearch.models.DarkTheme
 import com.prajwalch.torrentsearch.models.MagnetUri
@@ -117,7 +118,11 @@ class MainActivity : ComponentActivity() {
         if (urlPatternMatcher.matches()) {
             Log.w(TAG, "Cannot perform search; text is a URL")
 
-            Toast.makeText(this, "Cannot search using a URL", Toast.LENGTH_LONG).show()
+            val cannotSearchUsingUrlMessage = getString(
+                R.string.main_cannot_search_using_url_message,
+            )
+            Toast.makeText(this, cannotSearchUsingUrlMessage, Toast.LENGTH_LONG).show()
+
             return
         }
 
