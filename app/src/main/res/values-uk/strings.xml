@@ -125,4 +125,6 @@
     <string name="settings_pure_black_summary">Вмикає режим теми AMOLED</string>
     <string name="bookmarked_message">Додано до закладок</string>
     <string name="settings_save_search_history_summary">Зберігає останні пошукові запити локально для швидкого доступу та пропозицій</string>
+    <string name="main_cannot_search_using_url_message">Не вдається шукати за URL-адресою</string>
+    <string name="main_cannot_search_blank_query_message">Неможливо шукати, використовуючи пустий запит</string>
 </resources>
