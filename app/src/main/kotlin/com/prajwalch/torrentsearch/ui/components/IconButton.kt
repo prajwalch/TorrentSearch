@@ -28,9 +28,14 @@ fun ArrowBackIconButton(
 fun DeleteForeverIconButton(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
+    enabled: Boolean = true,
     @StringRes contentDescription: Int? = null,
 ) {
-    IconButton(modifier = modifier, onClick = onClick) {
+    IconButton(
+        modifier = modifier,
+        onClick = onClick,
+        enabled = enabled,
+    ) {
         Icon(
             painter = painterResource(R.drawable.ic_delete_forever),
             contentDescription = contentDescription?.let { stringResource(it) },

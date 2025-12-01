@@ -118,12 +118,19 @@ fun BookmarksScreen(
         }
     }
     val topBarActions: @Composable RowScope.() -> Unit = @Composable {
-        val isResultsNotEmpty = uiState.bookmarks.isNotEmpty()
+        val isBookmarksNotEmpty = uiState.bookmarks.isNotEmpty()
         val isFilterQueryNotBlank = uiState.filterQuery.isNotBlank()
+        val enableBookmarksActions = isBookmarksNotEmpty || isFilterQueryNotBlank
 
-        if (!showSearchBar && (isResultsNotEmpty || isFilterQueryNotBlank)) {
-            SearchIconButton(onClick = { showSearchBar = true })
-            SortIconButton(onClick = { showSortMenu = true })
+        if (!showSearchBar) {
+            SearchIconButton(
+                onClick = { showSearchBar = true },
+                enabled = enableBookmarksActions,
+            )
+            SortIconButton(
+                onClick = { showSortMenu = true },
+                enabled = enableBookmarksActions,
+            )
             SortDropdownMenu(
                 expanded = showSortMenu,
                 onDismissRequest = { showSortMenu = false },
@@ -134,6 +141,7 @@ fun BookmarksScreen(
             DeleteForeverIconButton(
                 onClick = { showDeleteAllConfirmationDialog = true },
                 contentDescription = R.string.bookmarks_action_delete_all,
+                enabled = enableBookmarksActions,
             )
         }
         SettingsIconButton(onClick = onNavigateToSettings)
