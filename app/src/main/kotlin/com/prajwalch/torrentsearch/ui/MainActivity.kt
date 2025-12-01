@@ -95,7 +95,7 @@ class MainActivity : ComponentActivity() {
     private fun handleSendText(intent: Intent) {
         intent.getStringExtra(Intent.EXTRA_TEXT)?.let {
             Log.i(TAG, "Received '$it' from Intent.ACTION_SEND")
-            performSearch(text = it)
+            changeStartDestinationToSearch(searchQuery = it)
         }
     }
 
@@ -106,13 +106,13 @@ class MainActivity : ComponentActivity() {
     private fun handleProcessText(intent: Intent) {
         intent.getStringExtra(Intent.EXTRA_PROCESS_TEXT)?.let {
             Log.i(TAG, "Received '$it' from Intent.ACTION_PROCESS_TEXT")
-            performSearch(text = it)
+            changeStartDestinationToSearch(searchQuery = it)
         }
     }
 
-    /** Sets the given text as the initial search query. */
-    private fun performSearch(text: String) {
-        val urlPatternMatcher = Patterns.WEB_URL.matcher(text)
+    /** Changes the start destination to search after validating search query. */
+    private fun changeStartDestinationToSearch(searchQuery: String) {
+        val urlPatternMatcher = Patterns.WEB_URL.matcher(searchQuery)
 
         if (urlPatternMatcher.matches()) {
             Log.w(TAG, "Cannot perform search; text is a URL")
@@ -121,11 +121,11 @@ class MainActivity : ComponentActivity() {
             return
         }
 
-        val text = urlPatternMatcher.replaceAll("").trim().trim('"', '\n')
-        Log.d(TAG, "Performing search; query = $text")
+        val searchQuery = urlPatternMatcher.replaceAll("").trim().trim('"', '\n')
+        Log.d(TAG, "Performing search; query = $searchQuery")
 
         startDestination = Screens.createSearchRoute(
-            query = text,
+            query = searchQuery,
             // FIXME: Default category is not respected.
             category = Category.All,
         )
