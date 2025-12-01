@@ -126,4 +126,5 @@
     <string name="settings_section_about">عن</string>
     <string name="settings_version">إصدار</string>
     <string name="settings_source_code">مصدر الكود</string>
+    <string name="settings_save_search_history_summary">يخزن عمليات البحث الأخيرة محليًا للوصول السريع والاقتراحات</string>
 </resources>
