@@ -171,7 +171,9 @@ class SearchViewModel @Inject constructor(
      */
     fun reload() {
         viewModelScope.launch {
-            internalState.update { it.copy(isLoading = true) }
+            internalState.update {
+                it.copy(isLoading = true, isInternetError = false)
+            }
             loadResults()
         }
     }
