@@ -92,7 +92,7 @@ fun SearchScreen(
 
     val coroutineScope = rememberCoroutineScope()
     val lazyListState = rememberLazyListState()
-    val textFieldState = rememberTextFieldState("")
+    val filterTextFieldState = rememberTextFieldState("")
     val searchBarFocusRequester = remember { FocusRequester() }
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
 
@@ -116,14 +116,14 @@ fun SearchScreen(
         if (showSearchBar) {
             SearchBar(
                 modifier = Modifier.focusRequester(searchBarFocusRequester),
-                textFieldState = textFieldState,
+                textFieldState = filterTextFieldState,
                 placeholder = { Text(text = stringResource(R.string.search_query_hint)) },
             )
         }
     }
     val topBarActions: @Composable RowScope.() -> Unit = @Composable {
         val isSearchResultsNotEmpty = uiState.searchResults.isNotEmpty()
-        val isFilterQueryNotBlank = textFieldState.text.isNotBlank()
+        val isFilterQueryNotBlank = filterTextFieldState.text.isNotBlank()
 
         if (!showSearchBar && (isSearchResultsNotEmpty || isFilterQueryNotBlank)) {
             SearchIconButton(onClick = { showSearchBar = true })
@@ -159,7 +159,7 @@ fun SearchScreen(
 
     if (showSearchBar) {
         LaunchedEffect(Unit) {
-            snapshotFlow { textFieldState.text }
+            snapshotFlow { filterTextFieldState.text }
                 .distinctUntilChanged()
                 .collectLatest { viewModel.filterSearchResults(query = it.toString()) }
         }
@@ -207,6 +207,14 @@ fun SearchScreen(
                 )
             }
 
+            uiState.searchResults.isEmpty() && filterTextFieldState.text.isNotBlank() -> {
+                ResultsNotFound(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(innerPadding),
+                )
+            }
+
             uiState.searchResults.isEmpty() && !uiState.isSearching -> {
                 ResultsNotFound(
                     modifier = Modifier
@@ -240,6 +248,15 @@ private fun NoInternetConnection(onTryAgain: () -> Unit, modifier: Modifier = Mo
         icon = R.drawable.ic_signal_wifi_off,
         title = R.string.search_internet_connection_error,
         actions = { TryAgainButton(onClick = onTryAgain) }
+    )
+}
+
+@Composable
+private fun ResultsNotFound(modifier: Modifier = Modifier) {
+    EmptyPlaceholder(
+        modifier = modifier,
+        icon = R.drawable.ic_results_not_found,
+        title = R.string.search_no_results_message,
     )
 }
 
