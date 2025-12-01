@@ -5,6 +5,8 @@ import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -60,6 +62,9 @@ fun EmptyPlaceholder(
             message?.let { Text(text = stringResource(it)) }
         }
 
-        actions?.let { it() }
+        actions?.let {
+            Spacer(modifier = Modifier.height(MaterialTheme.spaces.extraSmall))
+            it()
+        }
     }
 }
