@@ -123,11 +123,20 @@ fun SearchScreen(
     }
     val topBarActions: @Composable RowScope.() -> Unit = @Composable {
         val isSearchResultsNotEmpty = uiState.searchResults.isNotEmpty()
-        val isFilterQueryNotBlank = filterTextFieldState.text.isNotBlank()
+        val isFilterQueryNotBlank by remember {
+            derivedStateOf { filterTextFieldState.text.isNotBlank() }
+        }
+        val enableSearchResultsActions = isSearchResultsNotEmpty || isFilterQueryNotBlank
 
-        if (!showSearchBar && (isSearchResultsNotEmpty || isFilterQueryNotBlank)) {
-            SearchIconButton(onClick = { showSearchBar = true })
-            SortIconButton(onClick = { showSortOptions = true })
+        if (!showSearchBar) {
+            SearchIconButton(
+                onClick = { showSearchBar = true },
+                enabled = enableSearchResultsActions,
+            )
+            SortIconButton(
+                onClick = { showSortOptions = true },
+                enabled = enableSearchResultsActions,
+            )
             SortDropdownMenu(
                 expanded = showSortOptions,
                 onDismissRequest = { showSortOptions = false },
@@ -135,12 +144,13 @@ fun SearchScreen(
                 currentSortOrder = uiState.sortOptions.order,
                 onSortRequest = viewModel::updateSortOptions,
             )
-            IconButton(onClick = { showFilterOptions = true }) {
+            IconButton(
+                onClick = { showFilterOptions = true },
+                enabled = enableSearchResultsActions,
+            ) {
                 Icon(
                     painter = painterResource(R.drawable.ic_filter_alt),
-                    contentDescription = stringResource(
-                        R.string.search_action_filter,
-                    ),
+                    contentDescription = stringResource(R.string.search_action_filter),
                 )
             }
         }

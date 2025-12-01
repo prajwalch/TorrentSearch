@@ -39,8 +39,16 @@ fun DeleteForeverIconButton(
 }
 
 @Composable
-fun SearchIconButton(onClick: () -> Unit, modifier: Modifier = Modifier) {
-    IconButton(modifier = modifier, onClick = onClick) {
+fun SearchIconButton(
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    enabled: Boolean = true,
+) {
+    IconButton(
+        modifier = modifier,
+        onClick = onClick,
+        enabled = enabled,
+    ) {
         Icon(
             painter = painterResource(R.drawable.ic_search),
             contentDescription = null,
@@ -49,8 +57,16 @@ fun SearchIconButton(onClick: () -> Unit, modifier: Modifier = Modifier) {
 }
 
 @Composable
-fun SortIconButton(onClick: () -> Unit, modifier: Modifier = Modifier) {
-    IconButton(modifier = modifier, onClick = onClick) {
+fun SortIconButton(
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    enabled: Boolean = true,
+) {
+    IconButton(
+        modifier = modifier,
+        onClick = onClick,
+        enabled = enabled,
+    ) {
         Icon(
             painter = painterResource(R.drawable.ic_sort),
             contentDescription = stringResource(R.string.action_sort),
