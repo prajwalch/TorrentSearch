@@ -349,12 +349,14 @@ private fun FilterOptionsBottomSheet(
 ) {
     ModalBottomSheet(modifier = modifier, onDismissRequest = onDismissRequest) {
         Column(modifier = Modifier.padding(bottom = MaterialTheme.spaces.large)) {
-            FiltersSectionTitle(titleId = R.string.search_filters_section_search_providers)
-            SearchProvidersChipsRow(
-                modifier = Modifier.padding(horizontal = MaterialTheme.spaces.large),
-                searchProviders = filterOptions.searchProviders,
-                onToggleSearchProvider = onToggleSearchProvider,
-            )
+            if (filterOptions.searchProviders.isNotEmpty()) {
+                FiltersSectionTitle(titleId = R.string.search_filters_section_search_providers)
+                SearchProvidersChipsRow(
+                    modifier = Modifier.padding(horizontal = MaterialTheme.spaces.large),
+                    searchProviders = filterOptions.searchProviders,
+                    onToggleSearchProvider = onToggleSearchProvider,
+                )
+            }
 
             FiltersSectionTitle(titleId = R.string.search_filters_section_additional_options)
             FlowRow(

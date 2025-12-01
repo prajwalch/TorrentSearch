@@ -285,10 +285,16 @@ class SearchViewModel @Inject constructor(
             searchResults = searchResults,
         )
         internalState.update {
+            // It doesn't make sense to create search provider filter option
+            // when only single search provider is enabled.
+            val filterOptions = if (searchProvidersFilterOption.size > 1) {
+                it.filterOptions.copy(searchProviders = searchProvidersFilterOption)
+            } else {
+                it.filterOptions
+            }
+
             it.copy(
-                filterOptions = it.filterOptions.copy(
-                    searchProviders = searchProvidersFilterOption,
-                ),
+                filterOptions = filterOptions,
                 searchResults = searchResults,
             )
         }
