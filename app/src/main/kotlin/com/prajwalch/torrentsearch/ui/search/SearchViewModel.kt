@@ -118,7 +118,7 @@ class SearchViewModel @Inject constructor(
         }
 
         val enabledSearchProvidersId = filterOptions.searchProviders.mapNotNull {
-            if (it.enabled && it.selected) it.searchProviderId else null
+            if (it.selected) it.searchProviderId else null
         }
         val sortComparator = createSortComparator(
             criteria = sortOptions.criteria,
@@ -128,9 +128,7 @@ class SearchViewModel @Inject constructor(
             .asSequence()
             .filter { nsfwModeEnabled || !it.isNSFW() }
             .filter { filterOptions.deadTorrents || !it.isDead() }
-            .filter {
-                enabledSearchProvidersId.isEmpty() || it.providerId in enabledSearchProvidersId
-            }
+            .filter { it.providerId in enabledSearchProvidersId }
             .filter { filterQuery.isBlank() || it.name.contains(filterQuery, ignoreCase = true) }
             .sortedWith(comparator = sortComparator)
             .toImmutableList()
