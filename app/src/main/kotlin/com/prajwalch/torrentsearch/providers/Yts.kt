@@ -96,6 +96,7 @@ class Yts : SearchProvider {
             append("/v2")
             append("/list_movies.json")
             append("?query_term=$query")
+            append("&limit=50")
         }
 
         val responseJson = context.httpClient.getJson(url = requestUrl) ?: return emptyList()
