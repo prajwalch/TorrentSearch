@@ -126,9 +126,11 @@ class SearchViewModel @Inject constructor(
         )
         val filteredSearchResults = searchResults
             .asSequence()
+            .filter {
+                filterOptions.searchProviders.isEmpty() || it.providerId in enabledSearchProvidersId
+            }
             .filter { nsfwModeEnabled || !it.isNSFW() }
             .filter { filterOptions.deadTorrents || !it.isDead() }
-            .filter { it.providerId in enabledSearchProvidersId }
             .filter { filterQuery.isBlank() || it.name.contains(filterQuery, ignoreCase = true) }
             .sortedWith(comparator = sortComparator)
             .toImmutableList()
@@ -143,6 +145,8 @@ class SearchViewModel @Inject constructor(
             isSearching = isSearching,
             isRefreshing = isRefreshing,
             isInternetError = false,
+            resultsNotFound = searchResults.isEmpty() && !isSearching,
+            resultsFilteredOut = searchResults.isNotEmpty() && filteredSearchResults.isEmpty(),
         )
     }
 
@@ -356,6 +360,8 @@ data class SearchUiState(
     val isSearching: Boolean = false,
     val isRefreshing: Boolean = false,
     val isInternetError: Boolean = false,
+    val resultsNotFound: Boolean = false,
+    val resultsFilteredOut: Boolean = false,
 )
 
 private data class InternalState(

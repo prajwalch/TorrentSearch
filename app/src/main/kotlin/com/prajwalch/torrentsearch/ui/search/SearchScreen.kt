@@ -122,11 +122,7 @@ fun SearchScreen(
         }
     }
     val topBarActions: @Composable RowScope.() -> Unit = @Composable {
-        val isSearchResultsNotEmpty = uiState.searchResults.isNotEmpty()
-        val isFilterQueryNotBlank by remember {
-            derivedStateOf { filterTextFieldState.text.isNotBlank() }
-        }
-        val enableSearchResultsActions = isSearchResultsNotEmpty || isFilterQueryNotBlank
+        val enableSearchResultsActions = !uiState.resultsNotFound
 
         if (!showSearchBar) {
             SearchIconButton(
@@ -217,20 +213,20 @@ fun SearchScreen(
                 )
             }
 
-            uiState.searchResults.isEmpty() && filterTextFieldState.text.isNotBlank() -> {
-                ResultsNotFound(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(innerPadding),
-                )
-            }
-
-            uiState.searchResults.isEmpty() && !uiState.isSearching -> {
+            uiState.resultsNotFound -> {
                 ResultsNotFound(
                     modifier = Modifier
                         .fillMaxSize()
                         .padding(innerPadding),
                     onTryAgain = viewModel::reload,
+                )
+            }
+
+            uiState.resultsFilteredOut -> {
+                ResultsNotFound(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(innerPadding),
                 )
             }
 
