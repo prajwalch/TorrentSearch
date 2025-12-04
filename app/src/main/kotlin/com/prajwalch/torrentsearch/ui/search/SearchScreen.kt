@@ -122,7 +122,11 @@ fun SearchScreen(
         }
     }
     val topBarActions: @Composable RowScope.() -> Unit = @Composable {
-        val enableSearchResultsActions = !uiState.resultsNotFound
+        val enableSearchResultsActions = when {
+            uiState.resultsNotFound -> false
+            uiState.resultsFilteredOut -> true
+            else -> uiState.searchResults.isNotEmpty()
+        }
 
         if (!showSearchBar) {
             SearchIconButton(
