@@ -25,7 +25,6 @@ import kotlin.time.Duration.Companion.seconds
 /** UI state for the Bookmarks screen. */
 data class BookmarksUiState(
     val bookmarks: List<Torrent> = emptyList(),
-    val filterQuery: String = "",
     val currentSortCriteria: SortCriteria = SortCriteria.Default,
     val currentSortOrder: SortOrder = SortOrder.Default,
 )
@@ -57,7 +56,6 @@ class BookmarksViewModel @Inject constructor(
 
         BookmarksUiState(
             bookmarks = bookmarks,
-            filterQuery = filterQuery,
             currentSortCriteria = sortOptions.criteria,
             currentSortOrder = sortOptions.order,
         )
@@ -86,8 +84,8 @@ class BookmarksViewModel @Inject constructor(
         sortOptions.value = SortOptions(criteria = criteria, order = order)
     }
 
-    /** Updates the filter query and filters the current bookmarks. */
-    fun updateFilterQuery(query: String) {
+    /** Filters the bookmarks using the given query. */
+    fun filterBookmarks(query: String) {
         filterQuery.value = query
     }
 }

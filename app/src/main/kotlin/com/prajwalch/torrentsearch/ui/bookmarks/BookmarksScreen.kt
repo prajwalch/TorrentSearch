@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
@@ -36,6 +37,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
@@ -63,6 +65,8 @@ import com.prajwalch.torrentsearch.ui.components.SortIconButton
 import com.prajwalch.torrentsearch.ui.components.TorrentListItem
 import com.prajwalch.torrentsearch.ui.theme.spaces
 
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -79,6 +83,7 @@ fun BookmarksScreen(
 
     val coroutineScope = rememberCoroutineScope()
     val lazyListState = rememberLazyListState()
+    val textFieldState = rememberTextFieldState("")
     val searchBarFocusRequester = remember { FocusRequester() }
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
 
@@ -97,8 +102,7 @@ fun BookmarksScreen(
         if (showSearchBar) {
             SearchBar(
                 modifier = Modifier.focusRequester(searchBarFocusRequester),
-                query = uiState.filterQuery,
-                onQueryChange = viewModel::updateFilterQuery,
+                textFieldState = textFieldState,
                 placeholder = { Text(text = stringResource(R.string.bookmarks_search_query_hint)) },
             )
         } else {
@@ -121,7 +125,9 @@ fun BookmarksScreen(
     }
     val topBarActions: @Composable RowScope.() -> Unit = @Composable {
         val isBookmarksNotEmpty = uiState.bookmarks.isNotEmpty()
-        val isFilterQueryNotBlank = uiState.filterQuery.isNotBlank()
+        val isFilterQueryNotBlank by remember {
+            derivedStateOf { textFieldState.text.isNotBlank() }
+        }
         val enableBookmarksActions = isBookmarksNotEmpty || isFilterQueryNotBlank
 
         if (!showSearchBar) {
@@ -158,6 +164,15 @@ fun BookmarksScreen(
             searchBarFocusRequester.requestFocus()
         }
     }
+
+    if (showSearchBar) {
+        LaunchedEffect(Unit) {
+            snapshotFlow { textFieldState.text }
+                .distinctUntilChanged()
+                .collectLatest { viewModel.filterBookmarks(query = it.toString()) }
+        }
+    }
+
 
     if (showDeleteAllConfirmationDialog) {
         DeleteAllConfirmationDialog(
