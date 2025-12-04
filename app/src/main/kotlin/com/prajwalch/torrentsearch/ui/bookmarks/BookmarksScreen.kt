@@ -87,9 +87,11 @@ fun BookmarksScreen(
         mutableStateOf(false)
     }
     var showDeleteAllConfirmationDialog by remember { mutableStateOf(false) }
-    val showScrollToTopButton by remember {
-        derivedStateOf { lazyListState.firstVisibleItemIndex > 1 }
+
+    val isFirstBookmarkVisible by remember {
+        derivedStateOf { lazyListState.firstVisibleItemIndex <= 1 }
     }
+    val showScrollToTopButton = uiState.bookmarks.isNotEmpty() && !isFirstBookmarkVisible
 
     val topBarTitle: @Composable () -> Unit = @Composable {
         if (showSearchBar) {
