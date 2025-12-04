@@ -99,9 +99,11 @@ fun SearchScreen(
     var showSearchBar by remember { mutableStateOf(false) }
     var showSortOptions by remember(uiState.sortOptions) { mutableStateOf(false) }
     var showFilterOptions by remember { mutableStateOf(false) }
-    val showScrollToTopButton by remember {
-        derivedStateOf { lazyListState.firstVisibleItemIndex > 1 }
+
+    val isFirstResultVisible by remember {
+        derivedStateOf { lazyListState.firstVisibleItemIndex <= 1 }
     }
+    val showScrollToTopButton = uiState.searchResults.isNotEmpty() && !isFirstResultVisible
 
     if (showFilterOptions) {
         FilterOptionsBottomSheet(
