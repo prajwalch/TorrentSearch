@@ -55,18 +55,18 @@
     <string name="bookmarks_button_delete">حذف</string>
     <string name="bookmarks_empty_message">بدون نشانه گذاری</string>
     <string name="action_sort_criteria_seeders">آپلود کنندگان</string>
-    <string name="action_sort_criteria_peers">همسالان</string>
+    <string name="action_sort_criteria_peers">اشتراک گذارندگان</string>
     <string name="action_sort_order_ascending">صعودی</string>
     <string name="action_sort_order_descending">نزولی</string>
     <string name="torrent_list_seeders_format">"آپلود کنندگان  %1$s"</string>
-    <string name="torrent_list_peers_format">همسالان %1$s</string>
+    <string name="torrent_list_peers_format">اشتراک گذارندگان %1$s</string>
     <string name="search_history_screen_title">تاریخچه جستجو</string>
     <string name="search_history_action_delete_all">حذف همه</string>
     <string name="search_history_empty_message">تاریخچه جستجو موجود نیست</string>
     <string name="search_history_query_copied_message">پرسش و پاسخ در کلیپ بورد کپی شد</string>
     <string name="search_history_dialog_title_clear_history">آیا تاریخچه جستجو حذف شود؟</string>
     <string name="search_history_dialog_message_clear_history">تاریخچه جستجو برای همیشه حذف خواهد شد</string>
-    <string name="search_history_button_clear">حذف</string>
+    <string name="search_history_button_clear">پاک کردن</string>
     <string name="search_providers_screen_title">ارائه دهندگان جستجو</string>
     <string name="search_providers_action_enable_all">فعال کردن همه</string>
     <string name="search_providers_action_disable_all">غیرفعال کردن همه</string>
@@ -102,7 +102,7 @@
     <string name="settings_search_providers_summary_format">%1$d از %2$d فعال شده</string>
     <string name="settings_default_category">دسته بندی پیش فرض</string>
     <string name="settings_default_sort_options">گزینه‌ های مرتب‌ سازی پیش‌ فرض</string>
-    <string name="settings_section_sort_criteria">معیار های مرتب‌ سازی</string>
+    <string name="settings_section_sort_criteria">مرتب سازی بر اساس</string>
     <string name="settings_section_sort_order">ترتیب مرتب‌ سازی</string>
     <string name="settings_max_num_results">بیشترین تعداد نتایج</string>
     <string name="settings_max_num_results_summary_format">%1$d نتیجه</string>
@@ -119,4 +119,10 @@
     <string name="settings_section_about">درباره</string>
     <string name="settings_version">نسخه</string>
     <string name="settings_source_code">کد منبع</string>
+    <string name="bookmarked_message">نشانه گذاری شده</string>
+    <string name="main_cannot_search_using_url_message">نمی توان با استفاده از لینک جستجو کرد</string>
+    <string name="main_cannot_search_blank_query_message">نمی‌ توان با استفاده از یک عبارت جستجوی خالی جستجو کرد</string>
+    <string name="settings_enable_dynamic_theme_summary">تولید پس زمینه برنامه بر اساس پس زمینه دستگاه</string>
+    <string name="settings_pure_black_summary">‌حالت پس زمینه AMOLED را فعال می کند</string>
+    <string name="settings_save_search_history_summary">جستجو های اخیر را به صورت محلی برای دسترسی سریع و پیشنهادات ذخیره می‌ کند</string>
 </resources>
