@@ -291,12 +291,8 @@ private fun SearchSettings(
             }
         )
 
-        val defaultSortCriteria = sortCriteriaStringResource(
-            settings.defaultSortOptions.sortCriteria,
-        )
-        val defaultSortOrder = sortOrderStringResource(
-            settings.defaultSortOptions.sortOrder,
-        )
+        val defaultSortCriteria = sortCriteriaStringResource(settings.defaultSortOptions.criteria)
+        val defaultSortOrder = sortOrderStringResource(settings.defaultSortOptions.order)
         SettingsListItem(
             onClick = onNavigateToDefaultSortOptions,
             icon = R.drawable.ic_sort,

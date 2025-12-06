@@ -7,6 +7,7 @@ import com.prajwalch.torrentsearch.data.repository.BookmarksRepository
 import com.prajwalch.torrentsearch.data.repository.SettingsRepository
 import com.prajwalch.torrentsearch.extensions.customSort
 import com.prajwalch.torrentsearch.models.SortCriteria
+import com.prajwalch.torrentsearch.models.SortOptions
 import com.prajwalch.torrentsearch.models.SortOrder
 import com.prajwalch.torrentsearch.models.Torrent
 
@@ -25,13 +26,7 @@ import kotlin.time.Duration.Companion.seconds
 /** UI state for the Bookmarks screen. */
 data class BookmarksUiState(
     val bookmarks: List<Torrent> = emptyList(),
-    val currentSortCriteria: SortCriteria = SortCriteria.Default,
-    val currentSortOrder: SortOrder = SortOrder.Default,
-)
-
-private data class SortOptions(
-    val criteria: SortCriteria = SortCriteria.Default,
-    val order: SortOrder = SortOrder.Default,
+    val sortOptions: SortOptions = SortOptions(),
 )
 
 /** ViewModel that handles the business logic of Bookmarks screen. */
@@ -56,8 +51,7 @@ class BookmarksViewModel @Inject constructor(
 
         BookmarksUiState(
             bookmarks = bookmarks,
-            currentSortCriteria = sortOptions.criteria,
-            currentSortOrder = sortOptions.order,
+            sortOptions = sortOptions,
         )
     }.stateIn(
         scope = viewModelScope,

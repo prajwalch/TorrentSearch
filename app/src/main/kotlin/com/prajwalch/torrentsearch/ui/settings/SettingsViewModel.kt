@@ -13,6 +13,7 @@ import com.prajwalch.torrentsearch.models.Category
 import com.prajwalch.torrentsearch.models.DarkTheme
 import com.prajwalch.torrentsearch.models.MaxNumResults
 import com.prajwalch.torrentsearch.models.SortCriteria
+import com.prajwalch.torrentsearch.models.SortOptions
 import com.prajwalch.torrentsearch.models.SortOrder
 
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -44,18 +45,13 @@ data class GeneralSettingsUiState(
 data class SearchSettingsUiState(
     val searchProvidersStat: SearchProvidersStat = SearchProvidersStat(),
     val defaultCategory: Category = Category.All,
-    val defaultSortOptions: DefaultSortOptions = DefaultSortOptions(),
+    val defaultSortOptions: SortOptions = SortOptions(),
     val maxNumResults: MaxNumResults = MaxNumResults.Unlimited,
 )
 
 data class SearchProvidersStat(
     val enabledSearchProvidersCount: Int = 0,
     val totalSearchProvidersCount: Int = 0,
-)
-
-data class DefaultSortOptions(
-    val sortCriteria: SortCriteria = SortCriteria.Default,
-    val sortOrder: SortOrder = SortOrder.Default,
 )
 
 /** State for the search history settings. */
@@ -104,7 +100,7 @@ class SettingsViewModel @Inject constructor(
     private val defaultSortOptionsFlow = combine(
         settingsRepository.defaultSortCriteria,
         settingsRepository.defaultSortOrder,
-        ::DefaultSortOptions,
+        ::SortOptions,
     )
 
     val searchSettingsUiState = combine(

@@ -11,6 +11,7 @@ import com.prajwalch.torrentsearch.data.repository.SettingsRepository
 import com.prajwalch.torrentsearch.models.Category
 import com.prajwalch.torrentsearch.models.SearchResults
 import com.prajwalch.torrentsearch.models.SortCriteria
+import com.prajwalch.torrentsearch.models.SortOptions
 import com.prajwalch.torrentsearch.models.SortOrder
 import com.prajwalch.torrentsearch.models.Torrent
 import com.prajwalch.torrentsearch.network.ConnectivityChecker
@@ -373,11 +374,6 @@ private data class InternalState(
     val isSearching: Boolean = false,
     val isRefreshing: Boolean = false,
     val isInternetError: Boolean = false,
-)
-
-data class SortOptions(
-    val criteria: SortCriteria = SortCriteria.Default,
-    val order: SortOrder = SortOrder.Default,
 )
 
 data class FilterOptions(

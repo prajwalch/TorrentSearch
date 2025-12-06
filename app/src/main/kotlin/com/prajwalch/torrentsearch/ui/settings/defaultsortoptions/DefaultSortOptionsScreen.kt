@@ -62,11 +62,11 @@ fun DefaultSortOptionsScreen(onNavigateBack: () -> Unit, modifier: Modifier = Mo
                 .padding(innerPadding),
         ) {
             SortCriteriaSection(
-                selectedCriteria = defaultSortOptions.sortCriteria,
+                selectedCriteria = defaultSortOptions.criteria,
                 onCriteriaSelect = viewModel::setDefaultSortCriteria,
             )
             SortOrderSection(
-                selectedOrder = defaultSortOptions.sortOrder,
+                selectedOrder = defaultSortOptions.order,
                 onOrderSelect = viewModel::setDefaultSortOrder,
             )
         }

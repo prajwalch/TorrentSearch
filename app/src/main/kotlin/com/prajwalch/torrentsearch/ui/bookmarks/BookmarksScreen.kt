@@ -88,9 +88,7 @@ fun BookmarksScreen(
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
 
     var showSearchBar by remember { mutableStateOf(false) }
-    var showSortMenu by remember(uiState.currentSortCriteria, uiState.currentSortOrder) {
-        mutableStateOf(false)
-    }
+    var showSortOptions by remember(uiState.sortOptions) { mutableStateOf(false) }
     var showDeleteAllConfirmationDialog by remember { mutableStateOf(false) }
 
     val isFirstBookmarkVisible by remember {
@@ -136,14 +134,14 @@ fun BookmarksScreen(
                 enabled = enableBookmarksActions,
             )
             SortIconButton(
-                onClick = { showSortMenu = true },
+                onClick = { showSortOptions = true },
                 enabled = enableBookmarksActions,
             )
             SortDropdownMenu(
-                expanded = showSortMenu,
-                onDismissRequest = { showSortMenu = false },
-                currentSortCriteria = uiState.currentSortCriteria,
-                currentSortOrder = uiState.currentSortOrder,
+                expanded = showSortOptions,
+                onDismissRequest = { showSortOptions = false },
+                currentSortCriteria = uiState.sortOptions.criteria,
+                currentSortOrder = uiState.sortOptions.order,
                 onSortRequest = viewModel::sortBookmarks,
             )
             DeleteForeverIconButton(
