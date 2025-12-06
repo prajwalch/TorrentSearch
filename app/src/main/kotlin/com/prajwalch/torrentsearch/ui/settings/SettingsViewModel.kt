@@ -96,17 +96,10 @@ class SettingsViewModel @Inject constructor(
         searchProvidersRepository.observeSearchProvidersCount(),
         ::SearchProvidersStat,
     )
-
-    private val defaultSortOptionsFlow = combine(
-        settingsRepository.defaultSortCriteria,
-        settingsRepository.defaultSortOrder,
-        ::SortOptions,
-    )
-
     val searchSettingsUiState = combine(
         searchProvidersStatFlow,
         settingsRepository.defaultCategory,
-        defaultSortOptionsFlow,
+        settingsRepository.defaultSortOptions,
         settingsRepository.maxNumResults,
         ::SearchSettingsUiState,
     ).stateIn(

@@ -84,15 +84,6 @@ class SearchViewModel @Inject constructor(
         }
     }
 
-    /** Returns the default sort options. */
-    private suspend fun getDefaultSortOptions(): SortOptions {
-        return combine(
-            settingsRepository.defaultSortCriteria,
-            settingsRepository.defaultSortOrder,
-            ::SortOptions
-        ).first()
-    }
-
     /** Produces UI state from the given internal state and other parameters. */
     private suspend fun createUiState(
         internalState: InternalState,
@@ -246,7 +237,7 @@ class SearchViewModel @Inject constructor(
             return
         }
 
-        val defaultSortOptions = getDefaultSortOptions()
+        val defaultSortOptions = settingsRepository.defaultSortOptions.first()
         internalState.update { it.copy(sortOptions = defaultSortOptions) }
 
         search(query = searchQuery, category = searchCategory)

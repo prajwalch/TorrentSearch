@@ -12,10 +12,12 @@ import com.prajwalch.torrentsearch.models.Category
 import com.prajwalch.torrentsearch.models.DarkTheme
 import com.prajwalch.torrentsearch.models.MaxNumResults
 import com.prajwalch.torrentsearch.models.SortCriteria
+import com.prajwalch.torrentsearch.models.SortOptions
 import com.prajwalch.torrentsearch.models.SortOrder
 import com.prajwalch.torrentsearch.providers.SearchProviderId
 
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
 
 import javax.inject.Inject
@@ -53,19 +55,19 @@ class SettingsRepository @Inject constructor(
             default = Category.All,
         )
 
-    val defaultSortCriteria: Flow<SortCriteria> = dataStore
-        .getMapOrDefault(
+    val defaultSortOptions: Flow<SortOptions> = combine(
+        dataStore.getMapOrDefault(
             key = DEFAULT_SORT_CRITERIA,
             map = SortCriteria::valueOf,
-            default = SortCriteria.Default,
-        )
-
-    val defaultSortOrder: Flow<SortOrder> = dataStore
-        .getMapOrDefault(
+            default = SortCriteria.Default
+        ),
+        dataStore.getMapOrDefault(
             key = DEFAULT_SORT_ORDER,
             map = SortOrder::valueOf,
             default = SortOrder.Default,
-        )
+        ),
+        ::SortOptions,
+    )
 
     val maxNumResults: Flow<MaxNumResults> = dataStore
         .getMapOrDefault(
