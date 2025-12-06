@@ -88,6 +88,20 @@ class SettingsRepository @Inject constructor(
     val enableQuickSearch: Flow<Boolean> = dataStore
         .getOrDefault(key = ENABLE_QUICK_SEARCH, default = true)
 
+    val bookmarksSortOptions: Flow<SortOptions> = combine(
+        dataStore.getMapOrDefault(
+            key = BOOKMARKS_SORT_CRITERIA,
+            map = SortCriteria::valueOf,
+            default = SortCriteria.Default,
+        ),
+        dataStore.getMapOrDefault(
+            key = BOOKMARKS_SORT_ORDER,
+            map = SortOrder::valueOf,
+            default = SortOrder.Default,
+        ),
+        ::SortOptions,
+    )
+
     suspend fun enableDynamicTheme(enable: Boolean) {
         dataStore.setOrUpdate(key = ENABLE_DYNAMIC_THEME, enable)
     }
@@ -140,6 +154,14 @@ class SettingsRepository @Inject constructor(
         dataStore.setOrUpdate(key = ENABLE_QUICK_SEARCH, value = enable)
     }
 
+    suspend fun setBookmarksSortCriteria(criteria: SortCriteria) {
+        dataStore.setOrUpdate(key = BOOKMARKS_SORT_CRITERIA, value = criteria.name)
+    }
+
+    suspend fun setBookmarksSortOrder(order: SortOrder) {
+        dataStore.setOrUpdate(key = BOOKMARKS_SORT_ORDER, value = order.name)
+    }
+
     private companion object PreferencesKeys {
         // Appearance
         val ENABLE_DYNAMIC_THEME = booleanPreferencesKey("enable_dynamic_theme")
@@ -163,6 +185,10 @@ class SettingsRepository @Inject constructor(
         // Advanced
         val ENABLE_SHARE_INTEGRATION = booleanPreferencesKey("enable_share_integration")
         val ENABLE_QUICK_SEARCH = booleanPreferencesKey("enable_quick_search")
+
+        // Bookmarks screen sort options.
+        val BOOKMARKS_SORT_CRITERIA = stringPreferencesKey("bookmarks_sort_criteria")
+        val BOOKMARKS_SORT_ORDER = stringPreferencesKey("bookmarks_sort_order")
     }
 }
 

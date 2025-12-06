@@ -2,8 +2,8 @@ package com.prajwalch.torrentsearch.ui.bookmarks
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.prajwalch.torrentsearch.data.repository.BookmarksRepository
 
+import com.prajwalch.torrentsearch.data.repository.BookmarksRepository
 import com.prajwalch.torrentsearch.data.repository.SettingsRepository
 import com.prajwalch.torrentsearch.extensions.customSort
 import com.prajwalch.torrentsearch.models.SortCriteria
@@ -18,7 +18,6 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.WhileSubscribed
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
-import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 import javax.inject.Inject
@@ -34,17 +33,16 @@ data class BookmarksUiState(
 @HiltViewModel
 class BookmarksViewModel @Inject constructor(
     private val bookmarksRepository: BookmarksRepository,
-    settingsRepository: SettingsRepository,
+    private val settingsRepository: SettingsRepository,
 ) : ViewModel() {
     private val filterQuery = MutableStateFlow("")
-    private val sortOptions = MutableStateFlow(SortOptions())
 
     val uiState = combine(
         filterQuery,
-        sortOptions,
         bookmarksRepository.observeAllBookmarks(),
         settingsRepository.enableNSFWMode,
-    ) { filterQuery, sortOptions, bookmarks, nsfwModeEnabled ->
+        settingsRepository.bookmarksSortOptions,
+    ) { filterQuery, bookmarks, nsfwModeEnabled, sortOptions ->
         val bookmarks = bookmarks
             .filter { nsfwModeEnabled || !it.isNSFW() }
             .filter { filterQuery.isBlank() || it.name.contains(filterQuery, ignoreCase = true) }
@@ -74,12 +72,18 @@ class BookmarksViewModel @Inject constructor(
         }
     }
 
-    fun updateSortCriteria(criteria: SortCriteria) {
-        sortOptions.update { it.copy(criteria = criteria) }
+    /** Sets or updates the sort criteria. */
+    fun setSortCriteria(criteria: SortCriteria) {
+        viewModelScope.launch {
+            settingsRepository.setBookmarksSortCriteria(criteria)
+        }
     }
 
-    fun updateSortOrder(order: SortOrder) {
-        sortOptions.update { it.copy(order = order) }
+    /** Sets or updates the sort order. */
+    fun setSortOrder(order: SortOrder) {
+        viewModelScope.launch {
+            settingsRepository.setBookmarksSortOrder(order)
+        }
     }
 
     /** Filters the bookmarks using the given query. */
