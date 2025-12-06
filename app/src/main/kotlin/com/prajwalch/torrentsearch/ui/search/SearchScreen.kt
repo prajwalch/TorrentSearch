@@ -142,9 +142,10 @@ fun SearchScreen(
             SortDropdownMenu(
                 expanded = showSortOptions,
                 onDismissRequest = { showSortOptions = false },
-                currentSortCriteria = uiState.sortOptions.criteria,
-                currentSortOrder = uiState.sortOptions.order,
-                onSortRequest = viewModel::updateSortOptions,
+                currentCriteria = uiState.sortOptions.criteria,
+                onChangeCriteria = viewModel::updateSortCriteria,
+                currentOrder = uiState.sortOptions.order,
+                onChangeOrder = viewModel::updateSortOrder,
             )
             IconButton(
                 onClick = { showFilterOptions = true },

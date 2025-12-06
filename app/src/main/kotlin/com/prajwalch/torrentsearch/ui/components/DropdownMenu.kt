@@ -59,9 +59,10 @@ fun RoundedDropdownMenu(
 fun SortDropdownMenu(
     expanded: Boolean,
     onDismissRequest: () -> Unit,
-    currentSortCriteria: SortCriteria,
-    currentSortOrder: SortOrder,
-    onSortRequest: (SortCriteria, SortOrder) -> Unit,
+    currentCriteria: SortCriteria,
+    onChangeCriteria: (SortCriteria) -> Unit,
+    currentOrder: SortOrder,
+    onChangeOrder: (SortOrder) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val checkIcon: @Composable () -> Unit = @Composable {
@@ -80,8 +81,8 @@ fun SortDropdownMenu(
         for (criteria in SortCriteria.entries) {
             DropdownMenuItem(
                 text = { Text(text = sortCriteriaStringResource(criteria)) },
-                onClick = { onSortRequest(criteria, currentSortOrder) },
-                trailingIcon = { if (criteria == currentSortCriteria) checkIcon() },
+                onClick = { onChangeCriteria(criteria) },
+                trailingIcon = { if (criteria == currentCriteria) checkIcon() },
             )
         }
 
@@ -90,8 +91,8 @@ fun SortDropdownMenu(
         for (order in SortOrder.entries) {
             DropdownMenuItem(
                 text = { Text(text = sortOrderStringResource(order)) },
-                onClick = { onSortRequest(currentSortCriteria, order) },
-                trailingIcon = { if (order == currentSortOrder) checkIcon() },
+                onClick = { onChangeOrder(order) },
+                trailingIcon = { if (order == currentOrder) checkIcon() },
             )
         }
     }

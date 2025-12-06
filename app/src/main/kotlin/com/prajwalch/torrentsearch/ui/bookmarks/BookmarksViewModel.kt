@@ -18,6 +18,7 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.WhileSubscribed
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 import javax.inject.Inject
@@ -73,9 +74,12 @@ class BookmarksViewModel @Inject constructor(
         }
     }
 
-    /** Sorts the current bookmarks. */
-    fun sortBookmarks(criteria: SortCriteria, order: SortOrder) {
-        sortOptions.value = SortOptions(criteria = criteria, order = order)
+    fun updateSortCriteria(criteria: SortCriteria) {
+        sortOptions.update { it.copy(criteria = criteria) }
+    }
+
+    fun updateSortOrder(order: SortOrder) {
+        sortOptions.update { it.copy(order = order) }
     }
 
     /** Filters the bookmarks using the given query. */

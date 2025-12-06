@@ -140,9 +140,10 @@ fun BookmarksScreen(
             SortDropdownMenu(
                 expanded = showSortOptions,
                 onDismissRequest = { showSortOptions = false },
-                currentSortCriteria = uiState.sortOptions.criteria,
-                currentSortOrder = uiState.sortOptions.order,
-                onSortRequest = viewModel::sortBookmarks,
+                currentCriteria = uiState.sortOptions.criteria,
+                onChangeCriteria = viewModel::updateSortCriteria,
+                currentOrder = uiState.sortOptions.order,
+                onChangeOrder = viewModel::updateSortOrder,
             )
             DeleteForeverIconButton(
                 onClick = { showDeleteAllConfirmationDialog = true },

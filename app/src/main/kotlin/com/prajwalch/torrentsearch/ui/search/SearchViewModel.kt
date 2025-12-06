@@ -178,10 +178,17 @@ class SearchViewModel @Inject constructor(
         internalState.update { it.copy(filterQuery = query) }
     }
 
-    /** Updates the current sort options with the given options. */
-    fun updateSortOptions(criteria: SortCriteria, order: SortOrder) {
+    /** Updates the sort criteria. */
+    fun updateSortCriteria(criteria: SortCriteria) {
         internalState.update {
-            it.copy(sortOptions = SortOptions(criteria = criteria, order = order))
+            it.copy(sortOptions = it.sortOptions.copy(criteria = criteria))
+        }
+    }
+
+    /** Updates the sort order. */
+    fun updateSortOrder(order: SortOrder) {
+        internalState.update {
+            it.copy(sortOptions = it.sortOptions.copy(order = order))
         }
     }
 
