@@ -5,7 +5,7 @@ import android.content.Context
 import com.prajwalch.torrentsearch.data.local.TorrentSearchDatabase
 import com.prajwalch.torrentsearch.data.local.dao.BookmarkedTorrentDao
 import com.prajwalch.torrentsearch.data.local.dao.SearchHistoryDao
-import com.prajwalch.torrentsearch.data.local.dao.TorznabSearchProviderDao
+import com.prajwalch.torrentsearch.data.local.dao.TorznabConfigDao
 
 import dagger.Module
 import dagger.Provides
@@ -32,6 +32,6 @@ object RoomModule {
         database.searchHistoryDao()
 
     @Provides
-    fun provideTorznabSearchProviderDao(database: TorrentSearchDatabase): TorznabSearchProviderDao =
-        database.torznabSearchProviderDao()
+    fun provideTorznabConfigDao(database: TorrentSearchDatabase): TorznabConfigDao =
+        database.torznabConfigDao()
 }

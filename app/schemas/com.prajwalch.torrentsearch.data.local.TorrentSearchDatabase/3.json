@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 3,
-    "identityHash": "62aa926defdab5e4ba4eb9211358a87b",
+    "identityHash": "ca6f5f6f32a6966fbfa3ffe27546b55d",
     "entities": [
       {
         "tableName": "bookmarks",
@@ -129,7 +129,7 @@
         ]
       },
       {
-        "tableName": "torznab_search_providers",
+        "tableName": "torznab_configs",
         "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `name` TEXT NOT NULL, `url` TEXT NOT NULL, `apiKey` TEXT NOT NULL, `category` TEXT NOT NULL, PRIMARY KEY(`id`))",
         "fields": [
           {
@@ -171,20 +171,20 @@
         },
         "indices": [
           {
-            "name": "index_torznab_search_providers_id",
+            "name": "index_torznab_configs_id",
             "unique": true,
             "columnNames": [
               "id"
             ],
             "orders": [],
-            "createSql": "CREATE UNIQUE INDEX IF NOT EXISTS `index_torznab_search_providers_id` ON `${TABLE_NAME}` (`id`)"
+            "createSql": "CREATE UNIQUE INDEX IF NOT EXISTS `index_torznab_configs_id` ON `${TABLE_NAME}` (`id`)"
           }
         ]
       }
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '62aa926defdab5e4ba4eb9211358a87b')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'ca6f5f6f32a6966fbfa3ffe27546b55d')"
     ]
   }
 }

@@ -8,15 +8,15 @@ import com.prajwalch.torrentsearch.models.Category
 import com.prajwalch.torrentsearch.providers.SearchProviderInfo
 import com.prajwalch.torrentsearch.providers.SearchProviderSafetyStatus
 import com.prajwalch.torrentsearch.providers.SearchProviderType
-import com.prajwalch.torrentsearch.providers.TorznabSearchProviderConfig
+import com.prajwalch.torrentsearch.providers.TorznabConfig
 
 import java.util.UUID
 
 @Entity(
-    tableName = "torznab_search_providers",
+    tableName = "torznab_configs",
     indices = [Index("id", unique = true)],
 )
-data class TorznabSearchProviderEntity(
+data class TorznabConfigEntity(
     @PrimaryKey
     val id: String = UUID.randomUUID().toString(),
     val name: String,
@@ -25,7 +25,7 @@ data class TorznabSearchProviderEntity(
     val category: String,
 )
 
-fun TorznabSearchProviderEntity.toSearchProviderInfo() =
+fun TorznabConfigEntity.toSearchProviderInfo() =
     SearchProviderInfo(
         id = this.id,
         name = this.name,
@@ -36,8 +36,8 @@ fun TorznabSearchProviderEntity.toSearchProviderInfo() =
         type = SearchProviderType.Torznab,
     )
 
-fun TorznabSearchProviderEntity.toTorznabConfig() =
-    TorznabSearchProviderConfig(
+fun TorznabConfigEntity.toTorznabConfig() =
+    TorznabConfig(
         id = this.id,
         name = this.name,
         url = this.url,
@@ -46,13 +46,5 @@ fun TorznabSearchProviderEntity.toTorznabConfig() =
         enabledByDefault = false,
     )
 
-fun TorznabSearchProviderConfig.toEntity() =
-    TorznabSearchProviderEntity(
-        name = this.name,
-        url = this.url,
-        apiKey = this.apiKey,
-        category = this.category.name,
-    )
-
-fun List<TorznabSearchProviderEntity>.toSearchProviderInfo(): List<SearchProviderInfo> =
+fun List<TorznabConfigEntity>.toSearchProviderInfo(): List<SearchProviderInfo> =
     this.map { it.toSearchProviderInfo() }

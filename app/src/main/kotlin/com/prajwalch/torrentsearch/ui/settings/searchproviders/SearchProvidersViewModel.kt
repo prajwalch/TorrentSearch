@@ -125,9 +125,9 @@ class SearchProvidersViewModel @Inject constructor(
     }
 
     /** Deletes the Torznab search provider that matches the specified ID. */
-    fun deleteTorznabSearchProvider(id: String) {
+    fun deleteTorznabConfig(id: String) {
         viewModelScope.launch {
-            searchProvidersRepository.deleteTorznabSearchProvider(id = id)
+            searchProvidersRepository.deleteTorznabConfig(id = id)
         }
         enableSearchProvider(providerId = id, enable = false)
     }

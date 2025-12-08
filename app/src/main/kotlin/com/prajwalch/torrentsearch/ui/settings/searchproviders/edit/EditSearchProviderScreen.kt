@@ -22,13 +22,16 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 
 import com.prajwalch.torrentsearch.R
 import com.prajwalch.torrentsearch.ui.components.ArrowBackIconButton
-import com.prajwalch.torrentsearch.ui.components.TorznabSearchProviderConfigForm
-import com.prajwalch.torrentsearch.ui.settings.searchproviders.TorznabSearchProviderConfigViewModel
+import com.prajwalch.torrentsearch.ui.components.TorznabConfigForm
+import com.prajwalch.torrentsearch.ui.settings.searchproviders.TorznabConfigViewModel
 import com.prajwalch.torrentsearch.ui.theme.spaces
 
 @Composable
-fun EditSearchProviderScreen(onNavigateBack: () -> Unit, modifier: Modifier = Modifier) {
-    val viewModel = hiltViewModel<TorznabSearchProviderConfigViewModel>()
+fun EditSearchProviderScreen(
+    onNavigateBack: () -> Unit,
+    modifier: Modifier = Modifier,
+    viewModel: TorznabConfigViewModel = hiltViewModel(),
+) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
     LaunchedEffect(uiState.isConfigSaved) {
@@ -45,17 +48,20 @@ fun EditSearchProviderScreen(onNavigateBack: () -> Unit, modifier: Modifier = Mo
     ) { innerPadding ->
         val scrollState = rememberScrollState()
 
-        TorznabSearchProviderConfigForm(
+        TorznabConfigForm(
             modifier = Modifier
                 .verticalScroll(state = scrollState)
                 .fillMaxWidth()
                 .imePadding()
                 .padding(innerPadding)
                 .padding(horizontal = MaterialTheme.spaces.large),
-            config = uiState.config,
+            name = uiState.name,
             onNameChange = viewModel::setName,
+            url = uiState.url,
             onUrlChange = viewModel::setUrl,
+            apiKey = uiState.apiKey,
             onApiKeyChange = viewModel::setAPIKey,
+            category = uiState.category,
             onCategoryChange = viewModel::setCategory,
             isUrlValid = uiState.isUrlValid,
             confirmButton = {

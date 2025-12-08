@@ -28,16 +28,18 @@ import androidx.compose.ui.unit.dp
 
 import com.prajwalch.torrentsearch.R
 import com.prajwalch.torrentsearch.models.Category
-import com.prajwalch.torrentsearch.providers.TorznabSearchProviderConfig
 import com.prajwalch.torrentsearch.ui.theme.spaces
 import com.prajwalch.torrentsearch.utils.categoryStringResource
 
 @Composable
-fun TorznabSearchProviderConfigForm(
-    config: TorznabSearchProviderConfig,
+fun TorznabConfigForm(
+    name: String,
     onNameChange: (String) -> Unit,
+    url: String,
     onUrlChange: (String) -> Unit,
+    apiKey: String,
     onApiKeyChange: (String) -> Unit,
+    category: Category,
     onCategoryChange: (Category) -> Unit,
     isUrlValid: Boolean,
     confirmButton: @Composable () -> Unit,
@@ -52,20 +54,20 @@ fun TorznabSearchProviderConfigForm(
     ) {
         OutlinedTextField(
             modifier = Modifier.fillMaxWidth(),
-            value = config.name,
+            value = name,
             onValueChange = onNameChange,
             label = { Text(text = stringResource(R.string.search_providers_label_name)) },
             singleLine = true,
         )
         OutlinedUrlTextField(
             modifier = Modifier.fillMaxWidth(),
-            url = config.url,
+            url = url,
             onUrlChange = onUrlChange,
             isError = !isUrlValid,
         )
         OutlinedTextField(
             modifier = Modifier.fillMaxWidth(),
-            value = config.apiKey,
+            value = apiKey,
             onValueChange = onApiKeyChange,
             label = { Text(text = stringResource(R.string.search_providers_label_api_key)) },
             singleLine = true,
@@ -80,7 +82,7 @@ fun TorznabSearchProviderConfigForm(
 
         OutlinedCategoryField(
             modifier = Modifier.fillMaxWidth(),
-            value = config.category,
+            value = category,
             onValueChange = onCategoryChange,
         )
 

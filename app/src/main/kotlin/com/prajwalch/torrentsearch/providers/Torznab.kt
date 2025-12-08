@@ -28,7 +28,7 @@ private object TorznabFunctions {
 }
 
 /** Configuration for the Torznab search provider. */
-data class TorznabSearchProviderConfig(
+data class TorznabConfig(
     val id: String,
     val name: String,
     val url: String,
@@ -38,7 +38,7 @@ data class TorznabSearchProviderConfig(
 )
 
 /** A Torznab API compatible search provider. */
-class TorznabSearchProvider(private val config: TorznabSearchProviderConfig) : SearchProvider {
+class TorznabSearchProvider(private val config: TorznabConfig) : SearchProvider {
     override val info = SearchProviderInfo(
         id = config.id,
         name = config.name,

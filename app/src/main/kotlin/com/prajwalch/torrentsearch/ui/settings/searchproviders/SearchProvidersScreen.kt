@@ -144,9 +144,7 @@ fun SearchProvidersScreen(
                                 onNavigateToEditSearchProvider(searchProviderUiState.id)
                             },
                             onDelete = {
-                                viewModel.deleteTorznabSearchProvider(
-                                    id = searchProviderUiState.id,
-                                )
+                                viewModel.deleteTorznabConfig(id = searchProviderUiState.id)
                             },
                         )
                     }

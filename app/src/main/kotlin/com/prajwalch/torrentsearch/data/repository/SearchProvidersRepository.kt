@@ -1,7 +1,7 @@
 package com.prajwalch.torrentsearch.data.repository
 
-import com.prajwalch.torrentsearch.data.local.dao.TorznabSearchProviderDao
-import com.prajwalch.torrentsearch.data.local.entities.toEntity
+import com.prajwalch.torrentsearch.data.local.dao.TorznabConfigDao
+import com.prajwalch.torrentsearch.data.local.entities.TorznabConfigEntity
 import com.prajwalch.torrentsearch.data.local.entities.toSearchProviderInfo
 import com.prajwalch.torrentsearch.data.local.entities.toTorznabConfig
 import com.prajwalch.torrentsearch.models.Category
@@ -21,8 +21,8 @@ import com.prajwalch.torrentsearch.providers.TheRarBg
 import com.prajwalch.torrentsearch.providers.TokyoToshokan
 import com.prajwalch.torrentsearch.providers.TorrentDownloads
 import com.prajwalch.torrentsearch.providers.TorrentsCSV
+import com.prajwalch.torrentsearch.providers.TorznabConfig
 import com.prajwalch.torrentsearch.providers.TorznabSearchProvider
-import com.prajwalch.torrentsearch.providers.TorznabSearchProviderConfig
 import com.prajwalch.torrentsearch.providers.UIndex
 import com.prajwalch.torrentsearch.providers.XXXClub
 import com.prajwalch.torrentsearch.providers.Yts
@@ -36,7 +36,7 @@ import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
 class SearchProvidersRepository @Inject constructor(
-    private val dao: TorznabSearchProviderDao,
+    private val torznabConfigDao: TorznabConfigDao,
 ) {
     private val builtins = listOf(
         AnimeTosho(),
@@ -64,7 +64,9 @@ class SearchProvidersRepository @Inject constructor(
 
     fun observeSearchProvidersInfo(): Flow<List<SearchProviderInfo>> {
         val builtinSearchProvidersInfoFlow = flowOf(builtins.map { it.info })
-        val torznabSearchProvidersInfoFlow = dao.observeAll().map { it.toSearchProviderInfo() }
+        val torznabSearchProvidersInfoFlow = torznabConfigDao.observeAll().map {
+            it.toSearchProviderInfo()
+        }
 
         return combine(
             builtinSearchProvidersInfoFlow,
@@ -75,7 +77,7 @@ class SearchProvidersRepository @Inject constructor(
     }
 
     fun observeSearchProvidersCount(): Flow<Int> {
-        return dao.observeCount().map { it + builtins.size }
+        return torznabConfigDao.observeCount().map { it + builtins.size }
     }
 
     suspend fun getSearchProvidersInstance(category: Category): List<SearchProvider> {
@@ -104,7 +106,7 @@ class SearchProvidersRepository @Inject constructor(
 
     suspend fun getSearchProvidersInstance(): List<SearchProvider> {
         val builtinSearchProvidersFlow = flowOf(builtins)
-        val torznabSearchProvidersFlow = dao.observeAll().map { entities ->
+        val torznabSearchProvidersFlow = torznabConfigDao.observeAll().map { entities ->
             entities.map { TorznabSearchProvider(config = it.toTorznabConfig()) }
         }
 
@@ -116,22 +118,43 @@ class SearchProvidersRepository @Inject constructor(
         }.firstOrNull().orEmpty()
     }
 
-    suspend fun addTorznabSearchProvider(config: TorznabSearchProviderConfig) {
-        val config = config.copy(url = config.url.trimEnd { it == '/' })
-        dao.insert(searchProvider = config.toEntity())
+    suspend fun addTorznabConfig(
+        name: String,
+        url: String,
+        apiKey: String,
+        category: Category,
+    ) {
+        val configEntity = TorznabConfigEntity(
+            name = name,
+            url = url.trimEnd { it == '/' },
+            apiKey = apiKey,
+            category = category.name,
+        )
+        torznabConfigDao.insert(entity = configEntity)
     }
 
-    suspend fun findTorznabSearchProviderConfig(
+    suspend fun findTorznabConfig(id: SearchProviderId): TorznabConfig? {
+        return torznabConfigDao.findById(id = id)?.toTorznabConfig()
+    }
+
+    suspend fun updateTorznabConfig(
         id: SearchProviderId,
-    ): TorznabSearchProviderConfig? {
-        return dao.findById(id = id)?.toTorznabConfig()
+        name: String,
+        url: String,
+        apiKey: String,
+        category: Category,
+    ) {
+        val configEntity = TorznabConfigEntity(
+            id = id,
+            name = name,
+            url = url,
+            apiKey = apiKey,
+            category = category.name,
+        )
+        torznabConfigDao.update(entity = configEntity)
     }
 
-    suspend fun updateTorznabSearchProvider(config: TorznabSearchProviderConfig) {
-        dao.update(searchProvider = config.toEntity())
-    }
-
-    suspend fun deleteTorznabSearchProvider(id: String) {
-        dao.deleteById(id = id)
+    suspend fun deleteTorznabConfig(id: SearchProviderId) {
+        torznabConfigDao.deleteById(id = id)
     }
 }
