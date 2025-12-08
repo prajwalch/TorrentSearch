@@ -4,8 +4,10 @@ import android.content.Context
 import androidx.room.AutoMigration
 
 import androidx.room.Database
+import androidx.room.DeleteColumn
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import androidx.room.migration.AutoMigrationSpec
 
 import com.prajwalch.torrentsearch.data.local.dao.BookmarkedTorrentDao
 import com.prajwalch.torrentsearch.data.local.dao.SearchHistoryDao
@@ -21,10 +23,15 @@ import com.prajwalch.torrentsearch.data.local.entities.TorznabSearchProviderEnti
         SearchHistoryEntity::class,
         TorznabSearchProviderEntity::class,
     ],
-    version = 2,
+    version = 3,
     exportSchema = true,
     autoMigrations = [
         AutoMigration(from = 1, to = 2),
+        AutoMigration(
+            from = 2,
+            to = 3,
+            spec = TorrentSearchDatabase.Version2To3AutoMigrationSpec::class,
+        ),
     ],
 )
 abstract class TorrentSearchDatabase : RoomDatabase() {
@@ -33,6 +40,9 @@ abstract class TorrentSearchDatabase : RoomDatabase() {
     abstract fun searchHistoryDao(): SearchHistoryDao
 
     abstract fun torznabSearchProviderDao(): TorznabSearchProviderDao
+
+    @DeleteColumn(tableName = "torznab_search_providers", columnName = "unsafeReason")
+    class Version2To3AutoMigrationSpec : AutoMigrationSpec
 
     companion object {
         /** Name of the database file. */

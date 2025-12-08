@@ -8,7 +8,6 @@ import androidx.lifecycle.viewModelScope
 
 import com.prajwalch.torrentsearch.data.repository.SearchProvidersRepository
 import com.prajwalch.torrentsearch.models.Category
-import com.prajwalch.torrentsearch.providers.SearchProviderSafetyStatus
 import com.prajwalch.torrentsearch.providers.TorznabSearchProviderConfig
 
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -79,12 +78,6 @@ class TorznabSearchProviderConfigViewModel @Inject constructor(
     fun setCategory(category: Category) {
         _uiState.update {
             it.copy(config = it.config.copy(category = category))
-        }
-    }
-
-    fun setSafetyStatus(safetyStatus: SearchProviderSafetyStatus) {
-        _uiState.update {
-            it.copy(config = it.config.copy(safetyStatus = safetyStatus))
         }
     }
 

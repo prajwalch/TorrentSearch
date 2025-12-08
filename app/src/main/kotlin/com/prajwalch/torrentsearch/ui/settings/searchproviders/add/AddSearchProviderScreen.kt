@@ -68,7 +68,6 @@ fun AddSearchProviderScreen(onNavigateBack: () -> Unit, modifier: Modifier = Mod
                 onUrlChange = viewModel::setUrl,
                 onApiKeyChange = viewModel::setAPIKey,
                 onCategoryChange = viewModel::setCategory,
-                onSafetyStatusChange = viewModel::setSafetyStatus,
                 isUrlValid = uiState.isUrlValid,
                 confirmButton = {
                     Button(

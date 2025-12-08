@@ -23,8 +23,6 @@ data class TorznabSearchProviderEntity(
     val url: String,
     val apiKey: String,
     val category: String,
-    // Null indicates safe status, otherwise it's unsafe.
-    val unsafeReason: String?,
 )
 
 fun TorznabSearchProviderEntity.toSearchProviderInfo() =
@@ -33,10 +31,7 @@ fun TorznabSearchProviderEntity.toSearchProviderInfo() =
         name = this.name,
         url = this.url,
         specializedCategory = Category.valueOf(this.category),
-        safetyStatus = when (this.unsafeReason) {
-            null -> SearchProviderSafetyStatus.Safe
-            else -> SearchProviderSafetyStatus.Unsafe(reason = this.unsafeReason)
-        },
+        safetyStatus = SearchProviderSafetyStatus.Safe,
         enabledByDefault = false,
         type = SearchProviderType.Torznab,
     )
@@ -48,10 +43,6 @@ fun TorznabSearchProviderEntity.toTorznabConfig() =
         url = this.url,
         apiKey = this.apiKey,
         category = Category.valueOf(this.category),
-        safetyStatus = when (this.unsafeReason) {
-            null -> SearchProviderSafetyStatus.Safe
-            else -> SearchProviderSafetyStatus.Unsafe(reason = this.unsafeReason)
-        },
         enabledByDefault = false,
     )
 
@@ -61,10 +52,6 @@ fun TorznabSearchProviderConfig.toEntity() =
         url = this.url,
         apiKey = this.apiKey,
         category = this.category.name,
-        unsafeReason = when (this.safetyStatus) {
-            is SearchProviderSafetyStatus.Safe -> null
-            is SearchProviderSafetyStatus.Unsafe -> this.safetyStatus.reason
-        },
     )
 
 fun List<TorznabSearchProviderEntity>.toSearchProviderInfo(): List<SearchProviderInfo> =

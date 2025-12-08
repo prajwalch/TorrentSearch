@@ -34,7 +34,6 @@ data class TorznabSearchProviderConfig(
     val url: String,
     val apiKey: String,
     val category: Category = Category.All,
-    val safetyStatus: SearchProviderSafetyStatus = SearchProviderSafetyStatus.Safe,
     val enabledByDefault: Boolean = false,
 )
 
@@ -48,7 +47,7 @@ class TorznabSearchProvider(private val config: TorznabSearchProviderConfig) : S
         //       Instead of only storing on, let each search provider store all
         //       the supported categories.
         specializedCategory = config.category,
-        safetyStatus = config.safetyStatus,
+        safetyStatus = SearchProviderSafetyStatus.Safe,
         enabledByDefault = config.enabledByDefault,
         type = SearchProviderType.Torznab,
     )

@@ -28,7 +28,6 @@ import androidx.compose.ui.unit.dp
 
 import com.prajwalch.torrentsearch.R
 import com.prajwalch.torrentsearch.models.Category
-import com.prajwalch.torrentsearch.providers.SearchProviderSafetyStatus
 import com.prajwalch.torrentsearch.providers.TorznabSearchProviderConfig
 import com.prajwalch.torrentsearch.ui.theme.spaces
 import com.prajwalch.torrentsearch.utils.categoryStringResource
@@ -40,7 +39,6 @@ fun TorznabSearchProviderConfigForm(
     onUrlChange: (String) -> Unit,
     onApiKeyChange: (String) -> Unit,
     onCategoryChange: (Category) -> Unit,
-    onSafetyStatusChange: (SearchProviderSafetyStatus) -> Unit,
     isUrlValid: Boolean,
     confirmButton: @Composable () -> Unit,
     modifier: Modifier = Modifier,
@@ -84,11 +82,6 @@ fun TorznabSearchProviderConfigForm(
             modifier = Modifier.fillMaxWidth(),
             value = config.category,
             onValueChange = onCategoryChange,
-        )
-        OutlinedSafetyStatusField(
-            modifier = Modifier.fillMaxWidth(),
-            value = config.safetyStatus,
-            onValueChange = onSafetyStatusChange,
         )
 
         Box(
@@ -189,59 +182,6 @@ private fun OutlinedCategoryField(
                     contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding,
                 )
             }
-        }
-    }
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-private fun OutlinedSafetyStatusField(
-    value: SearchProviderSafetyStatus,
-    onValueChange: (SearchProviderSafetyStatus) -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    val safeStatus = stringResource(R.string.safety_status_safe)
-    val unsafeStatus = stringResource(R.string.safety_status_unsafe)
-
-    var expanded by remember { mutableStateOf(false) }
-
-    ExposedDropdownMenuBox(
-        expanded = expanded,
-        onExpandedChange = { expanded = it },
-    ) {
-        OutlinedTextField(
-            modifier = modifier.menuAnchor(
-                type = ExposedDropdownMenuAnchorType.PrimaryNotEditable,
-            ),
-            value = if (value.isUnsafe()) unsafeStatus else safeStatus,
-            onValueChange = {},
-            readOnly = true,
-            singleLine = true,
-            label = { Text(stringResource(R.string.search_providers_label_safety_status)) },
-            trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
-        )
-
-        ExposedDropdownMenu(
-            expanded = expanded,
-            onDismissRequest = { expanded = false },
-            shape = MaterialTheme.shapes.medium,
-        ) {
-            DropdownMenuItem(
-                text = { Text(text = safeStatus) },
-                onClick = {
-                    onValueChange(SearchProviderSafetyStatus.Safe)
-                    expanded = false
-                },
-                contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding,
-            )
-            DropdownMenuItem(
-                text = { Text(text = unsafeStatus) },
-                onClick = {
-                    onValueChange(SearchProviderSafetyStatus.Unsafe(reason = ""))
-                    expanded = false
-                },
-                contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding,
-            )
         }
     }
 }
