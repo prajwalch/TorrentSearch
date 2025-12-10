@@ -11,19 +11,25 @@ import com.prajwalch.torrentsearch.providers.SearchProviderInfo
 import com.prajwalch.torrentsearch.providers.SearchProviderSafetyStatus
 import com.prajwalch.torrentsearch.providers.SearchProviderType
 
-import java.util.UUID
-
 @Entity(
     tableName = "torznab_configs",
     indices = [Index("id", unique = true)],
 )
 data class TorznabConfigEntity(
     @PrimaryKey
-    val id: String = UUID.randomUUID().toString(),
+    @ColumnInfo(name = "id")
+    val searchProviderId: String,
+
     @ColumnInfo(name = "name")
     val searchProviderName: String,
+
+    @ColumnInfo(name = "url")
     val url: String,
+
+    @ColumnInfo(name = "apiKey")
     val apiKey: String,
+
+    @ColumnInfo(name = "category")
     val category: String,
 )
 
@@ -37,7 +43,7 @@ fun TorznabConfigEntity.toDomain() =
 
 fun TorznabConfigEntity.toSearchProviderInfo() =
     SearchProviderInfo(
-        id = this.id,
+        id = this.searchProviderId,
         name = this.searchProviderName,
         url = this.url,
         specializedCategory = Category.valueOf(this.category),

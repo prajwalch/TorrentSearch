@@ -33,6 +33,7 @@ import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 
+import java.util.UUID
 import javax.inject.Inject
 
 class SearchProvidersRepository @Inject constructor(
@@ -107,7 +108,7 @@ class SearchProvidersRepository @Inject constructor(
     suspend fun getSearchProvidersInstance(): List<SearchProvider> {
         val builtinSearchProvidersFlow = flowOf(builtins)
         val torznabSearchProvidersFlow = torznabConfigDao.observeAll().map { entities ->
-            entities.map { TorznabSearchProvider(id = it.id, config = it.toDomain()) }
+            entities.map { TorznabSearchProvider(id = it.searchProviderId, config = it.toDomain()) }
         }
 
         return combine(
@@ -124,7 +125,9 @@ class SearchProvidersRepository @Inject constructor(
         apiKey: String,
         category: Category,
     ) {
+        val searchProviderId = UUID.randomUUID().toString()
         val configEntity = TorznabConfigEntity(
+            searchProviderId = searchProviderId,
             searchProviderName = searchProviderName,
             url = url.trimEnd { it == '/' },
             apiKey = apiKey,
@@ -145,7 +148,7 @@ class SearchProvidersRepository @Inject constructor(
         category: Category,
     ) {
         val configEntity = TorznabConfigEntity(
-            id = id,
+            searchProviderId = id,
             searchProviderName = searchProviderName,
             url = url,
             apiKey = apiKey,
