@@ -1,8 +1,9 @@
 package com.prajwalch.torrentsearch.models
 
-typealias SearchHistoryId = Long
+@JvmInline
+value class SearchHistoryId(val value: Int)
 
 data class SearchHistory(
-    val id: SearchHistoryId = 0L,
+    val id: SearchHistoryId = SearchHistoryId(0),
     val query: String,
 )
