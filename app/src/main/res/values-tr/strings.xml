@@ -1,3 +1,53 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="button_cancel">İptal et</string>
+    <string name="safety_status_safe">Güvenli</string>
+    <string name="safety_status_unsafe">Güvenli değil</string>
+    <string name="bookmarked_message">Yer işaretlerine eklendi</string>
+    <string name="main_cannot_search_using_url_message">URL kullanarak arama yapılamıyor</string>
+    <string name="main_cannot_search_blank_query_message">Boş bir sorgu kullanılarak arama yapılamaz</string>
+    <string name="action_sort_criteria_name">İsim</string>
+    <string name="action_sort_criteria_file_size">Dosya boyutu</string>
+    <string name="action_sort_criteria_date">Tarih</string>
+    <string name="action_sort_order_ascending">Yükselen</string>
+    <string name="action_sort_order_descending">Azalan</string>
+    <string name="category_all">Tümü</string>
+    <string name="category_anime">Anime</string>
+    <string name="category_apps">Uygulamalar</string>
+    <string name="category_books">Kitaplar</string>
+    <string name="category_games">Oyunlar</string>
+    <string name="category_movies">Filmler</string>
+    <string name="category_music">Müzik</string>
+    <string name="category_porn">Porno</string>
+    <string name="category_series">Dizi</string>
+    <string name="category_other">Diğer</string>
+    <string name="torrent_client_not_found_title">Torrent istemcisi bulunamadı</string>
+    <string name="torrent_client_not_found_content">İndirme özelliğini kullanmak için bir torrent istemcisi yükleyin, kurun ve bu uygulamaya geri dönün.</string>
+    <string name="torrent_client_not_found_recommended_client_hint">Önerilen istemci</string>
+    <string name="torrent_list_action_bookmark_torrent">Torrent\'i yer imlerine ekle</string>
+    <string name="torrent_list_action_delete_bookmark">Yer imini sil</string>
+    <string name="torrent_list_action_download_torrent">Torrent indir</string>
+    <string name="torrent_list_action_copy_magnet_link">Magnet bağlantısını kopyala</string>
+    <string name="torrent_list_action_share_magnet_link">Magnet bağlantısını paylaş</string>
+    <string name="torrent_list_action_open_description_page">Açıklama sayfasını aç</string>
+    <string name="search_filters_section_additional_options">Ek seçenekler</string>
+    <string name="search_filters_dead_torrents">Ölü torrentler</string>
+    <string name="search_internet_connection_error">İnternet bağlantısı yok</string>
+    <string name="search_button_try_again">Tekrar dene</string>
+    <string name="search_no_results_message">Hiçbir sonuç bulunamadı</string>
+    <string name="search_results_count_format">\'%2$s\' için %1$s sonuç (%3$s)</string>
+    <string name="bookmarks_screen_title">Yer işaretleri</string>
+    <plurals name="bookmarks_count_format">
+        <item quantity="one">%1$d yer işareti</item>
+        <item quantity="other">%1$d yer işareti</item>
+    </plurals>
+    <string name="bookmarks_search_query_hint">Yer işaretlerini ara</string>
+    <string name="bookmarks_action_delete_all">Tümünü sil</string>
+    <string name="bookmarks_dialog_title_delete_all">Tüm yer işaretleri silinsin mi?</string>
+    <string name="bookmarks_dialog_message_delete_all">Yer işaretleri kalıcı olarak silinecek</string>
+    <string name="bookmarks_button_delete">Sil</string>
+    <string name="bookmarks_empty_message">Yer işareti yok</string>
+    <string name="search_history_action_delete_all">Tümünü sil</string>
+    <string name="search_history_empty_message">Arama geçmişi yok</string>
+    <string name="search_history_query_copied_message">Sorgu panoya kopyalandı!</string>
 </resources>
