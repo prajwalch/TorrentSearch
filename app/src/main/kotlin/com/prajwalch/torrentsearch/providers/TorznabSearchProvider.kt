@@ -390,7 +390,7 @@ private class TorznabResponseXmlParser(
 
 /** Contains the capabilities of the search provider/indexer. */
 private data class TorznabCapabilities(
-    val supportedCategoriesId: List<String>,
+    val supportedCategoriesId: Set<String>,
 )
 
 /**
@@ -401,7 +401,7 @@ private data class TorznabCapabilities(
 private class TorznabCapabilitiesXmlParser {
     private val parser = Xml.newPullParser()
     private val namespace: String? = null
-    private val supportedCategoriesId = mutableListOf<String>()
+    private val supportedCategoriesId = mutableSetOf<String>()
 
     fun parse(xml: String): TorznabCapabilities {
         parser.setFeature(XmlPullParser.FEATURE_PROCESS_NAMESPACES, false)
@@ -410,7 +410,7 @@ private class TorznabCapabilitiesXmlParser {
 
         readCaps()
 
-        return TorznabCapabilities(supportedCategoriesId = supportedCategoriesId.toList())
+        return TorznabCapabilities(supportedCategoriesId = supportedCategoriesId)
     }
 
     private fun readCaps() {
