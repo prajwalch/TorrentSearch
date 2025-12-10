@@ -6,6 +6,7 @@ import android.util.Xml
 import com.prajwalch.torrentsearch.models.Category
 import com.prajwalch.torrentsearch.models.InfoHashOrMagnetUri
 import com.prajwalch.torrentsearch.models.Torrent
+import com.prajwalch.torrentsearch.models.TorznabConfig
 import com.prajwalch.torrentsearch.network.HttpClient
 import com.prajwalch.torrentsearch.utils.prettyFileSize
 
@@ -27,28 +28,21 @@ private object TorznabFunctions {
     const val SEARCH = "search"
 }
 
-/** Configuration for the Torznab search provider. */
-data class TorznabConfig(
-    val id: String,
-    val name: String,
-    val url: String,
-    val apiKey: String,
-    val category: Category = Category.All,
-    val enabledByDefault: Boolean = false,
-)
-
-/** A Torznab API compatible search provider. */
-class TorznabSearchProvider(private val config: TorznabConfig) : SearchProvider {
+/** A search provider which is based on Torznab specification. */
+class TorznabSearchProvider(
+    id: SearchProviderId,
+    private val config: TorznabConfig
+) : SearchProvider {
     override val info = SearchProviderInfo(
-        id = config.id,
-        name = config.name,
+        id = id,
+        name = config.searchProviderName,
         url = config.url,
         // TODO: We need to change the way we handle the specialized category.
         //       Instead of only storing on, let each search provider store all
         //       the supported categories.
         specializedCategory = config.category,
         safetyStatus = SearchProviderSafetyStatus.Safe,
-        enabledByDefault = config.enabledByDefault,
+        enabledByDefault = false,
         type = SearchProviderType.Torznab,
     )
 
@@ -183,7 +177,7 @@ class TorznabSearchProvider(private val config: TorznabConfig) : SearchProvider 
         apiUrl: String,
         httpClient: HttpClient,
     ): TorznabCapabilities {
-        Log.i(TAG, "Fetching ${config.name} capabilities ")
+        Log.i(TAG, "Fetching ${config.searchProviderName} capabilities ")
 
         val requestUrl = "$apiUrl?t=${TorznabFunctions.CAPS}&apikey=${config.apiKey}"
         val capabilitiesResponseXml = httpClient.get(url = requestUrl)

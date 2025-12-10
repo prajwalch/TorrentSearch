@@ -33,14 +33,14 @@ import com.prajwalch.torrentsearch.utils.categoryStringResource
 
 @Composable
 fun TorznabConfigForm(
-    name: String,
-    onNameChange: (String) -> Unit,
+    searchProviderName: String,
+    onChangeSearchProviderName: (String) -> Unit,
     url: String,
-    onUrlChange: (String) -> Unit,
+    onChangeUrl: (String) -> Unit,
     apiKey: String,
-    onApiKeyChange: (String) -> Unit,
+    onChangeApiKey: (String) -> Unit,
     category: Category,
-    onCategoryChange: (Category) -> Unit,
+    onChangeCategory: (Category) -> Unit,
     isUrlValid: Boolean,
     confirmButton: @Composable () -> Unit,
     modifier: Modifier = Modifier,
@@ -54,21 +54,21 @@ fun TorznabConfigForm(
     ) {
         OutlinedTextField(
             modifier = Modifier.fillMaxWidth(),
-            value = name,
-            onValueChange = onNameChange,
+            value = searchProviderName,
+            onValueChange = onChangeSearchProviderName,
             label = { Text(text = stringResource(R.string.search_providers_label_name)) },
             singleLine = true,
         )
         OutlinedUrlTextField(
             modifier = Modifier.fillMaxWidth(),
             url = url,
-            onUrlChange = onUrlChange,
+            onUrlChange = onChangeUrl,
             isError = !isUrlValid,
         )
         OutlinedTextField(
             modifier = Modifier.fillMaxWidth(),
             value = apiKey,
-            onValueChange = onApiKeyChange,
+            onValueChange = onChangeApiKey,
             label = { Text(text = stringResource(R.string.search_providers_label_api_key)) },
             singleLine = true,
         )
@@ -83,7 +83,7 @@ fun TorznabConfigForm(
         OutlinedCategoryField(
             modifier = Modifier.fillMaxWidth(),
             value = category,
-            onValueChange = onCategoryChange,
+            onValueChange = onChangeCategory,
         )
 
         Box(

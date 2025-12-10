@@ -20,14 +20,15 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 data class TorznabConfigUiState(
-    val name: String = "",
+    val searchProviderName: String = "",
     val url: String = "",
     val apiKey: String = "",
     val category: Category = Category.All,
     val isUrlValid: Boolean = true,
     val isConfigSaved: Boolean = false,
 ) {
-    fun isConfigNotBlank() = name.isNotBlank() && url.isNotBlank() && apiKey.isNotBlank()
+    fun isConfigNotBlank() =
+        searchProviderName.isNotBlank() && url.isNotBlank() && apiKey.isNotBlank()
 }
 
 @HiltViewModel
@@ -51,16 +52,16 @@ class TorznabConfigViewModel @Inject constructor(
 
         _uiState.update {
             it.copy(
-                name = config.name,
+                searchProviderName = config.searchProviderName,
                 url = config.url,
                 apiKey = config.apiKey,
-                category = config.category
+                category = config.category,
             )
         }
     }
 
-    fun setName(name: String) {
-        _uiState.update { it.copy(name = name) }
+    fun setSearchProviderName(name: String) {
+        _uiState.update { it.copy(searchProviderName = name) }
     }
 
     fun setUrl(url: String) {
@@ -88,7 +89,7 @@ class TorznabConfigViewModel @Inject constructor(
 
             if (isConfigNew) {
                 searchProvidersRepository.addTorznabConfig(
-                    name = _uiState.value.name,
+                    searchProviderName = _uiState.value.searchProviderName,
                     url = _uiState.value.url,
                     apiKey = _uiState.value.apiKey,
                     category = _uiState.value.category,
@@ -96,7 +97,7 @@ class TorznabConfigViewModel @Inject constructor(
             } else {
                 searchProvidersRepository.updateTorznabConfig(
                     id = torznabSearchProviderId,
-                    name = _uiState.value.name,
+                    searchProviderName = _uiState.value.searchProviderName,
                     url = _uiState.value.url,
                     apiKey = _uiState.value.apiKey,
                     category = _uiState.value.category,

@@ -2,9 +2,10 @@ package com.prajwalch.torrentsearch.data.repository
 
 import com.prajwalch.torrentsearch.data.local.dao.TorznabConfigDao
 import com.prajwalch.torrentsearch.data.local.entities.TorznabConfigEntity
+import com.prajwalch.torrentsearch.data.local.entities.toDomain
 import com.prajwalch.torrentsearch.data.local.entities.toSearchProviderInfo
-import com.prajwalch.torrentsearch.data.local.entities.toTorznabConfig
 import com.prajwalch.torrentsearch.models.Category
+import com.prajwalch.torrentsearch.models.TorznabConfig
 import com.prajwalch.torrentsearch.providers.AnimeTosho
 import com.prajwalch.torrentsearch.providers.BitSearch
 import com.prajwalch.torrentsearch.providers.Eztv
@@ -21,7 +22,6 @@ import com.prajwalch.torrentsearch.providers.TheRarBg
 import com.prajwalch.torrentsearch.providers.TokyoToshokan
 import com.prajwalch.torrentsearch.providers.TorrentDownloads
 import com.prajwalch.torrentsearch.providers.TorrentsCSV
-import com.prajwalch.torrentsearch.providers.TorznabConfig
 import com.prajwalch.torrentsearch.providers.TorznabSearchProvider
 import com.prajwalch.torrentsearch.providers.UIndex
 import com.prajwalch.torrentsearch.providers.XXXClub
@@ -107,7 +107,7 @@ class SearchProvidersRepository @Inject constructor(
     suspend fun getSearchProvidersInstance(): List<SearchProvider> {
         val builtinSearchProvidersFlow = flowOf(builtins)
         val torznabSearchProvidersFlow = torznabConfigDao.observeAll().map { entities ->
-            entities.map { TorznabSearchProvider(config = it.toTorznabConfig()) }
+            entities.map { TorznabSearchProvider(id = it.id, config = it.toDomain()) }
         }
 
         return combine(
@@ -119,13 +119,13 @@ class SearchProvidersRepository @Inject constructor(
     }
 
     suspend fun addTorznabConfig(
-        name: String,
+        searchProviderName: String,
         url: String,
         apiKey: String,
         category: Category,
     ) {
         val configEntity = TorznabConfigEntity(
-            name = name,
+            searchProviderName = searchProviderName,
             url = url.trimEnd { it == '/' },
             apiKey = apiKey,
             category = category.name,
@@ -134,19 +134,19 @@ class SearchProvidersRepository @Inject constructor(
     }
 
     suspend fun findTorznabConfig(id: SearchProviderId): TorznabConfig? {
-        return torznabConfigDao.findById(id = id)?.toTorznabConfig()
+        return torznabConfigDao.findById(id = id)?.toDomain()
     }
 
     suspend fun updateTorznabConfig(
         id: SearchProviderId,
-        name: String,
+        searchProviderName: String,
         url: String,
         apiKey: String,
         category: Category,
     ) {
         val configEntity = TorznabConfigEntity(
             id = id,
-            name = name,
+            searchProviderName = searchProviderName,
             url = url,
             apiKey = apiKey,
             category = category.name,

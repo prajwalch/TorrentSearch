@@ -66,14 +66,14 @@ fun AddSearchProviderScreen(
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             TorznabConfigForm(
-                name = uiState.name,
-                onNameChange = viewModel::setName,
+                searchProviderName = uiState.searchProviderName,
+                onChangeSearchProviderName = viewModel::setSearchProviderName,
                 url = uiState.url,
-                onUrlChange = viewModel::setUrl,
+                onChangeUrl = viewModel::setUrl,
                 apiKey = uiState.apiKey,
-                onApiKeyChange = viewModel::setAPIKey,
+                onChangeApiKey = viewModel::setAPIKey,
                 category = uiState.category,
-                onCategoryChange = viewModel::setCategory,
+                onChangeCategory = viewModel::setCategory,
                 isUrlValid = uiState.isUrlValid,
                 confirmButton = {
                     Button(
