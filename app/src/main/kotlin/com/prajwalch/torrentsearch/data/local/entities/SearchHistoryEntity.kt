@@ -5,7 +5,6 @@ import androidx.room.Index
 import androidx.room.PrimaryKey
 
 import com.prajwalch.torrentsearch.models.SearchHistory
-import com.prajwalch.torrentsearch.models.SearchHistoryId
 
 @Entity(
     tableName = "search_history",
@@ -13,15 +12,15 @@ import com.prajwalch.torrentsearch.models.SearchHistoryId
 )
 data class SearchHistoryEntity(
     @PrimaryKey(autoGenerate = true)
-    val id: Int = 0,
+    val id: Long = 0,
     val query: String,
 )
 
 fun SearchHistoryEntity.toDomain() =
-    SearchHistory(id = SearchHistoryId(this.id), query = this.query)
+    SearchHistory(id = this.id, query = this.query)
 
 fun SearchHistory.toEntity() =
-    SearchHistoryEntity(id = this.id.value, query = this.query)
+    SearchHistoryEntity(id = this.id, query = this.query)
 
 fun List<SearchHistoryEntity>.toDomain() =
     this.map { it.toDomain() }
