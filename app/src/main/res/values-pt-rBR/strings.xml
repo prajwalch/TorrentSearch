@@ -124,4 +124,6 @@
     <string name="settings_enable_dynamic_theme_summary">Gera um tema para o aplicativo com base no papel de parede do dispositivo</string>
     <string name="settings_pure_black_summary">Ativa o modo de tema AMOLED</string>
     <string name="settings_save_search_history_summary">Armazena pesquisas recentes localmente para acesso rápido e sugestões</string>
+    <string name="main_cannot_search_using_url_message">Não é possível pesquisar usando um URL</string>
+    <string name="main_cannot_search_blank_query_message">Não é possível pesquisar usando uma consulta em branco</string>
 </resources>
