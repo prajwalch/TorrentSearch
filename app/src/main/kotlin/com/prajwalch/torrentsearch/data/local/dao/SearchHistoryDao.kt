@@ -18,7 +18,7 @@ interface SearchHistoryDao {
     fun observeAll(): Flow<List<SearchHistoryEntity>>
 
     @Query("DElETE from search_history where id=:id")
-    suspend fun deleteById(id: Long)
+    suspend fun deleteById(id: Int)
 
     @Query("DELETE from search_history")
     suspend fun deleteAll()
