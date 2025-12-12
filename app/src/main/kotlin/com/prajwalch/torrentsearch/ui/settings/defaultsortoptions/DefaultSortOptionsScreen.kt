@@ -15,9 +15,7 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.stringResource
@@ -30,17 +28,17 @@ import com.prajwalch.torrentsearch.models.SortCriteria
 import com.prajwalch.torrentsearch.models.SortOrder
 import com.prajwalch.torrentsearch.ui.components.ArrowBackIconButton
 import com.prajwalch.torrentsearch.ui.components.SettingsSectionTitle
-import com.prajwalch.torrentsearch.ui.settings.SettingsViewModel
 import com.prajwalch.torrentsearch.utils.sortCriteriaStringResource
 import com.prajwalch.torrentsearch.utils.sortOrderStringResource
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun DefaultSortOptionsScreen(onNavigateBack: () -> Unit, modifier: Modifier = Modifier) {
-    val viewModel = hiltViewModel<SettingsViewModel>()
-    val searchSettings by viewModel.searchSettingsUiState.collectAsStateWithLifecycle()
-
-    val defaultSortOptions by remember { derivedStateOf { searchSettings.defaultSortOptions } }
+fun DefaultSortOptionsScreen(
+    onNavigateBack: () -> Unit,
+    modifier: Modifier = Modifier,
+    viewModel: DefaultSortOptionsViewModel = hiltViewModel(),
+) {
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
 
     Scaffold(
@@ -62,11 +60,11 @@ fun DefaultSortOptionsScreen(onNavigateBack: () -> Unit, modifier: Modifier = Mo
                 .padding(innerPadding),
         ) {
             SortCriteriaSection(
-                selectedCriteria = defaultSortOptions.criteria,
+                selectedCriteria = uiState.criteria,
                 onCriteriaSelect = viewModel::setDefaultSortCriteria,
             )
             SortOrderSection(
-                selectedOrder = defaultSortOptions.order,
+                selectedOrder = uiState.order,
                 onOrderSelect = viewModel::setDefaultSortOrder,
             )
         }

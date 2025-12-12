@@ -12,12 +12,11 @@ import com.prajwalch.torrentsearch.data.repository.SettingsRepository
 import com.prajwalch.torrentsearch.models.Category
 import com.prajwalch.torrentsearch.models.DarkTheme
 import com.prajwalch.torrentsearch.models.MaxNumResults
-import com.prajwalch.torrentsearch.models.SortCriteria
 import com.prajwalch.torrentsearch.models.SortOptions
-import com.prajwalch.torrentsearch.models.SortOrder
 
 import dagger.hilt.android.lifecycle.HiltViewModel
 
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.WhileSubscribed
 import kotlinx.coroutines.flow.combine
@@ -29,38 +28,42 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 import kotlin.time.Duration.Companion.seconds
 
-/** State for the appearance settings. */
+data class SettingsUiState(
+    val appearanceSettings: AppearanceSettingsUiState = AppearanceSettingsUiState(),
+    val generalSettings: GeneralSettingsUiState = GeneralSettingsUiState(),
+    val searchSettings: SearchSettingsUiState = SearchSettingsUiState(),
+    val searchHistorySettings: SearchHistorySettingsUiState = SearchHistorySettingsUiState(),
+    val advancedSettings: AdvancedSettingsUiState = AdvancedSettingsUiState(),
+)
+
 data class AppearanceSettingsUiState(
     val enableDynamicTheme: Boolean = true,
     val darkTheme: DarkTheme = DarkTheme.FollowSystem,
     val pureBlack: Boolean = false,
 )
 
-/** State for the general settings. */
 data class GeneralSettingsUiState(
     val enableNSFWMode: Boolean = false,
 )
 
-/** State for the search settings. */
 data class SearchSettingsUiState(
     val searchProvidersStat: SearchProvidersStat = SearchProvidersStat(),
     val defaultCategory: Category = Category.All,
     val defaultSortOptions: SortOptions = SortOptions(),
     val maxNumResults: MaxNumResults = MaxNumResults.Unlimited,
-)
+) {
+    data class SearchProvidersStat(
+        val enabledSearchProvidersCount: Int = 0,
+        val totalSearchProvidersCount: Int = 0,
+    )
+}
 
-data class SearchProvidersStat(
-    val enabledSearchProvidersCount: Int = 0,
-    val totalSearchProvidersCount: Int = 0,
-)
-
-/** State for the search history settings. */
 data class SearchHistorySettingsUiState(
     val saveSearchHistory: Boolean = true,
     val showSearchHistory: Boolean = true,
 )
 
-data class AdvanceSettingsUiState(
+data class AdvancedSettingsUiState(
     val enableShareIntegration: Boolean = true,
     val enableQuickSearch: Boolean = true,
 )
@@ -71,62 +74,56 @@ class SettingsViewModel @Inject constructor(
     private val settingsRepository: SettingsRepository,
     private val searchProvidersRepository: SearchProvidersRepository,
 ) : ViewModel() {
-    val appearanceSettingsUiState = combine(
-        settingsRepository.enableDynamicTheme,
-        settingsRepository.darkTheme,
-        settingsRepository.pureBlack,
-        ::AppearanceSettingsUiState,
-    ).stateIn(
+    val uiState = getSettingsFlow().stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5.seconds),
-        initialValue = AppearanceSettingsUiState(),
+        initialValue = SettingsUiState(),
     )
 
-    val generalSettingsUiState = settingsRepository
-        .enableNSFWMode
-        .map(::GeneralSettingsUiState)
-        .stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5.seconds),
-            initialValue = GeneralSettingsUiState(),
+    private fun getSettingsFlow(): Flow<SettingsUiState> {
+        val appearanceSettingsFlow = combine(
+            settingsRepository.enableDynamicTheme,
+            settingsRepository.darkTheme,
+            settingsRepository.pureBlack,
+            ::AppearanceSettingsUiState,
+        )
+        val generalSettingsFlow = settingsRepository
+            .enableNSFWMode
+            .map(::GeneralSettingsUiState)
+
+        val searchProvidersStatFlow = combine(
+            settingsRepository.enabledSearchProvidersId.map { it.size },
+            searchProvidersRepository.observeSearchProvidersCount(),
+            SearchSettingsUiState::SearchProvidersStat,
+        )
+        val searchSettingsFlow = combine(
+            searchProvidersStatFlow,
+            settingsRepository.defaultCategory,
+            settingsRepository.defaultSortOptions,
+            settingsRepository.maxNumResults,
+            ::SearchSettingsUiState,
         )
 
-    private val searchProvidersStatFlow = combine(
-        settingsRepository.enabledSearchProvidersId.map { it.size },
-        searchProvidersRepository.observeSearchProvidersCount(),
-        ::SearchProvidersStat,
-    )
-    val searchSettingsUiState = combine(
-        searchProvidersStatFlow,
-        settingsRepository.defaultCategory,
-        settingsRepository.defaultSortOptions,
-        settingsRepository.maxNumResults,
-        ::SearchSettingsUiState,
-    ).stateIn(
-        scope = viewModelScope,
-        started = SharingStarted.WhileSubscribed(5.seconds),
-        initialValue = SearchSettingsUiState(),
-    )
+        val searchHistorySettingsFlow = combine(
+            settingsRepository.saveSearchHistory,
+            settingsRepository.showSearchHistory,
+            ::SearchHistorySettingsUiState,
+        )
+        val advancedSettingsFlow = combine(
+            settingsRepository.enableShareIntegration,
+            settingsRepository.enableQuickSearch,
+            ::AdvancedSettingsUiState,
+        )
 
-    val searchHistorySettingsUiState = combine(
-        settingsRepository.saveSearchHistory,
-        settingsRepository.showSearchHistory,
-        ::SearchHistorySettingsUiState,
-    ).stateIn(
-        scope = viewModelScope,
-        started = SharingStarted.WhileSubscribed(5.seconds),
-        initialValue = SearchHistorySettingsUiState(),
-    )
-
-    val advanceSettingsUiState = combine(
-        settingsRepository.enableShareIntegration,
-        settingsRepository.enableQuickSearch,
-        ::AdvanceSettingsUiState,
-    ).stateIn(
-        scope = viewModelScope,
-        started = SharingStarted.WhileSubscribed(5.seconds),
-        initialValue = AdvanceSettingsUiState(),
-    )
+        return combine(
+            appearanceSettingsFlow,
+            generalSettingsFlow,
+            searchSettingsFlow,
+            searchHistorySettingsFlow,
+            advancedSettingsFlow,
+            ::SettingsUiState,
+        )
+    }
 
     /** Enables/disables dynamic theme. */
     fun enableDynamicTheme(enable: Boolean) {
@@ -157,13 +154,6 @@ class SettingsViewModel @Inject constructor(
         }
     }
 
-    /** Changes the default category to given one. */
-    fun setDefaultCategory(category: Category) {
-        viewModelScope.launch {
-            settingsRepository.setDefaultCategory(category = category)
-        }
-    }
-
     /** Disables NSFW and Unsafe search providers which are currently enabled. */
     private suspend fun disableRestrictedSearchProviders() {
         val enabledSearchProvidersInfo = combine(
@@ -181,20 +171,6 @@ class SettingsViewModel @Inject constructor(
         settingsRepository.setEnabledSearchProvidersId(
             providersId = newEnabledSearchProvidersId,
         )
-    }
-
-    /** Changes the default sort criteria. */
-    fun setDefaultSortCriteria(sortCriteria: SortCriteria) {
-        viewModelScope.launch {
-            settingsRepository.setDefaultSortCriteria(sortCriteria = sortCriteria)
-        }
-    }
-
-    /** Changes the default sort order. */
-    fun setDefaultSortOrder(sortOrder: SortOrder) {
-        viewModelScope.launch {
-            settingsRepository.setDefaultSortOrder(sortOrder = sortOrder)
-        }
     }
 
     /** Updates the maximum number of results. */

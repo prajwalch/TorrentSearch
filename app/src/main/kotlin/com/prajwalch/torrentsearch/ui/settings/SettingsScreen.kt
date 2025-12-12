@@ -2,6 +2,7 @@ package com.prajwalch.torrentsearch.ui.settings
 
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Build
 import android.provider.Settings
@@ -30,8 +31,6 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -63,10 +62,6 @@ import com.prajwalch.torrentsearch.utils.categoryStringResource
 import com.prajwalch.torrentsearch.utils.sortCriteriaStringResource
 import com.prajwalch.torrentsearch.utils.sortOrderStringResource
 
-private val LocalSettingsViewModel = compositionLocalOf<SettingsViewModel> {
-    error("Local SettingsViewModel not provided")
-}
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SettingsScreen(
@@ -77,6 +72,7 @@ fun SettingsScreen(
     modifier: Modifier = Modifier,
     viewModel: SettingsViewModel = hiltViewModel(),
 ) {
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
 
     Scaffold(
@@ -96,18 +92,34 @@ fun SettingsScreen(
                 .verticalScroll(state = rememberScrollState())
                 .padding(innerPadding),
         ) {
-            CompositionLocalProvider(LocalSettingsViewModel provides viewModel) {
-                AppearanceSettings()
-                GeneralSettings()
-                SearchSettings(
-                    onNavigateToSearchProviders = onNavigateToSearchProviders,
-                    onNavigateToDefaultCategory = onNavigateToDefaultCategory,
-                    onNavigateToDefaultSortOptions = onNavigateToDefaultSortOptions,
-                )
-                SearchHistorySettings()
-                AdvancedSettings()
-                About()
-            }
+            AppearanceSettings(
+                uiState = uiState.appearanceSettings,
+                onEnableDynamicTheme = viewModel::enableDynamicTheme,
+                onSetDarkTheme = viewModel::setDarkTheme,
+                onEnablePureBlackTheme = viewModel::enablePureBlackTheme,
+            )
+            GeneralSettings(
+                uiState = uiState.generalSettings,
+                onEnableNSFWMode = viewModel::enableNSFWMode,
+            )
+            SearchSettings(
+                uiState = uiState.searchSettings,
+                onNavigateToSearchProviders = onNavigateToSearchProviders,
+                onNavigateToDefaultCategory = onNavigateToDefaultCategory,
+                onNavigateToDefaultSortOptions = onNavigateToDefaultSortOptions,
+                onSetMaxNumResults = viewModel::setMaxNumResults,
+            )
+            SearchHistorySettings(
+                uiState = uiState.searchHistorySettings,
+                onEnableSaveSearchHistory = viewModel::enableSaveSearchHistory,
+                onEnableShowSearchHistory = viewModel::enableShowSearchHistory,
+            )
+            AdvancedSettings(
+                uiState = uiState.advancedSettings,
+                onEnableShareIntegration = viewModel::enableShareIntegration,
+                onEnableQuickSearch = viewModel::enableQuickSearch,
+            )
+            About()
         }
     }
 }
@@ -128,36 +140,39 @@ private fun SettingsScreenTopBar(
 }
 
 @Composable
-private fun AppearanceSettings(modifier: Modifier = Modifier) {
-    val viewModel = LocalSettingsViewModel.current
-    val settings by viewModel.appearanceSettingsUiState.collectAsStateWithLifecycle()
-
+private fun AppearanceSettings(
+    uiState: AppearanceSettingsUiState,
+    onEnableDynamicTheme: (Boolean) -> Unit,
+    onSetDarkTheme: (DarkTheme) -> Unit,
+    onEnablePureBlackTheme: (Boolean) -> Unit,
+    modifier: Modifier = Modifier,
+) {
     Column(modifier = modifier) {
         SettingsSectionTitle(title = R.string.settings_section_appearance)
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             SettingsListItem(
-                onClick = { viewModel.enableDynamicTheme(!settings.enableDynamicTheme) },
+                onClick = { onEnableDynamicTheme(!uiState.enableDynamicTheme) },
                 icon = R.drawable.ic_palette,
                 headline = R.string.settings_enable_dynamic_theme,
                 supportingContent = stringResource(R.string.settings_enable_dynamic_theme_summary),
                 trailingContent = {
                     Switch(
-                        checked = settings.enableDynamicTheme,
-                        onCheckedChange = { viewModel.enableDynamicTheme(it) },
+                        checked = uiState.enableDynamicTheme,
+                        onCheckedChange = onEnableDynamicTheme,
                     )
                 },
             )
         }
 
         Box {
-            var menuExpanded by remember(settings.darkTheme) { mutableStateOf(false) }
+            var menuExpanded by remember(uiState.darkTheme) { mutableStateOf(false) }
 
             SettingsListItem(
                 onClick = { menuExpanded = true },
                 icon = R.drawable.ic_dark_mode,
                 headline = R.string.settings_dark_theme,
-                supportingContent = darkThemeStringResource(settings.darkTheme),
+                supportingContent = darkThemeStringResource(uiState.darkTheme),
             )
 
             RoundedDropdownMenu(
@@ -168,29 +183,29 @@ private fun AppearanceSettings(modifier: Modifier = Modifier) {
                 DarkTheme.entries.forEach {
                     DropdownMenuItem(
                         text = { Text(text = darkThemeStringResource(it)) },
-                        onClick = { viewModel.setDarkTheme(it) },
+                        onClick = { onSetDarkTheme(it) },
                         leadingIcon = {
-                            if (it == settings.darkTheme) {
+                            if (it == uiState.darkTheme) {
                                 Icon(
                                     painter = painterResource(R.drawable.ic_check),
                                     contentDescription = null,
                                 )
                             }
-                        }
+                        },
                     )
                 }
             }
         }
 
         SettingsListItem(
-            onClick = { viewModel.enablePureBlackTheme(!settings.pureBlack) },
+            onClick = { onEnablePureBlackTheme(!uiState.pureBlack) },
             icon = R.drawable.ic_contrast,
             headline = R.string.settings_pure_black,
             supportingContent = stringResource(R.string.settings_pure_black_summary),
             trailingContent = {
                 Switch(
-                    checked = settings.pureBlack,
-                    onCheckedChange = { viewModel.enablePureBlackTheme(it) },
+                    checked = uiState.pureBlack,
+                    onCheckedChange = { onEnablePureBlackTheme(it) },
                 )
             },
         )
@@ -198,10 +213,11 @@ private fun AppearanceSettings(modifier: Modifier = Modifier) {
 }
 
 @Composable
-private fun GeneralSettings(modifier: Modifier = Modifier) {
-    val viewModel = LocalSettingsViewModel.current
-    val settings by viewModel.generalSettingsUiState.collectAsStateWithLifecycle()
-
+private fun GeneralSettings(
+    uiState: GeneralSettingsUiState,
+    onEnableNSFWMode: (Boolean) -> Unit,
+    modifier: Modifier = Modifier,
+) {
     Column(modifier = modifier) {
         SettingsSectionTitle(title = R.string.settings_section_general)
 
@@ -217,19 +233,19 @@ private fun GeneralSettings(modifier: Modifier = Modifier) {
                         painter = painterResource(R.drawable.ic_arrow_forward),
                         contentDescription = null,
                     )
-                }
+                },
             )
         }
 
         SettingsListItem(
-            onClick = { viewModel.enableNSFWMode(!settings.enableNSFWMode) },
+            onClick = { onEnableNSFWMode(!uiState.enableNSFWMode) },
             icon = R.drawable.ic_18_up_rating,
             headline = R.string.settings_enable_nsfw_mode,
             supportingContent = stringResource(R.string.settings_enable_nsfw_mode_summary),
             trailingContent = {
                 Switch(
-                    checked = settings.enableNSFWMode,
-                    onCheckedChange = { viewModel.enableNSFWMode(it) },
+                    checked = uiState.enableNSFWMode,
+                    onCheckedChange = { onEnableNSFWMode(it) },
                 )
             },
         )
@@ -238,24 +254,23 @@ private fun GeneralSettings(modifier: Modifier = Modifier) {
 
 @Composable
 private fun SearchSettings(
+    uiState: SearchSettingsUiState,
     onNavigateToSearchProviders: () -> Unit,
     onNavigateToDefaultCategory: () -> Unit,
     onNavigateToDefaultSortOptions: () -> Unit,
+    onSetMaxNumResults: (MaxNumResults) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val viewModel = LocalSettingsViewModel.current
-    val settings by viewModel.searchSettingsUiState.collectAsStateWithLifecycle()
-
     var showMaxNumResultsDialog by remember { mutableStateOf(false) }
 
     if (showMaxNumResultsDialog) {
         MaxNumResultsDialog(
             onDismissRequest = { showMaxNumResultsDialog = false },
-            num = if (settings.maxNumResults.isUnlimited()) null else settings.maxNumResults.n,
-            onNumChange = { viewModel.setMaxNumResults(MaxNumResults(n = it)) },
+            num = if (uiState.maxNumResults.isUnlimited()) null else uiState.maxNumResults.n,
+            onNumChange = { onSetMaxNumResults(MaxNumResults(n = it)) },
             onUnlimitedClick = {
                 showMaxNumResultsDialog = false
-                viewModel.setMaxNumResults(MaxNumResults.Unlimited)
+                onSetMaxNumResults(MaxNumResults.Unlimited)
             },
         )
     }
@@ -268,8 +283,8 @@ private fun SearchSettings(
             headline = R.string.settings_search_providers,
             supportingContent = stringResource(
                 R.string.settings_search_providers_summary_format,
-                settings.searchProvidersStat.enabledSearchProvidersCount,
-                settings.searchProvidersStat.totalSearchProvidersCount
+                uiState.searchProvidersStat.enabledSearchProvidersCount,
+                uiState.searchProvidersStat.totalSearchProvidersCount,
             ),
             trailingContent = {
                 Icon(
@@ -282,17 +297,17 @@ private fun SearchSettings(
             onClick = onNavigateToDefaultCategory,
             icon = R.drawable.ic_category_search,
             headline = R.string.settings_default_category,
-            supportingContent = categoryStringResource(settings.defaultCategory),
+            supportingContent = categoryStringResource(uiState.defaultCategory),
             trailingContent = {
                 Icon(
                     painter = painterResource(R.drawable.ic_arrow_forward),
                     contentDescription = null,
                 )
-            }
+            },
         )
 
-        val defaultSortCriteria = sortCriteriaStringResource(settings.defaultSortOptions.criteria)
-        val defaultSortOrder = sortOrderStringResource(settings.defaultSortOptions.order)
+        val defaultSortCriteria = sortCriteriaStringResource(uiState.defaultSortOptions.criteria)
+        val defaultSortOrder = sortOrderStringResource(uiState.defaultSortOptions.order)
         SettingsListItem(
             onClick = onNavigateToDefaultSortOptions,
             icon = R.drawable.ic_sort,
@@ -309,43 +324,45 @@ private fun SearchSettings(
             onClick = { showMaxNumResultsDialog = true },
             icon = R.drawable.ic_format_list_numbered,
             headline = R.string.settings_max_num_results,
-            supportingContent = if (settings.maxNumResults.isUnlimited()) {
+            supportingContent = if (uiState.maxNumResults.isUnlimited()) {
                 stringResource(R.string.settings_max_num_results_button_unlimited)
             } else {
-                settings.maxNumResults.n.toString()
+                uiState.maxNumResults.n.toString()
             },
         )
     }
 }
 
 @Composable
-private fun SearchHistorySettings(modifier: Modifier = Modifier) {
-    val viewModel = LocalSettingsViewModel.current
-    val settings by viewModel.searchHistorySettingsUiState.collectAsStateWithLifecycle()
-
+private fun SearchHistorySettings(
+    uiState: SearchHistorySettingsUiState,
+    onEnableSaveSearchHistory: (Boolean) -> Unit,
+    onEnableShowSearchHistory: (Boolean) -> Unit,
+    modifier: Modifier = Modifier,
+) {
     Column(modifier = modifier) {
         SettingsSectionTitle(title = R.string.settings_section_search_history)
         SettingsListItem(
-            onClick = { viewModel.enableSaveSearchHistory(!settings.saveSearchHistory) },
+            onClick = { onEnableSaveSearchHistory(!uiState.saveSearchHistory) },
             icon = R.drawable.ic_search_activity,
             headline = R.string.settings_save_search_history,
             supportingContent = stringResource(R.string.settings_save_search_history_summary),
             trailingContent = {
                 Switch(
-                    checked = settings.saveSearchHistory,
-                    onCheckedChange = { viewModel.enableSaveSearchHistory(it) },
+                    checked = uiState.saveSearchHistory,
+                    onCheckedChange = { onEnableSaveSearchHistory(it) },
                 )
             },
         )
         SettingsListItem(
-            onClick = { viewModel.enableShowSearchHistory(!settings.showSearchHistory) },
+            onClick = { onEnableShowSearchHistory(!uiState.showSearchHistory) },
             icon = R.drawable.ic_history_toggle_off,
             headline = R.string.settings_show_search_history,
             supportingContent = stringResource(R.string.settings_show_search_history_summary),
             trailingContent = {
                 Switch(
-                    checked = settings.showSearchHistory,
-                    onCheckedChange = { viewModel.enableShowSearchHistory(it) },
+                    checked = uiState.showSearchHistory,
+                    onCheckedChange = { onEnableShowSearchHistory(it) },
                 )
             },
         )
@@ -353,10 +370,12 @@ private fun SearchHistorySettings(modifier: Modifier = Modifier) {
 }
 
 @Composable
-private fun AdvancedSettings(modifier: Modifier = Modifier) {
-    val viewModel = LocalSettingsViewModel.current
-    val uiState by viewModel.advanceSettingsUiState.collectAsStateWithLifecycle()
-
+private fun AdvancedSettings(
+    uiState: AdvancedSettingsUiState,
+    onEnableShareIntegration: (Boolean, PackageManager) -> Unit,
+    onEnableQuickSearch: (Boolean, PackageManager) -> Unit,
+    modifier: Modifier = Modifier,
+) {
     val context = LocalContext.current
     val packageManager = context.packageManager
 
@@ -364,12 +383,7 @@ private fun AdvancedSettings(modifier: Modifier = Modifier) {
         SettingsSectionTitle(R.string.settings_section_advanced)
 
         SettingsListItem(
-            onClick = {
-                viewModel.enableShareIntegration(
-                    enable = !uiState.enableShareIntegration,
-                    packageManager = packageManager,
-                )
-            },
+            onClick = { onEnableShareIntegration(!uiState.enableShareIntegration, packageManager) },
             icon = R.drawable.ic_share,
             headline = R.string.settings_enable_share_integration,
             supportingContent = stringResource(
@@ -378,22 +392,12 @@ private fun AdvancedSettings(modifier: Modifier = Modifier) {
             trailingContent = {
                 Switch(
                     checked = uiState.enableShareIntegration,
-                    onCheckedChange = {
-                        viewModel.enableShareIntegration(
-                            enable = it,
-                            packageManager = packageManager,
-                        )
-                    },
+                    onCheckedChange = { onEnableShareIntegration(it, packageManager) },
                 )
             },
         )
         SettingsListItem(
-            onClick = {
-                viewModel.enableQuickSearch(
-                    enable = !uiState.enableQuickSearch,
-                    packageManager = packageManager,
-                )
-            },
+            onClick = { onEnableQuickSearch(!uiState.enableQuickSearch, packageManager) },
             icon = R.drawable.ic_search,
             headline = R.string.settings_enable_quick_search,
             supportingContent = stringResource(
@@ -402,12 +406,7 @@ private fun AdvancedSettings(modifier: Modifier = Modifier) {
             trailingContent = {
                 Switch(
                     checked = uiState.enableQuickSearch,
-                    onCheckedChange = {
-                        viewModel.enableQuickSearch(
-                            enable = it,
-                            packageManager = packageManager,
-                        )
-                    },
+                    onCheckedChange = { onEnableQuickSearch(it, packageManager) },
                 )
             },
         )
@@ -433,7 +432,7 @@ private fun About(modifier: Modifier = Modifier) {
                     painter = painterResource(R.drawable.ic_open_in_new),
                     contentDescription = null,
                 )
-            }
+            },
         )
         SettingsListItem(
             onClick = { uriHandler.openUri(uri = repoUrl) },
@@ -445,7 +444,7 @@ private fun About(modifier: Modifier = Modifier) {
                     painter = painterResource(R.drawable.ic_open_in_new),
                     contentDescription = null,
                 )
-            }
+            },
         )
     }
 }
@@ -475,7 +474,7 @@ private fun MaxNumResultsDialog(
             }) {
                 Text(text = stringResource(R.string.button_done))
             }
-        }
+        },
     ) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,

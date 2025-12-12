@@ -14,9 +14,7 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.stringResource
@@ -27,16 +25,16 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.prajwalch.torrentsearch.R
 import com.prajwalch.torrentsearch.models.Category
 import com.prajwalch.torrentsearch.ui.components.ArrowBackIconButton
-import com.prajwalch.torrentsearch.ui.settings.SettingsViewModel
 import com.prajwalch.torrentsearch.utils.categoryStringResource
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun DefaultCategoryScreen(onNavigateBack: () -> Unit, modifier: Modifier = Modifier) {
-    val viewModel = hiltViewModel<SettingsViewModel>()
-    val settings by viewModel.searchSettingsUiState.collectAsStateWithLifecycle()
-
-    val defaultCategory by remember { derivedStateOf { settings.defaultCategory } }
+fun DefaultCategoryScreen(
+    onNavigateBack: () -> Unit,
+    modifier: Modifier = Modifier,
+    viewModel: DefaultCategoryViewModel = hiltViewModel(),
+) {
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
 
     Scaffold(
@@ -60,7 +58,7 @@ fun DefaultCategoryScreen(onNavigateBack: () -> Unit, modifier: Modifier = Modif
             items(items = Category.entries, contentType = { it }) {
                 CategoryListItem(
                     onClick = { viewModel.setDefaultCategory(it) },
-                    selected = it == defaultCategory,
+                    selected = it == uiState,
                     name = categoryStringResource(it),
                 )
             }
