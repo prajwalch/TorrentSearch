@@ -5,11 +5,11 @@ import androidx.lifecycle.viewModelScope
 
 import com.prajwalch.torrentsearch.data.repository.BookmarksRepository
 import com.prajwalch.torrentsearch.data.repository.SettingsRepository
-import com.prajwalch.torrentsearch.extensions.customSort
 import com.prajwalch.torrentsearch.models.SortCriteria
 import com.prajwalch.torrentsearch.models.SortOptions
 import com.prajwalch.torrentsearch.models.SortOrder
 import com.prajwalch.torrentsearch.models.Torrent
+import com.prajwalch.torrentsearch.utils.createSortComparator
 
 import dagger.hilt.android.lifecycle.HiltViewModel
 
@@ -46,7 +46,9 @@ class BookmarksViewModel @Inject constructor(
         val bookmarks = bookmarks
             .filter { nsfwModeEnabled || !it.isNSFW() }
             .filter { filterQuery.isBlank() || it.name.contains(filterQuery, ignoreCase = true) }
-            .customSort(criteria = sortOptions.criteria, order = sortOptions.order)
+            .sortedWith(
+                createSortComparator(criteria = sortOptions.criteria, order = sortOptions.order)
+            )
 
         BookmarksUiState(
             bookmarks = bookmarks,
