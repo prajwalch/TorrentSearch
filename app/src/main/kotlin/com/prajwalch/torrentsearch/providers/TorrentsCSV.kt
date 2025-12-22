@@ -9,7 +9,7 @@ import com.prajwalch.torrentsearch.models.Category
 import com.prajwalch.torrentsearch.models.InfoHashOrMagnetUri
 import com.prajwalch.torrentsearch.models.Torrent
 import com.prajwalch.torrentsearch.utils.DateUtils
-import com.prajwalch.torrentsearch.utils.prettyFileSize
+import com.prajwalch.torrentsearch.utils.FileSizeUtils
 
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -67,7 +67,7 @@ class TorrentsCSV : SearchProvider {
         val infoHash = torrentObject.getString("infohash") ?: return null
 
         val sizeBytes = torrentObject.getLong("size_bytes") ?: return null
-        val size = prettyFileSize(bytes = sizeBytes.toFloat())
+        val size = FileSizeUtils.formatBytes(bytes = sizeBytes.toFloat())
 
         val seeders = torrentObject.getUInt("seeders") ?: return null
         val peers = torrentObject.getUInt("leechers") ?: return null

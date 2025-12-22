@@ -9,7 +9,7 @@ import com.prajwalch.torrentsearch.models.Category
 import com.prajwalch.torrentsearch.models.InfoHashOrMagnetUri
 import com.prajwalch.torrentsearch.models.Torrent
 import com.prajwalch.torrentsearch.utils.DateUtils
-import com.prajwalch.torrentsearch.utils.prettyFileSize
+import com.prajwalch.torrentsearch.utils.FileSizeUtils
 
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -86,7 +86,7 @@ class Knaben : SearchProvider {
         val name = obj.getString("title") ?: return null
         val magnetUri = obj.getString("magnetUrl") ?: return null
         val sizeBytes = obj.getLong("bytes") ?: return null
-        val size = prettyFileSize(sizeBytes.toFloat())
+        val size = FileSizeUtils.formatBytes(sizeBytes.toFloat())
 
         val seeders = obj.getUInt("seeders") ?: 0u
         val peers = obj.getUInt("peers") ?: 0u

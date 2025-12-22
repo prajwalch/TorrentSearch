@@ -9,7 +9,7 @@ fun createSortComparator(criteria: SortCriteria, order: SortOrder): Comparator<T
         SortCriteria.Name -> compareBy { it.name }
         SortCriteria.Seeders -> compareBy { it.seeders }
         SortCriteria.Peers -> compareBy { it.peers }
-        SortCriteria.FileSize -> compareBy { prettySizeToBytes(it.size) }
+        SortCriteria.FileSize -> compareBy { FileSizeUtils.getBytes(it.size) }
         SortCriteria.Date -> compareBy { it.uploadDate }
     }
 

@@ -8,7 +8,7 @@ import com.prajwalch.torrentsearch.models.InfoHashOrMagnetUri
 import com.prajwalch.torrentsearch.models.Torrent
 import com.prajwalch.torrentsearch.models.TorznabConfig
 import com.prajwalch.torrentsearch.network.HttpClient
-import com.prajwalch.torrentsearch.utils.prettyFileSize
+import com.prajwalch.torrentsearch.utils.FileSizeUtils
 
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -31,7 +31,7 @@ private object TorznabFunctions {
 /** A search provider which is based on Torznab specification. */
 class TorznabSearchProvider(
     id: SearchProviderId,
-    private val config: TorznabConfig
+    private val config: TorznabConfig,
 ) : SearchProvider {
     override val info = SearchProviderInfo(
         id = id,
@@ -342,7 +342,7 @@ private class TorznabResponseXmlParser(
 
     private fun readSize(): String {
         val sizeBytes = readTextContainedTag(tagName = "size")
-        return prettyFileSize(bytes = sizeBytes)
+        return FileSizeUtils.formatBytes(bytes = sizeBytes)
     }
 
     private fun readTextContainedTag(tagName: String): String {

@@ -4,7 +4,7 @@ import com.prajwalch.torrentsearch.models.Category
 import com.prajwalch.torrentsearch.models.InfoHashOrMagnetUri
 import com.prajwalch.torrentsearch.models.Torrent
 import com.prajwalch.torrentsearch.utils.DateUtils
-import com.prajwalch.torrentsearch.utils.FileSizeUnits
+import com.prajwalch.torrentsearch.utils.FileSizeUtils
 
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -120,11 +120,11 @@ class TokyoToshokan : SearchProvider {
 
     private companion object {
         val fileSizeUnits = listOf(
-            FileSizeUnits.PB,
-            FileSizeUnits.TB,
-            FileSizeUnits.GB,
-            FileSizeUnits.MB,
-            FileSizeUnits.KB,
+            FileSizeUtils.FileSizeUnits.PB,
+            FileSizeUtils.FileSizeUnits.TB,
+            FileSizeUtils.FileSizeUnits.GB,
+            FileSizeUtils.FileSizeUnits.MB,
+            FileSizeUtils.FileSizeUnits.KB,
         )
     }
 }
