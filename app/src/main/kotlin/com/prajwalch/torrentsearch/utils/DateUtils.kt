@@ -1,10 +1,19 @@
 package com.prajwalch.torrentsearch.utils
 
-import java.text.SimpleDateFormat
-import java.util.Locale
+object DateUtils {
+    private val dateFormatter = TorrentSearchDateFormatter.init()
 
-/** Returns the pretty date format. */
-fun prettyDate(epochSeconds: Long): String {
-    val simpleDateFormat = SimpleDateFormat("dd MMM yyyy", Locale.getDefault())
-    return simpleDateFormat.format(epochSeconds * 1000L)
+    fun formatEpochSecond(epochSecond: Long) = dateFormatter.formatEpochSecond(epochSecond)
+
+    fun formatYearMonthDay(date: String) = dateFormatter.formatYearMonthDay(date)
+
+    fun formatDayMonthYear(date: String) = dateFormatter.formatDayMonthYear(date)
+
+    fun formatMonthDayYear(date: String) = dateFormatter.formatMonthDayYear(date)
+
+    fun formatIsoDate(date: String) = dateFormatter.formatIsoDate(date)
+
+    fun formatTodayDate() = dateFormatter.formatTodayDate()
+
+    fun formatYesterdayDate() = dateFormatter.formatYesterdayDate()
 }

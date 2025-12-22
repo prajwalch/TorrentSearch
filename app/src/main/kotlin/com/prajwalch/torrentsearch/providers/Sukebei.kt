@@ -3,7 +3,7 @@ package com.prajwalch.torrentsearch.providers
 import com.prajwalch.torrentsearch.models.Category
 import com.prajwalch.torrentsearch.models.InfoHashOrMagnetUri
 import com.prajwalch.torrentsearch.models.Torrent
-import com.prajwalch.torrentsearch.utils.prettyDate
+import com.prajwalch.torrentsearch.utils.DateUtils
 
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -49,23 +49,20 @@ class Sukebei : SearchProvider {
 
     private fun parseTableRow(tr: Element): Torrent? {
         val nameAnchorElem = tr.selectFirst("td:nth-child(2)")?.selectFirst("a") ?: return null
+
         val torrentName = nameAnchorElem.ownText()
         val descriptionPageUrl = info.url + nameAnchorElem.attr("href")
-
         val magnetUri = tr
             .selectFirst("td:nth-child(3)")
             ?.selectFirst("a:nth-child(2)")
             ?.attr("href")
             ?: return null
-
         val size = tr.selectFirst("td:nth-child(4)")?.ownText() ?: return null
-
-        val uploadDateEpochSeconds = tr
+        val uploadDate = tr
             .selectFirst("td:nth-child(5)")
             ?.attr("data-timestamp")
+            ?.let { DateUtils.formatEpochSecond(it.toLong()) }
             ?: return null
-        val uploadDate = prettyDate(epochSeconds = uploadDateEpochSeconds.toLong())
-
         val seeders = tr.selectFirst("td:nth-child(6)")?.ownText() ?: return null
         val peers = tr.selectFirst("td:nth-child(7)")?.ownText() ?: return null
 

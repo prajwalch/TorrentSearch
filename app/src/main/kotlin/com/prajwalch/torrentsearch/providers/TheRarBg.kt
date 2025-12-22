@@ -5,6 +5,7 @@ import com.prajwalch.torrentsearch.models.InfoHashOrMagnetUri
 import com.prajwalch.torrentsearch.models.Torrent
 import com.prajwalch.torrentsearch.network.HttpClient
 import com.prajwalch.torrentsearch.network.HttpClientResponse
+import com.prajwalch.torrentsearch.utils.DateUtils
 
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
@@ -121,6 +122,7 @@ class TheRarBg : SearchProvider {
         val uploadDate = tr.selectFirst("td:nth-child(4)")
             ?.selectFirst("div")
             ?.ownText()
+            ?.let { DateUtils.formatYearMonthDay(it) }
             ?: return null
         val size = tr.selectFirst("td:nth-child(6)")?.ownText() ?: return null
         val seeders = tr.selectFirst("td:nth-child(7)")?.ownText() ?: return null

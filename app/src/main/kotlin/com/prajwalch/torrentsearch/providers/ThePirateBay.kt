@@ -6,7 +6,7 @@ import com.prajwalch.torrentsearch.extensions.getString
 import com.prajwalch.torrentsearch.models.Category
 import com.prajwalch.torrentsearch.models.InfoHashOrMagnetUri
 import com.prajwalch.torrentsearch.models.Torrent
-import com.prajwalch.torrentsearch.utils.prettyDate
+import com.prajwalch.torrentsearch.utils.DateUtils
 import com.prajwalch.torrentsearch.utils.prettyFileSize
 
 import kotlinx.coroutines.Dispatchers
@@ -94,9 +94,11 @@ class ThePirateBay : SearchProvider {
         val size = prettyFileSize(bytes = sizeBytes)
         val seeders = torrentObject.getString("seeders")?.toUIntOrNull() ?: return null
         val peers = torrentObject.getString("leechers")?.toUIntOrNull() ?: return null
-
-        val uploadDateEpochSeconds = torrentObject.getString("added")?.toLongOrNull() ?: return null
-        val uploadDate = prettyDate(uploadDateEpochSeconds)
+        val uploadDate = torrentObject
+            .getString("added")
+            ?.toLongOrNull()
+            ?.let { DateUtils.formatEpochSecond(it) }
+            ?: return null
 
         val categoryIndex = torrentObject.getString("category") ?: return null
         val category = getCategoryFromIndex(categoryIndex = categoryIndex.toInt())

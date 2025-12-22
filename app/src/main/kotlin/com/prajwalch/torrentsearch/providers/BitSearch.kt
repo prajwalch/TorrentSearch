@@ -5,6 +5,7 @@ import com.prajwalch.torrentsearch.models.InfoHashOrMagnetUri
 import com.prajwalch.torrentsearch.models.MagnetUri
 import com.prajwalch.torrentsearch.models.Torrent
 import com.prajwalch.torrentsearch.network.HttpClient
+import com.prajwalch.torrentsearch.utils.DateUtils
 
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
@@ -142,6 +143,7 @@ class BitSearch : SearchProvider {
         val uploadDate = categoryAndStatsDiv
             .selectFirst("> span:nth-child(3) > span")
             ?.ownText()
+            ?.let { DateUtils.formatMonthDayYear(it) }
             ?: return null
 
         // Third child contains seeders, leechers and download count (no use for us)

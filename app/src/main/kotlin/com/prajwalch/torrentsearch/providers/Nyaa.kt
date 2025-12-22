@@ -3,7 +3,7 @@ package com.prajwalch.torrentsearch.providers
 import com.prajwalch.torrentsearch.models.Category
 import com.prajwalch.torrentsearch.models.InfoHashOrMagnetUri
 import com.prajwalch.torrentsearch.models.Torrent
-import com.prajwalch.torrentsearch.utils.prettyDate
+import com.prajwalch.torrentsearch.utils.DateUtils
 
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -71,13 +71,11 @@ class Nyaa : SearchProvider {
             ?.attr("href")
             ?: return null
         val size = tr.selectFirst("td:nth-child(4)")?.ownText() ?: return null
-
-        val uploadDateEpochSeconds = tr
+        val uploadDate = tr
             .selectFirst("td:nth-child(5)")
             ?.attr("data-timestamp")
+            ?.let { DateUtils.formatEpochSecond(it.toLong()) }
             ?: return null
-        val uploadDate = prettyDate(uploadDateEpochSeconds.toLong())
-
         val seeders = tr.selectFirst("td:nth-child(6)")?.ownText() ?: return null
         val peers = tr.selectFirst("td:nth-child(7)")?.ownText() ?: return null
 

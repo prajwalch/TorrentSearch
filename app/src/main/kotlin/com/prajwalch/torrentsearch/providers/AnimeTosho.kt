@@ -1,20 +1,15 @@
 package com.prajwalch.torrentsearch.providers
 
-import android.os.Build
-import androidx.annotation.RequiresApi
-
 import com.prajwalch.torrentsearch.models.Category
 import com.prajwalch.torrentsearch.models.InfoHashOrMagnetUri
 import com.prajwalch.torrentsearch.models.Torrent
+import com.prajwalch.torrentsearch.utils.DateUtils
 
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Element
-
-import java.text.SimpleDateFormat
-import java.util.Locale
 
 class AnimeTosho : SearchProvider {
     override val info = SearchProviderInfo(
@@ -52,12 +47,7 @@ class AnimeTosho : SearchProvider {
         val size = entryDiv.selectFirst("div.size")?.ownText() ?: return null
         val (seeders, peers) = parseSeedsAndPeers(entryDiv)
 
-        val uploadDate = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            parseUploadDate(entryDiv) ?: return null
-        } else {
-            entryDiv.selectFirst("div.date")?.ownText() ?: return null
-        }
-
+        val uploadDate = parseUploadDate(entryDiv) ?: return null
         val magnetUri = entryDiv
             .select("div.links > a")
             .firstOrNull { it.ownText() == "Magnet" }
@@ -79,7 +69,6 @@ class AnimeTosho : SearchProvider {
     }
 
     /** Parses the upload date and converts "Today"/"Yesterday" into real dates. */
-    @RequiresApi(Build.VERSION_CODES.O)
     private fun parseUploadDate(entryDiv: Element): String? {
         val raw = entryDiv
             .selectFirst("div.date")
@@ -88,29 +77,16 @@ class AnimeTosho : SearchProvider {
             ?.trim()
             ?: return null
 
-        val inputDateOnly = java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy")
-        val normalizedRaw = when {
-            raw.startsWith("Today") -> {
-                val timePart = raw.removePrefix("Today").trim()
-                val today = java.time.LocalDate.now()
-                "${today.format(inputDateOnly)} $timePart"
+        return when {
+            raw.startsWith("Today") -> DateUtils.formatTodayDate()
+            raw.startsWith("Yesterday") -> DateUtils.formatYesterdayDate()
+            else -> {
+                raw
+                    .split(' ', limit = 1)
+                    .firstOrNull()
+                    ?.let { DateUtils.formatDayMonthYear(it) }
+                    ?: raw
             }
-
-            raw.startsWith("Yesterday") -> {
-                val timePart = raw.removePrefix("Yesterday").trim()
-                val yesterday = java.time.LocalDate.now().minusDays(1)
-                "${yesterday.format(inputDateOnly)} $timePart"
-            }
-
-            else -> raw
-        }
-
-        return try {
-            val input = SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.ENGLISH)
-            val output = SimpleDateFormat("dd MMM yyyy", Locale.ENGLISH)
-            output.format(input.parse(normalizedRaw)!!)
-        } catch (_: Exception) {
-            raw
         }
     }
 

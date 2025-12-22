@@ -4,6 +4,7 @@ import com.prajwalch.torrentsearch.models.Category
 import com.prajwalch.torrentsearch.models.InfoHashOrMagnetUri
 import com.prajwalch.torrentsearch.models.Torrent
 import com.prajwalch.torrentsearch.network.HttpClient
+import com.prajwalch.torrentsearch.utils.DateUtils
 
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -129,6 +130,7 @@ class TorrentDownloads : SearchProvider {
             ?.ownText()
             ?.split(' ')
             ?.first()
+            ?.let { DateUtils.formatYearMonthDay(it) }
             ?: return null
 
         return Pair(uploadDate, magnetUri)

@@ -1,8 +1,5 @@
 package com.prajwalch.torrentsearch.providers
 
-import android.os.Build
-import androidx.annotation.RequiresApi
-
 import com.prajwalch.torrentsearch.extensions.asObject
 import com.prajwalch.torrentsearch.extensions.getArray
 import com.prajwalch.torrentsearch.extensions.getLong
@@ -11,6 +8,7 @@ import com.prajwalch.torrentsearch.extensions.getUInt
 import com.prajwalch.torrentsearch.models.Category
 import com.prajwalch.torrentsearch.models.InfoHashOrMagnetUri
 import com.prajwalch.torrentsearch.models.Torrent
+import com.prajwalch.torrentsearch.utils.DateUtils
 import com.prajwalch.torrentsearch.utils.prettyFileSize
 
 import kotlinx.coroutines.Dispatchers
@@ -19,8 +17,6 @@ import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.putJsonArray
-
-import java.util.Locale
 
 /**
  * Provider implementation using the official [Knaben API](https://knaben.org/api/v1).
@@ -94,14 +90,7 @@ class Knaben : SearchProvider {
 
         val seeders = obj.getUInt("seeders") ?: 0u
         val peers = obj.getUInt("peers") ?: 0u
-
-        val uploadDateIso = obj.getString("date") ?: ""
-        val uploadDate = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            formatIsoDateToPrettyDate(uploadDateIso)
-        } else {
-            uploadDateIso
-        }
-
+        val uploadDate = obj.getString("date")?.let { DateUtils.formatIsoDate(it) } ?: ""
         val descriptionPageUrl = obj.getString("details").orEmpty()
         val category = extractCategory(obj)
 
@@ -133,20 +122,6 @@ class Knaben : SearchProvider {
         Category.Games -> listOf(7000000)
         Category.Books -> listOf(9000000)
         Category.Other -> listOf(10000000)
-    }
-
-    /**
-     * Parses ISO 8601 date (e.g., `2025-06-11T06:13:57+00:00`) into a more readable format.
-     *
-     * @return Date formatted as `"dd MMM yyyy"`, e.g., `"11 Jun 2025"`.
-     */
-    @RequiresApi(Build.VERSION_CODES.O)
-    fun formatIsoDateToPrettyDate(isoDate: String): String {
-        val parsedDate = java.time.OffsetDateTime.parse(isoDate)
-        val outputFormatter =
-            java.time.format.DateTimeFormatter.ofPattern("dd MMM yyyy", Locale.ENGLISH)
-
-        return parsedDate.format(outputFormatter)
     }
 
     /**

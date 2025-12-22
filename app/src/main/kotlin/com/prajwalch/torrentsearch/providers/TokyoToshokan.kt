@@ -3,6 +3,7 @@ package com.prajwalch.torrentsearch.providers
 import com.prajwalch.torrentsearch.models.Category
 import com.prajwalch.torrentsearch.models.InfoHashOrMagnetUri
 import com.prajwalch.torrentsearch.models.Torrent
+import com.prajwalch.torrentsearch.utils.DateUtils
 import com.prajwalch.torrentsearch.utils.FileSizeUnits
 
 import kotlinx.coroutines.Dispatchers
@@ -88,6 +89,7 @@ class TokyoToshokan : SearchProvider {
             .removePrefix("Date: ")
             .split(' ')
             .first()
+            .let { DateUtils.formatYearMonthDay(it) }
 
         // Seeders and peers.
         val tr2SecondTd = tr2.selectFirst("td:nth-child(2)") ?: return null
