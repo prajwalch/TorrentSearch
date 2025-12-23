@@ -40,7 +40,7 @@
     <string name="torrent_list_magnet_link_copied_message">تم نسخ الرابط المغناطيسي إلى الحافظة!</string>
     <string name="torrent_list_url_copied_message">تم نسخ الرابط إلى الحافظة!</string>
     <string name="home_search_query_hint">البحث…</string>
-    <string name="home_button_search">البحث</string>
+    <string name="home_button_search">أبحث</string>
     <string name="search_query_hint">نتائج البحث</string>
     <string name="search_action_filter">تصفية</string>
     <string name="search_filters_section_search_providers">مزوّدو البحث</string>
@@ -64,7 +64,7 @@
     <string name="bookmarks_dialog_title_delete_all">حذف جميع الإشارات المرجعية؟</string>
     <string name="bookmarks_dialog_message_delete_all">سيتم إزالة الإشارات المرجعية بشكل دائم</string>
     <string name="bookmarks_button_delete">حذف</string>
-    <string name="bookmarks_empty_message">لا توجد إشارات مرجعية</string>
+    <string name="bookmarks_empty_message">لا توجد علامات مرجعية</string>
     <string name="search_history_screen_title">سجل البحث</string>
     <string name="search_history_action_delete_all">حذف الكل</string>
     <string name="search_history_empty_message">لا يوجد سجل بحث</string>
@@ -127,4 +127,6 @@
     <string name="settings_version">إصدار</string>
     <string name="settings_source_code">مصدر الكود</string>
     <string name="settings_save_search_history_summary">يخزن عمليات البحث الأخيرة محليًا للوصول السريع والاقتراحات</string>
+    <string name="main_cannot_search_using_url_message">لا يمكن البحث باستخدام عنوان URL</string>
+    <string name="main_cannot_search_blank_query_message">لا يمكن البحث باستخدام استعلام فارغ</string>
 </resources>
