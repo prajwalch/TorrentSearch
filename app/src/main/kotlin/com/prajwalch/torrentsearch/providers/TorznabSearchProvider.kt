@@ -132,6 +132,15 @@ class TorznabSearchProvider(
      */
     private var capabilities: TorznabCapabilities? = null
 
+    /** The XML parser for the capabilities. */
+    private val capabilitiesXmlParser = TorznabCapabilitiesXmlParser()
+
+    /** The XML parser for the response. */
+    private val responseXmlParser = TorznabResponseXmlParser(
+        providerId = info.id,
+        providerName = info.name,
+    )
+
     override suspend fun search(query: String, context: SearchContext): List<Torrent> {
         val apiUrl = if (!config.url.endsWith("api")) "${config.url}/api" else config.url
 
@@ -158,18 +167,14 @@ class TorznabSearchProvider(
         Log.d(TAG, "-> Got response; length = ${responseXml.length}")
 
         return withContext(Dispatchers.Default) {
-            val xmlParser = TorznabResponseXmlParser(
-                providerId = info.id,
-                providerName = info.name,
-                category = if (info.specializedCategory != Category.All) {
-                    info.specializedCategory
-                } else {
-                    // FIXME: If the category is `All` then we need to read the
-                    //        category from the each result itself.
-                    context.category
-                },
-            )
-            xmlParser.parse(xml = responseXml)
+            val category = if (info.specializedCategory != Category.All) {
+                info.specializedCategory
+            } else {
+                // FIXME: If the category is `All` then we need to read the
+                //        category from the each result itself.
+                context.category
+            }
+            responseXmlParser.parse(xml = responseXml, category = category)
         }
     }
 
@@ -185,7 +190,6 @@ class TorznabSearchProvider(
         Log.i(TAG, "-> Capabilities fetch succeed")
 
         return withContext(Dispatchers.Default) {
-            val capabilitiesXmlParser = TorznabCapabilitiesXmlParser()
             Log.i(TAG, "Parsing capabilities")
             val capabilities = capabilitiesXmlParser.parse(xml = capabilitiesResponseXml)
             Log.i(TAG, "Capabilities parse succeed")
@@ -216,18 +220,23 @@ class TorznabSearchProvider(
 private class TorznabResponseXmlParser(
     private val providerId: SearchProviderId,
     private val providerName: String,
-    private val category: Category,
 ) {
     private val parser = Xml.newPullParser()
     private val namespace: String? = null
     private val torrents = mutableListOf<Torrent>()
 
-    fun parse(xml: String): List<Torrent> {
+    private lateinit var category: Category
+
+    fun parse(xml: String, category: Category): List<Torrent> {
         parser.setFeature(XmlPullParser.FEATURE_PROCESS_NAMESPACES, false)
         parser.setInput(xml.byteInputStream(), null)
         parser.nextTag()
 
+        torrents.clear()
+        this.category = category
+
         readRss()
+
         return torrents.toList()
     }
 
@@ -408,6 +417,7 @@ private class TorznabCapabilitiesXmlParser {
         parser.setInput(xml.byteInputStream(), null)
         parser.nextTag()
 
+        supportedCategoriesId.clear()
         readCaps()
 
         return TorznabCapabilities(supportedCategoriesId = supportedCategoriesId)
