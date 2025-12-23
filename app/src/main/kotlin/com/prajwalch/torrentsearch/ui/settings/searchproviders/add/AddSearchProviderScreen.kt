@@ -90,7 +90,7 @@ fun AddSearchProviderScreen(
             TextUrl(
                 text = stringResource(R.string.search_providers_learn_how_to_add),
                 onClick = { uriHandler.openUri(HOW_TO_WIKI_URL) },
-                color = MaterialTheme.colorScheme.primary,
+                color = MaterialTheme.colorScheme.secondary,
                 style = MaterialTheme.typography.bodyMedium,
             )
             Spacer(modifier = Modifier.height(32.dp))
