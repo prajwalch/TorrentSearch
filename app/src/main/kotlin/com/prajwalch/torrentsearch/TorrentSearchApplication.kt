@@ -5,7 +5,7 @@ import com.prajwalch.torrentsearch.network.HttpClient
 import dagger.hilt.android.HiltAndroidApp
 
 @HiltAndroidApp
-class TorrentSearch : Application() {
+class TorrentSearchApplication : Application() {
     override fun onTerminate() {
         super.onTerminate()
         HttpClient.close()
