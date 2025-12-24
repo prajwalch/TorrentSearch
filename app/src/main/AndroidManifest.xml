@@ -18,7 +18,7 @@
         android:usesCleartextTraffic="true"
         tools:targetApi="36">
         <activity
-            android:name=".ui.MainActivity"
+            android:name=".ui.main.MainActivity"
             android:exported="true"
             android:theme="@style/Theme.TorrentSearch">
             <intent-filter>
@@ -31,7 +31,7 @@
         <activity-alias
             android:name="${applicationId}.SendAlias"
             android:exported="true"
-            android:targetActivity=".ui.MainActivity">
+            android:targetActivity=".ui.main.MainActivity">
 
             <intent-filter>
                 <action android:name="android.intent.action.SEND" />
@@ -44,11 +44,11 @@
         <activity-alias
             android:name="${applicationId}.ProcessTextAlias"
             android:exported="true"
-            android:targetActivity=".ui.MainActivity">
+            android:targetActivity=".ui.main.MainActivity">
 
             <intent-filter>
                 <action android:name="android.intent.action.PROCESS_TEXT" />
-                
+
                 <category android:name="android.intent.category.DEFAULT" />
                 <data android:mimeType="text/plain" />
             </intent-filter>

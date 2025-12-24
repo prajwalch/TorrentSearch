@@ -1,4 +1,4 @@
-package com.prajwalch.torrentsearch.ui
+package com.prajwalch.torrentsearch.ui.main
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope

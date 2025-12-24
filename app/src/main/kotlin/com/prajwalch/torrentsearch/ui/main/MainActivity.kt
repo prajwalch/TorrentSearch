@@ -1,4 +1,4 @@
-package com.prajwalch.torrentsearch.ui
+package com.prajwalch.torrentsearch.ui.main
 
 import android.content.ActivityNotFoundException
 import android.content.Intent
@@ -22,6 +22,8 @@ import com.prajwalch.torrentsearch.R
 import com.prajwalch.torrentsearch.models.Category
 import com.prajwalch.torrentsearch.models.DarkTheme
 import com.prajwalch.torrentsearch.models.MagnetUri
+import com.prajwalch.torrentsearch.ui.Screens
+import com.prajwalch.torrentsearch.ui.TorrentSearchApp
 import com.prajwalch.torrentsearch.ui.theme.TorrentSearchTheme
 
 import dagger.hilt.android.AndroidEntryPoint
