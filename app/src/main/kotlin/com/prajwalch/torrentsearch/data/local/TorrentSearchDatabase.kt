@@ -42,7 +42,10 @@ abstract class TorrentSearchDatabase : RoomDatabase() {
 
     abstract fun torznabConfigDao(): TorznabConfigDao
 
-    @DeleteColumn(tableName = "torznab_search_providers", columnName = "unsafeReason")
+    @DeleteColumn.Entries(
+        DeleteColumn(tableName = "bookmarks", columnName = "providerId"),
+        DeleteColumn(tableName = "torznab_search_providers", columnName = "unsafeReason"),
+    )
     @RenameTable(fromTableName = "torznab_search_providers", toTableName = "torznab_configs")
     class Migration2To3Spec : AutoMigrationSpec
 

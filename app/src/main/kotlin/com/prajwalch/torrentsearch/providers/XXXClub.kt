@@ -68,7 +68,6 @@ class XXXClub : SearchProvider {
             size = size,
             seeders = seeders.toUIntOrNull() ?: 0u,
             peers = peers.toUIntOrNull() ?: 0u,
-            providerId = info.id,
             providerName = info.name,
             uploadDate = uploadDate,
             category = info.specializedCategory,

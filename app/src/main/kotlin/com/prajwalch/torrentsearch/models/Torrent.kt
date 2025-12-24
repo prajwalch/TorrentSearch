@@ -1,7 +1,5 @@
 package com.prajwalch.torrentsearch.models
 
-import com.prajwalch.torrentsearch.providers.SearchProviderId
-
 /** Represents a magnet URI. */
 typealias MagnetUri = String
 
@@ -16,8 +14,6 @@ data class Torrent(
     val seeders: UInt,
     /** Number of peers. */
     val peers: UInt,
-    /** Id of the provider. */
-    val providerId: SearchProviderId,
     /** Name of the provider/source from where torrent is extracted. */
     val providerName: String,
     /** Torrent upload date (in pretty format). */

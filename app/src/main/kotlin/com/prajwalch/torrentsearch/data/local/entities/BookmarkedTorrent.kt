@@ -19,7 +19,6 @@ data class BookmarkedTorrent(
     val size: String,
     val seeders: Int,
     val peers: Int,
-    val providerId: String,
     val providerName: String,
     val uploadDate: String,
     val category: String,
@@ -34,7 +33,6 @@ fun BookmarkedTorrent.toDomain() =
         size = this.size,
         seeders = this.seeders.toUInt(),
         peers = this.peers.toUInt(),
-        providerId = this.providerId,
         providerName = this.providerName,
         uploadDate = this.uploadDate,
         category = if (this.category.isNotEmpty()) {
@@ -54,7 +52,6 @@ fun Torrent.toEntity() =
         size = this.size,
         seeders = this.seeders.toInt(),
         peers = this.peers.toInt(),
-        providerId = this.providerId,
         providerName = this.providerName,
         uploadDate = this.uploadDate,
         category = this.category?.name ?: "",

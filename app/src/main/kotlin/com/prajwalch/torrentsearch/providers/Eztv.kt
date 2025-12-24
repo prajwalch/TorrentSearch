@@ -115,7 +115,6 @@ class Eztv : SearchProvider {
             size = size,
             seeders = seeders.toUIntOrNull() ?: 0u,
             peers = peers,
-            providerId = info.id,
             providerName = info.name,
             uploadDate = uploadDate,
             category = info.specializedCategory,

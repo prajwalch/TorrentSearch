@@ -15,7 +15,6 @@ import com.prajwalch.torrentsearch.models.SortOptions
 import com.prajwalch.torrentsearch.models.SortOrder
 import com.prajwalch.torrentsearch.models.Torrent
 import com.prajwalch.torrentsearch.network.ConnectivityChecker
-import com.prajwalch.torrentsearch.providers.SearchProviderId
 import com.prajwalch.torrentsearch.usecases.SearchTorrentsUseCase
 import com.prajwalch.torrentsearch.utils.createSortComparator
 
@@ -109,8 +108,8 @@ class SearchViewModel @Inject constructor(
             return SearchUiState(isLoading = false, isInternetError = true)
         }
 
-        val enabledSearchProvidersId = filterOptions.searchProviders.mapNotNull {
-            if (it.selected) it.searchProviderId else null
+        val enabledSearchProvidersName = filterOptions.searchProviders.mapNotNull {
+            if (it.selected) it.searchProviderName else null
         }
         val sortComparator = createSortComparator(
             criteria = sortOptions.criteria,
@@ -119,7 +118,8 @@ class SearchViewModel @Inject constructor(
         val filteredSearchResults = searchResults
             .asSequence()
             .filter {
-                filterOptions.searchProviders.isEmpty() || it.providerId in enabledSearchProvidersId
+                filterOptions.searchProviders.isEmpty()
+                        || it.providerName in enabledSearchProvidersName
             }
             .filter { nsfwModeEnabled || !it.isNSFW() }
             .filter { filterOptions.deadTorrents || !it.isDead() }
@@ -196,11 +196,11 @@ class SearchViewModel @Inject constructor(
      * Shows or hides search results which are fetched from the search
      * provider whose ID matches with the given one.
      */
-    fun toggleSearchProviderResults(searchProviderId: SearchProviderId) {
+    fun toggleSearchProviderResults(searchProviderName: String) {
         val filterOptions = with(internalState.value.filterOptions) {
             val searchProviders = this.searchProviders
                 .map {
-                    if (it.searchProviderId == searchProviderId) {
+                    if (it.searchProviderName == searchProviderName) {
                         it.copy(selected = !it.selected)
                     } else {
                         it
@@ -309,16 +309,10 @@ class SearchViewModel @Inject constructor(
     ): ImmutableList<SearchProviderFilterOption> {
         return searchResults
             .asSequence()
-            .distinctBy { it.providerId }
-            .sortedBy { it.providerName }
-            .map { Pair(it.providerId, it.providerName) }
-            .map { (searchProviderId, searchProviderName) ->
-                SearchProviderFilterOption(
-                    searchProviderId = searchProviderId,
-                    searchProviderName = searchProviderName,
-                    selected = true,
-                )
-            }
+            .distinctBy { it.providerName }
+            .map { it.providerName }
+            .sorted()
+            .map { SearchProviderFilterOption(searchProviderName = it, selected = true) }
             .toImmutableList()
     }
 
@@ -380,7 +374,6 @@ data class FilterOptions(
 )
 
 data class SearchProviderFilterOption(
-    val searchProviderId: SearchProviderId,
     val searchProviderName: String,
     val enabled: Boolean = false,
     val selected: Boolean = false,

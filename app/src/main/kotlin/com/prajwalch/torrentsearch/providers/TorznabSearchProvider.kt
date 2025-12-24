@@ -136,10 +136,7 @@ class TorznabSearchProvider(
     private val capabilitiesXmlParser = TorznabCapabilitiesXmlParser()
 
     /** The XML parser for the response. */
-    private val responseXmlParser = TorznabResponseXmlParser(
-        providerId = info.id,
-        providerName = info.name,
-    )
+    private val responseXmlParser = TorznabResponseXmlParser(providerName = info.name)
 
     override suspend fun search(query: String, context: SearchContext): List<Torrent> {
         val apiUrl = if (!config.url.endsWith("api")) "${config.url}/api" else config.url
@@ -218,7 +215,6 @@ class TorznabSearchProvider(
  * See [API spec](https://torznab.github.io/spec-1.3-draft/torznab/Specification-v1.3.html).
  */
 private class TorznabResponseXmlParser(
-    private val providerId: SearchProviderId,
     private val providerName: String,
 ) {
     private val parser = Xml.newPullParser()
@@ -324,7 +320,6 @@ private class TorznabResponseXmlParser(
             size = size ?: return,
             seeders = seeders?.toUIntOrNull() ?: return,
             peers = peers?.toUIntOrNull() ?: return,
-            providerId = providerId,
             providerName = providerName,
             uploadDate = uploadDate ?: return,
             category = category,

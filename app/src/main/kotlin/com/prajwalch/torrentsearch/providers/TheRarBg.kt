@@ -175,7 +175,6 @@ class TheRarBg : SearchProvider {
             size = parsedResult.size,
             seeders = parsedResult.seeders.toUInt(),
             peers = parsedResult.peers.toUInt(),
-            providerId = info.id,
             providerName = info.name,
             uploadDate = parsedResult.uploadDate,
             category = category,

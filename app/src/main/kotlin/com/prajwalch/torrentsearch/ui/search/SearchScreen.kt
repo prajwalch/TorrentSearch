@@ -59,7 +59,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.prajwalch.torrentsearch.R
 import com.prajwalch.torrentsearch.models.Category
 import com.prajwalch.torrentsearch.models.Torrent
-import com.prajwalch.torrentsearch.providers.SearchProviderId
 import com.prajwalch.torrentsearch.ui.components.ArrowBackIconButton
 import com.prajwalch.torrentsearch.ui.components.EmptyPlaceholder
 import com.prajwalch.torrentsearch.ui.components.LazyColumnWithScrollbar
@@ -373,7 +372,7 @@ private fun SearchResultsCount(
 private fun FilterOptionsBottomSheet(
     onDismissRequest: () -> Unit,
     filterOptions: FilterOptions,
-    onToggleSearchProvider: (SearchProviderId) -> Unit,
+    onToggleSearchProvider: (String) -> Unit,
     onToggleDeadTorrents: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -383,7 +382,7 @@ private fun FilterOptionsBottomSheet(
                 FiltersSectionTitle(titleId = R.string.search_filters_section_search_providers)
                 SearchProvidersChipsRow(
                     modifier = Modifier.padding(horizontal = MaterialTheme.spaces.large),
-                    searchProviders = filterOptions.searchProviders,
+                    filterOptions = filterOptions.searchProviders,
                     onToggleSearchProvider = onToggleSearchProvider,
                 )
             }
@@ -420,8 +419,8 @@ private fun FiltersSectionTitle(@StringRes titleId: Int, modifier: Modifier = Mo
 
 @Composable
 private fun SearchProvidersChipsRow(
-    searchProviders: ImmutableList<SearchProviderFilterOption>,
-    onToggleSearchProvider: (SearchProviderId) -> Unit,
+    filterOptions: ImmutableList<SearchProviderFilterOption>,
+    onToggleSearchProvider: (String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     FlowRow(
@@ -430,12 +429,12 @@ private fun SearchProvidersChipsRow(
             space = MaterialTheme.spaces.small,
         ),
     ) {
-        for (searchProvider in searchProviders) {
+        for (filterOption in filterOptions) {
             FilterChip(
-                selected = searchProvider.selected,
-                onClick = { onToggleSearchProvider(searchProvider.searchProviderId) },
-                label = { Text(text = searchProvider.searchProviderName) },
-                enabled = searchProvider.enabled,
+                selected = filterOption.selected,
+                onClick = { onToggleSearchProvider(filterOption.searchProviderName) },
+                label = { Text(text = filterOption.searchProviderName) },
+                enabled = filterOption.enabled,
             )
         }
     }

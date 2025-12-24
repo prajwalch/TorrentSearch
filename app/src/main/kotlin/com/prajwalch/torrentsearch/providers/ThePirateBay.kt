@@ -108,7 +108,6 @@ class ThePirateBay : SearchProvider {
             size = size,
             seeders = seeders,
             peers = peers,
-            providerId = info.id,
             providerName = info.name,
             uploadDate = uploadDate,
             category = category,

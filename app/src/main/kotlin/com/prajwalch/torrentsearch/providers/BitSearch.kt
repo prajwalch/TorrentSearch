@@ -109,7 +109,6 @@ class BitSearch : SearchProvider {
             size = torrentInfo.size,
             seeders = torrentInfo.seeders,
             peers = torrentInfo.peers,
-            providerId = info.id,
             providerName = info.name,
             uploadDate = torrentInfo.uploadDate,
             category = torrentInfo.category,
