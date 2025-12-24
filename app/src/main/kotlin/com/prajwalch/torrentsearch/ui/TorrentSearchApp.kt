@@ -91,9 +91,9 @@ fun TorrentSearchApp(
                 }
             },
             onShareDescriptionPageUrl = { onShareDescriptionPageUrl(torrent.descriptionPageUrl) },
-            isNSFW = torrent.isNSFW(),
+            showNSFWBadge = torrent.isNSFW(),
             isBookmarked = torrent.bookmarked,
-            hasDescriptionPage = torrent.descriptionPageUrl.isNotEmpty(),
+            enableDescriptionPageActions = torrent.descriptionPageUrl.isNotEmpty(),
         )
     }
 

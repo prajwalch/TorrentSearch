@@ -5,6 +5,7 @@ import androidx.annotation.StringRes
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -42,10 +43,10 @@ fun TorrentActionsBottomSheet(
     onOpenDescriptionPage: () -> Unit,
     onCopyDescriptionPageUrl: () -> Unit,
     onShareDescriptionPageUrl: () -> Unit,
-    isNSFW: Boolean,
+    showNSFWBadge: Boolean,
     isBookmarked: Boolean,
     modifier: Modifier = Modifier,
-    hasDescriptionPage: Boolean = true,
+    enableDescriptionPageActions: Boolean = true,
 ) {
     // Always expand the sheet to full.
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
@@ -65,64 +66,31 @@ fun TorrentActionsBottomSheet(
                 modifier = Modifier
                     .padding(horizontal = MaterialTheme.spaces.large),
                 title = title,
-                isNSFW = isNSFW,
+                isNSFW = showNSFWBadge,
             )
-
             Spacer(modifier = Modifier.height(MaterialTheme.spaces.small))
             HorizontalDivider()
 
-            Spacer(modifier = Modifier.height(MaterialTheme.spaces.small))
-            if (isBookmarked) {
-                Action(
-                    icon = R.drawable.ic_star_filled,
-                    label = R.string.torrent_list_action_delete_bookmark,
-                    onClick = actionWithDismiss(onDeleteBookmark),
-                )
-            } else {
-                Action(
-                    icon = R.drawable.ic_star,
-                    label = R.string.torrent_list_action_bookmark_torrent,
-                    onClick = actionWithDismiss(onBookmarkTorrent),
-                )
+            ActionsGroup {
+                if (isBookmarked) {
+                    DeleteBookmarkAction(onClick = actionWithDismiss(onDeleteBookmark))
+                } else {
+                    BookmarkTorrentAction(onClick = actionWithDismiss(onBookmarkTorrent))
+                }
+                DownloadTorrentAction(onClick = actionWithDismiss(onDownloadTorrent))
             }
-            Action(
-                icon = R.drawable.ic_download,
-                label = R.string.torrent_list_action_download_torrent,
-                onClick = actionWithDismiss(onDownloadTorrent),
+            HorizontalDivider()
+            MagnetLinkActions(
+                onCopyMagnetLink = actionWithDismiss(onCopyMagnetLink),
+                onShareMagnetLink = actionWithDismiss(onShareMagnetLink),
             )
-            Action(
-                modifier = modifier,
-                icon = R.drawable.ic_copy,
-                label = R.string.torrent_list_action_copy_magnet_link,
-                onClick = actionWithDismiss(onCopyMagnetLink),
+            HorizontalDivider()
+            DescriptionPageActions(
+                onOpenDescriptionPage = actionWithDismiss(onOpenDescriptionPage),
+                onCopyDescriptionPageUrl = actionWithDismiss(onCopyDescriptionPageUrl),
+                onShareDescriptionPageUrl = actionWithDismiss(onShareDescriptionPageUrl),
+                enabled = enableDescriptionPageActions,
             )
-            Action(
-                icon = R.drawable.ic_share,
-                label = R.string.torrent_list_action_share_magnet_link,
-                onClick = actionWithDismiss(onShareMagnetLink),
-            )
-            Spacer(modifier = Modifier.height(MaterialTheme.spaces.small))
-
-            if (hasDescriptionPage) {
-                HorizontalDivider()
-                Spacer(modifier = Modifier.height(MaterialTheme.spaces.small))
-                Action(
-                    icon = R.drawable.ic_public,
-                    label = R.string.torrent_list_action_open_description_page,
-                    onClick = actionWithDismiss(onOpenDescriptionPage),
-                )
-                Action(
-                    icon = R.drawable.ic_copy,
-                    label = R.string.torrent_list_action_copy_description_page_url,
-                    onClick = actionWithDismiss(onCopyDescriptionPageUrl),
-                )
-                Action(
-                    icon = R.drawable.ic_share,
-                    label = R.string.torrent_list_action_share_description_page_url,
-                    onClick = actionWithDismiss(onShareDescriptionPageUrl),
-                )
-                Spacer(modifier = Modifier.height(MaterialTheme.spaces.small))
-            }
         }
     }
 }
@@ -146,18 +114,109 @@ private fun TorrentActionsBottomSheetHeader(
 }
 
 @Composable
+private fun BookmarkTorrentAction(onClick: () -> Unit, modifier: Modifier = Modifier) {
+    Action(
+        modifier = modifier,
+        icon = R.drawable.ic_star,
+        label = R.string.torrent_list_action_bookmark_torrent,
+        onClick = onClick,
+    )
+}
+
+@Composable
+private fun DeleteBookmarkAction(onClick: () -> Unit, modifier: Modifier = Modifier) {
+    Action(
+        modifier = modifier,
+        icon = R.drawable.ic_star_filled,
+        label = R.string.torrent_list_action_delete_bookmark,
+        onClick = onClick,
+    )
+}
+
+@Composable
+private fun DownloadTorrentAction(onClick: () -> Unit, modifier: Modifier = Modifier) {
+    Action(
+        modifier = modifier,
+        icon = R.drawable.ic_download,
+        label = R.string.torrent_list_action_download_torrent,
+        onClick = onClick,
+    )
+}
+
+@Composable
+private fun MagnetLinkActions(
+    onCopyMagnetLink: () -> Unit,
+    onShareMagnetLink: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    ActionsGroup(modifier = modifier) {
+        Action(
+            modifier = modifier,
+            icon = R.drawable.ic_copy,
+            label = R.string.torrent_list_action_copy_magnet_link,
+            onClick = onCopyMagnetLink,
+        )
+        Action(
+            icon = R.drawable.ic_share,
+            label = R.string.torrent_list_action_share_magnet_link,
+            onClick = onShareMagnetLink,
+        )
+    }
+}
+
+@Composable
+private fun DescriptionPageActions(
+    onOpenDescriptionPage: () -> Unit,
+    onCopyDescriptionPageUrl: () -> Unit,
+    onShareDescriptionPageUrl: () -> Unit,
+    modifier: Modifier = Modifier,
+    enabled: Boolean = true,
+) {
+    ActionsGroup(modifier = modifier) {
+        Action(
+            icon = R.drawable.ic_public,
+            label = R.string.torrent_list_action_open_description_page,
+            onClick = onOpenDescriptionPage,
+            enabled = enabled,
+        )
+        Action(
+            icon = R.drawable.ic_copy,
+            label = R.string.torrent_list_action_copy_description_page_url,
+            onClick = onCopyDescriptionPageUrl,
+            enabled = enabled,
+        )
+        Action(
+            icon = R.drawable.ic_share,
+            label = R.string.torrent_list_action_share_description_page_url,
+            onClick = onShareDescriptionPageUrl,
+            enabled = enabled,
+        )
+    }
+}
+
+@Composable
 private fun Action(
     @DrawableRes icon: Int,
     @StringRes label: Int,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
+    enabled: Boolean = true,
     colors: ListItemColors = ListItemDefaults.colors(
         containerColor = Color.Transparent,
     ),
 ) {
+    val contentColor = if (enabled) {
+        Color.Unspecified
+    } else {
+        MaterialTheme.colorScheme.onSurface.copy(alpha = 0.38f)
+    }
+    val colors = colors.copy(
+        headlineColor = contentColor,
+        leadingIconColor = contentColor,
+    )
     ListItem(
         modifier = Modifier
-            .clickable(onClick = onClick)
+            .clickable(onClick = onClick, enabled = enabled)
             .then(modifier),
         leadingContent = {
             Icon(
@@ -167,5 +226,16 @@ private fun Action(
         },
         headlineContent = { Text(text = stringResource(label)) },
         colors = colors,
+    )
+}
+
+@Composable
+private fun ActionsGroup(
+    modifier: Modifier = Modifier,
+    content: @Composable (ColumnScope.() -> Unit),
+) {
+    Column(
+        modifier = modifier.padding(vertical = MaterialTheme.spaces.small),
+        content = content,
     )
 }
