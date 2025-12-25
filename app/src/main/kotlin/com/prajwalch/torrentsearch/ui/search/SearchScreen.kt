@@ -36,7 +36,6 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -68,6 +67,7 @@ import com.prajwalch.torrentsearch.ui.components.SortIconButton
 import com.prajwalch.torrentsearch.ui.components.TorrentActionsBottomSheet
 import com.prajwalch.torrentsearch.ui.components.TorrentListItem
 import com.prajwalch.torrentsearch.ui.components.rememberCollapsibleSearchBarState
+import com.prajwalch.torrentsearch.ui.rememberTorrentListState
 import com.prajwalch.torrentsearch.ui.theme.spaces
 import com.prajwalch.torrentsearch.utils.categoryStringResource
 
@@ -90,6 +90,9 @@ fun SearchScreen(
 
     val coroutineScope = rememberCoroutineScope()
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
+    val torrentListState = rememberTorrentListState(
+        itemsCount = { uiState.searchResults.size },
+    )
 
     // Torrent actions state.
     var selectedResult by remember { mutableStateOf<Torrent?>(null) }
@@ -203,12 +206,6 @@ fun SearchScreen(
         SettingsIconButton(onClick = onNavigateToSettings)
     }
 
-    // Search results list state.
-    val resultListState = rememberLazyListState()
-    val isFirstResultVisible by remember {
-        derivedStateOf { resultListState.firstVisibleItemIndex <= 1 }
-    }
-    val showScrollToTopButton = uiState.searchResults.isNotEmpty() && !isFirstResultVisible
 
     Scaffold(
         modifier = Modifier
@@ -225,8 +222,8 @@ fun SearchScreen(
         },
         floatingActionButton = {
             ScrollToTopFAB(
-                visible = showScrollToTopButton,
-                onClick = { coroutineScope.launch { resultListState.animateScrollToItem(0) } },
+                visible = torrentListState.showScrollTopButton,
+                onClick = { coroutineScope.launch { torrentListState.scrollToTop() } },
             )
         },
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
@@ -279,7 +276,7 @@ fun SearchScreen(
                     isSearching = uiState.isSearching,
                     isRefreshing = uiState.isRefreshing,
                     onRefresh = viewModel::refreshSearchResults,
-                    lazyListState = resultListState,
+                    lazyListState = torrentListState.lazyListState,
                 )
             }
         }

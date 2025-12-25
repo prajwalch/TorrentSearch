@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
@@ -64,6 +63,7 @@ import com.prajwalch.torrentsearch.ui.components.SortIconButton
 import com.prajwalch.torrentsearch.ui.components.TorrentActionsBottomSheet
 import com.prajwalch.torrentsearch.ui.components.TorrentListItem
 import com.prajwalch.torrentsearch.ui.components.rememberCollapsibleSearchBarState
+import com.prajwalch.torrentsearch.ui.rememberTorrentListState
 import com.prajwalch.torrentsearch.ui.theme.spaces
 
 import kotlinx.coroutines.launch
@@ -82,8 +82,9 @@ fun BookmarksScreen(
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
-    val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
     val coroutineScope = rememberCoroutineScope()
+    val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
+    val torrentListState = rememberTorrentListState(itemsCount = { uiState.bookmarks.size })
 
     // Bookmark related states.
     var selectedBookmark by remember { mutableStateOf<Torrent?>(null) }
@@ -200,13 +201,6 @@ fun BookmarksScreen(
         SettingsIconButton(onClick = onNavigateToSettings)
     }
 
-    // Bookmarks list states.
-    val bookmarkListState = rememberLazyListState()
-    val isFirstBookmarkVisible by remember {
-        derivedStateOf { bookmarkListState.firstVisibleItemIndex <= 1 }
-    }
-    val showScrollToTopButton = uiState.bookmarks.isNotEmpty() && !isFirstBookmarkVisible
-
     Scaffold(
         modifier = Modifier
             .fillMaxSize()
@@ -223,10 +217,8 @@ fun BookmarksScreen(
         },
         floatingActionButton = {
             ScrollToTopFAB(
-                visible = showScrollToTopButton,
-                onClick = {
-                    coroutineScope.launch { bookmarkListState.animateScrollToItem(0) }
-                },
+                visible = torrentListState.showScrollTopButton,
+                onClick = { coroutineScope.launch { torrentListState.scrollToTop() } },
             )
         },
     ) { innerPadding ->
@@ -246,7 +238,7 @@ fun BookmarksScreen(
                 onBookmarkClick = { selectedBookmark = it },
                 onDeleteBookmark = viewModel::deleteBookmarkedTorrent,
                 contentPadding = innerPadding,
-                lazyListState = bookmarkListState,
+                lazyListState = torrentListState.lazyListState,
             )
         }
     }
