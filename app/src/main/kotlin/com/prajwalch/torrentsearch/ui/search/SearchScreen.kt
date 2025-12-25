@@ -368,7 +368,14 @@ private fun SearchResults(
                         modifier = Modifier
                             .animateItem()
                             .clickable { onResultClick(it) },
-                        torrent = it,
+                        name = it.name,
+                        size = it.size,
+                        seeders = it.seeders,
+                        peers = it.peers,
+                        uploadDate = it.uploadDate,
+                        category = it.category,
+                        providerName = it.providerName,
+                        isNSFW = it.isNSFW(),
                     )
                     HorizontalDivider()
                 }

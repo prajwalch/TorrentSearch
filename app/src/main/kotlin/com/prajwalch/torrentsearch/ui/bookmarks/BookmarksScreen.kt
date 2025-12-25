@@ -360,7 +360,14 @@ private fun BookmarkListItem(
     ) {
         TorrentListItem(
             modifier = Modifier.clickable(onClick = onClick),
-            torrent = bookmark,
+            name = bookmark.name,
+            size = bookmark.size,
+            seeders = bookmark.seeders,
+            peers = bookmark.peers,
+            uploadDate = bookmark.uploadDate,
+            category = bookmark.category,
+            providerName = bookmark.providerName,
+            isNSFW = bookmark.isNSFW(),
         )
     }
 }

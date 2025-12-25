@@ -12,15 +12,25 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 
 import com.prajwalch.torrentsearch.R
-import com.prajwalch.torrentsearch.models.Torrent
+import com.prajwalch.torrentsearch.models.Category
 import com.prajwalch.torrentsearch.ui.theme.spaces
 
 @Composable
-fun TorrentListItem(torrent: Torrent, modifier: Modifier = Modifier) {
+fun TorrentListItem(
+    name: String,
+    size: String,
+    seeders: UInt,
+    peers: UInt,
+    uploadDate: String,
+    category: Category?,
+    providerName: String,
+    isNSFW: Boolean,
+    modifier: Modifier = Modifier,
+) {
     ListItem(
         modifier = modifier,
-        overlineContent = { Text(text = torrent.uploadDate) },
-        headlineContent = { Text(text = torrent.name) },
+        overlineContent = { Text(text = uploadDate) },
+        headlineContent = { Text(text = name) },
         supportingContent = {
             Column(
                 verticalArrangement = Arrangement.spacedBy(
@@ -29,14 +39,14 @@ fun TorrentListItem(torrent: Torrent, modifier: Modifier = Modifier) {
                 ),
             ) {
                 TorrentMetadata(
-                    size = torrent.size,
-                    seeders = torrent.seeders,
-                    peers = torrent.peers,
+                    size = size,
+                    seeders = seeders,
+                    peers = peers,
                 )
                 BadgesRow {
-                    torrent.category?.let { CategoryBadge(category = it) }
-                    SearchProviderBadge(name = torrent.providerName)
-                    if (torrent.isNSFW()) NSFWBadge()
+                    category?.let { CategoryBadge(category = it) }
+                    SearchProviderBadge(name = providerName)
+                    if (isNSFW) NSFWBadge()
                 }
             }
         },
