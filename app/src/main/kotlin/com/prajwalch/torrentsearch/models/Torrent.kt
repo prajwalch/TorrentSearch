@@ -33,8 +33,6 @@ data class Torrent(
      * Either of them is required for download functionality but not both.
      */
     private val infoHashOrMagnetUri: InfoHashOrMagnetUri,
-    /** Is this torrent bookmarked?. */
-    val bookmarked: Boolean = false,
 ) {
     /** Returns `true` if this torrent is NSFW. */
     fun isNSFW() = category?.isNSFW ?: true

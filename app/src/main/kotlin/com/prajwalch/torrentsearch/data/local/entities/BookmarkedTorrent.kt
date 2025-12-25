@@ -42,7 +42,6 @@ fun BookmarkedTorrent.toDomain() =
         },
         descriptionPageUrl = this.descriptionPageUrl,
         infoHashOrMagnetUri = InfoHashOrMagnetUri.MagnetUri(uri = this.magnetUri),
-        bookmarked = true,
     )
 
 fun Torrent.toEntity() =
