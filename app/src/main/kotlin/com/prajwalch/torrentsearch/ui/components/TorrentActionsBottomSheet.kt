@@ -53,13 +53,16 @@ fun TorrentActionsBottomSheet(
     val coroutineScope = rememberCoroutineScope()
 
     fun hideSheet() {
-        coroutineScope.launch { sheetState.hide() }
+        coroutineScope.launch {
+            sheetState.hide()
+        }.invokeOnCompletion {
+            onDismiss()
+        }
     }
 
     fun actionWithDismiss(action: () -> Unit) = {
         action()
         hideSheet()
-        onDismiss()
     }
 
     ModalBottomSheet(
