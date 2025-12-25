@@ -9,8 +9,6 @@ import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -22,6 +20,7 @@ import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
@@ -30,13 +29,13 @@ import androidx.compose.ui.res.stringResource
 import com.prajwalch.torrentsearch.R
 import com.prajwalch.torrentsearch.ui.theme.spaces
 
+import kotlinx.coroutines.launch
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TorrentActionsBottomSheet(
-    onDismissRequest: () -> Unit,
+    onDismiss: () -> Unit,
     title: String,
-    onBookmarkTorrent: () -> Unit,
-    onDeleteBookmark: () -> Unit,
     onDownloadTorrent: () -> Unit,
     onCopyMagnetLink: () -> Unit,
     onShareMagnetLink: () -> Unit,
@@ -44,51 +43,64 @@ fun TorrentActionsBottomSheet(
     onCopyDescriptionPageUrl: () -> Unit,
     onShareDescriptionPageUrl: () -> Unit,
     showNSFWBadge: Boolean,
-    isBookmarked: Boolean,
     modifier: Modifier = Modifier,
     enableDescriptionPageActions: Boolean = true,
+    onBookmarkTorrent: (() -> Unit)? = null,
+    onDeleteBookmark: (() -> Unit)? = null,
 ) {
     // Always expand the sheet to full.
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+    val coroutineScope = rememberCoroutineScope()
+
+    fun hideSheet() {
+        coroutineScope.launch { sheetState.hide() }
+    }
 
     fun actionWithDismiss(action: () -> Unit) = {
         action()
-        onDismissRequest()
+        hideSheet()
+        onDismiss()
     }
 
     ModalBottomSheet(
         modifier = modifier,
-        onDismissRequest = onDismissRequest,
+        onDismissRequest = onDismiss,
         sheetState = sheetState,
     ) {
-        Column(modifier = Modifier.verticalScroll(state = rememberScrollState())) {
-            TorrentActionsBottomSheetHeader(
-                modifier = Modifier
-                    .padding(horizontal = MaterialTheme.spaces.large),
-                title = title,
-                isNSFW = showNSFWBadge,
-            )
-            Spacer(modifier = Modifier.height(MaterialTheme.spaces.small))
-            HorizontalDivider()
+        TorrentActionsBottomSheetHeader(
+            modifier = Modifier.padding(horizontal = MaterialTheme.spaces.large),
+            title = title,
+            isNSFW = showNSFWBadge,
+        )
+        Spacer(modifier = Modifier.height(MaterialTheme.spaces.small))
+        HorizontalDivider()
 
-            ActionsGroup {
-                if (isBookmarked) {
-                    DeleteBookmarkAction(onClick = actionWithDismiss(onDeleteBookmark))
-                } else {
-                    BookmarkTorrentAction(onClick = actionWithDismiss(onBookmarkTorrent))
-                }
-                DownloadTorrentAction(onClick = actionWithDismiss(onDownloadTorrent))
+        ActionsGroup {
+            onBookmarkTorrent?.let {
+                Actions.BookmarkTorrent(onClick = actionWithDismiss(it))
             }
-            HorizontalDivider()
-            MagnetLinkActions(
-                onCopyMagnetLink = actionWithDismiss(onCopyMagnetLink),
-                onShareMagnetLink = actionWithDismiss(onShareMagnetLink),
+            onDeleteBookmark?.let {
+                Actions.DeleteBookmark(onClick = actionWithDismiss(it))
+            }
+            Actions.DownloadTorrent(onClick = actionWithDismiss(onDownloadTorrent))
+        }
+        HorizontalDivider()
+        ActionsGroup {
+            Actions.CopyMagnetLink(onClick = actionWithDismiss(onCopyMagnetLink))
+            Actions.ShareMagnetLink(onClick = actionWithDismiss(onShareMagnetLink))
+        }
+        HorizontalDivider()
+        ActionsGroup {
+            Actions.OpenDescriptionPage(
+                onClick = actionWithDismiss(onOpenDescriptionPage),
+                enabled = enableDescriptionPageActions,
             )
-            HorizontalDivider()
-            DescriptionPageActions(
-                onOpenDescriptionPage = actionWithDismiss(onOpenDescriptionPage),
-                onCopyDescriptionPageUrl = actionWithDismiss(onCopyDescriptionPageUrl),
-                onShareDescriptionPageUrl = actionWithDismiss(onShareDescriptionPageUrl),
+            Actions.CopyDescriptionPageUrl(
+                onClick = actionWithDismiss(onCopyDescriptionPageUrl),
+                enabled = enableDescriptionPageActions,
+            )
+            Actions.ShareDescriptionPageUrl(
+                onClick = actionWithDismiss(onShareDescriptionPageUrl),
                 enabled = enableDescriptionPageActions,
             )
         }
@@ -113,82 +125,98 @@ private fun TorrentActionsBottomSheetHeader(
     }
 }
 
-@Composable
-private fun BookmarkTorrentAction(onClick: () -> Unit, modifier: Modifier = Modifier) {
-    Action(
-        modifier = modifier,
-        icon = R.drawable.ic_star,
-        label = R.string.torrent_list_action_bookmark_torrent,
-        onClick = onClick,
-    )
-}
+object Actions {
+    @Composable
+    fun BookmarkTorrent(onClick: () -> Unit, modifier: Modifier = Modifier) {
+        Action(
+            modifier = modifier,
+            icon = R.drawable.ic_star,
+            label = R.string.torrent_list_action_bookmark_torrent,
+            onClick = onClick,
+        )
+    }
 
-@Composable
-private fun DeleteBookmarkAction(onClick: () -> Unit, modifier: Modifier = Modifier) {
-    Action(
-        modifier = modifier,
-        icon = R.drawable.ic_star_filled,
-        label = R.string.torrent_list_action_delete_bookmark,
-        onClick = onClick,
-    )
-}
+    @Composable
+    fun DeleteBookmark(onClick: () -> Unit, modifier: Modifier = Modifier) {
+        Action(
+            modifier = modifier,
+            icon = R.drawable.ic_star_filled,
+            label = R.string.torrent_list_action_delete_bookmark,
+            onClick = onClick,
+        )
+    }
 
-@Composable
-private fun DownloadTorrentAction(onClick: () -> Unit, modifier: Modifier = Modifier) {
-    Action(
-        modifier = modifier,
-        icon = R.drawable.ic_download,
-        label = R.string.torrent_list_action_download_torrent,
-        onClick = onClick,
-    )
-}
+    @Composable
+    fun DownloadTorrent(onClick: () -> Unit, modifier: Modifier = Modifier) {
+        Action(
+            modifier = modifier,
+            icon = R.drawable.ic_download,
+            label = R.string.torrent_list_action_download_torrent,
+            onClick = onClick,
+        )
+    }
 
-@Composable
-private fun MagnetLinkActions(
-    onCopyMagnetLink: () -> Unit,
-    onShareMagnetLink: () -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    ActionsGroup(modifier = modifier) {
+    @Composable
+    fun CopyMagnetLink(onClick: () -> Unit, modifier: Modifier = Modifier) {
         Action(
             modifier = modifier,
             icon = R.drawable.ic_copy,
             label = R.string.torrent_list_action_copy_magnet_link,
-            onClick = onCopyMagnetLink,
-        )
-        Action(
-            icon = R.drawable.ic_share,
-            label = R.string.torrent_list_action_share_magnet_link,
-            onClick = onShareMagnetLink,
+            onClick = onClick,
         )
     }
-}
 
-@Composable
-private fun DescriptionPageActions(
-    onOpenDescriptionPage: () -> Unit,
-    onCopyDescriptionPageUrl: () -> Unit,
-    onShareDescriptionPageUrl: () -> Unit,
-    modifier: Modifier = Modifier,
-    enabled: Boolean = true,
-) {
-    ActionsGroup(modifier = modifier) {
+    @Composable
+    fun ShareMagnetLink(onClick: () -> Unit, modifier: Modifier = Modifier) {
         Action(
+            modifier = modifier,
+            icon = R.drawable.ic_share,
+            label = R.string.torrent_list_action_share_magnet_link,
+            onClick = onClick,
+        )
+    }
+
+    @Composable
+    fun OpenDescriptionPage(
+        onClick: () -> Unit,
+        modifier: Modifier = Modifier,
+        enabled: Boolean = true,
+    ) {
+        Action(
+            modifier = modifier,
             icon = R.drawable.ic_public,
             label = R.string.torrent_list_action_open_description_page,
-            onClick = onOpenDescriptionPage,
+            onClick = onClick,
             enabled = enabled,
         )
+    }
+
+    @Composable
+    fun CopyDescriptionPageUrl(
+        onClick: () -> Unit,
+        modifier: Modifier = Modifier,
+        enabled: Boolean = true,
+    ) {
         Action(
+            modifier = modifier,
             icon = R.drawable.ic_copy,
             label = R.string.torrent_list_action_copy_description_page_url,
-            onClick = onCopyDescriptionPageUrl,
+            onClick = onClick,
             enabled = enabled,
         )
+    }
+
+    @Composable
+    fun ShareDescriptionPageUrl(
+        onClick: () -> Unit,
+        modifier: Modifier = Modifier,
+        enabled: Boolean = true,
+    ) {
         Action(
+            modifier = modifier,
             icon = R.drawable.ic_share,
             label = R.string.torrent_list_action_share_description_page_url,
-            onClick = onShareDescriptionPageUrl,
+            onClick = onClick,
             enabled = enabled,
         )
     }

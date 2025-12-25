@@ -6,6 +6,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 
+import com.prajwalch.torrentsearch.data.repository.BookmarksRepository
 import com.prajwalch.torrentsearch.data.repository.SearchHistoryRepository
 import com.prajwalch.torrentsearch.data.repository.SettingsRepository
 import com.prajwalch.torrentsearch.models.Category
@@ -42,8 +43,9 @@ import kotlin.time.Duration.Companion.seconds
 @HiltViewModel
 class SearchViewModel @Inject constructor(
     private val searchTorrentsUseCase: SearchTorrentsUseCase,
-    private val settingsRepository: SettingsRepository,
+    private val bookmarksRepository: BookmarksRepository,
     private val searchHistoryRepository: SearchHistoryRepository,
+    private val settingsRepository: SettingsRepository,
     private val connectivityChecker: ConnectivityChecker,
     savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
@@ -220,6 +222,13 @@ class SearchViewModel @Inject constructor(
         }
         internalState.update {
             it.copy(filterOptions = filterOptions)
+        }
+    }
+
+    /** Bookmarks the given [Torrent]. */
+    fun bookmarkTorrent(torrent: Torrent) {
+        viewModelScope.launch {
+            bookmarksRepository.bookmarkTorrent(torrent = torrent)
         }
     }
 

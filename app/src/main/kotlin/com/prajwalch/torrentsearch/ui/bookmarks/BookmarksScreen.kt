@@ -43,6 +43,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.platform.LocalClipboard
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
@@ -51,6 +52,8 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 
 import com.prajwalch.torrentsearch.R
+import com.prajwalch.torrentsearch.extensions.copyText
+import com.prajwalch.torrentsearch.models.MagnetUri
 import com.prajwalch.torrentsearch.models.Torrent
 import com.prajwalch.torrentsearch.ui.components.ArrowBackIconButton
 import com.prajwalch.torrentsearch.ui.components.DeleteForeverIconButton
@@ -62,6 +65,7 @@ import com.prajwalch.torrentsearch.ui.components.SearchIconButton
 import com.prajwalch.torrentsearch.ui.components.SettingsIconButton
 import com.prajwalch.torrentsearch.ui.components.SortDropdownMenu
 import com.prajwalch.torrentsearch.ui.components.SortIconButton
+import com.prajwalch.torrentsearch.ui.components.TorrentActionsBottomSheet
 import com.prajwalch.torrentsearch.ui.components.TorrentListItem
 import com.prajwalch.torrentsearch.ui.theme.spaces
 
@@ -74,8 +78,10 @@ import kotlinx.coroutines.launch
 fun BookmarksScreen(
     onNavigateBack: () -> Unit,
     onNavigateToSettings: () -> Unit,
-    onBookmarkClick: (Torrent) -> Unit,
-    snackbarHostState: SnackbarHostState,
+    onDownloadTorrent: (MagnetUri) -> Unit,
+    onShareMagnetLink: (MagnetUri) -> Unit,
+    onOpenDescriptionPage: (String) -> Unit,
+    onShareDescriptionPageUrl: (String) -> Unit,
     modifier: Modifier = Modifier,
     viewModel: BookmarksViewModel = hiltViewModel(),
 ) {
@@ -85,11 +91,13 @@ fun BookmarksScreen(
     val lazyListState = rememberLazyListState()
     val textFieldState = rememberTextFieldState("")
     val searchBarFocusRequester = remember { FocusRequester() }
+    val snackbarHostState = remember { SnackbarHostState() }
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
 
     var showSearchBar by remember { mutableStateOf(false) }
     var showSortOptions by remember(uiState.sortOptions) { mutableStateOf(false) }
     var showDeleteAllConfirmationDialog by remember { mutableStateOf(false) }
+    var selectedBookmark by remember { mutableStateOf<Torrent?>(null) }
 
     val isFirstBookmarkVisible by remember {
         derivedStateOf { lazyListState.firstVisibleItemIndex <= 1 }
@@ -172,7 +180,6 @@ fun BookmarksScreen(
         }
     }
 
-
     if (showDeleteAllConfirmationDialog) {
         DeleteAllConfirmationDialog(
             onDismiss = { showDeleteAllConfirmationDialog = false },
@@ -180,6 +187,51 @@ fun BookmarksScreen(
                 viewModel.deleteAllBookmarks()
                 showDeleteAllConfirmationDialog = false
             },
+        )
+    }
+
+    selectedBookmark?.let { bookmark ->
+        val clipboard = LocalClipboard.current
+
+        val magnetLinkCopiedMessage = stringResource(
+            R.string.torrent_list_magnet_link_copied_message
+        )
+        val urlCopiedMessage = stringResource(
+            R.string.torrent_list_url_copied_message,
+        )
+
+        TorrentActionsBottomSheet(
+            onDismiss = { selectedBookmark = null },
+            title = bookmark.name,
+            showNSFWBadge = bookmark.isNSFW(),
+            onDeleteBookmark = {
+                viewModel.deleteBookmarkedTorrent(torrent = bookmark)
+            },
+            onDownloadTorrent = {
+                onDownloadTorrent(bookmark.magnetUri())
+            },
+            onCopyMagnetLink = {
+                coroutineScope.launch {
+                    clipboard.copyText(text = bookmark.magnetUri())
+                    snackbarHostState.showSnackbar(message = magnetLinkCopiedMessage)
+                }
+            },
+            onShareMagnetLink = {
+                onShareMagnetLink(bookmark.magnetUri())
+            },
+            onOpenDescriptionPage = {
+                onOpenDescriptionPage(bookmark.descriptionPageUrl)
+            },
+            onCopyDescriptionPageUrl = {
+                coroutineScope.launch {
+                    clipboard.copyText(text = bookmark.descriptionPageUrl)
+                    snackbarHostState.showSnackbar(message = urlCopiedMessage)
+                }
+            },
+            onShareDescriptionPageUrl = {
+                onShareDescriptionPageUrl(bookmark.descriptionPageUrl)
+            },
+            enableDescriptionPageActions = bookmark.descriptionPageUrl.isNotEmpty(),
         )
     }
 
@@ -219,7 +271,7 @@ fun BookmarksScreen(
                     .fillMaxSize()
                     .consumeWindowInsets(innerPadding),
                 bookmarks = uiState.bookmarks,
-                onBookmarkClick = onBookmarkClick,
+                onBookmarkClick = { selectedBookmark = it },
                 onDeleteBookmark = viewModel::deleteBookmarkedTorrent,
                 contentPadding = innerPadding,
                 lazyListState = lazyListState,
@@ -328,3 +380,61 @@ private fun BookmarkListItem(
         )
     }
 }
+
+//@Composable
+//private fun TorrentActionsBottomSheet(
+//    onDismiss: () -> Unit,
+//    title: String,
+//    showNSFWBadge: Boolean,
+//    onDeleteBookmark: () -> Unit,
+//    onDownloadTorrent: () -> Unit,
+//    onCopyMagnetLink: () -> Unit,
+//    onShareMagnetLink: () -> Unit,
+//    enableDescriptionPageActions: Boolean,
+//    onOpenDescriptionPage: () -> Unit,
+//    onCopyDescriptionPageUrl: () -> Unit,
+//    onShareDescriptionPageUrl: () -> Unit,
+//    modifier: Modifier = Modifier,
+//) {
+//    fun actionWithDismiss(action: () -> Unit) = {
+//        action()
+//        onDismiss()
+//    }
+//
+//    TorrentActionsBottomSheet(
+//        modifier = modifier,
+//        onDismiss = onDismiss,
+//        title = title,
+//        showNSFWBadge = showNSFWBadge,
+//        deleteBookmark = {
+//            Actions.DeleteBookmark(onClick = actionWithDismiss(onDeleteBookmark))
+//        },
+//        downloadTorrent = {
+//            Actions.DownloadTorrent(onClick = actionWithDismiss(onDownloadTorrent))
+//        },
+//        copyMagnetLink = {
+//            Actions.CopyMagnetLink(onClick = actionWithDismiss(onCopyMagnetLink))
+//        },
+//        shareMagnetLink = {
+//            Actions.ShareMagnetLink(onClick = actionWithDismiss(onShareMagnetLink))
+//        },
+//        openDescriptionPage = {
+//            Actions.OpenDescriptionPage(
+//                onClick = actionWithDismiss(onOpenDescriptionPage),
+//                enabled = enableDescriptionPageActions,
+//            )
+//        },
+//        copyDescriptionPageUrl = {
+//            Actions.CopyDescriptionPageUrl(
+//                onClick = actionWithDismiss(onCopyDescriptionPageUrl),
+//                enabled = enableDescriptionPageActions,
+//            )
+//        },
+//        shareDescriptionPageUrl = {
+//            Actions.ShareDescriptionPageUrl(
+//                onClick = actionWithDismiss(onShareDescriptionPageUrl),
+//                enabled = enableDescriptionPageActions,
+//            )
+//        },
+//    )
+//}

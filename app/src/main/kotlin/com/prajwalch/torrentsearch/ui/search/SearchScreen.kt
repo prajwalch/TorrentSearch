@@ -51,13 +51,16 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.platform.LocalClipboard
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 
 import com.prajwalch.torrentsearch.R
+import com.prajwalch.torrentsearch.extensions.copyText
 import com.prajwalch.torrentsearch.models.Category
+import com.prajwalch.torrentsearch.models.MagnetUri
 import com.prajwalch.torrentsearch.models.Torrent
 import com.prajwalch.torrentsearch.ui.components.ArrowBackIconButton
 import com.prajwalch.torrentsearch.ui.components.EmptyPlaceholder
@@ -68,6 +71,7 @@ import com.prajwalch.torrentsearch.ui.components.SearchIconButton
 import com.prajwalch.torrentsearch.ui.components.SettingsIconButton
 import com.prajwalch.torrentsearch.ui.components.SortDropdownMenu
 import com.prajwalch.torrentsearch.ui.components.SortIconButton
+import com.prajwalch.torrentsearch.ui.components.TorrentActionsBottomSheet
 import com.prajwalch.torrentsearch.ui.components.TorrentListItem
 import com.prajwalch.torrentsearch.ui.theme.spaces
 import com.prajwalch.torrentsearch.utils.categoryStringResource
@@ -82,8 +86,10 @@ import kotlinx.coroutines.launch
 fun SearchScreen(
     onNavigateBack: () -> Unit,
     onNavigateToSettings: () -> Unit,
-    onResultClick: (Torrent) -> Unit,
-    snackbarHostState: SnackbarHostState,
+    onDownloadTorrent: (MagnetUri) -> Unit,
+    onShareMagnetLink: (MagnetUri) -> Unit,
+    onOpenDescriptionPage: (String) -> Unit,
+    onShareDescriptionPageUrl: (String) -> Unit,
     modifier: Modifier = Modifier,
     viewModel: SearchViewModel = hiltViewModel(),
 ) {
@@ -92,12 +98,14 @@ fun SearchScreen(
     val coroutineScope = rememberCoroutineScope()
     val lazyListState = rememberLazyListState()
     val filterTextFieldState = rememberTextFieldState("")
+    val snackbarHostState = remember { SnackbarHostState() }
     val searchBarFocusRequester = remember { FocusRequester() }
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
 
     var showSearchBar by remember { mutableStateOf(false) }
     var showSortOptions by remember(uiState.sortOptions) { mutableStateOf(false) }
     var showFilterOptions by remember { mutableStateOf(false) }
+    var selectedResult by remember { mutableStateOf<Torrent?>(null) }
 
     val isFirstResultVisible by remember {
         derivedStateOf { lazyListState.firstVisibleItemIndex <= 1 }
@@ -177,6 +185,57 @@ fun SearchScreen(
         }
     }
 
+    selectedResult?.let { torrent ->
+        val clipboard = LocalClipboard.current
+
+        val torrentBookmarkedMessage = stringResource(
+            R.string.bookmarked_message,
+        )
+        val magnetLinkCopiedMessage = stringResource(
+            R.string.torrent_list_magnet_link_copied_message
+        )
+        val urlCopiedMessage = stringResource(
+            R.string.torrent_list_url_copied_message,
+        )
+
+        TorrentActionsBottomSheet(
+            onDismiss = { selectedResult = null },
+            title = torrent.name,
+            showNSFWBadge = torrent.isNSFW(),
+            onBookmarkTorrent = {
+                viewModel.bookmarkTorrent(torrent = torrent)
+                coroutineScope.launch {
+                    snackbarHostState.showSnackbar(message = torrentBookmarkedMessage)
+                }
+            },
+            onDownloadTorrent = {
+                onDownloadTorrent(torrent.magnetUri())
+            },
+            onCopyMagnetLink = {
+                coroutineScope.launch {
+                    clipboard.copyText(text = torrent.magnetUri())
+                    snackbarHostState.showSnackbar(message = magnetLinkCopiedMessage)
+                }
+            },
+            onShareMagnetLink = {
+                onShareMagnetLink(torrent.magnetUri())
+            },
+            onOpenDescriptionPage = {
+                onOpenDescriptionPage(torrent.descriptionPageUrl)
+            },
+            onCopyDescriptionPageUrl = {
+                coroutineScope.launch {
+                    clipboard.copyText(text = torrent.descriptionPageUrl)
+                    snackbarHostState.showSnackbar(message = urlCopiedMessage)
+                }
+            },
+            onShareDescriptionPageUrl = {
+                onShareDescriptionPageUrl(torrent.descriptionPageUrl)
+            },
+            enableDescriptionPageActions = torrent.descriptionPageUrl.isNotEmpty(),
+        )
+    }
+
     Scaffold(
         modifier = Modifier
             .fillMaxSize()
@@ -240,7 +299,7 @@ fun SearchScreen(
                 SearchResults(
                     modifier = Modifier.padding(innerPadding),
                     searchResults = uiState.searchResults,
-                    onResultClick = onResultClick,
+                    onResultClick = { selectedResult = it },
                     searchQuery = uiState.searchQuery,
                     searchCategory = uiState.searchCategory,
                     isSearching = uiState.isSearching,
