@@ -50,12 +50,12 @@ import com.prajwalch.torrentsearch.R
 import com.prajwalch.torrentsearch.extensions.copyText
 import com.prajwalch.torrentsearch.models.MagnetUri
 import com.prajwalch.torrentsearch.models.Torrent
+import com.prajwalch.torrentsearch.ui.components.AnimatedScrollToTopFAB
 import com.prajwalch.torrentsearch.ui.components.ArrowBackIconButton
 import com.prajwalch.torrentsearch.ui.components.CollapsibleSearchBar
 import com.prajwalch.torrentsearch.ui.components.DeleteForeverIconButton
 import com.prajwalch.torrentsearch.ui.components.EmptyPlaceholder
 import com.prajwalch.torrentsearch.ui.components.LazyColumnWithScrollbar
-import com.prajwalch.torrentsearch.ui.components.ScrollToTopFAB
 import com.prajwalch.torrentsearch.ui.components.SearchIconButton
 import com.prajwalch.torrentsearch.ui.components.SettingsIconButton
 import com.prajwalch.torrentsearch.ui.components.SortDropdownMenu
@@ -216,7 +216,7 @@ fun BookmarksScreen(
             )
         },
         floatingActionButton = {
-            ScrollToTopFAB(
+            AnimatedScrollToTopFAB(
                 visible = torrentListState.showScrollTopButton,
                 onClick = { coroutineScope.launch { torrentListState.scrollToTop() } },
             )

@@ -1,6 +1,8 @@
 package com.prajwalch.torrentsearch.ui.components
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.EnterTransition
+import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInVertically
@@ -15,16 +17,18 @@ import androidx.compose.ui.res.painterResource
 import com.prajwalch.torrentsearch.R
 
 @Composable
-fun ScrollToTopFAB(
+fun AnimatedScrollToTopFAB(
+    visible: Boolean,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
-    visible: Boolean = true,
+    enterTransition: EnterTransition = fadeIn() + slideInVertically { it },
+    exitTransition: ExitTransition = fadeOut() + slideOutVertically { it },
 ) {
     AnimatedVisibility(
         modifier = modifier,
         visible = visible,
-        enter = fadeIn() + slideInVertically { fullHeight -> fullHeight },
-        exit = fadeOut() + slideOutVertically { fullHeight -> fullHeight },
+        enter = enterTransition,
+        exit = exitTransition,
     ) {
         FloatingActionButton(modifier = Modifier.imePadding(), onClick = onClick) {
             Icon(
