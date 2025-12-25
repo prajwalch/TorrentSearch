@@ -1,6 +1,5 @@
 package com.prajwalch.torrentsearch.ui.search
 
-import androidx.activity.compose.BackHandler
 import androidx.annotation.StringRes
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.clickable
@@ -18,7 +17,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -38,18 +36,14 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
-import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalClipboard
 import androidx.compose.ui.res.painterResource
@@ -63,23 +57,21 @@ import com.prajwalch.torrentsearch.models.Category
 import com.prajwalch.torrentsearch.models.MagnetUri
 import com.prajwalch.torrentsearch.models.Torrent
 import com.prajwalch.torrentsearch.ui.components.ArrowBackIconButton
+import com.prajwalch.torrentsearch.ui.components.CollapsibleSearchBar
 import com.prajwalch.torrentsearch.ui.components.EmptyPlaceholder
 import com.prajwalch.torrentsearch.ui.components.LazyColumnWithScrollbar
 import com.prajwalch.torrentsearch.ui.components.ScrollToTopFAB
-import com.prajwalch.torrentsearch.ui.components.SearchBar
 import com.prajwalch.torrentsearch.ui.components.SearchIconButton
 import com.prajwalch.torrentsearch.ui.components.SettingsIconButton
 import com.prajwalch.torrentsearch.ui.components.SortDropdownMenu
 import com.prajwalch.torrentsearch.ui.components.SortIconButton
 import com.prajwalch.torrentsearch.ui.components.TorrentActionsBottomSheet
 import com.prajwalch.torrentsearch.ui.components.TorrentListItem
+import com.prajwalch.torrentsearch.ui.components.rememberCollapsibleSearchBarState
 import com.prajwalch.torrentsearch.ui.theme.spaces
 import com.prajwalch.torrentsearch.utils.categoryStringResource
 
 import kotlinx.collections.immutable.ImmutableList
-import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -97,91 +89,11 @@ fun SearchScreen(
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
     val coroutineScope = rememberCoroutineScope()
-    val lazyListState = rememberLazyListState()
-    val filterTextFieldState = rememberTextFieldState("")
-    val snackbarHostState = remember { SnackbarHostState() }
-    val searchBarFocusRequester = remember { FocusRequester() }
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
 
-    var showSearchBar by remember { mutableStateOf(false) }
-    var showSortOptions by remember(uiState.sortOptions) { mutableStateOf(false) }
-    var showFilterOptions by remember { mutableStateOf(false) }
+    // Torrent actions state.
     var selectedResult by remember { mutableStateOf<Torrent?>(null) }
-
-    val isFirstResultVisible by remember {
-        derivedStateOf { lazyListState.firstVisibleItemIndex <= 1 }
-    }
-    val showScrollToTopButton = uiState.searchResults.isNotEmpty() && !isFirstResultVisible
-
-    if (showFilterOptions) {
-        FilterOptionsBottomSheet(
-            onDismissRequest = { showFilterOptions = false },
-            filterOptions = uiState.filterOptions,
-            onToggleSearchProvider = viewModel::toggleSearchProviderResults,
-            onToggleDeadTorrents = viewModel::toggleDeadTorrents,
-        )
-    }
-
-    val topBarTitle: @Composable () -> Unit = @Composable {
-        if (showSearchBar) {
-            SearchBar(
-                modifier = Modifier.focusRequester(searchBarFocusRequester),
-                textFieldState = filterTextFieldState,
-                placeholder = { Text(text = stringResource(R.string.search_query_hint)) },
-            )
-        }
-    }
-    val topBarActions: @Composable RowScope.() -> Unit = @Composable {
-        val enableSearchResultsActions = when {
-            uiState.resultsNotFound -> false
-            uiState.resultsFilteredOut -> true
-            else -> uiState.searchResults.isNotEmpty()
-        }
-
-        if (!showSearchBar) {
-            SearchIconButton(
-                onClick = { showSearchBar = true },
-                enabled = enableSearchResultsActions,
-            )
-            SortIconButton(
-                onClick = { showSortOptions = true },
-                enabled = enableSearchResultsActions,
-            )
-            SortDropdownMenu(
-                expanded = showSortOptions,
-                onDismissRequest = { showSortOptions = false },
-                currentCriteria = uiState.sortOptions.criteria,
-                onChangeCriteria = viewModel::updateSortCriteria,
-                currentOrder = uiState.sortOptions.order,
-                onChangeOrder = viewModel::updateSortOrder,
-            )
-            IconButton(
-                onClick = { showFilterOptions = true },
-                enabled = enableSearchResultsActions,
-            ) {
-                Icon(
-                    painter = painterResource(R.drawable.ic_filter_alt),
-                    contentDescription = stringResource(R.string.search_action_filter),
-                )
-            }
-        }
-        SettingsIconButton(onClick = onNavigateToSettings)
-    }
-
-    BackHandler(enabled = showSearchBar) {
-        showSearchBar = false
-    }
-
-    LaunchedEffect(showSearchBar) {
-        if (!showSearchBar) return@LaunchedEffect
-
-        searchBarFocusRequester.requestFocus()
-        snapshotFlow { filterTextFieldState.text }
-            // Ignore the initial empty text.
-            .drop(1)
-            .distinctUntilChanged()
-            .collectLatest { viewModel.filterSearchResults(it.toString()) }
-    }
+    val snackbarHostState = remember { SnackbarHostState() }
 
     selectedResult?.let { torrent ->
         val clipboard = LocalClipboard.current
@@ -234,6 +146,70 @@ fun SearchScreen(
         )
     }
 
+    var showFilterOptions by remember { mutableStateOf(false) }
+    if (showFilterOptions) {
+        FilterOptionsBottomSheet(
+            onDismissRequest = { showFilterOptions = false },
+            filterOptions = uiState.filterOptions,
+            onToggleSearchProvider = viewModel::toggleSearchProviderResults,
+            onToggleDeadTorrents = viewModel::toggleDeadTorrents,
+        )
+    }
+
+    val searchBarState = rememberCollapsibleSearchBarState(visibleOnInitial = false)
+    var showSortOptions by remember(uiState.sortOptions) { mutableStateOf(false) }
+
+    val topBarTitle: @Composable () -> Unit = @Composable {
+        CollapsibleSearchBar(
+            state = searchBarState,
+            onQueryChange = viewModel::filterSearchResults,
+            placeholder = { Text(text = stringResource(R.string.search_query_hint)) },
+        )
+    }
+    val topBarActions: @Composable RowScope.() -> Unit = @Composable {
+        val enableSearchResultsActions = when {
+            uiState.resultsNotFound -> false
+            uiState.resultsFilteredOut -> true
+            else -> uiState.searchResults.isNotEmpty()
+        }
+
+        if (!searchBarState.isVisible) {
+            SearchIconButton(
+                onClick = { searchBarState.showSearchBar() },
+                enabled = enableSearchResultsActions,
+            )
+            SortIconButton(
+                onClick = { showSortOptions = true },
+                enabled = enableSearchResultsActions,
+            )
+            SortDropdownMenu(
+                expanded = showSortOptions,
+                onDismissRequest = { showSortOptions = false },
+                currentCriteria = uiState.sortOptions.criteria,
+                onChangeCriteria = viewModel::updateSortCriteria,
+                currentOrder = uiState.sortOptions.order,
+                onChangeOrder = viewModel::updateSortOrder,
+            )
+            IconButton(
+                onClick = { showFilterOptions = true },
+                enabled = enableSearchResultsActions,
+            ) {
+                Icon(
+                    painter = painterResource(R.drawable.ic_filter_alt),
+                    contentDescription = stringResource(R.string.search_action_filter),
+                )
+            }
+        }
+        SettingsIconButton(onClick = onNavigateToSettings)
+    }
+
+    // Search results list state.
+    val resultListState = rememberLazyListState()
+    val isFirstResultVisible by remember {
+        derivedStateOf { resultListState.firstVisibleItemIndex <= 1 }
+    }
+    val showScrollToTopButton = uiState.searchResults.isNotEmpty() && !isFirstResultVisible
+
     Scaffold(
         modifier = Modifier
             .fillMaxSize()
@@ -250,7 +226,7 @@ fun SearchScreen(
         floatingActionButton = {
             ScrollToTopFAB(
                 visible = showScrollToTopButton,
-                onClick = { coroutineScope.launch { lazyListState.animateScrollToItem(0) } },
+                onClick = { coroutineScope.launch { resultListState.animateScrollToItem(0) } },
             )
         },
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
@@ -303,7 +279,7 @@ fun SearchScreen(
                     isSearching = uiState.isSearching,
                     isRefreshing = uiState.isRefreshing,
                     onRefresh = viewModel::refreshSearchResults,
-                    lazyListState = lazyListState,
+                    lazyListState = resultListState,
                 )
             }
         }

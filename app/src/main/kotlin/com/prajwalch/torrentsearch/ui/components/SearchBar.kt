@@ -1,5 +1,6 @@
 package com.prajwalch.torrentsearch.ui.components
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.height
@@ -21,14 +22,27 @@ import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.rememberSearchBarState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.Stable
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 
 import com.prajwalch.torrentsearch.R
 
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -108,6 +122,103 @@ private fun SearchBarInputField(
     )
 }
 
+@Composable
+fun CollapsibleSearchBar(
+    state: CollapsibleSearchBarState,
+    onQueryChange: (String) -> Unit,
+    modifier: Modifier = Modifier,
+    placeholder: @Composable (() -> Unit)? = null,
+) {
+    val showClearIconButton by remember {
+        derivedStateOf { state.textFieldState.text.isNotEmpty() }
+    }
+
+    LaunchedEffect(state.isVisible) {
+        if (!state.isVisible) return@LaunchedEffect
+
+        state.focusSearchBar()
+        state.observeText { onQueryChange(it) }
+    }
+
+    BackHandler(enabled = state.isVisible) {
+        state.hideSearchBar()
+    }
+
+    if (state.isVisible) {
+        TextField(
+            modifier = modifier
+                .focusRequester(state.focusRequester)
+                .height(TextFieldDefaults.MinHeight),
+            state = state.textFieldState,
+            textStyle = MaterialTheme.typography.bodyLarge,
+            placeholder = placeholder,
+            trailingIcon = {
+                if (showClearIconButton) {
+                    ClearIconButton(onClick = { state.clearText() })
+                }
+            },
+            lineLimits = TextFieldLineLimits.SingleLine,
+            colors = TextFieldDefaults.colors(
+                focusedContainerColor = Color.Transparent,
+                unfocusedContainerColor = Color.Transparent,
+                focusedIndicatorColor = Color.Transparent,
+                unfocusedIndicatorColor = Color.Transparent,
+                focusedTextColor = MaterialTheme.colorScheme.onSurface,
+                unfocusedTextColor = MaterialTheme.colorScheme.onSurfaceVariant,
+            ),
+        )
+    }
+}
+
+/** The state of a search bar which can be visible or hidden. */
+@Stable
+class CollapsibleSearchBarState(
+    val textFieldState: TextFieldState,
+    val focusRequester: FocusRequester,
+    visibleOnInitial: Boolean = true,
+) {
+    var isVisible by mutableStateOf(visibleOnInitial)
+        private set
+
+    fun showSearchBar() {
+        isVisible = true
+    }
+
+    fun hideSearchBar() {
+        isVisible = false
+    }
+
+    fun clearText() {
+        textFieldState.clearText()
+    }
+
+    suspend fun observeText(action: suspend (String) -> Unit) {
+        snapshotFlow { textFieldState.text }
+            // Ignore the initial empty text.
+            .drop(1)
+            .distinctUntilChanged()
+            .collectLatest { action(it.toString()) }
+    }
+
+    fun focusSearchBar() {
+        focusRequester.requestFocus()
+    }
+}
+
+/** Create and remember a [CollapsibleSearchBarState]. */
+@Composable
+fun rememberCollapsibleSearchBarState(
+    textFieldState: TextFieldState = rememberTextFieldState(""),
+    focusRequester: FocusRequester = remember { FocusRequester() },
+    visibleOnInitial: Boolean = true,
+): CollapsibleSearchBarState = remember {
+    CollapsibleSearchBarState(
+        textFieldState = textFieldState,
+        focusRequester = focusRequester,
+        visibleOnInitial = visibleOnInitial,
+    )
+}
+
 // TODO: Rename it
 @Composable
 fun SearchBar(
@@ -126,37 +237,6 @@ fun SearchBar(
             }
         },
         lineLimits = TextFieldLineLimits.SingleLine,
-        colors = TextFieldDefaults.colors(
-            focusedContainerColor = Color.Transparent,
-            unfocusedContainerColor = Color.Transparent,
-            focusedIndicatorColor = Color.Transparent,
-            unfocusedIndicatorColor = Color.Transparent,
-            focusedTextColor = MaterialTheme.colorScheme.onSurface,
-            unfocusedTextColor = MaterialTheme.colorScheme.onSurfaceVariant,
-        ),
-    )
-}
-
-// TODO: Rename it
-@Composable
-fun SearchBar(
-    query: String,
-    onQueryChange: (String) -> Unit,
-    modifier: Modifier = Modifier,
-    placeholder: @Composable (() -> Unit)? = null,
-) {
-    TextField(
-        modifier = modifier.height(TextFieldDefaults.MinHeight),
-        value = query,
-        onValueChange = onQueryChange,
-        textStyle = MaterialTheme.typography.bodyLarge,
-        placeholder = placeholder,
-        trailingIcon = {
-            if (query.isNotEmpty()) {
-                ClearIconButton(onClick = { onQueryChange("") })
-            }
-        },
-        singleLine = true,
         colors = TextFieldDefaults.colors(
             focusedContainerColor = Color.Transparent,
             unfocusedContainerColor = Color.Transparent,

@@ -1,6 +1,5 @@
 package com.prajwalch.torrentsearch.ui.bookmarks
 
-import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
@@ -13,7 +12,6 @@ import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
@@ -30,23 +28,21 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberSwipeToDismissBoxState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
-import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalClipboard
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -56,22 +52,20 @@ import com.prajwalch.torrentsearch.extensions.copyText
 import com.prajwalch.torrentsearch.models.MagnetUri
 import com.prajwalch.torrentsearch.models.Torrent
 import com.prajwalch.torrentsearch.ui.components.ArrowBackIconButton
+import com.prajwalch.torrentsearch.ui.components.CollapsibleSearchBar
 import com.prajwalch.torrentsearch.ui.components.DeleteForeverIconButton
 import com.prajwalch.torrentsearch.ui.components.EmptyPlaceholder
 import com.prajwalch.torrentsearch.ui.components.LazyColumnWithScrollbar
 import com.prajwalch.torrentsearch.ui.components.ScrollToTopFAB
-import com.prajwalch.torrentsearch.ui.components.SearchBar
 import com.prajwalch.torrentsearch.ui.components.SearchIconButton
 import com.prajwalch.torrentsearch.ui.components.SettingsIconButton
 import com.prajwalch.torrentsearch.ui.components.SortDropdownMenu
 import com.prajwalch.torrentsearch.ui.components.SortIconButton
 import com.prajwalch.torrentsearch.ui.components.TorrentActionsBottomSheet
 import com.prajwalch.torrentsearch.ui.components.TorrentListItem
+import com.prajwalch.torrentsearch.ui.components.rememberCollapsibleSearchBarState
 import com.prajwalch.torrentsearch.ui.theme.spaces
 
-import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -88,105 +82,12 @@ fun BookmarksScreen(
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
-    val coroutineScope = rememberCoroutineScope()
-    val lazyListState = rememberLazyListState()
-    val textFieldState = rememberTextFieldState("")
-    val searchBarFocusRequester = remember { FocusRequester() }
-    val snackbarHostState = remember { SnackbarHostState() }
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
+    val coroutineScope = rememberCoroutineScope()
 
-    var showSearchBar by remember { mutableStateOf(false) }
-    var showSortOptions by remember(uiState.sortOptions) { mutableStateOf(false) }
-    var showDeleteAllConfirmationDialog by remember { mutableStateOf(false) }
+    // Bookmark related states.
     var selectedBookmark by remember { mutableStateOf<Torrent?>(null) }
-
-    val isFirstBookmarkVisible by remember {
-        derivedStateOf { lazyListState.firstVisibleItemIndex <= 1 }
-    }
-    val showScrollToTopButton = uiState.bookmarks.isNotEmpty() && !isFirstBookmarkVisible
-
-    val topBarTitle: @Composable () -> Unit = @Composable {
-        if (showSearchBar) {
-            SearchBar(
-                modifier = Modifier.focusRequester(searchBarFocusRequester),
-                textFieldState = textFieldState,
-                placeholder = { Text(text = stringResource(R.string.bookmarks_search_query_hint)) },
-            )
-        } else {
-            Column {
-                Text(text = stringResource(R.string.bookmarks_screen_title))
-
-                if (uiState.bookmarks.isNotEmpty()) {
-                    Text(
-                        text = pluralStringResource(
-                            R.plurals.bookmarks_count_format,
-                            uiState.bookmarks.size,
-                            uiState.bookmarks.size,
-                        ),
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        style = MaterialTheme.typography.labelMedium,
-                    )
-                }
-            }
-        }
-    }
-    val topBarActions: @Composable RowScope.() -> Unit = @Composable {
-        val isBookmarksNotEmpty = uiState.bookmarks.isNotEmpty()
-        val isFilterQueryNotBlank by remember {
-            derivedStateOf { textFieldState.text.isNotBlank() }
-        }
-        val enableBookmarksActions = isBookmarksNotEmpty || isFilterQueryNotBlank
-
-        if (!showSearchBar) {
-            SearchIconButton(
-                onClick = { showSearchBar = true },
-                enabled = enableBookmarksActions,
-            )
-            SortIconButton(
-                onClick = { showSortOptions = true },
-                enabled = enableBookmarksActions,
-            )
-            SortDropdownMenu(
-                expanded = showSortOptions,
-                onDismissRequest = { showSortOptions = false },
-                currentCriteria = uiState.sortOptions.criteria,
-                onChangeCriteria = viewModel::setSortCriteria,
-                currentOrder = uiState.sortOptions.order,
-                onChangeOrder = viewModel::setSortOrder,
-            )
-            DeleteForeverIconButton(
-                onClick = { showDeleteAllConfirmationDialog = true },
-                contentDescription = R.string.bookmarks_action_delete_all,
-                enabled = enableBookmarksActions,
-            )
-        }
-        SettingsIconButton(onClick = onNavigateToSettings)
-    }
-
-    BackHandler(enabled = showSearchBar) {
-        showSearchBar = false
-    }
-
-    LaunchedEffect(showSearchBar) {
-        if (!showSearchBar) return@LaunchedEffect
-
-        searchBarFocusRequester.requestFocus()
-        snapshotFlow { textFieldState.text }
-            // Ignore the initial empty text.
-            .drop(1)
-            .distinctUntilChanged()
-            .collectLatest { viewModel.filterBookmarks(it.toString()) }
-    }
-
-    if (showDeleteAllConfirmationDialog) {
-        DeleteAllConfirmationDialog(
-            onDismiss = { showDeleteAllConfirmationDialog = false },
-            onConfirm = {
-                viewModel.deleteAllBookmarks()
-                showDeleteAllConfirmationDialog = false
-            },
-        )
-    }
+    val snackbarHostState = remember { SnackbarHostState() }
 
     selectedBookmark?.let { bookmark ->
         val clipboard = LocalClipboard.current
@@ -233,6 +134,79 @@ fun BookmarksScreen(
         )
     }
 
+    var showDeleteAllConfirmationDialog by remember { mutableStateOf(false) }
+    if (showDeleteAllConfirmationDialog) {
+        DeleteAllConfirmationDialog(
+            onDismiss = { showDeleteAllConfirmationDialog = false },
+            onConfirm = {
+                viewModel.deleteAllBookmarks()
+                showDeleteAllConfirmationDialog = false
+            },
+        )
+    }
+
+    val searchBarState = rememberCollapsibleSearchBarState(visibleOnInitial = false)
+    var showSortOptions by remember(uiState.sortOptions) { mutableStateOf(false) }
+
+    val topBarTitle: @Composable () -> Unit = @Composable {
+        CollapsibleSearchBar(
+            state = searchBarState,
+            onQueryChange = viewModel::filterBookmarks,
+            placeholder = { Text(text = stringResource(R.string.bookmarks_search_query_hint)) },
+        )
+        if (!searchBarState.isVisible) {
+            Column {
+                Text(text = stringResource(R.string.bookmarks_screen_title))
+
+                if (uiState.bookmarks.isNotEmpty()) {
+                    BookmarksCount(
+                        totalBookmarksCount = uiState.bookmarks.size,
+                        currentBookmarksCount = uiState.bookmarks.size,
+                    )
+                }
+            }
+        }
+    }
+    val topBarActions: @Composable RowScope.() -> Unit = @Composable {
+        val isBookmarksNotEmpty = uiState.bookmarks.isNotEmpty()
+        val isFilterQueryNotBlank by remember {
+            derivedStateOf { searchBarState.textFieldState.text.isNotBlank() }
+        }
+        val enableBookmarksActions = isBookmarksNotEmpty || isFilterQueryNotBlank
+
+        if (!searchBarState.isVisible) {
+            SearchIconButton(
+                onClick = { searchBarState.showSearchBar() },
+                enabled = enableBookmarksActions,
+            )
+            SortIconButton(
+                onClick = { showSortOptions = true },
+                enabled = enableBookmarksActions,
+            )
+            SortDropdownMenu(
+                expanded = showSortOptions,
+                onDismissRequest = { showSortOptions = false },
+                currentCriteria = uiState.sortOptions.criteria,
+                onChangeCriteria = viewModel::setSortCriteria,
+                currentOrder = uiState.sortOptions.order,
+                onChangeOrder = viewModel::setSortOrder,
+            )
+            DeleteForeverIconButton(
+                onClick = { showDeleteAllConfirmationDialog = true },
+                contentDescription = R.string.bookmarks_action_delete_all,
+                enabled = enableBookmarksActions,
+            )
+        }
+        SettingsIconButton(onClick = onNavigateToSettings)
+    }
+
+    // Bookmarks list states.
+    val bookmarkListState = rememberLazyListState()
+    val isFirstBookmarkVisible by remember {
+        derivedStateOf { bookmarkListState.firstVisibleItemIndex <= 1 }
+    }
+    val showScrollToTopButton = uiState.bookmarks.isNotEmpty() && !isFirstBookmarkVisible
+
     Scaffold(
         modifier = Modifier
             .fillMaxSize()
@@ -251,7 +225,7 @@ fun BookmarksScreen(
             ScrollToTopFAB(
                 visible = showScrollToTopButton,
                 onClick = {
-                    coroutineScope.launch { lazyListState.animateScrollToItem(0) }
+                    coroutineScope.launch { bookmarkListState.animateScrollToItem(0) }
                 },
             )
         },
@@ -272,10 +246,30 @@ fun BookmarksScreen(
                 onBookmarkClick = { selectedBookmark = it },
                 onDeleteBookmark = viewModel::deleteBookmarkedTorrent,
                 contentPadding = innerPadding,
-                lazyListState = lazyListState,
+                lazyListState = bookmarkListState,
             )
         }
     }
+}
+
+@Composable
+private fun BookmarksCount(
+    totalBookmarksCount: Int,
+    currentBookmarksCount: Int,
+    modifier: Modifier = Modifier,
+    color: Color = MaterialTheme.colorScheme.onSurfaceVariant,
+    style: TextStyle = MaterialTheme.typography.labelMedium,
+) {
+    Text(
+        modifier = modifier,
+        text = pluralStringResource(
+            R.plurals.bookmarks_count_format,
+            totalBookmarksCount,
+            currentBookmarksCount,
+        ),
+        color = color,
+        style = style,
+    )
 }
 
 @Composable
@@ -378,61 +372,3 @@ private fun BookmarkListItem(
         )
     }
 }
-
-//@Composable
-//private fun TorrentActionsBottomSheet(
-//    onDismiss: () -> Unit,
-//    title: String,
-//    showNSFWBadge: Boolean,
-//    onDeleteBookmark: () -> Unit,
-//    onDownloadTorrent: () -> Unit,
-//    onCopyMagnetLink: () -> Unit,
-//    onShareMagnetLink: () -> Unit,
-//    enableDescriptionPageActions: Boolean,
-//    onOpenDescriptionPage: () -> Unit,
-//    onCopyDescriptionPageUrl: () -> Unit,
-//    onShareDescriptionPageUrl: () -> Unit,
-//    modifier: Modifier = Modifier,
-//) {
-//    fun actionWithDismiss(action: () -> Unit) = {
-//        action()
-//        onDismiss()
-//    }
-//
-//    TorrentActionsBottomSheet(
-//        modifier = modifier,
-//        onDismiss = onDismiss,
-//        title = title,
-//        showNSFWBadge = showNSFWBadge,
-//        deleteBookmark = {
-//            Actions.DeleteBookmark(onClick = actionWithDismiss(onDeleteBookmark))
-//        },
-//        downloadTorrent = {
-//            Actions.DownloadTorrent(onClick = actionWithDismiss(onDownloadTorrent))
-//        },
-//        copyMagnetLink = {
-//            Actions.CopyMagnetLink(onClick = actionWithDismiss(onCopyMagnetLink))
-//        },
-//        shareMagnetLink = {
-//            Actions.ShareMagnetLink(onClick = actionWithDismiss(onShareMagnetLink))
-//        },
-//        openDescriptionPage = {
-//            Actions.OpenDescriptionPage(
-//                onClick = actionWithDismiss(onOpenDescriptionPage),
-//                enabled = enableDescriptionPageActions,
-//            )
-//        },
-//        copyDescriptionPageUrl = {
-//            Actions.CopyDescriptionPageUrl(
-//                onClick = actionWithDismiss(onCopyDescriptionPageUrl),
-//                enabled = enableDescriptionPageActions,
-//            )
-//        },
-//        shareDescriptionPageUrl = {
-//            Actions.ShareDescriptionPageUrl(
-//                onClick = actionWithDismiss(onShareDescriptionPageUrl),
-//                enabled = enableDescriptionPageActions,
-//            )
-//        },
-//    )
-//}
