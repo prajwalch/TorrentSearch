@@ -71,6 +71,7 @@ import com.prajwalch.torrentsearch.ui.theme.spaces
 
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -167,17 +168,14 @@ fun BookmarksScreen(
     }
 
     LaunchedEffect(showSearchBar) {
-        if (showSearchBar) {
-            searchBarFocusRequester.requestFocus()
-        }
-    }
+        if (!showSearchBar) return@LaunchedEffect
 
-    if (showSearchBar) {
-        LaunchedEffect(Unit) {
-            snapshotFlow { textFieldState.text }
-                .distinctUntilChanged()
-                .collectLatest { viewModel.filterBookmarks(query = it.toString()) }
-        }
+        searchBarFocusRequester.requestFocus()
+        snapshotFlow { textFieldState.text }
+            // Ignore the initial empty text.
+            .drop(1)
+            .distinctUntilChanged()
+            .collectLatest { viewModel.filterBookmarks(it.toString()) }
     }
 
     if (showDeleteAllConfirmationDialog) {
