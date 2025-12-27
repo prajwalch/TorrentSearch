@@ -32,7 +32,6 @@ import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -72,7 +71,6 @@ fun SearchProvidersScreen(
     viewModel: SearchProvidersViewModel = hiltViewModel(),
 ) {
     val searchProvidersUiState by viewModel.uiState.collectAsStateWithLifecycle()
-
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
 
     Scaffold(
@@ -225,7 +223,7 @@ private fun BuiltinSearchProviderListItem(
     onCheckedChange: (Boolean) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    var showUnsafeReason by remember { mutableStateOf<String?>(null) }
+    var showUnsafeReason by rememberSaveable { mutableStateOf<String?>(null) }
 
     showUnsafeReason?.let { unsafeReason ->
         SearchProviderUnsafeDetailsDialog(
