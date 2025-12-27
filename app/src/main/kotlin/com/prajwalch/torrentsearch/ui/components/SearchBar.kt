@@ -17,7 +17,6 @@ import androidx.compose.material3.SearchBar
 import androidx.compose.material3.SearchBarDefaults
 import androidx.compose.material3.SearchBarState
 import androidx.compose.material3.SearchBarValue
-import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.rememberSearchBarState
@@ -38,7 +37,6 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
 
 import com.prajwalch.torrentsearch.R
 
@@ -54,6 +52,7 @@ fun SearchBar(
     modifier: Modifier = Modifier,
     searchBarState: SearchBarState = rememberSearchBarState(),
     textFieldState: TextFieldState = rememberTextFieldState(),
+    placeholder: @Composable (() -> Unit)? = null,
     content: @Composable (ColumnScope.() -> Unit),
 ) {
     val inputField = @Composable {
@@ -61,6 +60,7 @@ fun SearchBar(
             searchBarState = searchBarState,
             textFieldState = textFieldState,
             onSearch = onSearch,
+            placeholder = placeholder,
         )
     }
 
@@ -86,6 +86,7 @@ private fun SearchBarInputField(
     textFieldState: TextFieldState,
     onSearch: (String) -> Unit,
     modifier: Modifier = Modifier,
+    placeholder: @Composable (() -> Unit)? = null,
 ) {
     val coroutineScope = rememberCoroutineScope()
 
@@ -106,7 +107,7 @@ private fun SearchBarInputField(
             coroutineScope.launch { searchBarState.animateToCollapsed() }
             onSearch(it)
         },
-        placeholder = { Text(stringResource(R.string.home_search_query_hint)) },
+        placeholder = placeholder,
         leadingIcon = {
             LeadingIcon(
                 isSearchBarExpanded = searchBarState.currentValue == SearchBarValue.Expanded,

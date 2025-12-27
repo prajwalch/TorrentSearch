@@ -128,6 +128,7 @@ fun HomeScreen(
                 onSearch = {
                     onSearch(textFieldState.text.toString(), uiState.selectedCategory)
                 },
+                placeholder = { Text(stringResource(R.string.home_search_query_hint)) },
             ) {
                 SearchHistoryList(
                     histories = uiState.histories,
