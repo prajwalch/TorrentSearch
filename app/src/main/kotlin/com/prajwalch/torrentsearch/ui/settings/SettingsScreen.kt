@@ -34,7 +34,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -166,7 +166,7 @@ private fun AppearanceSettings(
         }
 
         Box {
-            var menuExpanded by remember(uiState.darkTheme) { mutableStateOf(false) }
+            var menuExpanded by rememberSaveable(uiState.darkTheme) { mutableStateOf(false) }
 
             SettingsListItem(
                 onClick = { menuExpanded = true },
@@ -261,7 +261,7 @@ private fun SearchSettings(
     onSetMaxNumResults: (MaxNumResults) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    var showMaxNumResultsDialog by remember { mutableStateOf(false) }
+    var showMaxNumResultsDialog by rememberSaveable { mutableStateOf(false) }
 
     if (showMaxNumResultsDialog) {
         MaxNumResultsDialog(
@@ -459,7 +459,7 @@ private fun MaxNumResultsDialog(
     sliderRange: ClosedFloatingPointRange<Float> = 10f..100f,
     incrementBy: Int = 5,
 ) {
-    var sliderValue by remember(num) {
+    var sliderValue by rememberSaveable(num) {
         mutableFloatStateOf(num?.toFloat() ?: sliderRange.start)
     }
 
