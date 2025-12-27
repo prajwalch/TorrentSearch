@@ -40,6 +40,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.retain.retain
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -95,7 +97,7 @@ fun SearchScreen(
     )
 
     // Torrent actions state.
-    var selectedResult by remember { mutableStateOf<Torrent?>(null) }
+    var selectedResult by retain { mutableStateOf<Torrent?>(null) }
     val snackbarHostState = remember { SnackbarHostState() }
 
     selectedResult?.let { torrent ->
@@ -149,7 +151,7 @@ fun SearchScreen(
         )
     }
 
-    var showFilterOptions by remember { mutableStateOf(false) }
+    var showFilterOptions by rememberSaveable { mutableStateOf(false) }
     if (showFilterOptions) {
         FilterOptionsBottomSheet(
             onDismissRequest = { showFilterOptions = false },
@@ -160,7 +162,7 @@ fun SearchScreen(
     }
 
     val searchBarState = rememberCollapsibleSearchBarState(visibleOnInitial = false)
-    var showSortOptions by remember(uiState.sortOptions) { mutableStateOf(false) }
+    var showSortOptions by rememberSaveable(uiState.sortOptions) { mutableStateOf(false) }
 
     val topBarTitle: @Composable () -> Unit = @Composable {
         CollapsibleSearchBar(
