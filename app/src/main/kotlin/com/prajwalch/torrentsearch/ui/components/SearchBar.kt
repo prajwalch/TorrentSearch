@@ -129,10 +129,6 @@ fun CollapsibleSearchBar(
     modifier: Modifier = Modifier,
     placeholder: @Composable (() -> Unit)? = null,
 ) {
-    val showClearIconButton by remember {
-        derivedStateOf { state.textFieldState.text.isNotEmpty() }
-    }
-
     LaunchedEffect(state.isVisible) {
         if (!state.isVisible) return@LaunchedEffect
 
@@ -153,7 +149,7 @@ fun CollapsibleSearchBar(
             textStyle = MaterialTheme.typography.bodyLarge,
             placeholder = placeholder,
             trailingIcon = {
-                if (showClearIconButton) {
+                if (!state.isTextEmpty) {
                     ClearIconButton(onClick = { state.clearText() })
                 }
             },
@@ -179,6 +175,10 @@ class CollapsibleSearchBarState(
 ) {
     var isVisible by mutableStateOf(visibleOnInitial)
         private set
+
+    val isTextEmpty by derivedStateOf { textFieldState.text.isEmpty() }
+
+    val isTextBlank by derivedStateOf { textFieldState.text.isBlank() }
 
     fun showSearchBar() {
         isVisible = true

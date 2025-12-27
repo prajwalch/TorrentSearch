@@ -27,7 +27,6 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberSwipeToDismissBoxState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -169,11 +168,7 @@ fun BookmarksScreen(
         }
     }
     val topBarActions: @Composable RowScope.() -> Unit = @Composable {
-        val isBookmarksNotEmpty = uiState.bookmarks.isNotEmpty()
-        val isFilterQueryNotBlank by remember {
-            derivedStateOf { searchBarState.textFieldState.text.isNotBlank() }
-        }
-        val enableBookmarksActions = isBookmarksNotEmpty || isFilterQueryNotBlank
+        val enableBookmarksActions = uiState.bookmarks.isNotEmpty() || !searchBarState.isTextBlank
 
         if (!searchBarState.isVisible) {
             SearchIconButton(
