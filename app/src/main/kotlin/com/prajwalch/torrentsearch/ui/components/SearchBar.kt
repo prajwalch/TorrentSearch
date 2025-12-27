@@ -29,6 +29,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.Saver
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
@@ -203,6 +205,24 @@ class CollapsibleSearchBarState(
     fun focusSearchBar() {
         focusRequester.requestFocus()
     }
+
+    companion object {
+        fun Saver(
+            textFieldState: TextFieldState,
+            focusRequester: FocusRequester,
+        ): Saver<CollapsibleSearchBarState, Boolean> {
+            return Saver(
+                save = { it.isVisible },
+                restore = {
+                    CollapsibleSearchBarState(
+                        textFieldState = textFieldState,
+                        focusRequester = focusRequester,
+                        visibleOnInitial = it,
+                    )
+                }
+            )
+        }
+    }
 }
 
 /** Create and remember a [CollapsibleSearchBarState]. */
@@ -211,12 +231,19 @@ fun rememberCollapsibleSearchBarState(
     textFieldState: TextFieldState = rememberTextFieldState(""),
     focusRequester: FocusRequester = remember { FocusRequester() },
     visibleOnInitial: Boolean = true,
-): CollapsibleSearchBarState = remember {
-    CollapsibleSearchBarState(
-        textFieldState = textFieldState,
-        focusRequester = focusRequester,
-        visibleOnInitial = visibleOnInitial,
-    )
+): CollapsibleSearchBarState {
+    return rememberSaveable(
+        saver = CollapsibleSearchBarState.Saver(
+            textFieldState = textFieldState,
+            focusRequester = focusRequester,
+        )
+    ) {
+        CollapsibleSearchBarState(
+            textFieldState = textFieldState,
+            focusRequester = focusRequester,
+            visibleOnInitial = visibleOnInitial,
+        )
+    }
 }
 
 // TODO: Rename it
