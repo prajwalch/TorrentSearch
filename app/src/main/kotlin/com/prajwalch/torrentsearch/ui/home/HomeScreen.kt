@@ -56,6 +56,8 @@ import com.prajwalch.torrentsearch.ui.theme.spaces
 import com.prajwalch.torrentsearch.utils.categoryStringResource
 
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -119,6 +121,9 @@ fun HomeScreen(
 
             LaunchedEffect(Unit) {
                 snapshotFlow { textFieldState.text }
+                    // Ignore the initial empty text.
+                    .drop(1)
+                    .distinctUntilChanged()
                     .collectLatest { viewModel.filterSearchHistories(query = it.toString()) }
             }
 
