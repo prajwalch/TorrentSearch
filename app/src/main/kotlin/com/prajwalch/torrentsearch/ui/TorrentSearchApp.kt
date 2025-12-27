@@ -5,7 +5,7 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -30,7 +30,7 @@ fun TorrentSearchApp(
     startDestination: String = Screens.HOME,
 ) {
     val navController = rememberNavController()
-    var showTorrentClientNotFoundDialog by remember { mutableStateOf(false) }
+    var showTorrentClientNotFoundDialog by rememberSaveable { mutableStateOf(false) }
 
     if (showTorrentClientNotFoundDialog) {
         TorrentClientNotFoundDialog(
