@@ -9,6 +9,8 @@ import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -70,42 +72,44 @@ fun TorrentActionsBottomSheet(
         onDismissRequest = onDismiss,
         sheetState = sheetState,
     ) {
-        TorrentActionsBottomSheetHeader(
-            modifier = Modifier.padding(horizontal = MaterialTheme.spaces.large),
-            title = title,
-            isNSFW = showNSFWBadge,
-        )
-        Spacer(modifier = Modifier.height(MaterialTheme.spaces.small))
-        HorizontalDivider()
+        Column(modifier = Modifier.verticalScroll(state = rememberScrollState())) {
+            TorrentActionsBottomSheetHeader(
+                modifier = Modifier.padding(horizontal = MaterialTheme.spaces.large),
+                title = title,
+                isNSFW = showNSFWBadge,
+            )
+            Spacer(modifier = Modifier.height(MaterialTheme.spaces.small))
+            HorizontalDivider()
 
-        ActionsGroup {
-            onBookmarkTorrent?.let {
-                Actions.BookmarkTorrent(onClick = actionWithDismiss(it))
+            ActionsGroup {
+                onBookmarkTorrent?.let {
+                    Actions.BookmarkTorrent(onClick = actionWithDismiss(it))
+                }
+                onDeleteBookmark?.let {
+                    Actions.DeleteBookmark(onClick = actionWithDismiss(it))
+                }
+                Actions.DownloadTorrent(onClick = actionWithDismiss(onDownloadTorrent))
             }
-            onDeleteBookmark?.let {
-                Actions.DeleteBookmark(onClick = actionWithDismiss(it))
+            HorizontalDivider()
+            ActionsGroup {
+                Actions.CopyMagnetLink(onClick = actionWithDismiss(onCopyMagnetLink))
+                Actions.ShareMagnetLink(onClick = actionWithDismiss(onShareMagnetLink))
             }
-            Actions.DownloadTorrent(onClick = actionWithDismiss(onDownloadTorrent))
-        }
-        HorizontalDivider()
-        ActionsGroup {
-            Actions.CopyMagnetLink(onClick = actionWithDismiss(onCopyMagnetLink))
-            Actions.ShareMagnetLink(onClick = actionWithDismiss(onShareMagnetLink))
-        }
-        HorizontalDivider()
-        ActionsGroup {
-            Actions.OpenDescriptionPage(
-                onClick = actionWithDismiss(onOpenDescriptionPage),
-                enabled = enableDescriptionPageActions,
-            )
-            Actions.CopyDescriptionPageUrl(
-                onClick = actionWithDismiss(onCopyDescriptionPageUrl),
-                enabled = enableDescriptionPageActions,
-            )
-            Actions.ShareDescriptionPageUrl(
-                onClick = actionWithDismiss(onShareDescriptionPageUrl),
-                enabled = enableDescriptionPageActions,
-            )
+            HorizontalDivider()
+            ActionsGroup {
+                Actions.OpenDescriptionPage(
+                    onClick = actionWithDismiss(onOpenDescriptionPage),
+                    enabled = enableDescriptionPageActions,
+                )
+                Actions.CopyDescriptionPageUrl(
+                    onClick = actionWithDismiss(onCopyDescriptionPageUrl),
+                    enabled = enableDescriptionPageActions,
+                )
+                Actions.ShareDescriptionPageUrl(
+                    onClick = actionWithDismiss(onShareDescriptionPageUrl),
+                    enabled = enableDescriptionPageActions,
+                )
+            }
         }
     }
 }
