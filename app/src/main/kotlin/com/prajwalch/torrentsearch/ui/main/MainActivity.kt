@@ -12,6 +12,7 @@ import androidx.activity.addCallback
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.material3.Surface
 import androidx.compose.runtime.getValue
 import androidx.core.net.toUri
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
@@ -57,13 +58,15 @@ class MainActivity : ComponentActivity() {
                 dynamicColor = uiState.enableDynamicTheme,
                 pureBlack = uiState.pureBlack,
             ) {
-                TorrentSearchApp(
-                    onDownloadTorrent = ::downloadTorrentViaClient,
-                    onShareMagnetLink = ::shareMagnetLink,
-                    onOpenDescriptionPage = ::openDescriptionPage,
-                    onShareDescriptionPageUrl = ::shareDescriptionPageUrl,
-                    startDestination = startDestination,
-                )
+                Surface {
+                    TorrentSearchApp(
+                        onDownloadTorrent = ::downloadTorrentViaClient,
+                        onShareMagnetLink = ::shareMagnetLink,
+                        onOpenDescriptionPage = ::openDescriptionPage,
+                        onShareDescriptionPageUrl = ::shareDescriptionPageUrl,
+                        startDestination = startDestination,
+                    )
+                }
             }
         }
     }
