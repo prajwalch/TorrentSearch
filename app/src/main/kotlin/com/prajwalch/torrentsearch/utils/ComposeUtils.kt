@@ -4,9 +4,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
 
 import com.prajwalch.torrentsearch.R
-import com.prajwalch.torrentsearch.models.Category
-import com.prajwalch.torrentsearch.models.SortCriteria
-import com.prajwalch.torrentsearch.models.SortOrder
+import com.prajwalch.torrentsearch.domain.models.Category
+import com.prajwalch.torrentsearch.domain.models.SortCriteria
+import com.prajwalch.torrentsearch.domain.models.SortOrder
 
 @Composable
 fun categoryStringResource(category: Category): String {

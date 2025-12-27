@@ -1,7 +1,7 @@
 package com.prajwalch.torrentsearch
 
-import com.prajwalch.torrentsearch.models.Category
-import com.prajwalch.torrentsearch.models.Torrent
+import com.prajwalch.torrentsearch.domain.models.Category
+import com.prajwalch.torrentsearch.domain.models.Torrent
 import com.prajwalch.torrentsearch.network.HttpClient
 import com.prajwalch.torrentsearch.providers.Knaben
 import com.prajwalch.torrentsearch.providers.SearchContext

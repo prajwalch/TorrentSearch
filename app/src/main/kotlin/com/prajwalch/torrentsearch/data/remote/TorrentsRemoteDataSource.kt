@@ -3,9 +3,9 @@ package com.prajwalch.torrentsearch.data.remote
 import android.net.Uri
 import android.util.Log
 
-import com.prajwalch.torrentsearch.models.Category
-import com.prajwalch.torrentsearch.models.SearchProviderException
-import com.prajwalch.torrentsearch.models.Torrent
+import com.prajwalch.torrentsearch.domain.models.Category
+import com.prajwalch.torrentsearch.domain.models.SearchProviderException
+import com.prajwalch.torrentsearch.domain.models.Torrent
 import com.prajwalch.torrentsearch.network.HttpClient
 import com.prajwalch.torrentsearch.providers.SearchContext
 import com.prajwalch.torrentsearch.providers.SearchProvider

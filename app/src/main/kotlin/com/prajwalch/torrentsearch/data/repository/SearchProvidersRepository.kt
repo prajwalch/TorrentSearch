@@ -4,8 +4,8 @@ import com.prajwalch.torrentsearch.data.local.dao.TorznabConfigDao
 import com.prajwalch.torrentsearch.data.local.entities.TorznabConfigEntity
 import com.prajwalch.torrentsearch.data.local.entities.toDomain
 import com.prajwalch.torrentsearch.data.local.entities.toSearchProviderInfo
-import com.prajwalch.torrentsearch.models.Category
-import com.prajwalch.torrentsearch.models.TorznabConfig
+import com.prajwalch.torrentsearch.domain.models.Category
+import com.prajwalch.torrentsearch.domain.models.TorznabConfig
 import com.prajwalch.torrentsearch.providers.AnimeTosho
 import com.prajwalch.torrentsearch.providers.BitSearch
 import com.prajwalch.torrentsearch.providers.Eztv

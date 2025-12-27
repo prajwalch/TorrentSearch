@@ -1,4 +1,4 @@
-package com.prajwalch.torrentsearch.models
+package com.prajwalch.torrentsearch.domain.models
 
 /** Dark theme options. */
 enum class DarkTheme {

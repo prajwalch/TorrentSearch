@@ -9,10 +9,10 @@ import androidx.lifecycle.viewModelScope
 import com.prajwalch.torrentsearch.BuildConfig
 import com.prajwalch.torrentsearch.data.repository.SearchProvidersRepository
 import com.prajwalch.torrentsearch.data.repository.SettingsRepository
-import com.prajwalch.torrentsearch.models.Category
-import com.prajwalch.torrentsearch.models.DarkTheme
-import com.prajwalch.torrentsearch.models.MaxNumResults
-import com.prajwalch.torrentsearch.models.SortOptions
+import com.prajwalch.torrentsearch.domain.models.Category
+import com.prajwalch.torrentsearch.domain.models.DarkTheme
+import com.prajwalch.torrentsearch.domain.models.MaxNumResults
+import com.prajwalch.torrentsearch.domain.models.SortOptions
 
 import dagger.hilt.android.lifecycle.HiltViewModel
 

@@ -1,9 +1,9 @@
 package com.prajwalch.torrentsearch.data.repository
 
 import com.prajwalch.torrentsearch.data.remote.TorrentsRemoteDataSource
-import com.prajwalch.torrentsearch.models.Category
-import com.prajwalch.torrentsearch.models.SearchResults
-import com.prajwalch.torrentsearch.models.Torrent
+import com.prajwalch.torrentsearch.domain.models.Category
+import com.prajwalch.torrentsearch.domain.models.SearchResults
+import com.prajwalch.torrentsearch.domain.models.Torrent
 import com.prajwalch.torrentsearch.providers.SearchProvider
 
 import kotlinx.collections.immutable.toImmutableList

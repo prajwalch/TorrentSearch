@@ -1,8 +1,8 @@
 package com.prajwalch.torrentsearch.utils
 
-import com.prajwalch.torrentsearch.models.SortCriteria
-import com.prajwalch.torrentsearch.models.SortOrder
-import com.prajwalch.torrentsearch.models.Torrent
+import com.prajwalch.torrentsearch.domain.models.SortCriteria
+import com.prajwalch.torrentsearch.domain.models.SortOrder
+import com.prajwalch.torrentsearch.domain.models.Torrent
 
 fun createSortComparator(criteria: SortCriteria, order: SortOrder): Comparator<Torrent> {
     val comparator: Comparator<Torrent> = when (criteria) {

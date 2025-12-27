@@ -4,7 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 
 import com.prajwalch.torrentsearch.data.repository.SearchHistoryRepository
-import com.prajwalch.torrentsearch.models.SearchHistoryId
+import com.prajwalch.torrentsearch.domain.models.SearchHistoryId
 
 import dagger.hilt.android.lifecycle.HiltViewModel
 

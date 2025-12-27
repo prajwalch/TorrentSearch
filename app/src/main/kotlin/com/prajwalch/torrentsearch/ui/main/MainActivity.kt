@@ -20,9 +20,9 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 
 import com.prajwalch.torrentsearch.R
-import com.prajwalch.torrentsearch.models.Category
-import com.prajwalch.torrentsearch.models.DarkTheme
-import com.prajwalch.torrentsearch.models.MagnetUri
+import com.prajwalch.torrentsearch.domain.models.Category
+import com.prajwalch.torrentsearch.domain.models.DarkTheme
+import com.prajwalch.torrentsearch.domain.models.MagnetUri
 import com.prajwalch.torrentsearch.ui.Screens
 import com.prajwalch.torrentsearch.ui.TorrentSearchApp
 import com.prajwalch.torrentsearch.ui.theme.TorrentSearchTheme

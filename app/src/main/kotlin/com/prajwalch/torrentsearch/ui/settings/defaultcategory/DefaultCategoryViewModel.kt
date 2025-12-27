@@ -4,7 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 
 import com.prajwalch.torrentsearch.data.repository.SettingsRepository
-import com.prajwalch.torrentsearch.models.Category
+import com.prajwalch.torrentsearch.domain.models.Category
 
 import dagger.hilt.android.lifecycle.HiltViewModel
 

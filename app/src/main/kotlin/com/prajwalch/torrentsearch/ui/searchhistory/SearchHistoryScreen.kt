@@ -34,8 +34,8 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 
 import com.prajwalch.torrentsearch.R
 import com.prajwalch.torrentsearch.extensions.copyText
-import com.prajwalch.torrentsearch.models.SearchHistory
-import com.prajwalch.torrentsearch.models.SearchHistoryId
+import com.prajwalch.torrentsearch.domain.models.SearchHistory
+import com.prajwalch.torrentsearch.domain.models.SearchHistoryId
 import com.prajwalch.torrentsearch.ui.components.ArrowBackIconButton
 import com.prajwalch.torrentsearch.ui.components.DeleteForeverIconButton
 import com.prajwalch.torrentsearch.ui.components.EmptyPlaceholder

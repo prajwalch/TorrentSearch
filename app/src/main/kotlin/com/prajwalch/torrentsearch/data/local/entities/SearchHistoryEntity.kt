@@ -4,7 +4,7 @@ import androidx.room.Entity
 import androidx.room.Index
 import androidx.room.PrimaryKey
 
-import com.prajwalch.torrentsearch.models.SearchHistory
+import com.prajwalch.torrentsearch.domain.models.SearchHistory
 
 @Entity(
     tableName = "search_history",

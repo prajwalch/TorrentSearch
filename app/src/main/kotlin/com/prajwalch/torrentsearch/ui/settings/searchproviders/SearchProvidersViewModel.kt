@@ -5,7 +5,7 @@ import androidx.lifecycle.viewModelScope
 
 import com.prajwalch.torrentsearch.data.repository.SearchProvidersRepository
 import com.prajwalch.torrentsearch.data.repository.SettingsRepository
-import com.prajwalch.torrentsearch.models.Category
+import com.prajwalch.torrentsearch.domain.models.Category
 import com.prajwalch.torrentsearch.providers.SearchProviderId
 import com.prajwalch.torrentsearch.providers.SearchProviderInfo
 import com.prajwalch.torrentsearch.providers.SearchProviderSafetyStatus

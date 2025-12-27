@@ -9,14 +9,14 @@ import androidx.lifecycle.viewModelScope
 import com.prajwalch.torrentsearch.data.repository.BookmarksRepository
 import com.prajwalch.torrentsearch.data.repository.SearchHistoryRepository
 import com.prajwalch.torrentsearch.data.repository.SettingsRepository
-import com.prajwalch.torrentsearch.models.Category
-import com.prajwalch.torrentsearch.models.SearchResults
-import com.prajwalch.torrentsearch.models.SortCriteria
-import com.prajwalch.torrentsearch.models.SortOptions
-import com.prajwalch.torrentsearch.models.SortOrder
-import com.prajwalch.torrentsearch.models.Torrent
+import com.prajwalch.torrentsearch.domain.models.Category
+import com.prajwalch.torrentsearch.domain.models.SearchResults
+import com.prajwalch.torrentsearch.domain.models.SortCriteria
+import com.prajwalch.torrentsearch.domain.models.SortOptions
+import com.prajwalch.torrentsearch.domain.models.SortOrder
+import com.prajwalch.torrentsearch.domain.models.Torrent
 import com.prajwalch.torrentsearch.network.ConnectivityChecker
-import com.prajwalch.torrentsearch.usecases.SearchTorrentsUseCase
+import com.prajwalch.torrentsearch.domain.SearchTorrentsUseCase
 import com.prajwalch.torrentsearch.utils.createSortComparator
 
 import dagger.hilt.android.lifecycle.HiltViewModel

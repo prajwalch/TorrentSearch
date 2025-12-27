@@ -27,7 +27,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 
 import com.prajwalch.torrentsearch.R
-import com.prajwalch.torrentsearch.models.Category
+import com.prajwalch.torrentsearch.domain.models.Category
 import com.prajwalch.torrentsearch.ui.theme.spaces
 import com.prajwalch.torrentsearch.utils.categoryStringResource
 

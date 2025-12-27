@@ -1,11 +1,11 @@
-package com.prajwalch.torrentsearch.usecases
+package com.prajwalch.torrentsearch.domain
 
 import com.prajwalch.torrentsearch.data.repository.SearchProvidersRepository
 import com.prajwalch.torrentsearch.data.repository.SettingsRepository
 import com.prajwalch.torrentsearch.data.repository.TorrentsRepository
-import com.prajwalch.torrentsearch.models.Category
-import com.prajwalch.torrentsearch.models.MaxNumResults
-import com.prajwalch.torrentsearch.models.SearchResults
+import com.prajwalch.torrentsearch.domain.models.Category
+import com.prajwalch.torrentsearch.domain.models.MaxNumResults
+import com.prajwalch.torrentsearch.domain.models.SearchResults
 import com.prajwalch.torrentsearch.providers.SearchProvider
 
 import kotlinx.collections.immutable.toImmutableList
@@ -72,6 +72,6 @@ class SearchTorrentsUseCase @Inject constructor(
     }
 
     private suspend fun getSearchResultsLimit(): MaxNumResults {
-        return settingsRepository.maxNumResults.firstOrNull() ?: MaxNumResults.Unlimited
+        return settingsRepository.maxNumResults.firstOrNull() ?: MaxNumResults.Companion.Unlimited
     }
 }

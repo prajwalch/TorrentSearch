@@ -5,9 +5,9 @@ import androidx.lifecycle.viewModelScope
 
 import com.prajwalch.torrentsearch.data.repository.SearchHistoryRepository
 import com.prajwalch.torrentsearch.data.repository.SettingsRepository
-import com.prajwalch.torrentsearch.models.Category
-import com.prajwalch.torrentsearch.models.SearchHistory
-import com.prajwalch.torrentsearch.models.SearchHistoryId
+import com.prajwalch.torrentsearch.domain.models.Category
+import com.prajwalch.torrentsearch.domain.models.SearchHistory
+import com.prajwalch.torrentsearch.domain.models.SearchHistoryId
 
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow

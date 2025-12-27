@@ -3,7 +3,7 @@ package com.prajwalch.torrentsearch.data.repository
 import com.prajwalch.torrentsearch.data.local.dao.BookmarkedTorrentDao
 import com.prajwalch.torrentsearch.data.local.entities.toDomain
 import com.prajwalch.torrentsearch.data.local.entities.toEntity
-import com.prajwalch.torrentsearch.models.Torrent
+import com.prajwalch.torrentsearch.domain.models.Torrent
 
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map

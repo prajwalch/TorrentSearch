@@ -5,9 +5,9 @@ import com.prajwalch.torrentsearch.extensions.getArray
 import com.prajwalch.torrentsearch.extensions.getLong
 import com.prajwalch.torrentsearch.extensions.getString
 import com.prajwalch.torrentsearch.extensions.getUInt
-import com.prajwalch.torrentsearch.models.Category
-import com.prajwalch.torrentsearch.models.InfoHashOrMagnetUri
-import com.prajwalch.torrentsearch.models.Torrent
+import com.prajwalch.torrentsearch.domain.models.Category
+import com.prajwalch.torrentsearch.domain.models.InfoHashOrMagnetUri
+import com.prajwalch.torrentsearch.domain.models.Torrent
 import com.prajwalch.torrentsearch.utils.DateUtils
 import com.prajwalch.torrentsearch.utils.FileSizeUtils
 

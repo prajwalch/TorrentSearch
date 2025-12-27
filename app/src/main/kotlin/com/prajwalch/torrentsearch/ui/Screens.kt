@@ -1,6 +1,6 @@
 package com.prajwalch.torrentsearch.ui
 
-import com.prajwalch.torrentsearch.models.Category
+import com.prajwalch.torrentsearch.domain.models.Category
 
 object Screens {
     const val HOME = "home"

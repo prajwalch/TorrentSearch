@@ -3,10 +3,10 @@ package com.prajwalch.torrentsearch.providers
 import android.util.Log
 import android.util.Xml
 
-import com.prajwalch.torrentsearch.models.Category
-import com.prajwalch.torrentsearch.models.InfoHashOrMagnetUri
-import com.prajwalch.torrentsearch.models.Torrent
-import com.prajwalch.torrentsearch.models.TorznabConfig
+import com.prajwalch.torrentsearch.domain.models.Category
+import com.prajwalch.torrentsearch.domain.models.InfoHashOrMagnetUri
+import com.prajwalch.torrentsearch.domain.models.Torrent
+import com.prajwalch.torrentsearch.domain.models.TorznabConfig
 import com.prajwalch.torrentsearch.network.HttpClient
 import com.prajwalch.torrentsearch.utils.FileSizeUtils
 
