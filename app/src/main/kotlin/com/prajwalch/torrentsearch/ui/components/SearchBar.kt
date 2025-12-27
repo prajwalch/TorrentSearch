@@ -32,6 +32,7 @@ import androidx.compose.runtime.saveable.Saver
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
@@ -47,81 +48,58 @@ import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SearchBar(
+fun ExpandableSearchBar(
     onSearch: (String) -> Unit,
     modifier: Modifier = Modifier,
-    searchBarState: SearchBarState = rememberSearchBarState(),
+    state: SearchBarState = rememberSearchBarState(),
     textFieldState: TextFieldState = rememberTextFieldState(),
     placeholder: @Composable (() -> Unit)? = null,
     content: @Composable (ColumnScope.() -> Unit),
 ) {
-    val inputField = @Composable {
-        SearchBarInputField(
-            searchBarState = searchBarState,
+    val coroutineScope = rememberCoroutineScope()
+
+    val inputFieldLeadingIcon: @Composable () -> Unit = @Composable {
+        AnimatedContent(
+            targetState = state.currentValue,
+            contentAlignment = Alignment.Center,
+            label = "Expandable search bar leading icon animation",
+        ) { searchBarValue ->
+            if (searchBarValue == SearchBarValue.Expanded) {
+                ArrowBackIconButton(
+                    onClick = { coroutineScope.launch { state.animateToCollapsed() } }
+                )
+            } else {
+                Icon(
+                    painter = painterResource(R.drawable.ic_search),
+                    contentDescription = null,
+                )
+            }
+        }
+    }
+    val inputField: @Composable () -> Unit = @Composable {
+        SearchBarDefaults.InputField(
+            searchBarState = state,
             textFieldState = textFieldState,
             onSearch = onSearch,
             placeholder = placeholder,
+            leadingIcon = inputFieldLeadingIcon,
+            trailingIcon = {
+                if (textFieldState.text.isNotEmpty()) {
+                    ClearIconButton(onClick = { textFieldState.clearText() })
+                }
+            },
         )
     }
 
     SearchBar(
         modifier = modifier,
-        state = searchBarState,
+        state = state,
         inputField = inputField,
     )
     ExpandedFullScreenSearchBar(
-        state = searchBarState,
+        state = state,
         inputField = inputField,
-        colors = SearchBarDefaults.colors(
-            containerColor = MaterialTheme.colorScheme.surface,
-        ),
         content = content,
-    )
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-private fun SearchBarInputField(
-    searchBarState: SearchBarState,
-    textFieldState: TextFieldState,
-    onSearch: (String) -> Unit,
-    modifier: Modifier = Modifier,
-    placeholder: @Composable (() -> Unit)? = null,
-) {
-    val coroutineScope = rememberCoroutineScope()
-
-    val defaultColors = SearchBarDefaults.inputFieldColors()
-    val customColors = SearchBarDefaults.inputFieldColors(
-        focusedContainerColor = MaterialTheme.colorScheme.surface,
-    )
-    val colors = when (searchBarState.currentValue) {
-        SearchBarValue.Collapsed -> defaultColors
-        else -> customColors
-    }
-
-    SearchBarDefaults.InputField(
-        modifier = modifier,
-        searchBarState = searchBarState,
-        textFieldState = textFieldState,
-        onSearch = {
-            coroutineScope.launch { searchBarState.animateToCollapsed() }
-            onSearch(it)
-        },
-        placeholder = placeholder,
-        leadingIcon = {
-            LeadingIcon(
-                isSearchBarExpanded = searchBarState.currentValue == SearchBarValue.Expanded,
-                onBack = {
-                    coroutineScope.launch { searchBarState.animateToCollapsed() }
-                }
-            )
-        },
-        trailingIcon = {
-            if (textFieldState.text.isNotEmpty()) {
-                ClearIconButton(onClick = { textFieldState.clearText() })
-            }
-        },
-        colors = colors,
     )
 }
 
@@ -274,27 +252,6 @@ fun SearchBar(
             unfocusedTextColor = MaterialTheme.colorScheme.onSurfaceVariant,
         ),
     )
-}
-
-@Composable
-private fun LeadingIcon(
-    isSearchBarExpanded: Boolean,
-    onBack: () -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    AnimatedContent(
-        modifier = modifier,
-        targetState = isSearchBarExpanded,
-    ) { searchBarExpanded ->
-        if (searchBarExpanded) {
-            ArrowBackIconButton(onClick = onBack)
-        } else {
-            Icon(
-                painter = painterResource(R.drawable.ic_search),
-                contentDescription = null,
-            )
-        }
-    }
 }
 
 @Composable

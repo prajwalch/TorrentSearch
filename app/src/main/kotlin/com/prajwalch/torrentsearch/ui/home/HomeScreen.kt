@@ -48,7 +48,7 @@ import com.prajwalch.torrentsearch.R
 import com.prajwalch.torrentsearch.models.Category
 import com.prajwalch.torrentsearch.models.SearchHistory
 import com.prajwalch.torrentsearch.models.SearchHistoryId
-import com.prajwalch.torrentsearch.ui.components.SearchBar
+import com.prajwalch.torrentsearch.ui.components.ExpandableSearchBar
 import com.prajwalch.torrentsearch.ui.components.SearchHistoryList
 import com.prajwalch.torrentsearch.ui.components.SearchHistoryListItem
 import com.prajwalch.torrentsearch.ui.components.SettingsIconButton
@@ -122,11 +122,12 @@ fun HomeScreen(
                     .collectLatest { viewModel.filterSearchHistories(query = it.toString()) }
             }
 
-            SearchBar(
-                searchBarState = searchBarState,
+            ExpandableSearchBar(
+                state = searchBarState,
                 textFieldState = textFieldState,
                 onSearch = {
                     onSearch(textFieldState.text.toString(), uiState.selectedCategory)
+                    coroutineScope.launch { searchBarState.animateToCollapsed() }
                 },
                 placeholder = { Text(stringResource(R.string.home_search_query_hint)) },
             ) {
