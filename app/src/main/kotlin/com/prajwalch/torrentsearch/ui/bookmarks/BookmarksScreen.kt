@@ -31,6 +31,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.retain.retain
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -86,7 +88,7 @@ fun BookmarksScreen(
     val torrentListState = rememberTorrentListState(itemsCount = { uiState.bookmarks.size })
 
     // Bookmark related states.
-    var selectedBookmark by remember { mutableStateOf<Torrent?>(null) }
+    var selectedBookmark by retain { mutableStateOf<Torrent?>(null) }
     val snackbarHostState = remember { SnackbarHostState() }
 
     selectedBookmark?.let { bookmark ->
@@ -134,7 +136,7 @@ fun BookmarksScreen(
         )
     }
 
-    var showDeleteAllConfirmationDialog by remember { mutableStateOf(false) }
+    var showDeleteAllConfirmationDialog by rememberSaveable { mutableStateOf(false) }
     if (showDeleteAllConfirmationDialog) {
         DeleteAllConfirmationDialog(
             onDismiss = { showDeleteAllConfirmationDialog = false },
@@ -146,7 +148,7 @@ fun BookmarksScreen(
     }
 
     val searchBarState = rememberCollapsibleSearchBarState(visibleOnInitial = false)
-    var showSortOptions by remember(uiState.sortOptions) { mutableStateOf(false) }
+    var showSortOptions by rememberSaveable(uiState.sortOptions) { mutableStateOf(false) }
 
     val topBarTitle: @Composable () -> Unit = @Composable {
         CollapsibleSearchBar(
