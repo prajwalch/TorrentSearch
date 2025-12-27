@@ -21,6 +21,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
@@ -60,7 +61,7 @@ fun SearchHistoryScreen(
     val coroutineScope = rememberCoroutineScope()
     val queryCopiedMessage = stringResource(R.string.search_history_query_copied_message)
 
-    var showDeleteAllConfirmationDialog by remember { mutableStateOf(false) }
+    var showDeleteAllConfirmationDialog by rememberSaveable { mutableStateOf(false) }
     if (showDeleteAllConfirmationDialog) {
         DeleteAllConfirmationDialog(
             onDismiss = { showDeleteAllConfirmationDialog = false },
