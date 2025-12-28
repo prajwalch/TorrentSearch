@@ -50,6 +50,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 
 import com.prajwalch.torrentsearch.BuildConfig
 import com.prajwalch.torrentsearch.R
+import com.prajwalch.torrentsearch.constants.TorrentSearchConstants
 import com.prajwalch.torrentsearch.domain.models.DarkTheme
 import com.prajwalch.torrentsearch.domain.models.MaxNumResults
 import com.prajwalch.torrentsearch.ui.components.ArrowBackIconButton
@@ -417,13 +418,10 @@ private fun AdvancedSettings(
 private fun About(modifier: Modifier = Modifier) {
     val uriHandler = LocalUriHandler.current
 
-    val repoUrl = "https://github.com/prajwalch/TorrentSearch"
-    val currentReleaseUrl = "$repoUrl/releases/tag/v${BuildConfig.VERSION_NAME}"
-
     Column(modifier = modifier) {
         SettingsSectionTitle(title = R.string.settings_section_about)
         SettingsListItem(
-            onClick = { uriHandler.openUri(uri = currentReleaseUrl) },
+            onClick = { uriHandler.openUri(uri = TorrentSearchConstants.GITHUB_RELEASE_URL) },
             icon = R.drawable.ic_info,
             headline = R.string.settings_version,
             supportingContent = "${BuildConfig.VERSION_NAME} (${BuildConfig.VERSION_CODE})",
@@ -435,10 +433,10 @@ private fun About(modifier: Modifier = Modifier) {
             },
         )
         SettingsListItem(
-            onClick = { uriHandler.openUri(uri = repoUrl) },
+            onClick = { uriHandler.openUri(uri = TorrentSearchConstants.GITHUB_REPO_URL) },
             icon = R.drawable.ic_code,
             headline = R.string.settings_source_code,
-            supportingContent = repoUrl.removePrefix("https://"),
+            supportingContent = TorrentSearchConstants.GITHUB_REPO_URL,
             trailingContent = {
                 Icon(
                     painter = painterResource(R.drawable.ic_open_in_new),

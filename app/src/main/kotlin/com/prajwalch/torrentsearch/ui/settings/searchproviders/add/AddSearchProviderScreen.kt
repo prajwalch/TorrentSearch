@@ -27,14 +27,12 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 
 import com.prajwalch.torrentsearch.R
+import com.prajwalch.torrentsearch.constants.TorrentSearchConstants
 import com.prajwalch.torrentsearch.ui.components.ArrowBackIconButton
 import com.prajwalch.torrentsearch.ui.components.TextUrl
 import com.prajwalch.torrentsearch.ui.components.TorznabConfigForm
 import com.prajwalch.torrentsearch.ui.settings.searchproviders.TorznabConfigViewModel
 import com.prajwalch.torrentsearch.ui.theme.spaces
-
-private const val HOW_TO_WIKI_URL =
-    "https://github.com/prajwalch/TorrentSearch/wiki/How-to-add-and-configure-Torznab-search-provider"
 
 @Composable
 fun AddSearchProviderScreen(
@@ -89,7 +87,7 @@ fun AddSearchProviderScreen(
             val uriHandler = LocalUriHandler.current
             TextUrl(
                 text = stringResource(R.string.search_providers_learn_how_to_add),
-                onClick = { uriHandler.openUri(HOW_TO_WIKI_URL) },
+                onClick = { uriHandler.openUri(TorrentSearchConstants.TORZNAB_HOW_TO_ADD_WIKI) },
                 color = MaterialTheme.colorScheme.secondary,
                 style = MaterialTheme.typography.bodyMedium,
             )
