@@ -10,19 +10,21 @@ import com.prajwalch.torrentsearch.network.HttpClient
 import com.prajwalch.torrentsearch.providers.SearchContext
 import com.prajwalch.torrentsearch.providers.SearchProvider
 
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.channelFlow
 import kotlinx.coroutines.launch
 
 import javax.inject.Inject
 
-class TorrentsRemoteDataSource @Inject constructor(private val httpClient: HttpClient) {
+class TorrentsRemoteDataSource @Inject constructor(
+    private val httpClient: HttpClient,
+) {
     fun searchTorrents(
         query: String,
         category: Category,
         searchProviders: List<SearchProvider>,
     ): Flow<Result<List<Torrent>>> = channelFlow {
-
         if (searchProviders.isEmpty()) {
             send(Result.success(emptyList()))
             return@channelFlow
@@ -33,31 +35,46 @@ class TorrentsRemoteDataSource @Inject constructor(private val httpClient: HttpC
         Log.d(TAG, "Encoded query = $encodedQuery")
 
         for (searchProvider in searchProviders) {
-            val searchProviderInfo = searchProvider.info
-            Log.i(TAG, "Launching ${searchProviderInfo.name} (${searchProviderInfo.id})")
-
+            Log.i(TAG, "Launching ${searchProvider.info.name}")
             launch {
-                try {
-                    val searchBatchResult = searchProvider.search(
-                        query = encodedQuery,
-                        context = searchContext,
-                    )
-                    send(Result.success(searchBatchResult))
-                } catch (cause: Throwable) {
-                    val searchProviderException = SearchProviderException(
-                        id = searchProviderInfo.id,
-                        name = searchProviderInfo.name,
-                        url = searchProviderInfo.url,
-                        cause = cause,
-                    )
-                    send(Result.failure(searchProviderException))
-                }
+                val result = runCatchingSearchProvider(
+                    provider = searchProvider,
+                    query = encodedQuery,
+                    context = searchContext,
+                )
+                send(result)
             }
         }
     }
 
     private fun encodeQuery(query: String): String {
         return Uri.encode(query) ?: query.replace(' ', '+').trim()
+    }
+
+    private suspend fun runCatchingSearchProvider(
+        provider: SearchProvider,
+        query: String,
+        context: SearchContext,
+    ): Result<List<Torrent>> = try {
+        val torrents = provider.search(query = query, context = context)
+        Log.i(TAG, "${provider.info.name} succeed with ${torrents.size} results")
+
+        Result.success(torrents)
+    } catch (e: CancellationException) {
+        Log.i(TAG, "${provider.info.name} got canceled")
+
+        // Never catch this as this is used to cancel coroutines.
+        throw e
+    } catch (cause: Throwable) {
+        Log.e(TAG, "${provider.info.name} crashed", cause)
+
+        val exception = SearchProviderException(
+            id = provider.info.id,
+            name = provider.info.name,
+            url = provider.info.url,
+            cause = cause,
+        )
+        Result.failure(exception)
     }
 
     private companion object {
