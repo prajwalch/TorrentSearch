@@ -27,6 +27,7 @@ import com.prajwalch.torrentsearch.providers.TorrentsCSV
 import com.prajwalch.torrentsearch.providers.TorznabSearchProvider
 import com.prajwalch.torrentsearch.providers.UIndex
 import com.prajwalch.torrentsearch.providers.XXXClub
+import com.prajwalch.torrentsearch.providers.XXXTracker
 import com.prajwalch.torrentsearch.providers.Yts
 
 import kotlinx.coroutines.flow.Flow
@@ -59,6 +60,7 @@ class SearchProvidersRepository @Inject constructor(
         TorrentsCSV(),
         UIndex(),
         XXXClub(),
+        XXXTracker(),
         Yts(),
     )
 
