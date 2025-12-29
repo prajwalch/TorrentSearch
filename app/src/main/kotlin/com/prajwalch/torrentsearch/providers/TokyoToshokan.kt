@@ -25,7 +25,7 @@ class TokyoToshokan : SearchProvider {
     override suspend fun search(query: String, context: SearchContext): List<Torrent> {
         val requestUrl = buildString {
             append(info.url)
-            append("/search.pho")
+            append("/search.php")
             append("?terms=$query")
             // Type = Anime (1)
             append("&type=1")
