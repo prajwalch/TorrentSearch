@@ -13,6 +13,8 @@ object DateUtils {
 
     fun formatIsoDate(date: String) = dateFormatter.formatIsoDate(date)
 
+    fun formatRFC1123Date(date: String) = dateFormatter.formatRFC1123Date(date)
+
     fun formatTodayDate() = dateFormatter.formatTodayDate()
 
     fun formatYesterdayDate() = dateFormatter.formatYesterdayDate()

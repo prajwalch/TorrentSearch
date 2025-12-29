@@ -16,6 +16,7 @@ import com.prajwalch.torrentsearch.providers.Nyaa
 import com.prajwalch.torrentsearch.providers.SearchProvider
 import com.prajwalch.torrentsearch.providers.SearchProviderId
 import com.prajwalch.torrentsearch.providers.SearchProviderInfo
+import com.prajwalch.torrentsearch.providers.SubsPlease
 import com.prajwalch.torrentsearch.providers.Sukebei
 import com.prajwalch.torrentsearch.providers.ThePirateBay
 import com.prajwalch.torrentsearch.providers.TheRarBg
@@ -47,6 +48,7 @@ class SearchProvidersRepository @Inject constructor(
         LimeTorrents(),
         MyPornClub(),
         Nyaa(),
+        SubsPlease(),
         Sukebei(),
         ThePirateBay(),
         TheRarBg(),

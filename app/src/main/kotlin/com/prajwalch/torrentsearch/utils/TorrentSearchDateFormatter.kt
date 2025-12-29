@@ -43,6 +43,9 @@ private object DateFormats {
 
     /** Format used to parse ISO-8601 date in legacy date formatter. */
     const val LEGACY_ISO_8601 = "yyyy-MM-dd'T'HH:mm:ss.SSSZ"
+
+    /** Format used to parse RFC-1123 date in legacy date formatter. */
+    const val LEGACY_RFC_1123 = "EEE, dd MMM yyyy HH:mm:ss z"
 }
 
 /** The common interface for both legacy and modern date formatters. */
@@ -62,6 +65,8 @@ private interface DateFormatter {
      * @return Date formatted as [DateFormats.OUTPUT_FORMAT], e.g., `"11 Jun 2025"`.
      */
     fun formatIsoDate(date: String): String
+
+    fun formatRFC1123Date(date: String): String
 
     fun formatTodayDate(): String
 
@@ -97,6 +102,13 @@ private class ModernDateFormatter : DateFormatter {
     override fun formatIsoDate(date: String): String {
         val date = OffsetDateTime.parse(date)
         return outputFormatter.format(date)
+    }
+
+    override fun formatRFC1123Date(date: String): String {
+        val inputFormatter = DateTimeFormatter.RFC_1123_DATE_TIME
+        val parsedDate = LocalDate.parse(date, inputFormatter) ?: return date
+
+        return parsedDate.format(outputFormatter)
     }
 
     override fun formatTodayDate(): String {
@@ -137,6 +149,10 @@ private class LegacyDateFormatter : DateFormatter {
 
     override fun formatIsoDate(date: String): String {
         return formatDate(pattern = DateFormats.LEGACY_ISO_8601, date = date)
+    }
+
+    override fun formatRFC1123Date(date: String): String {
+        return formatDate(pattern = DateFormats.LEGACY_RFC_1123, date = date)
     }
 
     override fun formatTodayDate(): String {
