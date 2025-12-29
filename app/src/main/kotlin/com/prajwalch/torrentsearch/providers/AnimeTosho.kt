@@ -81,7 +81,7 @@ class AnimeTosho : SearchProvider {
             raw.startsWith("Yesterday") -> DateUtils.formatYesterdayDate()
             else -> {
                 raw
-                    .split(' ', limit = 1)
+                    .split(' ', limit = 2)
                     .firstOrNull()
                     ?.let { DateUtils.formatDayMonthYear(it) }
                     ?: raw
