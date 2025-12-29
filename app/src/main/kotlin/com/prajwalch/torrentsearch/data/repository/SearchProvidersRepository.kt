@@ -9,6 +9,7 @@ import com.prajwalch.torrentsearch.domain.models.TorznabConfig
 import com.prajwalch.torrentsearch.providers.AnimeTosho
 import com.prajwalch.torrentsearch.providers.BitSearch
 import com.prajwalch.torrentsearch.providers.Eztv
+import com.prajwalch.torrentsearch.providers.InternetArchive
 import com.prajwalch.torrentsearch.providers.Knaben
 import com.prajwalch.torrentsearch.providers.LimeTorrents
 import com.prajwalch.torrentsearch.providers.MyPornClub
@@ -44,6 +45,7 @@ class SearchProvidersRepository @Inject constructor(
         AnimeTosho(),
         BitSearch(),
         Eztv(),
+        InternetArchive(),
         Knaben(),
         LimeTorrents(),
         MyPornClub(),
