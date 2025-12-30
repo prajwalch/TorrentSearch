@@ -6,6 +6,7 @@ import com.prajwalch.torrentsearch.data.local.entities.toDomain
 import com.prajwalch.torrentsearch.data.local.entities.toSearchProviderInfo
 import com.prajwalch.torrentsearch.domain.models.Category
 import com.prajwalch.torrentsearch.domain.models.TorznabConfig
+import com.prajwalch.torrentsearch.providers.AniRena
 import com.prajwalch.torrentsearch.providers.AnimeTosho
 import com.prajwalch.torrentsearch.providers.BitSearch
 import com.prajwalch.torrentsearch.providers.Eztv
@@ -44,6 +45,7 @@ class SearchProvidersRepository @Inject constructor(
     private val torznabConfigDao: TorznabConfigDao,
 ) {
     private val builtins = listOf(
+        AniRena(),
         AnimeTosho(),
         BitSearch(),
         Eztv(),
