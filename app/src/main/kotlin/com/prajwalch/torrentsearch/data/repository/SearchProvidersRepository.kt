@@ -22,6 +22,7 @@ import com.prajwalch.torrentsearch.providers.Sukebei
 import com.prajwalch.torrentsearch.providers.ThePirateBay
 import com.prajwalch.torrentsearch.providers.TheRarBg
 import com.prajwalch.torrentsearch.providers.TokyoToshokan
+import com.prajwalch.torrentsearch.providers.TorrentDatabase
 import com.prajwalch.torrentsearch.providers.TorrentDownloads
 import com.prajwalch.torrentsearch.providers.TorrentsCSV
 import com.prajwalch.torrentsearch.providers.TorznabSearchProvider
@@ -56,6 +57,7 @@ class SearchProvidersRepository @Inject constructor(
         ThePirateBay(),
         TheRarBg(),
         TokyoToshokan(),
+        TorrentDatabase(),
         TorrentDownloads(),
         TorrentsCSV(),
         UIndex(),
