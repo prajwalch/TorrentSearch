@@ -37,7 +37,11 @@ class SubsPlease : SearchProvider {
         val responseJson = context.httpClient.getJson(url = requestUrl) ?: return emptyList()
 
         return withContext(Dispatchers.Default) {
-            parseResponseObject(responseObject = responseJson.asObject())
+            try {
+                parseResponseObject(responseObject = responseJson.asObject())
+            } catch (_: IllegalArgumentException) {
+                emptyList()
+            }
         }
     }
 
