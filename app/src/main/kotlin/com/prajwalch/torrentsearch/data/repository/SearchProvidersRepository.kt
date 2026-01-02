@@ -10,6 +10,7 @@ import com.prajwalch.torrentsearch.providers.AniRena
 import com.prajwalch.torrentsearch.providers.AnimeTosho
 import com.prajwalch.torrentsearch.providers.BitSearch
 import com.prajwalch.torrentsearch.providers.Eztv
+import com.prajwalch.torrentsearch.providers.FileMood
 import com.prajwalch.torrentsearch.providers.InternetArchive
 import com.prajwalch.torrentsearch.providers.Knaben
 import com.prajwalch.torrentsearch.providers.LimeTorrents
@@ -50,6 +51,7 @@ class SearchProvidersRepository @Inject constructor(
         AnimeTosho(),
         BitSearch(),
         Eztv(),
+        FileMood(),
         InternetArchive(),
         Knaben(),
         LimeTorrents(),
