@@ -25,23 +25,21 @@ class TorrentsRepository @Inject constructor(
         val successes = mutableListOf<Torrent>()
         val failures = mutableListOf<Throwable>()
 
-        remoteDataSource
-            .searchTorrents(
-                query = query,
-                category = category,
-                searchProviders = searchProviders,
+        remoteDataSource.searchTorrents(
+            query = query,
+            category = category,
+            searchProviders = searchProviders,
+        ).collect { searchBatchResult ->
+            searchBatchResult.fold(
+                onSuccess = { successes.addAll(it) },
+                onFailure = { failures.add(it) }
             )
-            .collect { searchBatchResult ->
-                searchBatchResult.fold(
-                    onSuccess = { successes.addAll(it) },
-                    onFailure = { failures.add(it) }
-                )
 
-                val searchResults = SearchResults(
-                    successes = successes.toImmutableList(),
-                    failures = failures.toImmutableList(),
-                )
-                emit(searchResults)
-            }
+            val searchResults = SearchResults(
+                successes = successes.toImmutableList(),
+                failures = failures.toImmutableList(),
+            )
+            emit(searchResults)
+        }
     }.flowOn(Dispatchers.IO)
 }
