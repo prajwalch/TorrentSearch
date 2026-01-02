@@ -9,6 +9,7 @@ import androidx.lifecycle.viewModelScope
 import com.prajwalch.torrentsearch.data.repository.BookmarksRepository
 import com.prajwalch.torrentsearch.data.repository.SearchHistoryRepository
 import com.prajwalch.torrentsearch.data.repository.SettingsRepository
+import com.prajwalch.torrentsearch.domain.SearchTorrentsUseCase
 import com.prajwalch.torrentsearch.domain.models.Category
 import com.prajwalch.torrentsearch.domain.models.SearchResults
 import com.prajwalch.torrentsearch.domain.models.SortCriteria
@@ -16,7 +17,6 @@ import com.prajwalch.torrentsearch.domain.models.SortOptions
 import com.prajwalch.torrentsearch.domain.models.SortOrder
 import com.prajwalch.torrentsearch.domain.models.Torrent
 import com.prajwalch.torrentsearch.network.ConnectivityChecker
-import com.prajwalch.torrentsearch.domain.SearchTorrentsUseCase
 import com.prajwalch.torrentsearch.utils.createSortComparator
 
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -28,6 +28,7 @@ import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.WhileSubscribed
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.onCompletion
@@ -264,7 +265,7 @@ class SearchViewModel @Inject constructor(
         searchTorrentsUseCase(query = query, category = category)
             .onStart { onSearchStart() }
             .onCompletion { onSearchCompletion(cause = it) }
-            .collect { onSearchResultsReceived(searchResults = it) }
+            .collectLatest { onSearchResultsReceived(searchResults = it) }
     }
 
     /** Invoked when search is about to begin. */
