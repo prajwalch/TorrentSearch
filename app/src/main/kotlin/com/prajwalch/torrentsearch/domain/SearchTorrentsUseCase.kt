@@ -26,41 +26,38 @@ class SearchTorrentsUseCase @Inject constructor(
         val enabledSearchProviders = getEnabledSearchProviders(category = category)
         val limit = getSearchResultsLimit()
 
-        torrentsRepository
-            .search(
-                query = query,
-                category = category,
-                searchProviders = enabledSearchProviders,
-            )
-            .transformWhile {
-                if (limit.isUnlimited()) {
-                    emit(it)
-                    return@transformWhile true
-                }
+        torrentsRepository.search(
+            query = query,
+            category = category,
+            searchProviders = enabledSearchProviders,
+        ).transformWhile {
+            if (limit.isUnlimited()) {
+                emit(it)
+                return@transformWhile true
+            }
 
-                // If results already reached the limit, emit it and cancel the search.
-                if (it.successes.size == limit.n) {
-                    emit(it)
-                    return@transformWhile false
-                }
-
-                // If results is yet to reach the limit, emit it and continue the search.
-                if (it.successes.size < limit.n) {
-                    emit(it)
-                    // Continue search since we don't receive sufficient results yet.
-                    return@transformWhile true
-                }
-
-                // If results crossed the limit, take the number of results set
-                // by the limit, emit it and then cancel the search.
-                val searchResults = it.copy(
-                    successes = it.successes.take(limit.n).toImmutableList()
-                )
-                emit(searchResults)
-
+            // If results already reached the limit, emit it and cancel the search.
+            if (it.successes.size == limit.n) {
+                emit(it)
                 return@transformWhile false
             }
-            .collect { emit(it) }
+
+            // If results is yet to reach the limit, emit it and continue the search.
+            if (it.successes.size < limit.n) {
+                emit(it)
+                // Continue search since we don't receive sufficient results yet.
+                return@transformWhile true
+            }
+
+            // If results crossed the limit, take the number of results set
+            // by the limit, emit it and then cancel the search.
+            val searchResults = it.copy(
+                successes = it.successes.take(limit.n).toImmutableList()
+            )
+            emit(searchResults)
+
+            return@transformWhile false
+        }.collect { emit(it) }
     }
 
     private suspend fun getEnabledSearchProviders(category: Category): List<SearchProvider> {
