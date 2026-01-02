@@ -14,16 +14,11 @@ data class Torrent(
     val seeders: UInt,
     /** Number of peers. */
     val peers: UInt,
-    /** Name of the provider/source from where torrent is extracted. */
+    /** Name of the search provider from where torrent is searched. */
     val providerName: String,
     /** Torrent upload date (in pretty format). */
     val uploadDate: String,
-    /**
-     * Category of the torrent.
-     *
-     * NOTE: The nullable is made only to support TorrentsCSV.
-     * TorrentsCSV doesn't return any category.
-     */
+    /** Category of the torrent. */
     val category: Category? = null,
     /** URL of the page where the torrent details is available. */
     val descriptionPageUrl: String,
@@ -34,7 +29,7 @@ data class Torrent(
      */
     private val infoHashOrMagnetUri: InfoHashOrMagnetUri,
 ) {
-    /** Returns `true` if this torrent is NSFW. */
+    /** Returns `true` if this torrent is NSFW (Not Safe For Work). */
     fun isNSFW() = category?.isNSFW ?: true
 
     /** Returns `true` if this torrent is dead. */
