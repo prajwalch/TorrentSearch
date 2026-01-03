@@ -28,8 +28,8 @@ import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.WhileSubscribed
-import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.conflate
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onStart
@@ -266,7 +266,8 @@ class SearchViewModel @Inject constructor(
         searchTorrentsUseCase(query = query, category = category)
             .onStart { onSearchStart() }
             .onCompletion { onSearchCompletion(cause = it) }
-            .collectLatest { onSearchResultsReceived(searchResults = it) }
+            .conflate()
+            .collect { onSearchResultsReceived(searchResults = it) }
     }
 
     /** Invoked when search is about to begin. */
