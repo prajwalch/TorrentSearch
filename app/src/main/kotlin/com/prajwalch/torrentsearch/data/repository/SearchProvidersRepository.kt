@@ -9,6 +9,7 @@ import com.prajwalch.torrentsearch.domain.models.TorznabConfig
 import com.prajwalch.torrentsearch.providers.AniRena
 import com.prajwalch.torrentsearch.providers.AnimeTosho
 import com.prajwalch.torrentsearch.providers.BitSearch
+import com.prajwalch.torrentsearch.providers.Dmhy
 import com.prajwalch.torrentsearch.providers.Eztv
 import com.prajwalch.torrentsearch.providers.FileMood
 import com.prajwalch.torrentsearch.providers.InternetArchive
@@ -50,6 +51,7 @@ class SearchProvidersRepository @Inject constructor(
         AniRena(),
         AnimeTosho(),
         BitSearch(),
+        Dmhy(),
         Eztv(),
         FileMood(),
         InternetArchive(),
