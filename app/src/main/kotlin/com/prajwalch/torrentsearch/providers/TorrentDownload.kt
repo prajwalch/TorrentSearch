@@ -60,7 +60,7 @@ class TorrentDownload : SearchProvider {
 
         val descriptionPageRelativeUrl = nameHref.attr("href")
         val descriptionPageUrl = "${info.url}$descriptionPageRelativeUrl"
-        val infoHash = descriptionPageUrl
+        val infoHash = descriptionPageRelativeUrl
             .split('/')
             .getOrNull(1)
             ?.let(InfoHashOrMagnetUri::InfoHash)
