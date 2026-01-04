@@ -21,7 +21,6 @@ import io.ktor.http.contentType
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.io.IOException
-import kotlinx.serialization.SerializationException
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonElement
 
@@ -183,7 +182,7 @@ object HttpClient {
             val json = Json.parseToJsonElement(jsonString)
             Log.i(TAG, "Json parsed successfully")
             json
-        } catch (e: SerializationException) {
+        } catch (e: IllegalArgumentException) {
             Log.e(TAG, "Json parsing failed, ${e.message}")
             null
         }
