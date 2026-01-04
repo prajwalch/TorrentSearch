@@ -10,6 +10,7 @@ import io.ktor.client.plugins.HttpRequestRetry
 import io.ktor.client.plugins.HttpRequestTimeoutException
 import io.ktor.client.plugins.HttpTimeout
 import io.ktor.client.plugins.ResponseException
+import io.ktor.client.plugins.cache.HttpCache
 import io.ktor.client.request.get
 import io.ktor.client.request.header
 import io.ktor.client.request.post
@@ -28,17 +29,23 @@ import kotlinx.serialization.json.JsonElement
 object HttpClient {
     private const val TAG = "TorrentSearchHttpClient"
 
-    /** Time period required to process an HTTP call: from sending a request to
-     * receiving a response.
+    /** Maximum number of retries a client performs when a request fails. */
+    private const val MAX_RETRIES = 3
+
+    /**
+     * Time period in which a client should process a HTTP call:
+     * from sending a request to receiving a response.
      */
     private const val REQUEST_TIMEOUT_MS = 20_000L
 
-    /** Time period in which a client should establish a connection with a
+    /**
+     * Time period in which a client should establish a connection with a
      * server.
      */
     private const val CONNECT_TIMEOUT_MS = 10_000L
 
-    /** Maximum time of inactivity between two data packets when exchanging
+    /**
+     * Maximum time of inactivity between two data packets when exchanging
      * data with a server.
      */
     private const val SOCKET_TIMEOUT_MS = 15_000L
@@ -49,20 +56,16 @@ object HttpClient {
     /** Creates and configures the inner/underlying http client. */
     private fun createClient() = HttpClient(OkHttp) {
         install(HttpRequestRetry) {
-            retryOnExceptionIf(maxRetries = 3) { _, cause ->
-                when (cause) {
-                    is HttpRequestTimeoutException -> true
-                    is ConnectTimeoutException -> true
-                    is SocketTimeoutException -> true
-                    else -> false
-                }
-            }
+            retryOnServerErrors(maxRetries = MAX_RETRIES)
+            retryOnException(maxRetries = MAX_RETRIES, retryOnTimeout = true)
+            exponentialDelay()
         }
         install(HttpTimeout) {
             requestTimeoutMillis = REQUEST_TIMEOUT_MS
             connectTimeoutMillis = CONNECT_TIMEOUT_MS
             socketTimeoutMillis = SOCKET_TIMEOUT_MS
         }
+        install(HttpCache)
     }
 
     /** Completely closes the connection. */
