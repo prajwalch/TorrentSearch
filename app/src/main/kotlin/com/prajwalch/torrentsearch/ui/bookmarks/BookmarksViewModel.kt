@@ -20,6 +20,9 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
+import java.io.InputStream
+import java.io.OutputStream
+
 import javax.inject.Inject
 import kotlin.time.Duration.Companion.seconds
 
@@ -91,5 +94,19 @@ class BookmarksViewModel @Inject constructor(
     /** Filters the bookmarks using the given query. */
     fun filterBookmarks(query: String) {
         filterQuery.value = query
+    }
+
+    /** Attempts to import bookmarks from the given stream. */
+    fun importBookmarks(inputStream: InputStream) {
+        viewModelScope.launch {
+            bookmarksRepository.importBookmarks(inputStream = inputStream)
+        }
+    }
+
+    /** Attempts to export bookmarks to the given stream. */
+    fun exportBookmarks(outputStream: OutputStream) {
+        viewModelScope.launch {
+            bookmarksRepository.exportBookmarks(outputStream = outputStream)
+        }
     }
 }

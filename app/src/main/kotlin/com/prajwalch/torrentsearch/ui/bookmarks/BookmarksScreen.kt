@@ -1,7 +1,10 @@
 package com.prajwalch.torrentsearch.ui.bookmarks
 
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.RowScope
@@ -12,9 +15,11 @@ import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
@@ -39,6 +44,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalClipboard
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
@@ -48,17 +54,17 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 
 import com.prajwalch.torrentsearch.R
-import com.prajwalch.torrentsearch.extensions.copyText
 import com.prajwalch.torrentsearch.domain.models.MagnetUri
 import com.prajwalch.torrentsearch.domain.models.Torrent
+import com.prajwalch.torrentsearch.extensions.copyText
 import com.prajwalch.torrentsearch.ui.components.AnimatedScrollToTopFAB
 import com.prajwalch.torrentsearch.ui.components.ArrowBackIconButton
 import com.prajwalch.torrentsearch.ui.components.CollapsibleSearchBar
 import com.prajwalch.torrentsearch.ui.components.DeleteForeverIconButton
 import com.prajwalch.torrentsearch.ui.components.EmptyPlaceholder
 import com.prajwalch.torrentsearch.ui.components.LazyColumnWithScrollbar
+import com.prajwalch.torrentsearch.ui.components.RoundedDropdownMenu
 import com.prajwalch.torrentsearch.ui.components.SearchIconButton
-import com.prajwalch.torrentsearch.ui.components.SettingsIconButton
 import com.prajwalch.torrentsearch.ui.components.SortDropdownMenu
 import com.prajwalch.torrentsearch.ui.components.SortIconButton
 import com.prajwalch.torrentsearch.ui.components.TorrentActionsBottomSheet
@@ -68,6 +74,19 @@ import com.prajwalch.torrentsearch.ui.rememberTorrentListState
 import com.prajwalch.torrentsearch.ui.theme.spaces
 
 import kotlinx.coroutines.launch
+
+/** Name of the export file. */
+private const val BOOKMARKS_EXPORT_FILE_NAME = "bookmarks.json"
+
+/** Export file type. */
+private const val BOOKMARKS_EXPORT_FILE_TYPE = "application/json"
+
+/** Activity contract which allows the user to choose the export location. */
+private val CreateDocumentContract =
+    ActivityResultContracts.CreateDocument(BOOKMARKS_EXPORT_FILE_TYPE)
+
+/** Activity contract which allows the user to choose the exported file. */
+private val GetContentContract = ActivityResultContracts.GetContent()
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -82,6 +101,25 @@ fun BookmarksScreen(
     viewModel: BookmarksViewModel = hiltViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+
+    val context = LocalContext.current
+    val contentResolver = context.contentResolver
+
+    // TODO: Proper error handling.
+    val importFileChooserLauncher = rememberLauncherForActivityResult(
+        contract = GetContentContract,
+    ) { fileUri ->
+        fileUri
+            ?.let(contentResolver::openInputStream)
+            ?.let(viewModel::importBookmarks)
+    }
+    val exportLocationChooserLauncher = rememberLauncherForActivityResult(
+        contract = CreateDocumentContract,
+    ) { fileUri ->
+        fileUri
+            ?.let(contentResolver::openOutputStream)
+            ?.let(viewModel::exportBookmarks)
+    }
 
     val coroutineScope = rememberCoroutineScope()
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
@@ -148,8 +186,6 @@ fun BookmarksScreen(
     }
 
     val searchBarState = rememberCollapsibleSearchBarState(visibleOnInitial = false)
-    var showSortOptions by rememberSaveable(uiState.sortOptions) { mutableStateOf(false) }
-
     val topBarTitle: @Composable () -> Unit = @Composable {
         CollapsibleSearchBar(
             state = searchBarState,
@@ -170,6 +206,8 @@ fun BookmarksScreen(
         }
     }
     val topBarActions: @Composable RowScope.() -> Unit = @Composable {
+        var showSortOptions by rememberSaveable(uiState.sortOptions) { mutableStateOf(false) }
+        var showAdditionalActions by rememberSaveable { mutableStateOf(false) }
         val enableBookmarksActions = uiState.bookmarks.isNotEmpty() || !searchBarState.isTextBlank
 
         if (!searchBarState.isVisible) {
@@ -195,7 +233,28 @@ fun BookmarksScreen(
                 enabled = enableBookmarksActions,
             )
         }
-        SettingsIconButton(onClick = onNavigateToSettings)
+        Box {
+            IconButton(onClick = { showAdditionalActions = true }) {
+                Icon(
+                    painter = painterResource(R.drawable.ic_more_vert),
+                    contentDescription = null,
+                )
+            }
+            TopBarAdditionalActionsDropdownMenu(
+                expanded = showAdditionalActions,
+                onDismiss = { showAdditionalActions = false },
+                onImportBookmarks = {
+                    // When mime type is given it restricts other type of files
+                    // from being selectable.
+                    importFileChooserLauncher.launch(BOOKMARKS_EXPORT_FILE_TYPE)
+                },
+                onExportBookmarks = {
+                    // Takes file name to create on the selected location.
+                    exportLocationChooserLauncher.launch(BOOKMARKS_EXPORT_FILE_NAME)
+                },
+                onNavigateToSettings = onNavigateToSettings,
+            )
+        }
     }
 
     Scaffold(
@@ -238,6 +297,57 @@ fun BookmarksScreen(
                 lazyListState = torrentListState.lazyListState,
             )
         }
+    }
+}
+
+@Composable
+private fun TopBarAdditionalActionsDropdownMenu(
+    expanded: Boolean,
+    onDismiss: () -> Unit,
+    onImportBookmarks: () -> Unit,
+    onExportBookmarks: () -> Unit,
+    onNavigateToSettings: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    fun actionWithDismiss(action: () -> Unit) = {
+        action()
+        onDismiss()
+    }
+    RoundedDropdownMenu(
+        modifier = modifier,
+        expanded = expanded,
+        onDismissRequest = onDismiss,
+    ) {
+        DropdownMenuItem(
+            text = { Text(stringResource(R.string.bookmarks_action_import)) },
+            onClick = actionWithDismiss(onImportBookmarks),
+            leadingIcon = {
+                Icon(
+                    painter = painterResource(R.drawable.ic_download),
+                    contentDescription = stringResource(R.string.bookmarks_action_import),
+                )
+            }
+        )
+        DropdownMenuItem(
+            text = { Text(stringResource(R.string.bookmarks_action_export)) },
+            onClick = actionWithDismiss(onExportBookmarks),
+            leadingIcon = {
+                Icon(
+                    painter = painterResource(R.drawable.ic_upload),
+                    contentDescription = stringResource(R.string.bookmarks_action_export),
+                )
+            }
+        )
+        DropdownMenuItem(
+            text = { Text(stringResource(R.string.bookmarks_action_settings)) },
+            onClick = actionWithDismiss(onNavigateToSettings),
+            leadingIcon = {
+                Icon(
+                    painter = painterResource(R.drawable.ic_settings),
+                    contentDescription = stringResource(R.string.bookmarks_action_settings),
+                )
+            },
+        )
     }
 }
 

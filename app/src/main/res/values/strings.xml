@@ -76,6 +76,9 @@
     </plurals>
     <string name="bookmarks_search_query_hint">Search bookmarks</string>
     <string name="bookmarks_action_delete_all">Delete all</string>
+    <string name="bookmarks_action_import">Import from file</string>
+    <string name="bookmarks_action_export">Export to file</string>
+    <string name="bookmarks_action_settings">Settings</string>
     <string name="bookmarks_dialog_title_delete_all">Delete all bookmarks?</string>
     <string name="bookmarks_dialog_message_delete_all">Bookmarks will be permanently removed</string>
     <string name="bookmarks_button_delete">Delete</string>

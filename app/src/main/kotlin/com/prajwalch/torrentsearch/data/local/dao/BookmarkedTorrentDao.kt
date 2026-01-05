@@ -15,6 +15,9 @@ interface BookmarkedTorrentDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(bookmarkedTorrent: BookmarkedTorrent)
 
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    suspend fun insertAll(bookmarkedTorrents: List<BookmarkedTorrent>)
+
     @Query("SELECT * FROM bookmarks ORDER by id DESC")
     fun observeAll(): Flow<List<BookmarkedTorrent>>
 

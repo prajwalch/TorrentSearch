@@ -7,11 +7,13 @@ import androidx.room.PrimaryKey
 import com.prajwalch.torrentsearch.domain.models.Category
 import com.prajwalch.torrentsearch.domain.models.InfoHashOrMagnetUri
 import com.prajwalch.torrentsearch.domain.models.Torrent
+import kotlinx.serialization.Serializable
 
 @Entity(
     tableName = "bookmarks",
     indices = [Index("name", unique = true)],
 )
+@Serializable
 data class BookmarkedTorrent(
     @PrimaryKey(autoGenerate = true)
     val id: Long = 0,
