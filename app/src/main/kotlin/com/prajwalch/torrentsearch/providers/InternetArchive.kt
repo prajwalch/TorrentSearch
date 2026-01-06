@@ -53,6 +53,7 @@ class InternetArchive : SearchProvider {
         this.append("%20AND%20")
         this.append("mediatype:%28")
         when (category) {
+            Category.All -> throw IllegalStateException("Category.All is already covered")
             Category.Anime,
             Category.Games,
             Category.Music,
