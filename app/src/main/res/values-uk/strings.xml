@@ -125,4 +125,7 @@
     <string name="settings_save_search_history_summary">Зберігає останні пошукові запити локально для швидкого доступу та пропозицій</string>
     <string name="main_cannot_search_using_url_message">Не вдається шукати за URL-адресою</string>
     <string name="main_cannot_search_blank_query_message">Неможливо шукати, використовуючи пустий запит</string>
+    <string name="bookmarks_action_import">Імпорт з файлу</string>
+    <string name="bookmarks_action_export">Експорт у файл</string>
+    <string name="bookmarks_action_settings">Налаштування</string>
 </resources>
