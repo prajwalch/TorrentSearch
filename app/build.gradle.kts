@@ -18,8 +18,8 @@ android {
         applicationId = "com.prajwalch.torrentsearch"
         minSdk = 25
         targetSdk = 36
-        versionCode = 12
-        versionName = "0.4.5"
+        versionCode = 13
+        versionName = "0.4.6"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
