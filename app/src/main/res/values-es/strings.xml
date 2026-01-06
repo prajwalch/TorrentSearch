@@ -12,7 +12,6 @@
     <string name="action_sort_order_ascending">Ascendiente</string>
     <string name="action_sort_order_descending">Descendiente</string>
     <string name="category_all">Todo</string>
-    <string name="safety_status_safe">Seguro</string>
     <string name="safety_status_unsafe">Inseguro</string>
     <string name="category_books">Libros</string>
     <string name="category_games">Juegos</string>
@@ -72,7 +71,6 @@
     <string name="search_providers_label_name">Nombre</string>
     <string name="search_providers_url_validation_error">URL no válida</string>
     <string name="search_providers_label_category">Categoría</string>
-    <string name="search_providers_label_safety_status">Estado de seguridad</string>
     <string name="search_providers_section_additional_options">Opciones adicionales</string>
     <string name="settings_screen_title">Opciones</string>
     <string name="settings_section_appearance">Apariencia</string>

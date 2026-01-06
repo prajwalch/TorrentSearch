@@ -3,7 +3,6 @@
     <string name="button_done">Fertig</string>
     <string name="button_cancel">Abbrechen</string>
     <string name="nsfw">NSFW</string>
-    <string name="safety_status_safe">Sicher</string>
     <string name="safety_status_unsafe">Unsicher</string>
     <string name="bookmarked_message">Lesezeichen</string>
     <string name="main_cannot_search_using_url_message">Suche über URL nicht möglich</string>
@@ -86,7 +85,6 @@
     <string name="search_providers_url_validation_error">Keine gültige URL</string>
     <string name="search_providers_label_api_key">API Schlüssel</string>
     <string name="search_providers_label_category">Kategorie</string>
-    <string name="search_providers_label_safety_status">Sicherheits Status</string>
     <string name="search_providers_section_additional_options">Weitere Optionen</string>
     <string name="settings_screen_title">Einstellungen</string>
     <string name="settings_section_appearance">Darstellung</string>

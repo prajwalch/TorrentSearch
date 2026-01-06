@@ -3,7 +3,6 @@
     <string name="button_done">সম্পন্ন</string>
     <string name="button_cancel">বাতিল</string>
     <string name="nsfw">অনিরাপদ</string>
-    <string name="safety_status_safe">নিরাপদ</string>
     <string name="safety_status_unsafe">অনিরাপদ</string>
     <string name="bookmarked_message">পুস্তক-চিহ্ন</string>
     <string name="main_cannot_search_using_url_message">URL দ্বারা অনুসন্ধান করা যাচ্ছে না</string>
@@ -86,7 +85,6 @@
     <string name="search_providers_url_validation_error">ভুল লিংক</string>
     <string name="search_providers_label_api_key">APi চাবি</string>
     <string name="search_providers_label_category">বিভাগ</string>
-    <string name="search_providers_label_safety_status">নিরাপত্তা অবস্থা</string>
     <string name="search_providers_section_additional_options">অতিরিক্ত বিকল্প</string>
     <string name="settings_screen_title">সেটিংস</string>
     <string name="settings_section_appearance">চেহারা</string>

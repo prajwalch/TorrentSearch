@@ -5,7 +5,6 @@
     <string name="button_cancel">Cancel</string>
     <string name="nsfw">NSFW</string>
     <string name="torznab" translatable="false">Torznab</string>
-    <string name="safety_status_safe">Safe</string>
     <string name="safety_status_unsafe">Unsafe</string>
     <string name="bookmarked_message">Bookmarked</string>
 
@@ -108,7 +107,6 @@
     <string name="search_providers_url_validation_error">Not a valid URL</string>
     <string name="search_providers_label_api_key">API key</string>
     <string name="search_providers_label_category">Category</string>
-    <string name="search_providers_label_safety_status">Safety status</string>
     <string name="search_providers_section_additional_options">Additional options</string>
 
     <string name="settings_screen_title">Settings</string>

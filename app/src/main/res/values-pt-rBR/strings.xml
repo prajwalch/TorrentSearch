@@ -60,7 +60,6 @@
     <string name="search_providers_url_validation_error">Não é uma URL válida</string>
     <string name="search_providers_label_api_key">Chave de API</string>
     <string name="search_providers_label_category">Categoria</string>
-    <string name="search_providers_label_safety_status">Status de segurança</string>
     <string name="search_providers_section_additional_options">Configurações adicionais</string>
     <string name="settings_section_sort_criteria">Critério de ordenação</string>
     <string name="button_cancel">Cancelar</string>
@@ -112,7 +111,6 @@
     <string name="settings_dark_theme_follow_system">Conforme sistema</string>
     <string name="settings_enable_nsfw_mode_summary">Quando desativado, oculta categorias +18 e resultados de pesquisa.</string>
     <string name="search_providers_screen_title">Provedores de busca</string>
-    <string name="safety_status_safe">Seguro</string>
     <string name="bookmarked_message">Adicionado aos favoritos</string>
     <string name="bookmarks_dialog_title_delete_all">Apagar todos os favoritos?</string>
     <string name="bookmarks_dialog_message_delete_all">Os favoritos serão removidos permanentemente</string>

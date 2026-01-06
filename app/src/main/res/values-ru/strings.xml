@@ -3,7 +3,6 @@
     <string name="button_done">Готово</string>
     <string name="button_cancel">Отменить</string>
     <string name="nsfw">Для взрослых</string>
-    <string name="safety_status_safe">Безопасный</string>
     <string name="safety_status_unsafe">Небезопасный</string>
     <string name="action_sort">Сортировать</string>
     <string name="action_sort_criteria_name">Название</string>
@@ -78,7 +77,6 @@
     <string name="search_providers_url_validation_error">Неверная ссылка</string>
     <string name="search_providers_label_api_key">API ключ</string>
     <string name="search_providers_label_category">Категория</string>
-    <string name="search_providers_label_safety_status">Статус безопасности</string>
     <string name="search_providers_section_additional_options">Дополнительные параметры</string>
     <string name="settings_screen_title">Настройки</string>
     <string name="settings_section_appearance">Внешний вид</string>

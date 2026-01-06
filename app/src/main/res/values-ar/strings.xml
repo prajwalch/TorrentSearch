@@ -3,7 +3,6 @@
     <string name="button_done">أنتهى</string>
     <string name="button_cancel">إلغاء</string>
     <string name="nsfw">غير مناسب للعمل</string>
-    <string name="safety_status_safe">آمن</string>
     <string name="safety_status_unsafe">غير آمن</string>
     <string name="bookmarked_message">مُشار إليه</string>
     <string name="action_sort">ضبط على</string>
@@ -88,7 +87,6 @@
     <string name="search_providers_url_validation_error">عنوان URL ليس صالحًا</string>
     <string name="search_providers_label_api_key">مفتاح API</string>
     <string name="search_providers_label_category">الفئة</string>
-    <string name="search_providers_label_safety_status">حالة السلامة</string>
     <string name="search_providers_section_additional_options">خيارات إضافية</string>
     <string name="settings_screen_title">إعدادات</string>
     <string name="settings_section_appearance">مظهر</string>

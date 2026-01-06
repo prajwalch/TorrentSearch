@@ -64,7 +64,6 @@
     <string name="search_providers_url_validation_error">സാധുവായ URL അല്ല</string>
     <string name="search_providers_label_api_key">API കീ</string>
     <string name="search_providers_label_category">വിഭാഗം</string>
-    <string name="search_providers_label_safety_status">സുരക്ഷാ നില</string>
     <string name="search_providers_section_additional_options">കൂടുതൽ ഓപ്ഷനുകൾ</string>
     <string name="settings_section_sort_criteria">സോർട്ട് ക്രൈറ്റീരിയ</string>
     <string name="settings_section_sort_order">സോർട്ട് ഓർഡർ</string>
@@ -74,7 +73,6 @@
     <string name="home_button_search">സേർച്ച്</string>
     <string name="bookmarks_empty_message">ബുക്ക്മാർക്കുകളൊന്നുമില്ല</string>
     <string name="search_history_empty_message">സേർച്ച് ഹിസ്റ്ററിയൊന്നുമില്ല</string>
-    <string name="safety_status_safe">സുരക്ഷിതം</string>
     <string name="bookmarked_message">"ബുക്ക്മാർക്ക്  ചെയ്തു"</string>
     <string name="main_cannot_search_using_url_message">URL ഉപയോഗിച്ച് സേർച്ച് ചെയ്യാനാകില്ല</string>
     <string name="main_cannot_search_blank_query_message">ഒന്നും അടിക്കാതെ സേർച്ച് ചെയ്യാനാകില്ല</string>

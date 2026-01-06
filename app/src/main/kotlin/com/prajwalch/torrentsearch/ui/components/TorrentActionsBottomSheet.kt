@@ -147,7 +147,7 @@ object Actions {
     fun DeleteBookmark(onClick: () -> Unit, modifier: Modifier = Modifier) {
         Action(
             modifier = modifier,
-            icon = R.drawable.ic_star_filled,
+            icon = R.drawable.ic_delete,
             label = R.string.torrent_list_action_delete_bookmark,
             onClick = onClick,
         )

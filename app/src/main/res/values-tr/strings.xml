@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="button_cancel">İptal et</string>
-    <string name="safety_status_safe">Güvenli</string>
     <string name="safety_status_unsafe">Güvenli değil</string>
     <string name="bookmarked_message">Yer işaretlerine eklendi</string>
     <string name="main_cannot_search_using_url_message">URL kullanarak arama yapılamıyor</string>
@@ -85,7 +84,6 @@
     <string name="search_providers_url_validation_error">Geçerli bir URL değil</string>
     <string name="search_providers_label_api_key">API anahtarı</string>
     <string name="search_providers_label_category">Kategori</string>
-    <string name="search_providers_label_safety_status">Güvenlik durumu</string>
     <string name="search_providers_section_additional_options">Ek seçenekler</string>
     <string name="settings_screen_title">Ayarlar</string>
     <string name="settings_section_appearance">Görünüm</string>

@@ -3,7 +3,6 @@
     <string name="button_done">完成</string>
     <string name="button_cancel">取消</string>
     <string name="nsfw">成人内容</string>
-    <string name="safety_status_safe">安全</string>
     <string name="safety_status_unsafe">不安全</string>
     <string name="action_sort">类别</string>
     <string name="action_sort_criteria_name">名称</string>
@@ -75,7 +74,6 @@
     <string name="search_providers_url_validation_error">无效网址</string>
     <string name="search_providers_label_api_key">API Key</string>
     <string name="search_providers_label_category">类别</string>
-    <string name="search_providers_label_safety_status">安全状况</string>
     <string name="search_providers_section_additional_options">附加选项</string>
     <string name="settings_screen_title">设置</string>
     <string name="settings_section_appearance">外观</string>

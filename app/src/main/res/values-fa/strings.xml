@@ -3,7 +3,6 @@
     <string name="button_done">انجام شد</string>
     <string name="button_cancel">لغو</string>
     <string name="nsfw">+18</string>
-    <string name="safety_status_safe">امن</string>
     <string name="safety_status_unsafe">ناامن</string>
     <string name="action_sort">مرتب سازی</string>
     <string name="action_sort_criteria_name">نام</string>
@@ -83,7 +82,6 @@
     <string name="search_providers_url_validation_error">لینک معتبر نیست</string>
     <string name="search_providers_label_api_key">کلید API</string>
     <string name="search_providers_label_category">دسته بندی</string>
-    <string name="search_providers_label_safety_status">وضعیت ایمنی</string>
     <string name="search_providers_section_additional_options">گزینه‌ های اضافی</string>
     <string name="settings_screen_title">تنظیمات</string>
     <string name="settings_section_appearance">رنگ زمینه</string>
