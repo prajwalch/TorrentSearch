@@ -10,7 +10,7 @@ import com.prajwalch.torrentsearch.domain.models.Torrent
 
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.ExperimentalSerializationApi
@@ -18,6 +18,7 @@ import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.decodeFromStream
 import kotlinx.serialization.json.encodeToStream
 
+import java.io.IOException
 import java.io.InputStream
 import java.io.OutputStream
 
@@ -47,13 +48,21 @@ class BookmarksRepository @Inject constructor(private val dao: BookmarkedTorrent
             dao.insertAll(bookmarksEntity)
         } catch (e: IllegalArgumentException) {
             Log.e(TAG, "Bookmarks import failed", e)
+        } catch (e: IOException) {
+            Log.e(TAG, "Bookmarks import file read failed", e)
         }
     }
 
     @OptIn(ExperimentalSerializationApi::class)
     suspend fun exportBookmarks(outputStream: OutputStream) = withContext(Dispatchers.IO) {
-        val bookmarksEntity = dao.observeAll().first()
-        Json.encodeToStream(bookmarksEntity, outputStream)
+        try {
+            val bookmarksEntity = dao.observeAll().firstOrNull() ?: return@withContext
+            Json.encodeToStream(bookmarksEntity, outputStream)
+        } catch (e: IllegalArgumentException) {
+            Log.e(TAG, "Bookmarks export failed", e)
+        } catch (e: IOException) {
+            Log.e(TAG, "Bookmarks export file write error", e)
+        }
     }
 
     private companion object {
