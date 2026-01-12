@@ -8,7 +8,7 @@
     <string name="action_sort_criteria_name">İsim</string>
     <string name="action_sort_criteria_file_size">Dosya boyutu</string>
     <string name="action_sort_criteria_date">Tarih</string>
-    <string name="action_sort_order_ascending">Yükselen</string>
+    <string name="action_sort_order_ascending">Artan</string>
     <string name="action_sort_order_descending">Azalan</string>
     <string name="category_all">Tümü</string>
     <string name="category_anime">Anime</string>
@@ -23,7 +23,7 @@
     <string name="torrent_client_not_found_title">Torrent istemcisi bulunamadı</string>
     <string name="torrent_client_not_found_content">İndirme özelliğini kullanmak için bir torrent istemcisi yükleyin, kurun ve bu uygulamaya geri dönün.</string>
     <string name="torrent_client_not_found_recommended_client_hint">Önerilen istemci</string>
-    <string name="torrent_list_action_bookmark_torrent">Torrent\'i yer imlerine ekle</string>
+    <string name="torrent_list_action_bookmark_torrent">Torrent\'i yer işaretlerine ekle</string>
     <string name="torrent_list_action_delete_bookmark">Yer işaretini sil</string>
     <string name="torrent_list_action_download_torrent">Torrent indir</string>
     <string name="torrent_list_action_copy_magnet_link">Magnet bağlantısını kopyala</string>
@@ -101,4 +101,29 @@
     <string name="settings_enable_nsfw_mode_summary">Devre dışı bırakıldığında, NSFW (Yetişkin içerikleri) kategorilerini ve arama sonuçlarını gizler.</string>
     <string name="settings_section_search">Ara</string>
     <string name="settings_search_providers">Arama sağlayıcıları</string>
+    <string name="nsfw">NSFW (Yetişkin İçerik)</string>
+    <string name="bookmarks_action_import">Dosyadan içe aktar</string>
+    <string name="bookmarks_action_export">Dosyaya aktar</string>
+    <string name="bookmarks_action_settings">Ayarlar</string>
+    <string name="settings_search_providers_summary_format">%1$d / %2$d etkinleştirildi</string>
+    <string name="settings_default_category">Varsayılan kategori</string>
+    <string name="settings_default_sort_options">Varsayılan sıralama seçenekleri</string>
+    <string name="settings_section_sort_criteria">Sıralama kriterleri</string>
+    <string name="settings_section_sort_order">Sıralama düzeni</string>
+    <string name="settings_max_num_results">Maksimum sonuç sayısı</string>
+    <string name="settings_max_num_results_summary_format">%1$d sonuç</string>
+    <string name="settings_max_num_results_button_unlimited">Sınırsız</string>
+    <string name="settings_section_search_history">Arama geçmişi</string>
+    <string name="settings_save_search_history">Arama geçmişini kaydet</string>
+    <string name="settings_save_search_history_summary">Son yerel aramaları saklayarak hızlı erişim ve öneriler sunar</string>
+    <string name="settings_show_search_history">Arama geçmişini göster</string>
+    <string name="settings_show_search_history_summary">Arama çubuğunda arama geçmişini göster</string>
+    <string name="settings_section_advanced">Gelişmiş</string>
+    <string name="settings_enable_share_integration">Paylaşım entegrasyonunu etkinleştirin</string>
+    <string name="settings_enable_share_integration_summary">Etkinleştirildiğinde, bu uygulamayı paylaşım menüsüne ekler.</string>
+    <string name="settings_enable_quick_search">Hızlı aramayı etkinleştir</string>
+    <string name="settings_enable_quick_search_summary">Etkinleştirildiğinde, bu uygulamayı metin seçim menüsüne ekler (Kopyala veya Kes gibi).</string>
+    <string name="settings_section_about">Hakkında</string>
+    <string name="settings_version">Sürüm</string>
+    <string name="settings_source_code">Kaynak kodu</string>
 </resources>
