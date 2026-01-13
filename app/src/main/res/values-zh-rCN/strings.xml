@@ -86,7 +86,7 @@
     <string name="settings_section_general">通用</string>
     <string name="settings_language">语言</string>
     <string name="settings_enable_nsfw_mode">显示成人内容</string>
-    <string name="settings_enable_nsfw_mode_summary">关闭时隐藏成人内容</string>
+    <string name="settings_enable_nsfw_mode_summary">关闭时隐藏成人内容。</string>
     <string name="settings_section_search">搜索</string>
     <string name="settings_search_providers">搜索源</string>
     <string name="settings_search_providers_summary_format">已启用 %1$d 个（共 %2$d 个）</string>
@@ -118,4 +118,8 @@
     <string name="bookmarks_dialog_title_delete_all">删除所有书签？</string>
     <string name="search_history_dialog_title_clear_history">清除搜索历史记录？</string>
     <string name="search_history_button_clear">清除</string>
+    <string name="bookmarks_action_settings">设置</string>
+    <string name="bookmarks_action_import">从文件中导入</string>
+    <string name="bookmarks_action_export">导出到文件</string>
+    <string name="main_cannot_search_using_url_message">无法通过 URL 搜索</string>
 </resources>
