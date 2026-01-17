@@ -35,7 +35,7 @@
     <string name="crash_screen_subtitle">
         %1$s hit an unexpected error. Please export the logs and create a Github issue with the logs attached.
     </string>
-    <string name="crash_button_export_crash_logs">Export crash logs to a file</string>
+    <string name="crash_button_export_crash_logs">Export crash logs to file</string>
     <string name="crash_button_restart_application">Restart the application</string>
     <string name="crash_logs_export_success_message">Logs exported to a file</string>
 
