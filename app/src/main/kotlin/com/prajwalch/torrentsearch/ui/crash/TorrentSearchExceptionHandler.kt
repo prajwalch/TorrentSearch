@@ -6,16 +6,17 @@ import android.util.Log
 
 import com.prajwalch.torrentsearch.BuildConfig
 
-class UncaughtExceptionHandler private constructor(
+class TorrentSearchExceptionHandler(
     private val context: Context,
-    private val defaultHandler: Thread.UncaughtExceptionHandler,
     private val activityToLaunch: Class<*>,
 ) : Thread.UncaughtExceptionHandler {
+    private val defaultHandler = Thread.getDefaultUncaughtExceptionHandler()
+
     override fun uncaughtException(thread: Thread, exception: Throwable) {
         Log.e(TAG, "Application crashed!", exception)
 
         startGivenActivity(exception)
-        defaultHandler.uncaughtException(thread, exception)
+        defaultHandler?.uncaughtException(thread, exception)
     }
 
     private fun startGivenActivity(exception: Throwable) {
@@ -29,19 +30,8 @@ class UncaughtExceptionHandler private constructor(
     }
 
     companion object {
-        private const val TAG = "UncaughtExceptionHandler"
+        private const val TAG = "TorrentSearchExceptionHandler"
         private const val EXTRA_CRASH_STACKTRACE = "${BuildConfig.VERSION_NAME}.CRASH_STACKTRACE"
-
-        fun init(context: Context, crashActivity: Class<*>) {
-            val defaultHandler = Thread.getDefaultUncaughtExceptionHandler() ?: return
-            val newHandler = UncaughtExceptionHandler(
-                context = context,
-                defaultHandler = defaultHandler,
-                activityToLaunch = crashActivity,
-            )
-
-            Thread.setDefaultUncaughtExceptionHandler(newHandler)
-        }
 
         fun getCrashStackTrace(intent: Intent): String =
             intent.getStringExtra(EXTRA_CRASH_STACKTRACE)!!
