@@ -3,6 +3,7 @@ package com.prajwalch.torrentsearch.ui.crash
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import android.widget.Toast
 
 import androidx.activity.ComponentActivity
@@ -39,10 +40,15 @@ class CrashActivity : ComponentActivity() {
         lifecycleScope.launch(Dispatchers.IO) {
             val outputStream = contentResolver.openOutputStream(fileUri) ?: return@launch
             outputStream.use { it.write(stackTrace.toByteArray()) }
-        }
+        }.invokeOnCompletion { cause ->
+            if (cause != null) {
+                Log.e(TAG, "Failed to export crash logs", cause)
+                return@invokeOnCompletion
+            }
 
-        val successMessage = getString(R.string.crash_logs_export_success_message)
-        Toast.makeText(this, successMessage, Toast.LENGTH_SHORT).show()
+            val successMessage = getString(R.string.crash_logs_export_success_message)
+            Toast.makeText(this, successMessage, Toast.LENGTH_SHORT).show()
+        }
     }
 
     private fun restartApplication() {
@@ -50,5 +56,9 @@ class CrashActivity : ComponentActivity() {
 
         val mainActivityIntent = Intent(this, MainActivity::class.java)
         startActivity(mainActivityIntent)
+    }
+
+    private companion object {
+        private const val TAG = "CrashActivity"
     }
 }
