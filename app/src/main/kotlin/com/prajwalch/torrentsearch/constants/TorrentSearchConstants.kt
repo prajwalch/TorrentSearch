@@ -15,4 +15,7 @@ object TorrentSearchConstants {
     /** Torzanb search provider configuration guide wiki URL. */
     const val TORZNAB_HOW_TO_ADD_WIKI =
         "$GITHUB_WIKI_URL/How-to-add-and-configure-Torznab-search-provider"
+
+    const val CRASH_LOGS_FILE_NAME = "torrentsearch_crash_logs.txt"
+    const val CRASH_LOGS_FILE_TYPE = "text/plain"
 }
