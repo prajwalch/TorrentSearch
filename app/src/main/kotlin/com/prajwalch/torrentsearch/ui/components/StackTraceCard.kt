@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Card
 import androidx.compose.material3.MaterialTheme
@@ -27,7 +28,7 @@ fun StackTraceCard(
                 .padding(contentPadding)
                 .verticalScroll(state = rememberScrollState()),
         ) {
-            Text(text = stackTrace)
+            SelectionContainer { Text(text = stackTrace) }
         }
     }
 }
