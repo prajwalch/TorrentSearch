@@ -31,7 +31,7 @@ class TorrentsRepository @Inject constructor(
             searchProviders = searchProviders,
         ).collect { searchBatchResult ->
             searchBatchResult.fold(
-                onSuccess = { successes.addAll(it) },
+                onSuccess = { successes.addAll(filterTorrentsByCategory(it, category)) },
                 onFailure = { failures.add(it) }
             )
 
@@ -42,4 +42,15 @@ class TorrentsRepository @Inject constructor(
             emit(searchResults)
         }
     }.flowOn(Dispatchers.IO)
+
+    private fun filterTorrentsByCategory(
+        torrents: List<Torrent>,
+        category: Category,
+    ): List<Torrent> {
+        return if (category == Category.All) {
+            torrents
+        } else {
+            torrents.filter { it.category == category }
+        }
+    }
 }

@@ -20,8 +20,6 @@ class TorrentDownload : SearchProvider {
         enabledByDefault = false,
     )
 
-    private var category = Category.All
-
     override suspend fun search(query: String, context: SearchContext): List<Torrent> {
         val requestUrl = buildString {
             append(info.url)
@@ -30,8 +28,6 @@ class TorrentDownload : SearchProvider {
         }
 
         val responseHtml = context.httpClient.get(url = requestUrl)
-        category = context.category
-
         val torrents = withContext(Dispatchers.Default) {
             parseResponseHtml(html = responseHtml)
         }
@@ -51,6 +47,9 @@ class TorrentDownload : SearchProvider {
     private fun parseTableRow(tr: Element): Torrent? {
         val torrentNameDiv = tr.selectFirst("td:nth-child(1) > div.tt-name") ?: return null
 
+        val nameHref = torrentNameDiv.selectFirst("> a") ?: return null
+        val torrentName = nameHref.text()
+
         val category = torrentNameDiv
             .selectFirst("> span")
             ?.ownText()
@@ -58,13 +57,6 @@ class TorrentDownload : SearchProvider {
             ?.replace(regex = CategoryTextFilterRegex, "")
             ?.let(::getCategory)
             ?: return null
-
-        if (this.category != Category.All && this.category != category) {
-            return null
-        }
-        
-        val nameHref = torrentNameDiv.selectFirst("> a") ?: return null
-        val torrentName = nameHref.text()
 
         val descriptionPageRelativeUrl = nameHref.attr("href")
         val descriptionPageUrl = "${info.url}$descriptionPageRelativeUrl"
