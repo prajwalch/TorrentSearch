@@ -128,4 +128,9 @@
     <string name="bookmarks_action_import">Імпорт з файлу</string>
     <string name="bookmarks_action_export">Експорт у файл</string>
     <string name="bookmarks_action_settings">Налаштування</string>
+    <string name="crash_screen_title">Ой!</string>
+    <string name="crash_screen_subtitle">%1$s зіткнувся з неочікуваною помилкою. Експортуйте журнали та створіть задачу на Github із доданими журналами.</string>
+    <string name="crash_button_export_crash_logs">Експорт журналів аварійного завершення роботи у файл</string>
+    <string name="crash_button_restart_application">Перезапустіть програму</string>
+    <string name="crash_logs_export_success_message">Журнали, експортовані у файл</string>
 </resources>
