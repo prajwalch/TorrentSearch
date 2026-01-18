@@ -119,7 +119,7 @@ private fun StackTraceCard(stackTrace: String, modifier: Modifier = Modifier) {
 }
 
 @Composable
-fun ExportCrashLogsButton(onClick: () -> Unit, modifier: Modifier = Modifier) {
+private fun ExportCrashLogsButton(onClick: () -> Unit, modifier: Modifier = Modifier) {
     Button(modifier = modifier, onClick = onClick) {
         Text(text = stringResource(R.string.crash_button_export_crash_logs))
     }
