@@ -84,7 +84,7 @@ class TokyoToshokan : SearchProvider {
             .drop(1)
             .map { it.trim() }
 
-        val size = normalizeSize(sizeWithPrefix.removePrefix("Size: "))
+        val size = sizeWithPrefix.removePrefix("Size: ").let(FileSizeUtils::normalizeSize)
         val uploadDate = uploadDateWithPrefix
             .removePrefix("Date: ")
             .split(' ')
@@ -106,24 +106,6 @@ class TokyoToshokan : SearchProvider {
             category = info.specializedCategory,
             descriptionPageUrl = descriptionPageUrl,
             infoHashOrMagnetUri = InfoHashOrMagnetUri.MagnetUri(magnetUri),
-        )
-    }
-
-    private fun normalizeSize(size: String): String {
-        // 1. Find the unit.
-        val unit = fileSizeUnits.find { size.endsWith(it) }!!
-        // 2. Remove the unit from the size and reconstruct with space.
-        val sizeNoUnit = size.removeSuffix(unit)
-        return "$sizeNoUnit $unit"
-    }
-
-    private companion object {
-        val fileSizeUnits = listOf(
-            FileSizeUtils.FileSizeUnits.PB,
-            FileSizeUtils.FileSizeUnits.TB,
-            FileSizeUtils.FileSizeUnits.GB,
-            FileSizeUtils.FileSizeUnits.MB,
-            FileSizeUtils.FileSizeUnits.KB,
         )
     }
 }

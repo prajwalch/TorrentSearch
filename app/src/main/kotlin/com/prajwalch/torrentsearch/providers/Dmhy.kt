@@ -4,6 +4,7 @@ import com.prajwalch.torrentsearch.domain.models.Category
 import com.prajwalch.torrentsearch.domain.models.InfoHashOrMagnetUri
 import com.prajwalch.torrentsearch.domain.models.Torrent
 import com.prajwalch.torrentsearch.utils.DateUtils
+import com.prajwalch.torrentsearch.utils.FileSizeUtils
 
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -72,6 +73,7 @@ class Dmhy : SearchProvider {
         val size = tr
             .selectFirst("td:nth-child(5)")
             ?.ownText()
+            ?.let(FileSizeUtils::normalizeSize)
             ?: return null
         val seeders = tr
             .selectFirst("td:nth-child(6)")
