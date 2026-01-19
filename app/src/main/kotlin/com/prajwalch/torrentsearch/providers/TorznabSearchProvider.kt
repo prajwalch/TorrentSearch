@@ -164,14 +164,7 @@ class TorznabSearchProvider(
         Log.d(TAG, "-> Got response; length = ${responseXml.length}")
 
         return withContext(Dispatchers.Default) {
-            val category = if (info.specializedCategory != Category.All) {
-                info.specializedCategory
-            } else {
-                // FIXME: If the category is `All` then we need to read the
-                //        category from the each result itself.
-                context.category
-            }
-            responseXmlParser.parse(xml = responseXml, category = category)
+            responseXmlParser.parse(xml = responseXml)
         }
     }
 
@@ -221,16 +214,12 @@ private class TorznabResponseXmlParser(
     private val namespace: String? = null
     private val torrents = mutableListOf<Torrent>()
 
-    private lateinit var category: Category
-
-    fun parse(xml: String, category: Category): List<Torrent> {
+    fun parse(xml: String): List<Torrent> {
         parser.setFeature(XmlPullParser.FEATURE_PROCESS_NAMESPACES, false)
         parser.setInput(xml.byteInputStream(), null)
         parser.nextTag()
 
         torrents.clear()
-        this.category = category
-
         readRss()
 
         return torrents.toList()
@@ -275,6 +264,8 @@ private class TorznabResponseXmlParser(
         var magnetUri: String? = null
         var infoHash: String? = null
 
+        val categoryIds = mutableSetOf<Int>()
+
         parser.readParentTag(tagName = "item") {
             when (parser.name) {
                 "title" -> torrentName = readTitle()
@@ -294,6 +285,14 @@ private class TorznabResponseXmlParser(
                     "peers" -> peers = readTorznabAttribute(name = "peers")
                     "magneturl" -> magnetUri = readTorznabAttribute(name = "magneturl")
                     "infohash" -> infoHash = readTorznabAttribute(name = "infohash")
+                    "category" -> {
+                        val id = readTorznabAttribute("category").toInt()
+
+                        if (id < CUSTOM_CATEGORY_RANGE_START) {
+                            categoryIds.add(id)
+                        }
+                    }
+
                     else -> {
                         Log.d(TAG, "-> Skipping <${parser.name}>")
                         parser.skipCurrentTag()
@@ -315,6 +314,8 @@ private class TorznabResponseXmlParser(
                 return
             }
         }
+        val category = categoryIds.maxOrNull()?.let(::getCategoryFromId) ?: Category.Other
+
         val torrent = Torrent(
             name = torrentName ?: return,
             size = size ?: return,
@@ -387,8 +388,21 @@ private class TorznabResponseXmlParser(
         return value
     }
 
+    private fun getCategoryFromId(id: Int): Category = when (id) {
+        in 1000..1999 -> Category.Games
+        in 2000..2999 -> Category.Movies
+        in 3000..3999 -> if (id == 3030) Category.Books else Category.Music
+        in 4000..4999 -> if (id == 4050) Category.Games else Category.Apps
+        in 5000..5999 -> if (id == 5070) Category.Anime else Category.Series
+        in 6000..6999 -> Category.Porn
+        in 7000..7999 -> Category.Books
+        in 8000..8999 -> Category.Other
+        else -> Category.Other
+    }
+
     private companion object {
         private const val TAG = "TorznabResponseXmlParser"
+        private const val CUSTOM_CATEGORY_RANGE_START = 100000
     }
 }
 
