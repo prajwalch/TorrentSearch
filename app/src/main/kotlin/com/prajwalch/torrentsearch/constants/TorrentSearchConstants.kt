@@ -19,6 +19,12 @@ object TorrentSearchConstants {
     /** MIME type of a logs file. */
     const val LOGS_FILE_TYPE = "text/plain"
 
+    /** Name of the export file. */
+    const val BOOKMARKS_EXPORT_FILE_NAME = "bookmarks.json"
+
+    /** Export file type. */
+    const val BOOKMARKS_EXPORT_FILE_TYPE = "application/json"
+
     /** Name of a crash logs file. */
     const val CRASH_LOGS_FILE_NAME = "torrentsearch_crash_logs.txt"
 

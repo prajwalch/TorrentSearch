@@ -54,6 +54,7 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 
 import com.prajwalch.torrentsearch.R
+import com.prajwalch.torrentsearch.constants.TorrentSearchConstants
 import com.prajwalch.torrentsearch.domain.models.MagnetUri
 import com.prajwalch.torrentsearch.domain.models.Torrent
 import com.prajwalch.torrentsearch.extensions.copyText
@@ -75,15 +76,9 @@ import com.prajwalch.torrentsearch.ui.theme.spaces
 
 import kotlinx.coroutines.launch
 
-/** Name of the export file. */
-private const val BOOKMARKS_EXPORT_FILE_NAME = "bookmarks.json"
-
-/** Export file type. */
-private const val BOOKMARKS_EXPORT_FILE_TYPE = "application/json"
-
 /** Activity contract which allows the user to choose the export location. */
 private val CreateDocumentContract =
-    ActivityResultContracts.CreateDocument(BOOKMARKS_EXPORT_FILE_TYPE)
+    ActivityResultContracts.CreateDocument(TorrentSearchConstants.BOOKMARKS_EXPORT_FILE_TYPE)
 
 /** Activity contract which allows the user to choose the exported file. */
 private val GetContentContract = ActivityResultContracts.GetContent()
@@ -102,18 +97,15 @@ fun BookmarksScreen(
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
-    val context = LocalContext.current
-    val contentResolver = context.contentResolver
-
-    // TODO: Proper error handling.
-    val importFileChooserLauncher = rememberLauncherForActivityResult(
+    val contentResolver = LocalContext.current.contentResolver
+    val bookmarksExportedFileChooser = rememberLauncherForActivityResult(
         contract = GetContentContract,
     ) { fileUri ->
         fileUri
             ?.let(contentResolver::openInputStream)
             ?.let(viewModel::importBookmarks)
     }
-    val exportLocationChooserLauncher = rememberLauncherForActivityResult(
+    val bookmarksExportLocationChooser = rememberLauncherForActivityResult(
         contract = CreateDocumentContract,
     ) { fileUri ->
         fileUri
@@ -246,11 +238,15 @@ fun BookmarksScreen(
                 onImportBookmarks = {
                     // When mime type is given it restricts other type of files
                     // from being selectable.
-                    importFileChooserLauncher.launch(BOOKMARKS_EXPORT_FILE_TYPE)
+                    bookmarksExportedFileChooser.launch(
+                        TorrentSearchConstants.BOOKMARKS_EXPORT_FILE_TYPE,
+                    )
                 },
                 onExportBookmarks = {
                     // Takes file name to create on the selected location.
-                    exportLocationChooserLauncher.launch(BOOKMARKS_EXPORT_FILE_NAME)
+                    bookmarksExportLocationChooser.launch(
+                        TorrentSearchConstants.BOOKMARKS_EXPORT_FILE_NAME,
+                    )
                 },
                 onNavigateToSettings = onNavigateToSettings,
             )
