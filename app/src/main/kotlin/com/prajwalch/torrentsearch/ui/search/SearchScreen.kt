@@ -591,7 +591,7 @@ private fun SearchFailuresBottomSheet(
                     .padding(all = MaterialTheme.spaces.large),
                 verticalArrangement = Arrangement.SpaceBetween,
             ) {
-                SearchProviderExceptionList(
+                SearchExceptionList(
                     modifier = Modifier.weight(1f),
                     exceptions = failures,
                 )
@@ -639,7 +639,7 @@ private fun SearchFailuresBottomSheetPreview() {
 }
 
 @Composable
-private fun SearchProviderExceptionList(
+private fun SearchExceptionList(
     exceptions: ImmutableList<SearchException>,
     modifier: Modifier = Modifier,
 ) {
