@@ -24,7 +24,7 @@ class SearchProviderException(
 ) : TorrentSearchException(message, cause) {
     override fun toString(): String {
         return buildString {
-            append("SearchProviderException($id = $id, name = $name, url = $url)")
+            append("SearchProviderException(id = $id, name = $name, url = $url)")
 
             if (message != null) {
                 append(": ")
