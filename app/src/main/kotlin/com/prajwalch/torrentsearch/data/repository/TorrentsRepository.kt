@@ -2,6 +2,7 @@ package com.prajwalch.torrentsearch.data.repository
 
 import com.prajwalch.torrentsearch.data.remote.TorrentsRemoteDataSource
 import com.prajwalch.torrentsearch.domain.models.Category
+import com.prajwalch.torrentsearch.domain.models.SearchException
 import com.prajwalch.torrentsearch.domain.models.SearchResults
 import com.prajwalch.torrentsearch.domain.models.Torrent
 import com.prajwalch.torrentsearch.providers.SearchProvider
@@ -23,7 +24,7 @@ class TorrentsRepository @Inject constructor(
         searchProviders: List<SearchProvider>,
     ): Flow<SearchResults> = flow {
         val successes = mutableListOf<Torrent>()
-        val failures = mutableListOf<Throwable>()
+        val failures = mutableListOf<SearchException>()
 
         remoteDataSource.searchTorrents(
             query = query,
@@ -32,7 +33,7 @@ class TorrentsRepository @Inject constructor(
         ).collect { searchBatchResult ->
             searchBatchResult.fold(
                 onSuccess = { successes.addAll(filterTorrentsByCategory(it, category)) },
-                onFailure = { failures.add(it) }
+                onFailure = { failures.add(it as SearchException) }
             )
 
             val searchResults = SearchResults(

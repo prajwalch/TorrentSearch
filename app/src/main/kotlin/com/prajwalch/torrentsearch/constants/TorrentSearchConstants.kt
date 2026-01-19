@@ -18,4 +18,7 @@ object TorrentSearchConstants {
 
     const val CRASH_LOGS_FILE_NAME = "torrentsearch_crash_logs.txt"
     const val CRASH_LOGS_FILE_TYPE = "text/plain"
+
+    const val SEARCH_ERROR_LOGS_FILE_NAME = "torrentsearch_search_error_logs.txt"
+    const val SEARCH_ERROR_LOGS_FILE_TYPE = "text/plain"
 }

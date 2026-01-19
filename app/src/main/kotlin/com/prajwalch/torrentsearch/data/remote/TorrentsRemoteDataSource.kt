@@ -4,7 +4,7 @@ import android.net.Uri
 import android.util.Log
 
 import com.prajwalch.torrentsearch.domain.models.Category
-import com.prajwalch.torrentsearch.domain.models.SearchProviderException
+import com.prajwalch.torrentsearch.domain.models.SearchException
 import com.prajwalch.torrentsearch.domain.models.Torrent
 import com.prajwalch.torrentsearch.network.HttpClient
 import com.prajwalch.torrentsearch.providers.SearchContext
@@ -68,10 +68,10 @@ class TorrentsRemoteDataSource @Inject constructor(
     } catch (cause: Throwable) {
         Log.e(TAG, "${provider.info.name} crashed", cause)
 
-        val exception = SearchProviderException(
-            id = provider.info.id,
-            name = provider.info.name,
-            url = provider.info.url,
+        val exception = SearchException(
+            searchProviderName = provider.info.name,
+            searchProviderUrl = provider.info.url,
+            message = cause.message ?: cause.toString(),
             cause = cause,
         )
         Result.failure(exception)

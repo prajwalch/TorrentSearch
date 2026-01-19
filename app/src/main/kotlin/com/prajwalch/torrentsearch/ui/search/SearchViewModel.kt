@@ -11,6 +11,7 @@ import com.prajwalch.torrentsearch.data.repository.SearchHistoryRepository
 import com.prajwalch.torrentsearch.data.repository.SettingsRepository
 import com.prajwalch.torrentsearch.domain.SearchTorrentsUseCase
 import com.prajwalch.torrentsearch.domain.models.Category
+import com.prajwalch.torrentsearch.domain.models.SearchException
 import com.prajwalch.torrentsearch.domain.models.SearchResults
 import com.prajwalch.torrentsearch.domain.models.SortCriteria
 import com.prajwalch.torrentsearch.domain.models.SortOptions
@@ -25,6 +26,7 @@ import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.WhileSubscribed
@@ -36,6 +38,9 @@ import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+
+import java.io.OutputStream
+import java.io.PrintStream
 
 import javax.inject.Inject
 import kotlin.time.Duration.Companion.seconds
@@ -234,6 +239,22 @@ class SearchViewModel @Inject constructor(
         }
     }
 
+    /** Exports the current search failures to given output stream. */
+    fun exportSearchFailures(outputStream: OutputStream) {
+        viewModelScope.launch(Dispatchers.IO) {
+            val printStream = PrintStream(outputStream, true)
+
+            printStream.use { stream ->
+                for (exception in uiState.value.failures) {
+                    stream.println("----------${exception.searchProviderName}----------")
+                    exception.printStackTrace(stream)
+                    stream.println("----------${exception.searchProviderName}----------")
+                    stream.println()
+                }
+            }
+        }
+    }
+
     /** Performs a new search by resetting every state. */
     private suspend fun performNewSearch() {
         Log.i(TAG, "performNewSearch() called")
@@ -288,6 +309,7 @@ class SearchViewModel @Inject constructor(
         // TODO: Collect failures/errors as well and generate search results
         //       summary which can be used to display on UI or for debugging
         //       purpose.
+        val failures = searchResults.failures
         val searchResults = searchResults.successes
 
         if (searchResults.isEmpty()) {
@@ -311,6 +333,7 @@ class SearchViewModel @Inject constructor(
             it.copy(
                 filterOptions = filterOptions,
                 searchResults = searchResults,
+                failures = failures,
             )
         }
     }
@@ -359,6 +382,7 @@ data class SearchUiState(
     val searchQuery: String = "",
     val searchCategory: Category = Category.All,
     val searchResults: ImmutableList<Torrent> = persistentListOf(),
+    val failures: ImmutableList<SearchException> = persistentListOf(),
     val sortOptions: SortOptions = SortOptions(),
     val filterOptions: FilterOptions = FilterOptions(),
     val isLoading: Boolean = true,

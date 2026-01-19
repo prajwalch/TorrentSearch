@@ -1,6 +1,9 @@
 package com.prajwalch.torrentsearch.ui.search
 
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.StringRes
+import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -11,21 +14,26 @@ import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
+import androidx.compose.material3.ListItem
+import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
@@ -35,6 +43,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -45,35 +54,44 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalClipboard
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 
 import com.prajwalch.torrentsearch.R
-import com.prajwalch.torrentsearch.extensions.copyText
+import com.prajwalch.torrentsearch.constants.TorrentSearchConstants
 import com.prajwalch.torrentsearch.domain.models.Category
 import com.prajwalch.torrentsearch.domain.models.MagnetUri
+import com.prajwalch.torrentsearch.domain.models.SearchException
 import com.prajwalch.torrentsearch.domain.models.Torrent
+import com.prajwalch.torrentsearch.extensions.copyText
 import com.prajwalch.torrentsearch.ui.components.AnimatedScrollToTopFAB
 import com.prajwalch.torrentsearch.ui.components.ArrowBackIconButton
 import com.prajwalch.torrentsearch.ui.components.CollapsibleSearchBar
 import com.prajwalch.torrentsearch.ui.components.EmptyPlaceholder
 import com.prajwalch.torrentsearch.ui.components.LazyColumnWithScrollbar
+import com.prajwalch.torrentsearch.ui.components.RoundedDropdownMenu
 import com.prajwalch.torrentsearch.ui.components.SearchIconButton
-import com.prajwalch.torrentsearch.ui.components.SettingsIconButton
 import com.prajwalch.torrentsearch.ui.components.SortDropdownMenu
 import com.prajwalch.torrentsearch.ui.components.SortIconButton
+import com.prajwalch.torrentsearch.ui.components.StackTraceCard
 import com.prajwalch.torrentsearch.ui.components.TorrentActionsBottomSheet
 import com.prajwalch.torrentsearch.ui.components.TorrentListItem
 import com.prajwalch.torrentsearch.ui.components.rememberCollapsibleSearchBarState
 import com.prajwalch.torrentsearch.ui.rememberTorrentListState
+import com.prajwalch.torrentsearch.ui.theme.TorrentSearchTheme
 import com.prajwalch.torrentsearch.ui.theme.spaces
 import com.prajwalch.torrentsearch.utils.categoryStringResource
 
 import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -151,6 +169,28 @@ fun SearchScreen(
         )
     }
 
+    val contentResolver = LocalContext.current.contentResolver
+    val errorLogsExportLocationChooser = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.CreateDocument(TorrentSearchConstants.SEARCH_ERROR_LOGS_FILE_TYPE),
+    ) { fileUri ->
+        fileUri
+            ?.let(contentResolver::openOutputStream)
+            ?.let(viewModel::exportSearchFailures)
+    }
+
+    var showSearchFailures by rememberSaveable { mutableStateOf(false) }
+    if (showSearchFailures) {
+        SearchFailuresBottomSheet(
+            onDismiss = { showSearchFailures = false },
+            failures = uiState.failures,
+            onExportErrorLogsToFile = {
+                errorLogsExportLocationChooser.launch(
+                    TorrentSearchConstants.SEARCH_ERROR_LOGS_FILE_NAME
+                )
+            },
+        )
+    }
+
     var showFilterOptions by rememberSaveable { mutableStateOf(false) }
     if (showFilterOptions) {
         FilterOptionsBottomSheet(
@@ -205,9 +245,49 @@ fun SearchScreen(
                 )
             }
         }
-        SettingsIconButton(onClick = onNavigateToSettings)
-    }
+        Box {
+            var showAdditionalActionsMenu by rememberSaveable { mutableStateOf(false) }
 
+            IconButton(onClick = { showAdditionalActionsMenu = true }) {
+                Icon(
+                    painter = painterResource(R.drawable.ic_more_vert),
+                    contentDescription = null,
+                )
+            }
+            RoundedDropdownMenu(
+                expanded = showAdditionalActionsMenu,
+                onDismissRequest = { showAdditionalActionsMenu = false },
+            ) {
+                DropdownMenuItem(
+                    text = { Text(text = stringResource(R.string.search_action_view_errors)) },
+                    onClick = {
+                        showSearchFailures = true
+                        showAdditionalActionsMenu = false
+                    },
+                    leadingIcon = {
+                        Icon(
+                            painter = painterResource(R.drawable.ic_error),
+                            contentDescription = null,
+                        )
+                    },
+                    enabled = uiState.failures.isNotEmpty(),
+                )
+                DropdownMenuItem(
+                    text = { Text(text = stringResource(R.string.search_action_settings)) },
+                    onClick = {
+                        onNavigateToSettings()
+                        showAdditionalActionsMenu = false
+                    },
+                    leadingIcon = {
+                        Icon(
+                            painter = painterResource(R.drawable.ic_settings),
+                            contentDescription = null,
+                        )
+                    },
+                )
+            }
+        }
+    }
 
     Scaffold(
         modifier = Modifier
@@ -474,6 +554,153 @@ private fun SearchProvidersChipsRow(
                 onClick = { onToggleSearchProvider(filterOption.searchProviderName) },
                 label = { Text(text = filterOption.searchProviderName) },
                 enabled = filterOption.enabled,
+            )
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun SearchFailuresBottomSheet(
+    onDismiss: () -> Unit,
+    failures: ImmutableList<SearchException>,
+    onExportErrorLogsToFile: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    val bottomSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+
+    ModalBottomSheet(
+        modifier = modifier,
+        onDismissRequest = onDismiss,
+        sheetState = bottomSheetState,
+    ) {
+        Column(modifier = Modifier.fillMaxSize()) {
+            Column {
+                Text(
+                    modifier = Modifier.padding(horizontal = MaterialTheme.spaces.large),
+                    text = stringResource(R.string.search_errors_bottom_sheet_title),
+                    style = MaterialTheme.typography.headlineSmall,
+                )
+                Spacer(modifier = Modifier.height(MaterialTheme.spaces.small))
+                HorizontalDivider()
+            }
+
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(all = MaterialTheme.spaces.large),
+                verticalArrangement = Arrangement.SpaceBetween,
+            ) {
+                SearchProviderExceptionList(
+                    modifier = Modifier.weight(1f),
+                    exceptions = failures,
+                )
+
+                Button(
+                    modifier = Modifier.fillMaxWidth(),
+                    onClick = onExportErrorLogsToFile,
+                ) {
+                    Text(text = stringResource(R.string.search_button_export_error_logs))
+                }
+            }
+        }
+    }
+}
+
+@Preview
+@Composable
+private fun SearchFailuresBottomSheetPreview() {
+    val failures = persistentListOf(
+        SearchException(
+            searchProviderName = "ThePirateBay",
+            searchProviderUrl = "https://example.com",
+        ),
+        SearchException(
+            searchProviderName = "TheRarBg",
+            searchProviderUrl = "https://example.com",
+        ),
+        SearchException(
+            searchProviderName = "TorrentDownloads",
+            searchProviderUrl = "https://example.com",
+        ),
+        SearchException(
+            searchProviderName = "TokyoToshokan",
+            searchProviderUrl = "https://example.com",
+        ),
+    )
+
+    TorrentSearchTheme(darkTheme = true) {
+        SearchFailuresBottomSheet(
+            onDismiss = {},
+            failures = failures,
+            onExportErrorLogsToFile = {},
+        )
+    }
+}
+
+@Composable
+private fun SearchProviderExceptionList(
+    exceptions: ImmutableList<SearchException>,
+    modifier: Modifier = Modifier,
+) {
+    LazyColumn(
+        modifier = modifier,
+        verticalArrangement = Arrangement.spacedBy(
+            space = MaterialTheme.spaces.small,
+        ),
+    ) {
+        items(items = exceptions, key = { it.searchProviderUrl }) {
+            SearchExceptionListItem(
+                modifier = Modifier.animateItem(),
+                exception = it,
+            )
+        }
+    }
+}
+
+@Composable
+private fun SearchExceptionListItem(
+    exception: SearchException,
+    modifier: Modifier = Modifier,
+) {
+    Column(
+        modifier = modifier,
+        verticalArrangement = Arrangement.spacedBy(MaterialTheme.spaces.small),
+    ) {
+        var showStackTrace by rememberSaveable { mutableStateOf(false) }
+
+        val exceptionMessage = exception.message ?: stringResource(R.string.search_unexpected_error)
+        val listItemColors = ListItemDefaults.colors(
+            containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
+            supportingColor = MaterialTheme.colorScheme.error,
+        )
+
+        ListItem(
+            modifier = Modifier
+                .clip(shape = MaterialTheme.shapes.medium)
+                .clickable { showStackTrace = !showStackTrace },
+            headlineContent = { Text(text = exception.searchProviderName) },
+            supportingContent = { Text(text = exceptionMessage) },
+            trailingContent = {
+                AnimatedContent(targetState = showStackTrace) { stackTraceVisible ->
+                    val iconId = if (stackTraceVisible) {
+                        R.drawable.ic_keyboard_arrow_up
+                    } else {
+                        R.drawable.ic_keyboard_arrow_down
+                    }
+                    Icon(
+                        painter = painterResource(iconId),
+                        contentDescription = null,
+                    )
+                }
+            },
+            colors = listItemColors,
+        )
+
+        AnimatedVisibility(visible = showStackTrace) {
+            StackTraceCard(
+                modifier = Modifier.height(360.dp),
+                stackTrace = exception.stackTraceToString(),
             )
         }
     }
