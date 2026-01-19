@@ -182,7 +182,7 @@ fun SearchScreen(
     if (showSearchFailures) {
         SearchFailuresBottomSheet(
             onDismiss = { showSearchFailures = false },
-            failures = uiState.failures,
+            failures = uiState.searchFailures,
             onExportErrorLogsToFile = {
                 errorLogsExportLocationChooser.launch(
                     TorrentSearchConstants.SEARCH_ERROR_LOGS_FILE_NAME
@@ -270,7 +270,7 @@ fun SearchScreen(
                             contentDescription = null,
                         )
                     },
-                    enabled = uiState.failures.isNotEmpty(),
+                    enabled = uiState.searchFailures.isNotEmpty(),
                 )
                 DropdownMenuItem(
                     text = { Text(text = stringResource(R.string.search_action_settings)) },

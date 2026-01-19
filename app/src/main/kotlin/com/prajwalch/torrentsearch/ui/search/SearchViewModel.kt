@@ -45,6 +45,32 @@ import java.io.PrintStream
 import javax.inject.Inject
 import kotlin.time.Duration.Companion.seconds
 
+data class SearchUiState(
+    val searchQuery: String = "",
+    val searchCategory: Category = Category.All,
+    val searchResults: ImmutableList<Torrent> = persistentListOf(),
+    val searchFailures: ImmutableList<SearchException> = persistentListOf(),
+    val sortOptions: SortOptions = SortOptions(),
+    val filterOptions: FilterOptions = FilterOptions(),
+    val isLoading: Boolean = true,
+    val isSearching: Boolean = false,
+    val isRefreshing: Boolean = false,
+    val isInternetError: Boolean = false,
+    val resultsNotFound: Boolean = false,
+    val resultsFilteredOut: Boolean = false,
+)
+
+data class FilterOptions(
+    val searchProviders: ImmutableList<SearchProviderFilterOption> = persistentListOf(),
+    val deadTorrents: Boolean = true,
+)
+
+data class SearchProviderFilterOption(
+    val searchProviderName: String,
+    val enabled: Boolean = false,
+    val selected: Boolean = false,
+)
+
 /** ViewModel that handles the business logic of SearchScreen. */
 @HiltViewModel
 class SearchViewModel @Inject constructor(
@@ -245,7 +271,7 @@ class SearchViewModel @Inject constructor(
             val printStream = PrintStream(outputStream, true)
 
             printStream.use { stream ->
-                for (exception in uiState.value.failures) {
+                for (exception in uiState.value.searchFailures) {
                     stream.println("----------${exception.searchProviderName}----------")
                     exception.printStackTrace(stream)
                     stream.println("----------${exception.searchProviderName}----------")
@@ -306,10 +332,7 @@ class SearchViewModel @Inject constructor(
     private fun onSearchResultsReceived(searchResults: SearchResults) {
         Log.i(TAG, "onSearchResultsReceived() called")
 
-        // TODO: Collect failures/errors as well and generate search results
-        //       summary which can be used to display on UI or for debugging
-        //       purpose.
-        val failures = searchResults.failures
+        val searchFailures = searchResults.failures
         val searchResults = searchResults.successes
 
         if (searchResults.isEmpty()) {
@@ -333,7 +356,7 @@ class SearchViewModel @Inject constructor(
             it.copy(
                 filterOptions = filterOptions,
                 searchResults = searchResults,
-                failures = failures,
+                searchFailures = searchFailures,
             )
         }
     }
@@ -377,29 +400,3 @@ class SearchViewModel @Inject constructor(
         private const val TAG = "SearchViewModel"
     }
 }
-
-data class SearchUiState(
-    val searchQuery: String = "",
-    val searchCategory: Category = Category.All,
-    val searchResults: ImmutableList<Torrent> = persistentListOf(),
-    val failures: ImmutableList<SearchException> = persistentListOf(),
-    val sortOptions: SortOptions = SortOptions(),
-    val filterOptions: FilterOptions = FilterOptions(),
-    val isLoading: Boolean = true,
-    val isSearching: Boolean = false,
-    val isRefreshing: Boolean = false,
-    val isInternetError: Boolean = false,
-    val resultsNotFound: Boolean = false,
-    val resultsFilteredOut: Boolean = false,
-)
-
-data class FilterOptions(
-    val searchProviders: ImmutableList<SearchProviderFilterOption> = persistentListOf(),
-    val deadTorrents: Boolean = true,
-)
-
-data class SearchProviderFilterOption(
-    val searchProviderName: String,
-    val enabled: Boolean = false,
-    val selected: Boolean = false,
-)
