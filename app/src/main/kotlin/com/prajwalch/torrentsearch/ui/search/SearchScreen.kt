@@ -171,7 +171,7 @@ fun SearchScreen(
 
     val contentResolver = LocalContext.current.contentResolver
     val errorLogsExportLocationChooser = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.CreateDocument(TorrentSearchConstants.SEARCH_ERROR_LOGS_FILE_TYPE),
+        contract = ActivityResultContracts.CreateDocument(TorrentSearchConstants.LOGS_FILE_TYPE),
     ) { fileUri ->
         fileUri
             ?.let(contentResolver::openOutputStream)

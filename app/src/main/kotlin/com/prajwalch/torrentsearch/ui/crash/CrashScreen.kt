@@ -27,9 +27,6 @@ import com.prajwalch.torrentsearch.constants.TorrentSearchConstants
 import com.prajwalch.torrentsearch.ui.components.StackTraceCard
 import com.prajwalch.torrentsearch.ui.theme.spaces
 
-private val CreateDocumentContract =
-    ActivityResultContracts.CreateDocument(TorrentSearchConstants.CRASH_LOGS_FILE_TYPE)
-
 @Composable
 fun CrashScreen(
     stackTrace: String,
@@ -38,7 +35,7 @@ fun CrashScreen(
     modifier: Modifier = Modifier,
 ) {
     val exportLocationChooser = rememberLauncherForActivityResult(
-        contract = CreateDocumentContract,
+        contract = ActivityResultContracts.CreateDocument(TorrentSearchConstants.LOGS_FILE_TYPE),
     ) { uri ->
         uri?.let(onExportCrashLogsToFile)
     }
