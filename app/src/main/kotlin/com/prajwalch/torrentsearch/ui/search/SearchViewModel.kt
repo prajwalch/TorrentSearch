@@ -335,10 +335,6 @@ class SearchViewModel @Inject constructor(
         val searchFailures = searchResults.failures
         val searchResults = searchResults.successes
 
-        if (searchResults.isEmpty()) {
-            Log.i(TAG, "Received empty results. Returning")
-            return
-        }
         Log.i(TAG, "Received ${searchResults.size} results")
 
         val searchProvidersFilterOption = createSearchProvidersFilterOption(
