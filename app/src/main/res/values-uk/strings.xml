@@ -133,4 +133,9 @@
     <string name="crash_button_export_crash_logs">Експорт журналів аварійного завершення роботи у файл</string>
     <string name="crash_button_restart_application">Перезапустіть програму</string>
     <string name="crash_logs_export_success_message">Журнали, експортовані у файл</string>
+    <string name="search_action_view_errors">Переглянути помилки</string>
+    <string name="search_action_settings">Налаштування</string>
+    <string name="search_errors_bottom_sheet_title">Невдалі пошукові системи</string>
+    <string name="search_button_export_error_logs">Експорт журналів помилок у файл</string>
+    <string name="search_unexpected_error">Неочікувана помилка</string>
 </resources>
