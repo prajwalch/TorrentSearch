@@ -27,6 +27,7 @@ import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.WhileSubscribed
@@ -112,6 +113,9 @@ class SearchViewModel @Inject constructor(
         initialValue = SearchUiState(isLoading = true),
     )
 
+    /** Currently on-going search. */
+    private var searchJob: Job? = null
+
     init {
         Log.i(TAG, "init is invoked")
         Log.d(TAG, "query = $searchQuery, category = $searchCategory")
@@ -125,7 +129,8 @@ class SearchViewModel @Inject constructor(
                 val query = searchQuery.trim()
                 searchHistoryRepository.createNewSearchHistory(query = query)
             }
-
+        }
+        searchJob = viewModelScope.launch {
             performNewSearch()
         }
     }
@@ -182,7 +187,8 @@ class SearchViewModel @Inject constructor(
      * currently set by the user to default.
      */
     fun refreshSearchResults() {
-        viewModelScope.launch {
+        searchJob?.cancel()
+        searchJob = viewModelScope.launch {
             _uiState.update { it.copy(isRefreshing = true) }
 
             if (!connectivityChecker.isInternetAvailable()) {
@@ -199,7 +205,8 @@ class SearchViewModel @Inject constructor(
      * to default and performing a new search.
      */
     fun reload() {
-        viewModelScope.launch {
+        searchJob?.cancel()
+        searchJob = viewModelScope.launch {
             _uiState.update {
                 it.copy(isLoading = true, isInternetError = false)
             }
