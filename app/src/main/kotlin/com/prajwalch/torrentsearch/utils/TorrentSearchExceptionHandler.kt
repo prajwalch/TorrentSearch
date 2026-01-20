@@ -1,4 +1,4 @@
-package com.prajwalch.torrentsearch.ui.crash
+package com.prajwalch.torrentsearch.utils
 
 import android.content.Context
 import android.content.Intent

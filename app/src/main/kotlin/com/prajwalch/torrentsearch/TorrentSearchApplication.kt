@@ -4,7 +4,7 @@ import android.app.Application
 
 import com.prajwalch.torrentsearch.network.HttpClient
 import com.prajwalch.torrentsearch.ui.crash.CrashActivity
-import com.prajwalch.torrentsearch.ui.crash.TorrentSearchExceptionHandler
+import com.prajwalch.torrentsearch.utils.TorrentSearchExceptionHandler
 
 import dagger.hilt.android.HiltAndroidApp
 
