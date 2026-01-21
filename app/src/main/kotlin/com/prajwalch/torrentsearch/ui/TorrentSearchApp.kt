@@ -3,6 +3,7 @@ package com.prajwalch.torrentsearch.ui
 import androidx.compose.animation.AnimatedContentTransitionScope.SlideDirection
 import androidx.compose.animation.fadeIn
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -24,22 +25,20 @@ import com.prajwalch.torrentsearch.ui.settings.settingsNavigation
 
 import kotlinx.serialization.Serializable
 
-sealed interface TorrentSearchPrimaryRoute {
-    @Serializable
-    object Home : TorrentSearchPrimaryRoute
+@Serializable
+private object Home
 
-    @Serializable
-    data class Search(
-        val query: String,
-        val category: Category? = null,
-    ) : TorrentSearchPrimaryRoute
+@Serializable
+private data class Search(
+    val query: String,
+    val category: Category? = null,
+)
 
-    @Serializable
-    object Bookmarks : TorrentSearchPrimaryRoute
+@Serializable
+private object Bookmarks
 
-    @Serializable
-    object SearchHistory : TorrentSearchPrimaryRoute
-}
+@Serializable
+private object SearchHistory
 
 @Composable
 fun TorrentSearchApp(
@@ -47,7 +46,7 @@ fun TorrentSearchApp(
     onShareMagnetLink: (MagnetUri) -> Unit,
     onOpenDescriptionPage: (String) -> Unit,
     onShareDescriptionPageUrl: (String) -> Unit,
-    startDestination: TorrentSearchPrimaryRoute = TorrentSearchPrimaryRoute.Home,
+    initialSearchQuery: String? = null,
 ) {
     val navController = rememberNavController()
     var showTorrentClientNotFoundDialog by rememberSaveable { mutableStateOf(false) }
@@ -58,27 +57,40 @@ fun TorrentSearchApp(
         )
     }
 
-    NavHost(navController = navController, startDestination = startDestination) {
-        composable<TorrentSearchPrimaryRoute.Home>(
+    LaunchedEffect(initialSearchQuery) {
+        if (initialSearchQuery == null) return@LaunchedEffect
+
+        val searchRoute = Search(query = initialSearchQuery)
+        navController.navigate(searchRoute) {
+            popUpTo(Home) {
+                // When the initial query is given, going back should close
+                // the app instead of showing or navigating to home screen.
+                inclusive = true
+            }
+        }
+    }
+
+    NavHost(navController = navController, startDestination = Home) {
+        composable<Home>(
             enterTransition = { fadeIn() },
             exitTransition = { slideOutOfContainer(SlideDirection.Start) },
             popEnterTransition = { slideIntoContainer(SlideDirection.End) },
         ) {
             HomeScreen(
                 onNavigateToBookmarks = {
-                    navController.navigate(TorrentSearchPrimaryRoute.Bookmarks)
+                    navController.navigate(Bookmarks)
                 },
                 onNavigateToSearchHistory = {
-                    navController.navigate(TorrentSearchPrimaryRoute.SearchHistory)
+                    navController.navigate(SearchHistory)
                 },
                 onNavigateToSettings = { navController.navigateToSettings() },
                 onSearch = { query, category ->
-                    navController.navigate(TorrentSearchPrimaryRoute.Search(query, category))
+                    navController.navigate(Search(query, category))
                 }
             )
         }
 
-        parentComposable<TorrentSearchPrimaryRoute.Search> {
+        parentComposable<Search> {
             SearchScreen(
                 onNavigateBack = { navController.navigateUp() },
                 onNavigateToSettings = { navController.navigateToSettings() },
@@ -89,7 +101,7 @@ fun TorrentSearchApp(
             )
         }
 
-        parentComposable<TorrentSearchPrimaryRoute.Bookmarks> {
+        parentComposable<Bookmarks> {
             BookmarksScreen(
                 onNavigateBack = { navController.navigateUp() },
                 onNavigateToSettings = { navController.navigateToSettings() },
@@ -100,12 +112,12 @@ fun TorrentSearchApp(
             )
         }
 
-        parentComposable<TorrentSearchPrimaryRoute.SearchHistory> {
+        parentComposable<SearchHistory> {
             SearchHistoryScreen(
                 onNavigateBack = { navController.navigateUp() },
                 onPerformSearch = {
-                    navController.navigate(TorrentSearchPrimaryRoute.Search(query = it)) {
-                        popUpTo(route = TorrentSearchPrimaryRoute.Home)
+                    navController.navigate(Search(query = it)) {
+                        popUpTo(route = Home)
                     }
                 }
             )

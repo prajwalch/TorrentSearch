@@ -23,15 +23,12 @@ import com.prajwalch.torrentsearch.R
 import com.prajwalch.torrentsearch.domain.models.DarkTheme
 import com.prajwalch.torrentsearch.domain.models.MagnetUri
 import com.prajwalch.torrentsearch.ui.TorrentSearchApp
-import com.prajwalch.torrentsearch.ui.TorrentSearchPrimaryRoute
 import com.prajwalch.torrentsearch.ui.theme.TorrentSearchTheme
 
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
-    private var startDestination: TorrentSearchPrimaryRoute = TorrentSearchPrimaryRoute.Home
-
     override fun onCreate(savedInstanceState: Bundle?) {
         Log.i(TAG, "onCreate() called")
 
@@ -39,7 +36,8 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         onBackPressedDispatcher.addCallback(this) { moveTaskToBack(true) }
-        handleIntent()
+
+        val initialSearchQuery = getInitialSearchQuery()
 
         enableEdgeToEdge()
         setContent {
@@ -63,71 +61,49 @@ class MainActivity : ComponentActivity() {
                         onShareMagnetLink = ::shareMagnetLink,
                         onOpenDescriptionPage = ::openDescriptionPage,
                         onShareDescriptionPageUrl = ::shareDescriptionPageUrl,
-                        startDestination = startDestination,
+                        initialSearchQuery = initialSearchQuery,
                     )
                 }
             }
         }
     }
 
-    /** Handles the intent that started this activity. */
-    private fun handleIntent() {
-        val intent = intent ?: return
+    /**
+     * Returns the initial search query from the intent if the intent
+     * is supported and contains a valid text.
+     */
+    private fun getInitialSearchQuery(): String? {
+        // Not started by any intent.
+        if (intent == null) return null
 
         val action = intent.action
         val type = intent.type
 
-        when (action) {
-            Intent.ACTION_SEND -> {
-                if ("text/plain" == type) {
-                    handleSendText(intent)
-                }
-            }
-
-            Intent.ACTION_PROCESS_TEXT -> {
-                if ("text/plain" == type) {
-                    handleProcessText(intent)
-                }
-            }
-
-            else -> {}
+        if (type != "text/plain") {
+            return null
         }
-    }
 
-    /**
-     * Handles the text received from [Intent.ACTION_SEND] and updates the UI.
-     */
-    private fun handleSendText(intent: Intent) {
-        intent.getStringExtra(Intent.EXTRA_TEXT)?.let {
-            Log.i(TAG, "Received '$it' from Intent.ACTION_SEND")
-            changeStartDestinationToSearch(searchQuery = it)
+        val textReceivedFromIntent = when (action) {
+            Intent.ACTION_SEND -> intent.getStringExtra(Intent.EXTRA_TEXT)
+            Intent.ACTION_PROCESS_TEXT -> intent.getStringExtra(Intent.EXTRA_PROCESS_TEXT)
+            else -> null
         }
-    }
 
-    /**
-     * Handles the text received from [Intent.ACTION_PROCESS_TEXT] and updates
-     * the UI.
-     */
-    private fun handleProcessText(intent: Intent) {
-        intent.getStringExtra(Intent.EXTRA_PROCESS_TEXT)?.let {
-            Log.i(TAG, "Received '$it' from Intent.ACTION_PROCESS_TEXT")
-            changeStartDestinationToSearch(searchQuery = it)
+        if (textReceivedFromIntent == null) {
+            Log.i(TAG, "Initial query not found in intent")
+            return null
         }
-    }
 
-    /** Changes the start destination to search after validating search query. */
-    private fun changeStartDestinationToSearch(searchQuery: String) {
-        if (searchQuery.isBlank()) {
+        if (textReceivedFromIntent.isBlank()) {
             val cannotSearchUsingBlankQueryMessage = getString(
                 R.string.main_cannot_search_blank_query_message,
             )
             showToast(message = cannotSearchUsingBlankQueryMessage)
 
-            return
+            return null
         }
 
-        val urlPatternMatcher = Patterns.WEB_URL.matcher(searchQuery)
-
+        val urlPatternMatcher = Patterns.WEB_URL.matcher(textReceivedFromIntent)
         if (urlPatternMatcher.matches()) {
             Log.w(TAG, "Cannot perform search; text is a URL")
 
@@ -136,13 +112,13 @@ class MainActivity : ComponentActivity() {
             )
             showToast(message = cannotSearchUsingUrlMessage)
 
-            return
+            return null
         }
 
-        val searchQuery = urlPatternMatcher.replaceAll("").trim().trim('"', '\n')
-        Log.d(TAG, "Performing search; query = $searchQuery")
+        val initialSearchQuery = urlPatternMatcher.replaceAll("").trim().trim('"', '\n')
+        Log.d(TAG, "Initial search query = $initialSearchQuery")
 
-        startDestination = TorrentSearchPrimaryRoute.Search(query = searchQuery)
+        return initialSearchQuery
     }
 
     /** Shows a toast with a given message. */
