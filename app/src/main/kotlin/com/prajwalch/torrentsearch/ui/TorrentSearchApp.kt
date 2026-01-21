@@ -77,16 +77,10 @@ fun TorrentSearchApp(
             popEnterTransition = { slideIntoContainer(SlideDirection.End) },
         ) {
             HomeScreen(
-                onNavigateToBookmarks = {
-                    navController.navigate(Bookmarks)
-                },
-                onNavigateToSearchHistory = {
-                    navController.navigate(SearchHistory)
-                },
+                onNavigateToBookmarks = { navController.navigate(Bookmarks) },
+                onNavigateToSearchHistory = { navController.navigate(SearchHistory) },
                 onNavigateToSettings = { navController.navigateToSettings() },
-                onSearch = { query, category ->
-                    navController.navigate(Search(query, category))
-                }
+                onSearch = { query, category -> navController.navigate(Search(query, category)) }
             )
         }
 
