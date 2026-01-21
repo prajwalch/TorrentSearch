@@ -84,7 +84,7 @@ class SearchViewModel @Inject constructor(
 ) : ViewModel() {
     // Let app crash if these two are not present.
     private val searchQuery = savedStateHandle.get<String>("query")!!
-    private val searchCategory = savedStateHandle.get<String>("category")?.let(Category::valueOf)!!
+    private val searchCategory = savedStateHandle.get<Category>("category")!!
 
     /** The internal or mutable UI state. */
     private val _uiState = MutableStateFlow(

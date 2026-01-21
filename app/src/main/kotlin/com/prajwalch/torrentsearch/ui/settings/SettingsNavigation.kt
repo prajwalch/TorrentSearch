@@ -6,36 +6,48 @@ import androidx.navigation.navigation
 
 import com.prajwalch.torrentsearch.extensions.childComposable
 import com.prajwalch.torrentsearch.extensions.parentComposable
-import com.prajwalch.torrentsearch.ui.Screens
 import com.prajwalch.torrentsearch.ui.settings.defaultcategory.DefaultCategoryScreen
 import com.prajwalch.torrentsearch.ui.settings.defaultsortoptions.DefaultSortOptionsScreen
+import com.prajwalch.torrentsearch.ui.settings.searchproviders.navigateToSearchProviders
 import com.prajwalch.torrentsearch.ui.settings.searchproviders.searchProvidersNavigation
 
+import kotlinx.serialization.Serializable
+
+@Serializable
+private object Settings
+
+@Serializable
+private object Home
+
+@Serializable
+private object DefaultCategory
+
+@Serializable
+private object DefaultSortOptions
+
 fun NavGraphBuilder.settingsNavigation(navController: NavHostController) {
-    navigation(startDestination = Screens.Settings.MAIN, route = Screens.Settings.ROOT) {
-        parentComposable(route = Screens.Settings.MAIN) {
+    navigation<Settings>(startDestination = Home) {
+        parentComposable<Home> {
             SettingsScreen(
                 onNavigateBack = { navController.navigateUp() },
-                onNavigateToDefaultCategory = {
-                    navController.navigate(Screens.Settings.DEFAULT_CATEGORY)
-                },
-                onNavigateToSearchProviders = {
-                    navController.navigate(Screens.Settings.SearchProviders.ROOT)
-                },
-                onNavigateToDefaultSortOptions = {
-                    navController.navigate(Screens.Settings.DEFAULT_SORT_OPTIONS)
-                },
+                onNavigateToDefaultCategory = { navController.navigate(DefaultCategory) },
+                onNavigateToSearchProviders = { navController.navigateToSearchProviders() },
+                onNavigateToDefaultSortOptions = { navController.navigate(DefaultSortOptions) },
             )
         }
 
-        childComposable(route = Screens.Settings.DEFAULT_CATEGORY) {
+        childComposable<DefaultCategory> {
             DefaultCategoryScreen(onNavigateBack = { navController.navigateUp() })
         }
 
-        childComposable(route = Screens.Settings.DEFAULT_SORT_OPTIONS) {
+        childComposable<DefaultSortOptions> {
             DefaultSortOptionsScreen(onNavigateBack = { navController.navigateUp() })
         }
 
         searchProvidersNavigation(navController = navController)
     }
+}
+
+fun NavHostController.navigateToSettings() {
+    this.navigate(route = Settings)
 }

@@ -6,35 +6,44 @@ import androidx.navigation.navigation
 
 import com.prajwalch.torrentsearch.extensions.childComposable
 import com.prajwalch.torrentsearch.extensions.parentComposable
-import com.prajwalch.torrentsearch.ui.Screens
+import com.prajwalch.torrentsearch.providers.SearchProviderId
 import com.prajwalch.torrentsearch.ui.settings.searchproviders.add.AddSearchProviderScreen
 import com.prajwalch.torrentsearch.ui.settings.searchproviders.edit.EditSearchProviderScreen
 
+import kotlinx.serialization.Serializable
+
+@Serializable
+private object SearchProviders
+
+@Serializable
+private object Home
+
+@Serializable
+private object Add
+
+@Serializable
+private data class Edit(val id: SearchProviderId)
+
 fun NavGraphBuilder.searchProvidersNavigation(navController: NavHostController) {
-    navigation(
-        startDestination = Screens.Settings.SearchProviders.HOME,
-        route = Screens.Settings.SearchProviders.ROOT
-    ) {
-        parentComposable(route = Screens.Settings.SearchProviders.HOME) {
+    navigation<SearchProviders>(startDestination = Home) {
+        parentComposable<Home> {
             SearchProvidersScreen(
                 onNavigateBack = { navController.navigateUp() },
-                onNavigateToAddSearchProvider = {
-                    navController.navigate(route = Screens.Settings.SearchProviders.ADD)
-                },
-                onNavigateToEditSearchProvider = {
-                    navController.navigate(
-                        route = Screens.Settings.SearchProviders.createEditRoute(id = it)
-                    )
-                },
+                onNavigateToAddSearchProvider = { navController.navigate(Add) },
+                onNavigateToEditSearchProvider = { navController.navigate(Edit(id = it)) },
             )
         }
 
-        childComposable(route = Screens.Settings.SearchProviders.ADD) {
+        childComposable<Add> {
             AddSearchProviderScreen(onNavigateBack = { navController.navigateUp() })
         }
 
-        childComposable(route = Screens.Settings.SearchProviders.EDIT) {
+        childComposable<Edit> {
             EditSearchProviderScreen(onNavigateBack = { navController.navigateUp() })
         }
     }
+}
+
+fun NavHostController.navigateToSearchProviders() {
+    this.navigate(route = SearchProviders)
 }

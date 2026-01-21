@@ -20,18 +20,17 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 
 import com.prajwalch.torrentsearch.R
-import com.prajwalch.torrentsearch.domain.models.Category
 import com.prajwalch.torrentsearch.domain.models.DarkTheme
 import com.prajwalch.torrentsearch.domain.models.MagnetUri
-import com.prajwalch.torrentsearch.ui.Screens
 import com.prajwalch.torrentsearch.ui.TorrentSearchApp
+import com.prajwalch.torrentsearch.ui.TorrentSearchPrimaryRoute
 import com.prajwalch.torrentsearch.ui.theme.TorrentSearchTheme
 
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
-    private var startDestination = Screens.HOME
+    private var startDestination: TorrentSearchPrimaryRoute = TorrentSearchPrimaryRoute.Home
 
     override fun onCreate(savedInstanceState: Bundle?) {
         Log.i(TAG, "onCreate() called")
@@ -143,11 +142,7 @@ class MainActivity : ComponentActivity() {
         val searchQuery = urlPatternMatcher.replaceAll("").trim().trim('"', '\n')
         Log.d(TAG, "Performing search; query = $searchQuery")
 
-        startDestination = Screens.createSearchRoute(
-            query = searchQuery,
-            // FIXME: Default category is not respected.
-            category = Category.All,
-        )
+        startDestination = TorrentSearchPrimaryRoute.Search(query = searchQuery)
     }
 
     /** Shows a toast with a given message. */

@@ -7,12 +7,10 @@ import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 
-fun NavGraphBuilder.parentComposable(
-    route: String,
-    content: @Composable AnimatedContentScope.(NavBackStackEntry) -> Unit,
+inline fun <reified T : Any> NavGraphBuilder.parentComposable(
+    noinline content: @Composable AnimatedContentScope.(NavBackStackEntry) -> Unit,
 ) {
-    this.composable(
-        route = route,
+    this.composable<T>(
         enterTransition = { slideIntoContainer(SlideDirection.Start) },
         exitTransition = { slideOutOfContainer(SlideDirection.Start) },
         popEnterTransition = { slideIntoContainer(SlideDirection.End) },
@@ -21,12 +19,10 @@ fun NavGraphBuilder.parentComposable(
     )
 }
 
-fun NavGraphBuilder.childComposable(
-    route: String,
-    content: @Composable AnimatedContentScope.(NavBackStackEntry) -> Unit,
+inline fun <reified T : Any> NavGraphBuilder.childComposable(
+    noinline content: @Composable AnimatedContentScope.(NavBackStackEntry) -> Unit,
 ) {
-    this.composable(
-        route = route,
+    this.composable<T>(
         enterTransition = { slideIntoContainer(SlideDirection.Start) },
         popExitTransition = { slideOutOfContainer(SlideDirection.End) },
         content = content,
