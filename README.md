@@ -64,7 +64,7 @@ providers.
 [<img src="https://github.com/ImranR98/Obtainium/blob/main/assets/graphics/badge_obtainium.png" alt="Get it on Obtainium" height="55">](https://apps.obtainium.imranr.dev/redirect?r=obtainium://add/https://github.com/prajwalch/TorrentSearch/)
 
 
-The Nightly versions are also available under the artifact section of workflow run (You may require
+The Nightly versions are also available under the artifact section of [workflow](https://github.com/prajwalch/TorrentSearch/actions) run (You may require
 to logging in to Github). These are created for
 each commit/push done to the repository and can be used by anyone to test new features. Please note
 that Nightly builds can contain bugs and may not work properly.
