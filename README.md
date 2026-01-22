@@ -75,6 +75,10 @@ that Nightly builds can contain bugs and may not work properly.
 
 [![Translation status](https://hosted.weblate.org/widget/torrentsearch/multi-auto.svg)](https://hosted.weblate.org/engage/torrentsearch/)
 
+## Contributions
+
+See [CONTRIBUTING.md](https://github.com/prajwalch/TorrentSearch/blob/main/CONTRIBUTING.md) for details.
+
 ## Thanks
 
 - [IconKitchen](https://icon.kitchen/) for a platform to create an icon.
