@@ -34,6 +34,7 @@ import kotlinx.coroutines.flow.WhileSubscribed
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.conflate
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
@@ -80,19 +81,20 @@ class SearchViewModel @Inject constructor(
     private val searchHistoryRepository: SearchHistoryRepository,
     private val settingsRepository: SettingsRepository,
     private val connectivityChecker: ConnectivityChecker,
-    savedStateHandle: SavedStateHandle,
+    private val savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
-    // Let app crash if these two are not present.
+    /** Current search query. */
     private val searchQuery = savedStateHandle.get<String>("query")!!
-    private val searchCategory = savedStateHandle.get<Category>("category")!!
+
+    /**
+     * Current search category.
+     *
+     * If the category is not given, default category is fetched from the settings.
+     */
+    private lateinit var searchCategory: Category
 
     /** The internal or mutable UI state. */
-    private val _uiState = MutableStateFlow(
-        SearchUiState(
-            searchQuery = searchQuery,
-            searchCategory = searchCategory,
-        )
-    )
+    private val _uiState = MutableStateFlow(SearchUiState(searchQuery = searchQuery))
 
     /**
      * Query used to filter search results.
@@ -118,21 +120,35 @@ class SearchViewModel @Inject constructor(
 
     init {
         Log.i(TAG, "init is invoked")
-        Log.d(TAG, "query = $searchQuery, category = $searchCategory")
 
-        viewModelScope.launch {
-            // TODO: This ViewModel shouldn't be responsible for maintaining
-            //       search history.
-            if (settingsRepository.saveSearchHistory.first()) {
-                // Trim the query to prevent same query (e.g. 'one' and 'one ')
-                // from end upping into the database.
-                val query = searchQuery.trim()
-                searchHistoryRepository.createNewSearchHistory(query = query)
-            }
+        // 1. Maintain search history
+        saveSearchQueryToHistory()
+        // 2. Perform search
+        searchJob = initializeCategoryAndSearch()
+    }
+
+    private fun saveSearchQueryToHistory() = viewModelScope.launch {
+        if (!settingsRepository.saveSearchHistory.first()) {
+            return@launch
         }
-        searchJob = viewModelScope.launch {
-            performNewSearch()
-        }
+        // TODO: Do this in repository.
+        //
+        // Trim the query to prevent same query (e.g. 'one' and 'one ')
+        // from end upping into the database.
+        val query = searchQuery.trim()
+        searchHistoryRepository.createNewSearchHistory(query = query)
+    }
+
+    private fun initializeCategoryAndSearch() = viewModelScope.launch {
+        val category = savedStateHandle.get<Category>("category")
+        // If the category is not given fallback to default one.
+            ?: settingsRepository.defaultCategory.firstOrNull()
+            ?: Category.All
+
+        searchCategory = category
+        _uiState.update { it.copy(searchCategory = category) }
+
+        performNewSearch()
     }
 
     /** Produces UI state from the given internal state and other parameters. */
