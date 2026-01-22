@@ -148,50 +148,46 @@ class SearchViewModel @Inject constructor(
         searchCategory = category
         _uiState.update { it.copy(searchCategory = category) }
 
-        performNewSearch()
+        performSearch()
     }
 
     /** Produces UI state from the given internal state and other parameters. */
     private suspend fun createUiState(
-        currentUiState: SearchUiState,
+        internalUiState: SearchUiState,
         filterQuery: String,
         nsfwModeEnabled: Boolean,
     ): SearchUiState {
         Log.i(TAG, "Creating UI state")
 
-        if (currentUiState.isLoading) {
-            return currentUiState
+        if (internalUiState.isLoading || internalUiState.isInternetError) {
+            return internalUiState
         }
 
-        if (currentUiState.isInternetError) {
-            return currentUiState
-        }
-
-        val enabledSearchProvidersName = currentUiState.filterOptions.searchProviders.mapNotNull {
+        val enabledSearchProvidersName = internalUiState.filterOptions.searchProviders.mapNotNull {
             if (it.selected) it.searchProviderName else null
         }
         val sortComparator = createSortComparator(
-            criteria = currentUiState.sortOptions.criteria,
-            order = currentUiState.sortOptions.order,
+            criteria = internalUiState.sortOptions.criteria,
+            order = internalUiState.sortOptions.order,
         )
-        val filteredSearchResults = currentUiState
+        val filteredSearchResults = internalUiState
             .searchResults
             .asSequence()
             .filter {
-                currentUiState.filterOptions.searchProviders.isEmpty()
+                internalUiState.filterOptions.searchProviders.isEmpty()
                         || it.providerName in enabledSearchProvidersName
             }
             .filter { nsfwModeEnabled || !it.isNSFW() }
-            .filter { currentUiState.filterOptions.deadTorrents || !it.isDead() }
+            .filter { internalUiState.filterOptions.deadTorrents || !it.isDead() }
             .filter { filterQuery.isBlank() || it.name.contains(filterQuery, ignoreCase = true) }
             .sortedWith(comparator = sortComparator)
             .toImmutableList()
 
-        val isSearchResultsEmpty = currentUiState.searchResults.isEmpty()
-        val resultsNotFound = isSearchResultsEmpty && !currentUiState.isSearching
+        val isSearchResultsEmpty = internalUiState.searchResults.isEmpty()
+        val resultsNotFound = isSearchResultsEmpty && !internalUiState.isSearching
         val resultsFilteredOut = !isSearchResultsEmpty && filteredSearchResults.isEmpty()
 
-        return currentUiState.copy(
+        return internalUiState.copy(
             searchResults = filteredSearchResults,
             resultsNotFound = resultsNotFound,
             resultsFilteredOut = resultsFilteredOut,
@@ -204,16 +200,7 @@ class SearchViewModel @Inject constructor(
      */
     fun refreshSearchResults() {
         searchJob?.cancel()
-        searchJob = viewModelScope.launch {
-            _uiState.update { it.copy(isRefreshing = true) }
-
-            if (!connectivityChecker.isInternetAvailable()) {
-                _uiState.update { it.copy(isRefreshing = false) }
-                return@launch
-            }
-
-            search(query = searchQuery, category = searchCategory)
-        }
+        searchJob = performSearch(refreshOnly = true)
     }
 
     /**
@@ -222,12 +209,7 @@ class SearchViewModel @Inject constructor(
      */
     fun reload() {
         searchJob?.cancel()
-        searchJob = viewModelScope.launch {
-            _uiState.update {
-                it.copy(isLoading = true, isInternetError = false)
-            }
-            performNewSearch()
-        }
+        searchJob = performSearch()
     }
 
     /** Shows only those search results that contains the given query. */
@@ -304,36 +286,32 @@ class SearchViewModel @Inject constructor(
         }
     }
 
-    /** Performs a new search by resetting every state. */
-    private suspend fun performNewSearch() {
-        Log.i(TAG, "performNewSearch() called")
-
-        if (searchQuery.isBlank()) {
-            _uiState.update {
-                it.copy(
-                    isLoading = false,
-                    isSearching = false,
-                    isInternetError = false,
-                )
-            }
-            return
+    private fun performSearch(refreshOnly: Boolean = false) = viewModelScope.launch {
+        if (refreshOnly) {
+            _uiState.update { it.copy(isRefreshing = true) }
+        } else {
+            _uiState.update { it.copy(isLoading = true, isInternetError = false) }
         }
 
         if (!connectivityChecker.isInternetAvailable()) {
             Log.w(TAG, "Internet connection not available. Returning")
-            _uiState.update { it.copy(isLoading = false, isInternetError = true) }
-            return
+
+            _uiState.update {
+                it.copy(
+                    isLoading = false,
+                    isRefreshing = false,
+                    isInternetError = true,
+                )
+            }
+            return@launch
         }
 
-        val defaultSortOptions = settingsRepository.defaultSortOptions.first()
-        _uiState.update { it.copy(sortOptions = defaultSortOptions) }
+        if (!refreshOnly) {
+            val defaultSortOptions = settingsRepository.defaultSortOptions.first()
+            _uiState.update { it.copy(sortOptions = defaultSortOptions) }
+        }
 
-        search(query = searchQuery, category = searchCategory)
-    }
-
-    /** Performs a new search. */
-    private suspend fun search(query: String, category: Category) {
-        searchTorrentsUseCase(query = query, category = category)
+        searchTorrentsUseCase(query = searchQuery, category = searchCategory)
             .onStart { onSearchStart() }
             .onCompletion { onSearchCompletion(cause = it) }
             .conflate()
