@@ -1,7 +1,6 @@
 package com.prajwalch.torrentsearch.network
 
 import android.util.Log
-
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.okhttp.OkHttp
 import io.ktor.client.network.sockets.ConnectTimeoutException
@@ -15,10 +14,10 @@ import io.ktor.client.request.get
 import io.ktor.client.request.header
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
+import io.ktor.client.statement.HttpResponse
 import io.ktor.client.statement.bodyAsText
 import io.ktor.http.ContentType
 import io.ktor.http.contentType
-
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.io.IOException
@@ -130,6 +129,14 @@ object HttpClient {
         return innerClient.get(urlString = url) {
             headers.forEach { (key, value) -> header(key = key, value = value) }
         }.bodyAsText()
+    }
+
+    suspend fun getResponse(url: String, headers: Map<String, String> = emptyMap()): HttpResponse {
+        Log.i(TAG, "Making a request to $url (headers=$headers)")
+
+        return innerClient.get(urlString = url) {
+            headers.forEach { (key, value) -> header(key = key, value = value) }
+        }
     }
 
     /**

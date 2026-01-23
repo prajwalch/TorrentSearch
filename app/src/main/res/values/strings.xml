@@ -31,6 +31,13 @@
     <string name="category_series">Series</string>
     <string name="category_other">Other</string>
 
+    <string name="torznab_conn_check_result_ok">Ok</string>
+    <string name="torznab_conn_check_result_cannot_connect">Cannot connect</string>
+    <string name="torznab_conn_check_result_invalid_api_key">Invalid API key</string>
+    <string name="torznab_conn_check_result_api_disabled">API is disabled</string>
+    <string name="torznab_conn_check_result_internal_app_error">Internal application error (%1d)</string>
+    <string name="torznab_conn_check_result_unknown_error">Some unknown error occurred</string>
+
     <string name="crash_screen_title">Oops!</string>
     <string name="crash_screen_subtitle">
         %1$s hit an unexpected error. Please export the logs and create a Github issue with the logs attached.
@@ -121,6 +128,7 @@
     <string name="search_providers_label_api_key">API key</string>
     <string name="search_providers_label_category">Category</string>
     <string name="search_providers_section_additional_options">Additional options</string>
+    <string name="search_providers_button_check_connection">Check connection</string>
 
     <string name="settings_screen_title">Settings</string>
     <string name="settings_section_appearance">Appearance</string>

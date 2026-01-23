@@ -8,6 +8,7 @@ import androidx.lifecycle.viewModelScope
 
 import com.prajwalch.torrentsearch.data.repository.SearchProvidersRepository
 import com.prajwalch.torrentsearch.domain.models.Category
+import com.prajwalch.torrentsearch.domain.models.TorznabConnectionCheckResult
 import com.prajwalch.torrentsearch.providers.SearchProviderId
 
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -26,6 +27,8 @@ data class TorznabConfigUiState(
     val category: Category = Category.All,
     val isUrlValid: Boolean = true,
     val isConfigSaved: Boolean = false,
+    val isConnectionCheckRunning: Boolean = false,
+    val connectionCheckResult: TorznabConnectionCheckResult? = null,
 ) {
     fun isConfigNotBlank() =
         searchProviderName.isNotBlank() && url.isNotBlank() && apiKey.isNotBlank()
@@ -74,6 +77,32 @@ class TorznabConfigViewModel @Inject constructor(
 
     fun setCategory(category: Category) {
         _uiState.update { it.copy(category = category) }
+    }
+
+    fun checkConnection() {
+        viewModelScope.launch {
+            _uiState.update { it.copy(connectionCheckResult = null) }
+
+            if (!isUrlValid()) {
+                _uiState.update { it.copy(isUrlValid = false) }
+                return@launch
+            }
+
+            _uiState.update { it.copy(isConnectionCheckRunning = true) }
+
+            val url = _uiState.value.url
+            val apiKey = _uiState.value.apiKey
+            val connectionCheckResult =
+                searchProvidersRepository.checkTorznabConnection(url = url, apiKey = apiKey)
+
+            _uiState.update {
+                it.copy(
+                    isUrlValid = true,
+                    isConnectionCheckRunning = false,
+                    connectionCheckResult = connectionCheckResult,
+                )
+            }
+        }
     }
 
     fun saveConfig() {

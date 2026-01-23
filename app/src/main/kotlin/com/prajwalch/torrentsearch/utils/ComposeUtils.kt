@@ -2,11 +2,11 @@ package com.prajwalch.torrentsearch.utils
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
-
 import com.prajwalch.torrentsearch.R
 import com.prajwalch.torrentsearch.domain.models.Category
 import com.prajwalch.torrentsearch.domain.models.SortCriteria
 import com.prajwalch.torrentsearch.domain.models.SortOrder
+import com.prajwalch.torrentsearch.domain.models.TorznabConnectionCheckResult
 
 @Composable
 fun categoryStringResource(category: Category): String {
@@ -47,4 +47,24 @@ fun sortOrderStringResource(sortOrder: SortOrder): String {
     }
 
     return stringResource(id = resId)
+}
+
+@Composable
+fun torznabConnectionCheckResultStringResource(result: TorznabConnectionCheckResult): String {
+    if (result is TorznabConnectionCheckResult.InternalApplicationError) {
+        return stringResource(
+            R.string.torznab_conn_check_result_internal_app_error,
+            result.errorCode,
+        )
+    }
+
+    val otherResId = when (result) {
+        TorznabConnectionCheckResult.ApiDisabled -> R.string.torznab_conn_check_result_api_disabled
+        TorznabConnectionCheckResult.CannotConnect -> R.string.torznab_conn_check_result_cannot_connect
+        TorznabConnectionCheckResult.InvalidApiKey -> R.string.torznab_conn_check_result_invalid_api_key
+        TorznabConnectionCheckResult.Ok -> R.string.torznab_conn_check_result_ok
+        TorznabConnectionCheckResult.UnknownError -> R.string.torznab_conn_check_result_unknown_error
+    }
+
+    return stringResource(otherResId)
 }

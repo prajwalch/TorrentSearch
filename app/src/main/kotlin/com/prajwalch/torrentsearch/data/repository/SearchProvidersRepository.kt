@@ -6,6 +6,7 @@ import com.prajwalch.torrentsearch.data.local.entities.toDomain
 import com.prajwalch.torrentsearch.data.local.entities.toSearchProviderInfo
 import com.prajwalch.torrentsearch.domain.models.Category
 import com.prajwalch.torrentsearch.domain.models.TorznabConfig
+import com.prajwalch.torrentsearch.domain.models.TorznabConnectionCheckResult
 import com.prajwalch.torrentsearch.providers.AniRena
 import com.prajwalch.torrentsearch.providers.AnimeTosho
 import com.prajwalch.torrentsearch.providers.BitSearch
@@ -133,6 +134,10 @@ class SearchProvidersRepository @Inject constructor(
         ) { builtins, externals ->
             builtins + externals
         }.firstOrNull().orEmpty()
+    }
+
+    suspend fun checkTorznabConnection(url: String, apiKey: String): TorznabConnectionCheckResult {
+        return TorznabSearchProvider.checkConnection(url = url.trimEnd('/'), apiKey = apiKey)
     }
 
     suspend fun addTorznabConfig(

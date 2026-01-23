@@ -1,5 +1,6 @@
 package com.prajwalch.torrentsearch.providers
 
+
 import android.util.Log
 import android.util.Xml
 
@@ -7,13 +8,17 @@ import com.prajwalch.torrentsearch.domain.models.Category
 import com.prajwalch.torrentsearch.domain.models.InfoHashOrMagnetUri
 import com.prajwalch.torrentsearch.domain.models.Torrent
 import com.prajwalch.torrentsearch.domain.models.TorznabConfig
+import com.prajwalch.torrentsearch.domain.models.TorznabConnectionCheckResult
 import com.prajwalch.torrentsearch.network.HttpClient
 import com.prajwalch.torrentsearch.utils.FileSizeUtils
+
+import io.ktor.client.statement.bodyAsText
 
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
 import org.xmlpull.v1.XmlPullParser
+import java.net.ConnectException
 
 /**
  *  Torznab functions.
@@ -139,7 +144,7 @@ class TorznabSearchProvider(
     private val responseXmlParser = TorznabResponseXmlParser(providerName = info.name)
 
     override suspend fun search(query: String, context: SearchContext): List<Torrent> {
-        val apiUrl = if (!config.url.endsWith("api")) "${config.url}/api" else config.url
+        val apiUrl = normalizeUrl(url = config.url)
 
         if (capabilities == null) {
             capabilities = fetchCapabilities(apiUrl = apiUrl, httpClient = context.httpClient)
@@ -197,8 +202,71 @@ class TorznabSearchProvider(
         return filteredCategoriesId.joinToString()
     }
 
-    private companion object {
+    companion object {
         private const val TAG = "TorznabSearchProvider"
+        private const val HTTP_STATUS_OK = 200
+        private const val HTTP_STATUS_NOT_AUTHORIZED = 401
+
+        suspend fun checkConnection(url: String, apiKey: String): TorznabConnectionCheckResult {
+            Log.d(TAG, "Checking connection [url = $url, apiKey = $apiKey]")
+
+            val apiUrl = normalizeUrl(url)
+            val requestUrl = "$apiUrl?t=${TorznabFunctions.CAPS}&apikey=$apiKey"
+
+            val response = try {
+                HttpClient.getResponse(url = requestUrl)
+            } catch (_: ConnectException) {
+                return TorznabConnectionCheckResult.CannotConnect
+            }
+
+            val responseStatusCode = response.status.value
+
+            // Some client returns 401 instead of returning 200 with error page
+            // when invalid API key is given.
+            //
+            // For example: Prowlarr returns 401 but Jackett return 200
+            // with proper error response with code following the spec.
+            if (responseStatusCode == HTTP_STATUS_NOT_AUTHORIZED) {
+                return TorznabConnectionCheckResult.InvalidApiKey
+            }
+
+            if (responseStatusCode != HTTP_STATUS_OK) {
+                Log.w(TAG, "Unexpected http status code [code = $responseStatusCode]")
+                return TorznabConnectionCheckResult.UnknownError
+            }
+
+            val responseXml = response.bodyAsText()
+            val responseXmlStartTag = responseXml.lines().drop(1).first()
+            Log.d(TAG, "Response xml start tag = $responseXmlStartTag")
+
+            if (responseXmlStartTag == "<caps>") {
+                return TorznabConnectionCheckResult.Ok
+            }
+
+            if (!responseXmlStartTag.startsWith("<error code")) {
+                Log.w(TAG, "Unexpected xml start tag")
+                return TorznabConnectionCheckResult.UnknownError
+            }
+
+            val errorResponseXmlParser = TorznabErrorResponseXmlParser()
+            val errorCode = errorResponseXmlParser.parse(xml = responseXml)
+
+            return when (errorCode) {
+                in 100..199 -> TorznabConnectionCheckResult.InvalidApiKey
+                in 200..299 -> {
+                    TorznabConnectionCheckResult.InternalApplicationError(errorCode = errorCode)
+                }
+
+                900 -> TorznabConnectionCheckResult.UnknownError
+                910 -> TorznabConnectionCheckResult.ApiDisabled
+                else -> {
+                    Log.w(TAG, "Unexpected error code [code = $errorCode]")
+                    TorznabConnectionCheckResult.UnknownError
+                }
+            }
+        }
+
+        private fun normalizeUrl(url: String) = if (url.endsWith("api")) url else "${url}/api"
     }
 }
 
@@ -491,6 +559,31 @@ private class TorznabCapabilitiesXmlParser {
 
     private companion object {
         private const val TAG = "TorznabCapabilitiesXmlParser"
+    }
+}
+
+/** A XML parser for the error response. */
+private class TorznabErrorResponseXmlParser {
+    private val parser = Xml.newPullParser()
+    private val namespace: String? = null
+
+    fun parse(xml: String): Int {
+        parser.setFeature(XmlPullParser.FEATURE_PROCESS_NAMESPACES, false)
+        parser.setInput(xml.byteInputStream(), null)
+        parser.nextTag()
+
+        return readError()
+    }
+
+    private fun readError(): Int {
+        parser.require(XmlPullParser.START_TAG, namespace, "error")
+
+        val code = parser.getAttributeValue(null, "code").toInt()
+
+        parser.nextTag()
+        parser.require(XmlPullParser.END_TAG, namespace, "error")
+
+        return code
     }
 }
 
