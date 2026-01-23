@@ -75,10 +75,8 @@
     <string name="search_providers_list_action_edit">Yapılandırmayı düzenle</string>
     <string name="search_providers_list_action_delete">Sil</string>
     <string name="search_providers_add_screen_title">Arama sağlayıcısı ekle</string>
-    <string name="search_providers_button_add">Ekle</string>
     <string name="search_providers_learn_how_to_add">Nasıl ekleneceğini öğrenin</string>
     <string name="search_providers_edit_screen_title">Arama sağlayıcısını düzenle</string>
-    <string name="search_providers_button_update">Güncelle</string>
     <string name="search_providers_label_name">İsim</string>
     <string name="search_providers_label_url">URL</string>
     <string name="search_providers_url_validation_error">Geçerli bir URL değil</string>

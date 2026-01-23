@@ -56,10 +56,8 @@
     <string name="search_providers_list_action_edit">കോൺഫിഗറേഷൻ എഡിറ്റ് ചെയ്യുക</string>
     <string name="search_providers_list_action_delete">മായ്ക്കുക</string>
     <string name="search_providers_add_screen_title">സേർച്ച് പ്രൊവൈഡർ ചേർക്കുക</string>
-    <string name="search_providers_button_add">ചേർക്കുക</string>
     <string name="search_providers_learn_how_to_add">എങ്ങനെ ചേർക്കാമെന്ന് പഠിക്കുക</string>
     <string name="search_providers_edit_screen_title">സേർച്ച് പ്രൊവൈഡർ തിരുത്തുക</string>
-    <string name="search_providers_button_update">അപ്‌ഡേറ്റ്</string>
     <string name="search_providers_label_name">പേര്</string>
     <string name="search_providers_url_validation_error">സാധുവായ URL അല്ല</string>
     <string name="search_providers_label_api_key">API കീ</string>

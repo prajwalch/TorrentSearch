@@ -68,10 +68,8 @@
     <string name="search_providers_list_action_edit">Редактировать конфигурацию</string>
     <string name="search_providers_list_action_delete">Удалить</string>
     <string name="search_providers_add_screen_title">Добавить поисковую систему</string>
-    <string name="search_providers_button_add">Добавить</string>
     <string name="search_providers_learn_how_to_add">Подробнее про добавление</string>
     <string name="search_providers_edit_screen_title">Редактировать поисковую систему</string>
-    <string name="search_providers_button_update">Обновить</string>
     <string name="search_providers_label_name">Название</string>
     <string name="search_providers_label_url">Ссылка</string>
     <string name="search_providers_url_validation_error">Неверная ссылка</string>

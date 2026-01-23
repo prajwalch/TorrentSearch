@@ -65,10 +65,8 @@
     <string name="search_providers_add_screen_title">添加搜索源</string>
     <string name="action_sort_criteria_peers">下载者</string>
     <string name="torrent_list_peers_format">下载者 %1$s</string>
-    <string name="search_providers_button_add">添加</string>
     <string name="search_providers_learn_how_to_add">了解如何添加</string>
     <string name="search_providers_edit_screen_title">编辑搜索源</string>
-    <string name="search_providers_button_update">更新</string>
     <string name="search_providers_label_name">名称</string>
     <string name="search_providers_label_url">网址</string>
     <string name="search_providers_url_validation_error">无效网址</string>

@@ -64,10 +64,8 @@
     <string name="search_providers_list_action_edit">Editar configuración</string>
     <string name="search_providers_list_action_delete">Eliminar</string>
     <string name="search_providers_add_screen_title">Añadir proveedor de búsqueda</string>
-    <string name="search_providers_button_add">Añadir</string>
     <string name="search_providers_learn_how_to_add">Aprender cómo añadir</string>
     <string name="search_providers_edit_screen_title">Editar proveedor de búsqueda</string>
-    <string name="search_providers_button_update">Actualizar</string>
     <string name="search_providers_label_name">Nombre</string>
     <string name="search_providers_url_validation_error">URL no válida</string>
     <string name="search_providers_label_category">Categoría</string>

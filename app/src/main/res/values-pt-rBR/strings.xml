@@ -52,10 +52,8 @@
     <string name="search_providers_list_action_edit">Editar configuração</string>
     <string name="search_providers_list_action_delete">Deletar</string>
     <string name="search_providers_add_screen_title">Adicionar repositório de pesquisa</string>
-    <string name="search_providers_button_add">Adicionar</string>
     <string name="search_providers_learn_how_to_add">Veja como adicionar</string>
     <string name="search_providers_edit_screen_title">Editar repositório de pesquisa</string>
-    <string name="search_providers_button_update">Atualização</string>
     <string name="search_providers_label_name">Nome</string>
     <string name="search_providers_url_validation_error">Não é uma URL válida</string>
     <string name="search_providers_label_api_key">Chave de API</string>

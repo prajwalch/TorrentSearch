@@ -73,10 +73,8 @@
     <string name="search_providers_list_action_edit">ویرایش پیکربندی</string>
     <string name="search_providers_list_action_delete">حذف</string>
     <string name="search_providers_add_screen_title">افزودن ارائه دهنده جستجو</string>
-    <string name="search_providers_button_add">افزودن</string>
     <string name="search_providers_learn_how_to_add">یاد بگیرید چگونه اضافه کنید</string>
     <string name="search_providers_edit_screen_title">ویرایش ارائه دهنده جستجو</string>
-    <string name="search_providers_button_update">به روز رسانی</string>
     <string name="search_providers_label_name">نام</string>
     <string name="search_providers_label_url">لینک</string>
     <string name="search_providers_url_validation_error">لینک معتبر نیست</string>

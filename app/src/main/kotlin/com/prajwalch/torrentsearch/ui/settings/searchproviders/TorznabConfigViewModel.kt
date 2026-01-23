@@ -25,6 +25,7 @@ data class TorznabConfigUiState(
     val url: String = "",
     val apiKey: String = "",
     val category: Category = Category.All,
+    val isNewConfig: Boolean = true,
     val isUrlValid: Boolean = true,
     val isConfigSaved: Boolean = false,
     val isConnectionCheckRunning: Boolean = false,
@@ -41,7 +42,9 @@ class TorznabConfigViewModel @Inject constructor(
 ) : ViewModel() {
     private val torznabSearchProviderId = savedStateHandle.get<String>("id")
 
-    private val _uiState = MutableStateFlow(TorznabConfigUiState())
+    private val _uiState = MutableStateFlow(
+        TorznabConfigUiState(isNewConfig = torznabSearchProviderId == null)
+    )
     val uiState = _uiState.asStateFlow()
 
     init {

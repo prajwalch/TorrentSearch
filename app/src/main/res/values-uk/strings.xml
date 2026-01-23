@@ -69,10 +69,8 @@
     <string name="search_providers_list_action_edit">Редагувати конфігурацію</string>
     <string name="search_providers_list_action_delete">Видалити</string>
     <string name="search_providers_add_screen_title">Додати пошукову систему</string>
-    <string name="search_providers_button_add">Додати</string>
     <string name="search_providers_learn_how_to_add">Докладніше про додання</string>
     <string name="search_providers_edit_screen_title">Редагувати пошукову систему</string>
-    <string name="search_providers_button_update">Оновити</string>
     <string name="search_providers_label_name">Назва</string>
     <string name="search_providers_label_url">URL-адреса</string>
     <string name="search_providers_url_validation_error">Хибна URL-адреса</string>

@@ -76,10 +76,8 @@
     <string name="search_providers_list_action_edit">Konfiguration bearbeiten</string>
     <string name="search_providers_list_action_delete">Löschen</string>
     <string name="search_providers_add_screen_title">Suchanbieter hinzufügen</string>
-    <string name="search_providers_button_add">Hinzufügen</string>
     <string name="search_providers_learn_how_to_add">Erfahre wie du hinzufügst</string>
     <string name="search_providers_edit_screen_title">Suchanbieter bearbeiten</string>
-    <string name="search_providers_button_update">Aktualisieren</string>
     <string name="search_providers_label_name">Name</string>
     <string name="search_providers_label_url">URL</string>
     <string name="search_providers_url_validation_error">Keine gültige URL</string>

@@ -78,10 +78,8 @@
     <string name="search_providers_list_action_edit">تعديل التكوين</string>
     <string name="search_providers_list_action_delete">حذف</string>
     <string name="search_providers_add_screen_title">إضافة مزود البحث</string>
-    <string name="search_providers_button_add">إضافة</string>
     <string name="search_providers_learn_how_to_add">تعلم كيفية الإضافة</string>
     <string name="search_providers_edit_screen_title">تعديل مزوّد البحث</string>
-    <string name="search_providers_button_update">تحديث</string>
     <string name="search_providers_label_name">اسم</string>
     <string name="search_providers_label_url">الرابط</string>
     <string name="search_providers_url_validation_error">عنوان URL ليس صالحًا</string>

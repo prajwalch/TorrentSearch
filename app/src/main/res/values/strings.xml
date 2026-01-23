@@ -118,10 +118,9 @@
     <string name="search_providers_list_action_edit">Edit configuration</string>
     <string name="search_providers_list_action_delete">Delete</string>
     <string name="search_providers_add_screen_title">Add search provider</string>
-    <string name="search_providers_button_add">Add</string>
+    <string name="search_providers_button_save">Save</string>
     <string name="search_providers_learn_how_to_add">Learn how to add</string>
     <string name="search_providers_edit_screen_title">Edit search provider</string>
-    <string name="search_providers_button_update">Update</string>
     <string name="search_providers_label_name">Name</string>
     <string name="search_providers_label_url">URL</string>
     <string name="search_providers_url_validation_error">Not a valid URL</string>

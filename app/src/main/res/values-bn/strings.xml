@@ -76,10 +76,8 @@
     <string name="search_providers_list_action_edit">কনফিগারেশন সম্পাদনা করুন</string>
     <string name="search_providers_list_action_delete">ডিলিট</string>
     <string name="search_providers_add_screen_title">অনুসন্ধান প্রদানকারী যোগ করুন</string>
-    <string name="search_providers_button_add">যোগ করুন</string>
     <string name="search_providers_learn_how_to_add">কীভাবে যোগ করবেন তা জানুন</string>
     <string name="search_providers_edit_screen_title">অনুসন্ধান প্রদানকারী সম্পাদনা করুন</string>
-    <string name="search_providers_button_update">আপডেট</string>
     <string name="search_providers_label_name">নাম</string>
     <string name="search_providers_label_url">লিংক</string>
     <string name="search_providers_url_validation_error">ভুল লিংক</string>
