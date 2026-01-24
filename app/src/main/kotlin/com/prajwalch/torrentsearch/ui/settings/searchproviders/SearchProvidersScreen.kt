@@ -8,11 +8,10 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyItemScope
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.DropdownMenuItem
@@ -55,6 +54,7 @@ import com.prajwalch.torrentsearch.providers.SearchProviderType
 import com.prajwalch.torrentsearch.ui.components.ArrowBackIconButton
 import com.prajwalch.torrentsearch.ui.components.BadgesRow
 import com.prajwalch.torrentsearch.ui.components.CategoryBadge
+import com.prajwalch.torrentsearch.ui.components.CategoryChipsRow
 import com.prajwalch.torrentsearch.ui.components.RoundedDropdownMenu
 import com.prajwalch.torrentsearch.ui.components.TextUrl
 import com.prajwalch.torrentsearch.ui.components.TorznabBadge
@@ -70,7 +70,7 @@ fun SearchProvidersScreen(
     modifier: Modifier = Modifier,
     viewModel: SearchProvidersViewModel = hiltViewModel(),
 ) {
-    val searchProvidersUiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
 
     Scaffold(
@@ -97,57 +97,14 @@ fun SearchProvidersScreen(
         },
     ) { innerPadding ->
         SearchProviderList(
-            modifier = Modifier.consumeWindowInsets(innerPadding),
-            contentPadding = PaddingValues(
-                start = 0.dp,
-                top = innerPadding.calculateTopPadding(),
-                end = 0.dp,
-                bottom = 80.dp,
-            ),
-            searchProviders = searchProvidersUiState,
-            listItem = { searchProviderUiState ->
-                when (searchProviderUiState.type) {
-                    SearchProviderType.Builtin -> {
-                        BuiltinSearchProviderListItem(
-                            modifier = Modifier.animateItem(),
-                            name = searchProviderUiState.name,
-                            url = searchProviderUiState.url,
-                            specializedCategory = searchProviderUiState.specializedCategory,
-                            safetyStatus = searchProviderUiState.safetyStatus,
-                            checked = searchProviderUiState.enabled,
-                            onCheckedChange = {
-                                viewModel.enableSearchProvider(
-                                    providerId = searchProviderUiState.id,
-                                    enable = it,
-                                )
-                            },
-                        )
-                    }
-
-                    SearchProviderType.Torznab -> {
-                        TorznabSearchProviderListItem(
-                            modifier = Modifier.animateItem(),
-                            name = searchProviderUiState.name,
-                            url = searchProviderUiState.url,
-                            specializedCategory = searchProviderUiState.specializedCategory,
-                            safetyStatus = searchProviderUiState.safetyStatus,
-                            checked = searchProviderUiState.enabled,
-                            onCheckedChange = {
-                                viewModel.enableSearchProvider(
-                                    providerId = searchProviderUiState.id,
-                                    enable = it,
-                                )
-                            },
-                            onEditConfig = {
-                                onNavigateToEditSearchProvider(searchProviderUiState.id)
-                            },
-                            onDelete = {
-                                viewModel.deleteTorznabConfig(id = searchProviderUiState.id)
-                            },
-                        )
-                    }
-                }
-            },
+            modifier = Modifier.padding(innerPadding),
+            contentPadding = PaddingValues(bottom = 80.dp),
+            searchProviders = uiState.searchProviders,
+            onEnableSearchProvider = viewModel::enableSearchProvider,
+            onEditConfig = onNavigateToEditSearchProvider,
+            onDeleteConfig = viewModel::deleteTorznabConfig,
+            selectedCategory = uiState.selectedCategory,
+            onCategoryClick = viewModel::toggleCategory,
         )
     }
 }
@@ -198,8 +155,12 @@ private fun SearchProvidersScreenTopBar(
 
 @Composable
 private fun SearchProviderList(
-    searchProviders: List<SearchProviderUiState>,
-    listItem: @Composable (LazyItemScope.(SearchProviderUiState) -> Unit),
+    searchProviders: List<SearchProviderListItem>,
+    onEnableSearchProvider: (SearchProviderId, Boolean) -> Unit,
+    onEditConfig: (SearchProviderId) -> Unit,
+    onDeleteConfig: (SearchProviderId) -> Unit,
+    selectedCategory: Category?,
+    onCategoryClick: (Category) -> Unit,
     modifier: Modifier = Modifier,
     contentPadding: PaddingValues = PaddingValues(0.dp),
 ) {
@@ -207,8 +168,38 @@ private fun SearchProviderList(
         modifier = modifier,
         contentPadding = contentPadding,
     ) {
+        item {
+            CategoryChipsRow(
+                categories = Category.entries,
+                selectedCategory = selectedCategory,
+                onCategoryClick = onCategoryClick,
+                contentPadding = PaddingValues(horizontal = MaterialTheme.spaces.large),
+            )
+        }
         items(items = searchProviders, key = { it.id }) {
-            listItem(it)
+            if (it.type == SearchProviderType.Builtin) {
+                BuiltinSearchProviderListItem(
+                    modifier = Modifier.animateItem(),
+                    name = it.name,
+                    url = it.url,
+                    specializedCategory = it.specializedCategory,
+                    safetyStatus = it.safetyStatus,
+                    checked = it.enabled,
+                    onCheckedChange = { enable -> onEnableSearchProvider(it.id, enable) },
+                )
+            } else if (it.type == SearchProviderType.Torznab) {
+                TorznabSearchProviderListItem(
+                    modifier = Modifier.animateItem(),
+                    name = it.name,
+                    url = it.url,
+                    specializedCategory = it.specializedCategory,
+                    safetyStatus = it.safetyStatus,
+                    checked = it.enabled,
+                    onCheckedChange = { enable -> onEnableSearchProvider(it.id, enable) },
+                    onEditConfig = { onEditConfig(it.id) },
+                    onDelete = { onDeleteConfig(it.id) },
+                )
+            }
         }
     }
 }

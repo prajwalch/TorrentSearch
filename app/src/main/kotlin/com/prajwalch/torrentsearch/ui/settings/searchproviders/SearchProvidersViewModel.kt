@@ -13,6 +13,7 @@ import com.prajwalch.torrentsearch.providers.SearchProviderType
 
 import dagger.hilt.android.lifecycle.HiltViewModel
 
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.WhileSubscribed
 import kotlinx.coroutines.flow.combine
@@ -24,8 +25,12 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 import kotlin.time.Duration.Companion.seconds
 
-/** State for the single search provider. */
-data class SearchProviderUiState(
+data class SearchProvidersUiState(
+    val selectedCategory: Category? = null,
+    val searchProviders: List<SearchProviderListItem> = emptyList(),
+)
+
+data class SearchProviderListItem(
     val id: SearchProviderId,
     val name: String,
     val url: String,
@@ -41,33 +46,41 @@ class SearchProvidersViewModel @Inject constructor(
     private val searchProvidersRepository: SearchProvidersRepository,
     private val settingsRepository: SettingsRepository,
 ) : ViewModel() {
+    private val selectedCategory = MutableStateFlow<Category?>(null)
+
     val uiState = combine(
+        selectedCategory,
         searchProvidersRepository.observeSearchProvidersInfo(),
         settingsRepository.enabledSearchProvidersId,
-    ) { searchProvidersInfo, enabledSearchProvidersId ->
-        createSearchProvidersUiState(
-            searchProvidersInfo = searchProvidersInfo,
-            enabledSearchProvidersId = enabledSearchProvidersId,
-        )
-    }.stateIn(
+        ::createUiState,
+    ).stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5.seconds),
-        initialValue = emptyList(),
+        initialValue = SearchProvidersUiState(),
     )
 
-    /** Converts list of search providers info to list of UI states. */
-    private fun createSearchProvidersUiState(
-        enabledSearchProvidersId: Set<SearchProviderId>,
+    private fun createUiState(
+        selectedCategory: Category?,
         searchProvidersInfo: List<SearchProviderInfo>,
-    ): List<SearchProviderUiState> = searchProvidersInfo.map {
-        SearchProviderUiState(
-            id = it.id,
-            name = it.name,
-            url = it.url,
-            specializedCategory = it.specializedCategory,
-            safetyStatus = it.safetyStatus,
-            type = it.type,
-            enabled = it.id in enabledSearchProvidersId,
+        enabledSearchProvidersId: Set<SearchProviderId>,
+    ): SearchProvidersUiState {
+        val searchProviders = searchProvidersInfo
+            .filter { selectedCategory == null || it.specializedCategory == selectedCategory }
+            .map {
+                SearchProviderListItem(
+                    id = it.id,
+                    name = it.name,
+                    url = it.url,
+                    specializedCategory = it.specializedCategory,
+                    safetyStatus = it.safetyStatus,
+                    type = it.type,
+                    enabled = it.id in enabledSearchProvidersId,
+                )
+            }
+
+        return SearchProvidersUiState(
+            selectedCategory = selectedCategory,
+            searchProviders = searchProviders,
         )
     }
 
@@ -130,5 +143,14 @@ class SearchProvidersViewModel @Inject constructor(
             searchProvidersRepository.deleteTorznabConfig(id = id)
         }
         enableSearchProvider(providerId = id, enable = false)
+    }
+
+    /** Selects/unselects the given category. */
+    fun toggleCategory(category: Category) {
+        if (selectedCategory.value == category) {
+            selectedCategory.value = null
+        } else {
+            selectedCategory.value = category
+        }
     }
 }
