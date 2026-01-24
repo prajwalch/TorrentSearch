@@ -40,28 +40,31 @@ class TorznabConfigViewModel @Inject constructor(
     private val searchProvidersRepository: SearchProvidersRepository,
     savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
-    private val torznabSearchProviderId = savedStateHandle.get<String>("id")
+    /**
+     * ID of the search provider whose config to edit (edit mode).
+     *
+     * if `null`, a new config is created (add mode).
+     */
+    private val searchProviderId = savedStateHandle.get<String>("id")
 
     private val _uiState = MutableStateFlow(
-        TorznabConfigUiState(isNewConfig = torznabSearchProviderId == null)
+        TorznabConfigUiState(isNewConfig = searchProviderId == null),
     )
     val uiState = _uiState.asStateFlow()
 
     init {
-        viewModelScope.launch {
-            torznabSearchProviderId?.let { loadConfig(it) }
-        }
+        searchProviderId?.let(::loadConfig)
     }
 
-    private suspend fun loadConfig(id: SearchProviderId) {
-        val config = searchProvidersRepository.findTorznabConfig(id = id) ?: return
+    private fun loadConfig(id: SearchProviderId) = viewModelScope.launch {
+        val existingConfig = searchProvidersRepository.findTorznabConfig(id = id) ?: return@launch
 
         _uiState.update {
             it.copy(
-                searchProviderName = config.searchProviderName,
-                url = config.url,
-                apiKey = config.apiKey,
-                category = config.category,
+                searchProviderName = existingConfig.searchProviderName,
+                url = existingConfig.url,
+                apiKey = existingConfig.apiKey,
+                category = existingConfig.category,
             )
         }
     }
@@ -114,41 +117,42 @@ class TorznabConfigViewModel @Inject constructor(
     }
 
     fun saveConfig() {
-        viewModelScope.launch {
-            if (!isUrlValid()) {
-                _uiState.update {
-                    it.copy(
-                        isUrlValid = false,
-                        isConfigSaved = false,
-                    )
-                }
-                return@launch
-            }
-
-            val isConfigNew = torznabSearchProviderId == null
-
-            if (isConfigNew) {
-                searchProvidersRepository.addTorznabConfig(
-                    searchProviderName = _uiState.value.searchProviderName,
-                    url = _uiState.value.url,
-                    apiKey = _uiState.value.apiKey,
-                    category = _uiState.value.category,
-                )
-            } else {
-                searchProvidersRepository.updateTorznabConfig(
-                    id = torznabSearchProviderId,
-                    searchProviderName = _uiState.value.searchProviderName,
-                    url = _uiState.value.url,
-                    apiKey = _uiState.value.apiKey,
-                    category = _uiState.value.category,
-                )
-            }
-
+        if (!isUrlValid()) {
             _uiState.update {
-                it.copy(isUrlValid = true, isConfigSaved = true)
+                it.copy(isUrlValid = false, isConfigSaved = false)
             }
+            return
+        }
+
+        viewModelScope.launch {
+            if (searchProviderId == null) {
+                addConfig()
+            } else {
+                updateConfig(searchProviderId)
+            }
+
+            _uiState.update { it.copy(isUrlValid = true, isConfigSaved = true) }
         }
     }
 
     private fun isUrlValid(): Boolean = Patterns.WEB_URL.matcher(_uiState.value.url).matches()
+
+    private suspend fun addConfig() {
+        searchProvidersRepository.addTorznabConfig(
+            searchProviderName = _uiState.value.searchProviderName,
+            url = _uiState.value.url,
+            apiKey = _uiState.value.apiKey,
+            category = _uiState.value.category,
+        )
+    }
+
+    private suspend fun updateConfig(id: SearchProviderId) {
+        searchProvidersRepository.updateTorznabConfig(
+            id = id,
+            searchProviderName = _uiState.value.searchProviderName,
+            url = _uiState.value.url,
+            apiKey = _uiState.value.apiKey,
+            category = _uiState.value.category,
+        )
+    }
 }
