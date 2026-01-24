@@ -136,4 +136,12 @@
     <string name="search_errors_bottom_sheet_title">Невдалі пошукові системи</string>
     <string name="search_button_export_error_logs">Експорт журналів помилок у файл</string>
     <string name="search_unexpected_error">Неочікувана помилка</string>
+    <string name="torznab_conn_check_result_conn_established">З\'єднання встановлено</string>
+    <string name="torznab_conn_check_result_conn_failed">Помилка з’єднання. Перевірте URL-адресу та стан сервера.</string>
+    <string name="torznab_conn_check_result_invalid_api_key">Недійсний ключ API</string>
+    <string name="torznab_conn_check_result_app_error">Помилка програми (%1$d)</string>
+    <string name="torznab_conn_check_result_unexpected_response">Неочікувана відповідь (%1$d)</string>
+    <string name="torznab_conn_check_result_unexpected_error">Неочікувана помилка</string>
+    <string name="search_providers_button_save">Зберегти</string>
+    <string name="search_providers_button_check_connection">Перевірте з\'єднання</string>
 </resources>
