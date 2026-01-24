@@ -86,7 +86,12 @@ fun AddEditSearchProviderScreen(
                 title = stringResource(topBarTitleId),
             )
         },
-        snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
+        snackbarHost = {
+            SnackbarHost(
+                modifier = Modifier.imePadding(),
+                hostState = snackbarHostState,
+            )
+        },
     ) { innerPadding ->
         Column(
             modifier = Modifier
