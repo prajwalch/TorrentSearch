@@ -31,12 +31,12 @@
     <string name="category_series">Series</string>
     <string name="category_other">Other</string>
 
-    <string name="torznab_conn_check_result_ok">Connection established</string>
-    <string name="torznab_conn_check_result_cannot_connect">Connection failed. Check URL and server status.</string>
+    <string name="torznab_conn_check_result_conn_established">Connection established</string>
+    <string name="torznab_conn_check_result_conn_failed">Connection failed. Check URL and server status.</string>
     <string name="torznab_conn_check_result_invalid_api_key">Invalid API key</string>
-    <string name="torznab_conn_check_result_api_disabled">API is disabled</string>
-    <string name="torznab_conn_check_result_internal_app_error">App error (%1d). Please report the error code.</string>
-    <string name="torznab_conn_check_result_unknown_error">Unknown error occurred</string>
+    <string name="torznab_conn_check_result_app_error">Application error (%1$d)</string>
+    <string name="torznab_conn_check_result_unexpected_response">Unexpected response (%1$d)</string>
+    <string name="torznab_conn_check_result_unexpected_error">Unexpected error</string>
 
     <string name="crash_screen_title">Oops!</string>
     <string name="crash_screen_subtitle">

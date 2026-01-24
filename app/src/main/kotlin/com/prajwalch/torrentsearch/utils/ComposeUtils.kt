@@ -2,6 +2,7 @@ package com.prajwalch.torrentsearch.utils
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
+
 import com.prajwalch.torrentsearch.R
 import com.prajwalch.torrentsearch.domain.models.Category
 import com.prajwalch.torrentsearch.domain.models.SortCriteria
@@ -51,19 +52,36 @@ fun sortOrderStringResource(sortOrder: SortOrder): String {
 
 @Composable
 fun torznabConnectionCheckResultStringResource(result: TorznabConnectionCheckResult): String {
-    if (result is TorznabConnectionCheckResult.InternalApplicationError) {
+    if (result is TorznabConnectionCheckResult.ApplicationError) {
         return stringResource(
-            R.string.torznab_conn_check_result_internal_app_error,
+            R.string.torznab_conn_check_result_app_error,
+            result.errorCode,
+        )
+    }
+
+    if (result is TorznabConnectionCheckResult.UnexpectedResponse) {
+        return stringResource(
+            R.string.torznab_conn_check_result_unexpected_response,
             result.errorCode,
         )
     }
 
     val otherResId = when (result) {
-        TorznabConnectionCheckResult.ApiDisabled -> R.string.torznab_conn_check_result_api_disabled
-        TorznabConnectionCheckResult.CannotConnect -> R.string.torznab_conn_check_result_cannot_connect
-        TorznabConnectionCheckResult.InvalidApiKey -> R.string.torznab_conn_check_result_invalid_api_key
-        TorznabConnectionCheckResult.Ok -> R.string.torznab_conn_check_result_ok
-        TorznabConnectionCheckResult.UnknownError -> R.string.torznab_conn_check_result_unknown_error
+        TorznabConnectionCheckResult.ConnectionFailed -> {
+            R.string.torznab_conn_check_result_conn_failed
+        }
+
+        TorznabConnectionCheckResult.InvalidApiKey -> {
+            R.string.torznab_conn_check_result_invalid_api_key
+        }
+
+        TorznabConnectionCheckResult.ConnectionEstablished -> {
+            R.string.torznab_conn_check_result_conn_established
+        }
+
+        TorznabConnectionCheckResult.UnexpectedError -> {
+            R.string.torznab_conn_check_result_unexpected_error
+        }
     }
 
     return stringResource(otherResId)

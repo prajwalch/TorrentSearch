@@ -206,6 +206,7 @@ class TorznabSearchProvider(
         private const val TAG = "TorznabSearchProvider"
         private const val HTTP_STATUS_OK = 200
         private const val HTTP_STATUS_NOT_AUTHORIZED = 401
+        private const val XML_DECLARATION = """<?xml version="1.0" encoding="UTF-8"?>"""
 
         suspend fun checkConnection(url: String, apiKey: String): TorznabConnectionCheckResult {
             Log.d(TAG, "Checking connection [url = $url, apiKey = $apiKey]")
@@ -216,7 +217,7 @@ class TorznabSearchProvider(
             val response = try {
                 HttpClient.getResponse(url = requestUrl)
             } catch (_: ConnectException) {
-                return TorznabConnectionCheckResult.CannotConnect
+                return TorznabConnectionCheckResult.ConnectionFailed
             }
 
             val responseStatusCode = response.status.value
@@ -232,20 +233,21 @@ class TorznabSearchProvider(
 
             if (responseStatusCode != HTTP_STATUS_OK) {
                 Log.w(TAG, "Unexpected http status code [code = $responseStatusCode]")
-                return TorznabConnectionCheckResult.UnknownError
+                return TorznabConnectionCheckResult.UnexpectedError
             }
 
             val responseXml = response.bodyAsText()
-            val responseXmlStartTag = responseXml.lines().drop(1).first()
-            Log.d(TAG, "Response xml start tag = $responseXmlStartTag")
+            val responseXmlWoDeclaration = responseXml.removePrefix(XML_DECLARATION).trimStart()
 
-            if (responseXmlStartTag == "<caps>") {
-                return TorznabConnectionCheckResult.Ok
+            if (responseXmlWoDeclaration.startsWith("<caps>")) {
+                return TorznabConnectionCheckResult.ConnectionEstablished
             }
 
-            if (!responseXmlStartTag.startsWith("<error code")) {
-                Log.w(TAG, "Unexpected xml start tag")
-                return TorznabConnectionCheckResult.UnknownError
+            if (!responseXmlWoDeclaration.startsWith("<error code=")) {
+                val startTag = responseXmlWoDeclaration.takeWhile { it != '>' }
+                Log.w(TAG, "Unexpected xml start tag [tag = $startTag]")
+                
+                return TorznabConnectionCheckResult.UnexpectedError
             }
 
             val errorResponseXmlParser = TorznabErrorResponseXmlParser()
@@ -253,16 +255,8 @@ class TorznabSearchProvider(
 
             return when (errorCode) {
                 in 100..199 -> TorznabConnectionCheckResult.InvalidApiKey
-                in 200..299 -> {
-                    TorznabConnectionCheckResult.InternalApplicationError(errorCode = errorCode)
-                }
-
-                900 -> TorznabConnectionCheckResult.UnknownError
-                910 -> TorznabConnectionCheckResult.ApiDisabled
-                else -> {
-                    Log.w(TAG, "Unexpected error code [code = $errorCode]")
-                    TorznabConnectionCheckResult.UnknownError
-                }
+                in 200..299 -> TorznabConnectionCheckResult.ApplicationError(errorCode)
+                else -> TorznabConnectionCheckResult.UnexpectedResponse(errorCode)
             }
         }
 

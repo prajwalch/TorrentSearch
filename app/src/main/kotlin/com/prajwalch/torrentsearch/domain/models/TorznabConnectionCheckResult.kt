@@ -1,21 +1,22 @@
 package com.prajwalch.torrentsearch.domain.models
 
+/** Result of the Torznab connection check. */
 sealed class TorznabConnectionCheckResult {
-    /** Connection check succeed. */
-    data object Ok : TorznabConnectionCheckResult()
+    /** A successful connection established. */
+    data object ConnectionEstablished : TorznabConnectionCheckResult()
 
-    /** Cannot connect to client. */
-    data object CannotConnect : TorznabConnectionCheckResult()
+    /** Failed to establish successful connection. */
+    data object ConnectionFailed : TorznabConnectionCheckResult()
 
     /** API key is not valid. */
     data object InvalidApiKey : TorznabConnectionCheckResult()
 
-    /** API is disabled. */
-    data object ApiDisabled : TorznabConnectionCheckResult()
+    /** An internal application error occurred. */
+    data class ApplicationError(val errorCode: Int) : TorznabConnectionCheckResult()
 
-    /** Internal application error occurred. */
-    data class InternalApplicationError(val errorCode: Int) : TorznabConnectionCheckResult()
+    /** Received an unexpected response. */
+    data class UnexpectedResponse(val errorCode: Int) : TorznabConnectionCheckResult()
 
-    /** Some other unknown error occurred. */
-    data object UnknownError : TorznabConnectionCheckResult()
+    /** An unexpected error occurred. */
+    data object UnexpectedError : TorznabConnectionCheckResult()
 }
