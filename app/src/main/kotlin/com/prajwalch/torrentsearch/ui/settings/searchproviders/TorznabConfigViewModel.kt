@@ -84,7 +84,12 @@ class TorznabConfigViewModel @Inject constructor(
 
     fun checkConnection() {
         viewModelScope.launch {
-            _uiState.update { it.copy(connectionCheckResult = null) }
+            _uiState.update {
+                it.copy(
+                    isConnectionCheckRunning = false,
+                    connectionCheckResult = null,
+                )
+            }
 
             if (!isUrlValid()) {
                 _uiState.update { it.copy(isUrlValid = false) }
@@ -112,7 +117,10 @@ class TorznabConfigViewModel @Inject constructor(
         viewModelScope.launch {
             if (!isUrlValid()) {
                 _uiState.update {
-                    it.copy(isUrlValid = false, isConfigSaved = false)
+                    it.copy(
+                        isUrlValid = false,
+                        isConfigSaved = false,
+                    )
                 }
                 return@launch
             }
