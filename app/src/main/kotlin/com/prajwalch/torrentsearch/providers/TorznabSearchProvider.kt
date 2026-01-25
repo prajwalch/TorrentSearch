@@ -18,7 +18,9 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
 import org.xmlpull.v1.XmlPullParser
+
 import java.net.ConnectException
+import java.net.UnknownHostException
 
 /**
  *  Torznab functions.
@@ -216,6 +218,8 @@ class TorznabSearchProvider(
 
             val response = try {
                 HttpClient.getResponse(url = requestUrl)
+            } catch (_: UnknownHostException) {
+                return TorznabConnectionCheckResult.ConnectionFailed
             } catch (_: ConnectException) {
                 return TorznabConnectionCheckResult.ConnectionFailed
             }
@@ -246,7 +250,7 @@ class TorznabSearchProvider(
             if (!responseXmlWoDeclaration.startsWith("<error code=")) {
                 val startTag = responseXmlWoDeclaration.takeWhile { it != '>' }
                 Log.w(TAG, "Unexpected xml start tag [tag = $startTag]")
-                
+
                 return TorznabConnectionCheckResult.UnexpectedError
             }
 
