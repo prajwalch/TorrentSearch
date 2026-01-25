@@ -18,6 +18,8 @@ import com.prajwalch.torrentsearch.utils.TorrentSearchExceptionHandler
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
+import java.io.PrintWriter
+
 class CrashActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -38,8 +40,23 @@ class CrashActivity : ComponentActivity() {
 
     private fun exportCrashLogsToFile(stackTrace: String, fileUri: Uri) {
         lifecycleScope.launch(Dispatchers.IO) {
-            val outputStream = contentResolver.openOutputStream(fileUri) ?: return@launch
-            outputStream.use { it.write(stackTrace.toByteArray()) }
+            val fileOutputStream = contentResolver.openOutputStream(fileUri) ?: return@launch
+            val filePrintWriter = PrintWriter(fileOutputStream)
+
+            val logcatProcess = Runtime.getRuntime().exec("logcat -d")
+            val logsBufferedReader = logcatProcess.inputStream.bufferedReader()
+
+            filePrintWriter.use { fileWriter ->
+                fileWriter.println(STACKTRACE_MARKER)
+                fileWriter.println(stackTrace)
+                fileWriter.println(STACKTRACE_MARKER)
+
+                fileWriter.println(LOGS_MARKER)
+                logsBufferedReader.forEachLine(fileWriter::println)
+                fileWriter.println(LOGS_MARKER)
+            }
+
+            logcatProcess.destroy()
         }
 
         val successMessage = getString(R.string.crash_logs_export_success_message)
@@ -55,5 +72,7 @@ class CrashActivity : ComponentActivity() {
 
     private companion object {
         private const val TAG = "CrashActivity"
+        private const val STACKTRACE_MARKER = "-----STACK TRACE-----"
+        private const val LOGS_MARKER = "-----LOGS-----"
     }
 }
