@@ -42,7 +42,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 import java.io.OutputStream
-import java.io.PrintStream
+import java.io.PrintWriter
 
 import javax.inject.Inject
 import kotlin.time.Duration.Companion.seconds
@@ -273,14 +273,14 @@ class SearchViewModel @Inject constructor(
     /** Exports the current search failures to given output stream. */
     fun exportSearchFailures(outputStream: OutputStream) {
         viewModelScope.launch(Dispatchers.IO) {
-            val printStream = PrintStream(outputStream, true)
+            val printWriter = PrintWriter(outputStream.bufferedWriter(Charsets.UTF_8))
 
-            printStream.use { stream ->
+            printWriter.use {
                 for (exception in uiState.value.searchFailures) {
-                    stream.println("----------${exception.searchProviderName}----------")
-                    exception.printStackTrace(stream)
-                    stream.println("----------${exception.searchProviderName}----------")
-                    stream.println()
+                    it.println("----------${exception.searchProviderName}----------")
+                    exception.printStackTrace(it)
+                    it.println("----------${exception.searchProviderName}----------")
+                    it.println()
                 }
             }
         }
