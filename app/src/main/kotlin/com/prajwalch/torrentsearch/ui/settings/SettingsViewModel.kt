@@ -16,6 +16,7 @@ import com.prajwalch.torrentsearch.domain.models.SortOptions
 
 import dagger.hilt.android.lifecycle.HiltViewModel
 
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.WhileSubscribed
@@ -24,6 +25,9 @@ import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+
+import java.io.OutputStream
+import java.io.PrintWriter
 
 import javax.inject.Inject
 import kotlin.time.Duration.Companion.seconds
@@ -235,5 +239,17 @@ class SettingsViewModel @Inject constructor(
             componentEnabledState,
             PackageManager.DONT_KILL_APP,
         )
+    }
+
+    fun exportLogs(outputStream: OutputStream) {
+        viewModelScope.launch(Dispatchers.IO) {
+            val printWriter = PrintWriter(outputStream.bufferedWriter(Charsets.UTF_8))
+
+            val logcatProcess = Runtime.getRuntime().exec("logcat -d")
+            val logsBufferedReader = logcatProcess.inputStream.bufferedReader(Charsets.UTF_8)
+
+            printWriter.use { logsBufferedReader.forEachLine(it::println) }
+            logcatProcess.destroy()
+        }
     }
 }

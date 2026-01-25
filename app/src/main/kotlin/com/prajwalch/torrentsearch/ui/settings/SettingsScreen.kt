@@ -7,6 +7,8 @@ import android.net.Uri
 import android.os.Build
 import android.provider.Settings
 
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -77,6 +79,15 @@ fun SettingsScreen(
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
 
+    val contentResolver = LocalContext.current.contentResolver
+    val logsExportLocationChooser = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.CreateDocument(TorrentSearchConstants.LOGS_FILE_TYPE),
+    ) { fileUri ->
+        fileUri
+            ?.let(contentResolver::openOutputStream)
+            ?.let(viewModel::exportLogs)
+    }
+
     Scaffold(
         modifier = Modifier
             .fillMaxSize()
@@ -120,6 +131,9 @@ fun SettingsScreen(
                 uiState = uiState.advancedSettings,
                 onEnableShareIntegration = viewModel::enableShareIntegration,
                 onEnableQuickSearch = viewModel::enableQuickSearch,
+                onExportLogsToFile = {
+                    logsExportLocationChooser.launch(TorrentSearchConstants.APP_LOGS_FILE_NAME)
+                },
             )
             About()
         }
@@ -376,6 +390,7 @@ private fun AdvancedSettings(
     uiState: AdvancedSettingsUiState,
     onEnableShareIntegration: (Boolean, PackageManager) -> Unit,
     onEnableQuickSearch: (Boolean, PackageManager) -> Unit,
+    onExportLogsToFile: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val context = LocalContext.current
@@ -411,6 +426,12 @@ private fun AdvancedSettings(
                     onCheckedChange = { onEnableQuickSearch(it, packageManager) },
                 )
             },
+        )
+        SettingsListItem(
+            onClick = onExportLogsToFile,
+            icon = R.drawable.ic_file_export,
+            headline = R.string.settings_export_logs_to_file,
+            supportingContent = stringResource(R.string.settings_export_logs_to_file_summary),
         )
     }
 }

@@ -167,6 +167,10 @@
     <string name="settings_enable_quick_search_summary">
         When enabled, adds this app to the text selection menu (like Copy or Cut).
     </string>
+    <string name="settings_export_logs_to_file">Export logs to file</string>
+    <string name="settings_export_logs_to_file_summary">
+        Generates a file with application activities that can help troubleshoot issues
+    </string>
     <string name="settings_section_about">About</string>
     <string name="settings_version">Version</string>
     <string name="settings_source_code">Source code</string>
