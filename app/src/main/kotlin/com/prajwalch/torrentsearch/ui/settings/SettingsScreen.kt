@@ -60,6 +60,7 @@ import com.prajwalch.torrentsearch.ui.components.SettingsListItem
 import com.prajwalch.torrentsearch.ui.components.SettingsSectionTitle
 import com.prajwalch.torrentsearch.ui.theme.spaces
 import com.prajwalch.torrentsearch.utils.categoryStringResource
+import com.prajwalch.torrentsearch.utils.darkThemeStringResource
 import com.prajwalch.torrentsearch.utils.sortCriteriaStringResource
 import com.prajwalch.torrentsearch.utils.sortOrderStringResource
 
@@ -497,17 +498,6 @@ private fun MaxNumResultsDialog(
             }
         }
     }
-}
-
-@Composable
-private fun darkThemeStringResource(darkTheme: DarkTheme): String {
-    val resId = when (darkTheme) {
-        DarkTheme.On -> R.string.settings_dark_theme_on
-        DarkTheme.Off -> R.string.settings_dark_theme_off
-        DarkTheme.FollowSystem -> R.string.settings_dark_theme_follow_system
-    }
-
-    return stringResource(id = resId)
 }
 
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)

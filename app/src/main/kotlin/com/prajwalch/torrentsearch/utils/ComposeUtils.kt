@@ -5,9 +5,21 @@ import androidx.compose.ui.res.stringResource
 
 import com.prajwalch.torrentsearch.R
 import com.prajwalch.torrentsearch.domain.models.Category
+import com.prajwalch.torrentsearch.domain.models.DarkTheme
 import com.prajwalch.torrentsearch.domain.models.SortCriteria
 import com.prajwalch.torrentsearch.domain.models.SortOrder
 import com.prajwalch.torrentsearch.domain.models.TorznabConnectionCheckResult
+
+@Composable
+fun darkThemeStringResource(darkTheme: DarkTheme): String {
+    val resId = when (darkTheme) {
+        DarkTheme.On -> R.string.settings_dark_theme_on
+        DarkTheme.Off -> R.string.settings_dark_theme_off
+        DarkTheme.FollowSystem -> R.string.settings_dark_theme_follow_system
+    }
+
+    return stringResource(id = resId)
+}
 
 @Composable
 fun categoryStringResource(category: Category): String {
