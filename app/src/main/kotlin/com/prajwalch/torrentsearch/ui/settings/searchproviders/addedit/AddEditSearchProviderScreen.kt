@@ -43,8 +43,6 @@ import com.prajwalch.torrentsearch.domain.models.Category
 import com.prajwalch.torrentsearch.ui.components.ArrowBackIconButton
 import com.prajwalch.torrentsearch.ui.components.TextUrl
 import com.prajwalch.torrentsearch.ui.components.TorznabConfigForm
-import com.prajwalch.torrentsearch.ui.settings.searchproviders.TorznabConfigUiState
-import com.prajwalch.torrentsearch.ui.settings.searchproviders.TorznabConfigViewModel
 import com.prajwalch.torrentsearch.ui.theme.spaces
 import com.prajwalch.torrentsearch.utils.torznabConnectionCheckResultStringResource
 
