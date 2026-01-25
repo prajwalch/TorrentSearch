@@ -44,7 +44,7 @@ class CrashActivity : ComponentActivity() {
             val filePrintWriter = PrintWriter(fileOutputStream.bufferedWriter(Charsets.UTF_8))
 
             val logcatProcess = Runtime.getRuntime().exec("logcat -d")
-            val logsBufferedReader = logcatProcess.inputStream.bufferedReader()
+            val logsBufferedReader = logcatProcess.inputStream.bufferedReader(Charsets.UTF_8)
 
             filePrintWriter.use { fileWriter ->
                 fileWriter.println(STACKTRACE_MARKER)
