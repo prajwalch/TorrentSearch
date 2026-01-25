@@ -29,6 +29,7 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalUriHandler
@@ -48,6 +49,8 @@ import com.prajwalch.torrentsearch.ui.settings.searchproviders.TorznabConfigView
 import com.prajwalch.torrentsearch.ui.theme.spaces
 import com.prajwalch.torrentsearch.utils.torznabConnectionCheckResultStringResource
 
+import kotlinx.coroutines.launch
+
 @Composable
 fun AddEditSearchProviderScreen(
     onNavigateBack: () -> Unit,
@@ -55,25 +58,22 @@ fun AddEditSearchProviderScreen(
     viewModel: TorznabConfigViewModel = hiltViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-    val connectionCheckResultMessage = uiState.connectionCheckResult?.let {
-        torznabConnectionCheckResultStringResource(it)
-    }
     val topBarTitleId = if (uiState.isNewConfig) {
         R.string.search_providers_add_screen_title
     } else {
         R.string.search_providers_edit_screen_title
     }
 
+    val coroutineScope = rememberCoroutineScope()
     val snackbarHostState = remember { SnackbarHostState() }
 
     LaunchedEffect(uiState.isConfigSaved) {
         if (uiState.isConfigSaved) onNavigateBack()
     }
 
-    LaunchedEffect(connectionCheckResultMessage) {
-        if (connectionCheckResultMessage != null) {
-            snackbarHostState.showSnackbar(message = connectionCheckResultMessage)
-        }
+    uiState.connectionCheckResult?.let {
+        val message = torznabConnectionCheckResultStringResource(it)
+        coroutineScope.launch { snackbarHostState.showSnackbar(message = message) }
     }
 
     Scaffold(
