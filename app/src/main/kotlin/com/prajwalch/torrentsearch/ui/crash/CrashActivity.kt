@@ -41,7 +41,7 @@ class CrashActivity : ComponentActivity() {
     private fun exportCrashLogsToFile(stackTrace: String, fileUri: Uri) {
         lifecycleScope.launch(Dispatchers.IO) {
             val fileOutputStream = contentResolver.openOutputStream(fileUri) ?: return@launch
-            val filePrintWriter = PrintWriter(fileOutputStream)
+            val filePrintWriter = PrintWriter(fileOutputStream.bufferedWriter(Charsets.UTF_8))
 
             val logcatProcess = Runtime.getRuntime().exec("logcat -d")
             val logsBufferedReader = logcatProcess.inputStream.bufferedReader()
