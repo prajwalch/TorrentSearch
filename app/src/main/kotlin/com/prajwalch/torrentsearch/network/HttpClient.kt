@@ -1,6 +1,7 @@
 package com.prajwalch.torrentsearch.network
 
 import android.util.Log
+
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.okhttp.OkHttp
 import io.ktor.client.network.sockets.ConnectTimeoutException
@@ -18,6 +19,7 @@ import io.ktor.client.statement.HttpResponse
 import io.ktor.client.statement.bodyAsText
 import io.ktor.http.ContentType
 import io.ktor.http.contentType
+
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.io.IOException
@@ -69,7 +71,7 @@ object HttpClient {
 
     /** Completely closes the connection. */
     fun close() {
-        Log.i(TAG, "Closing the connection")
+        Log.d(TAG, "close")
         innerClient.close()
     }
 
@@ -124,7 +126,7 @@ object HttpClient {
      *       See its source code to understand why.
      */
     suspend fun get(url: String, headers: Map<String, String> = emptyMap()): String {
-        Log.i(TAG, "Making a request to $url (headers=$headers)")
+        Log.d(TAG, "get")
 
         return innerClient.get(urlString = url) {
             headers.forEach { (key, value) -> header(key = key, value = value) }
@@ -132,7 +134,7 @@ object HttpClient {
     }
 
     suspend fun getResponse(url: String, headers: Map<String, String> = emptyMap()): HttpResponse {
-        Log.i(TAG, "Making a request to $url (headers=$headers)")
+        Log.d(TAG, "getResponse")
 
         return innerClient.get(urlString = url) {
             headers.forEach { (key, value) -> header(key = key, value = value) }
@@ -144,15 +146,22 @@ object HttpClient {
      * if parsing fails.
      */
     suspend fun getJson(url: String): JsonElement? {
-        val response = get(url)
+        Log.d(TAG, "getJson")
 
-        if (response.isEmpty()) {
+        val response = getResponse(url)
+        if (response.contentType() != ContentType.Application.Json) {
+            Log.d(TAG, "Received non-Json content")
             return null
         }
 
-        Log.i(TAG, "Received a maybe json?: $response")
-        Log.i(TAG, "Parsing it...")
-        return parseJson(response)
+        val content = response.bodyAsText()
+        if (content.isEmpty()) {
+            Log.d(TAG, "Received empty body")
+            return null
+        }
+
+        Log.d(TAG, "Attempting to parse content as Json")
+        return parseJson(content)
     }
 
     /**
@@ -160,13 +169,13 @@ object HttpClient {
      * response parsed as Json or `null` if parsing fails or response is empty.
      */
     suspend fun postJson(url: String, payload: JsonElement): JsonElement? {
-        val response = post(url = url, payload = payload)
+        Log.d(TAG, "postJson")
 
+        val response = post(url = url, payload = payload)
         if (response.isEmpty()) {
             return null
         }
 
-        Log.i(TAG, "Parsing POST response as JSON: $response")
         return parseJson(response)
     }
 
@@ -175,9 +184,9 @@ object HttpClient {
      * as raw text.
      */
     private suspend fun post(url: String, payload: JsonElement): String {
-        val payloadString = payload.toString()
-        Log.i(TAG, "Making POST request to $url with payload: $payloadString")
+        Log.d(TAG, "post")
 
+        val payloadString = payload.toString()
         return innerClient.post(url) {
             contentType(ContentType.Application.Json)
             setBody(payloadString)
@@ -188,12 +197,14 @@ object HttpClient {
      * Parses and returns the given string as Json or `null` if parsing fails.
      */
     private suspend fun parseJson(jsonString: String) = withContext(Dispatchers.Default) {
+        Log.d(TAG, "parseJson")
+
         try {
             val json = Json.parseToJsonElement(jsonString)
-            Log.i(TAG, "Json parsed successfully")
+            Log.d(TAG, "Parse succeed")
             json
         } catch (e: IllegalArgumentException) {
-            Log.e(TAG, "Json parsing failed, ${e.message}")
+            Log.e(TAG, "Given string is not a valid Json", e)
             null
         }
     }
