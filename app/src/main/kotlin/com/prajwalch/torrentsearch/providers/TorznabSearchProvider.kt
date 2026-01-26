@@ -54,6 +54,9 @@ class TorznabSearchProvider(
         type = SearchProviderType.Torznab,
     )
 
+    /** Log tag for the current config. */
+    private val tag = "$BASE_TAG(${info.name})"
+
     /**
      * Category map.
      *
@@ -147,15 +150,15 @@ class TorznabSearchProvider(
     private val responseXmlParser = TorznabResponseXmlParser(providerName = info.name)
 
     override suspend fun search(query: String, context: SearchContext): List<Torrent> {
-        Log.d(TAG, "search")
+        Log.d(tag, "search")
 
         val apiUrl = normalizeUrl(url = config.url)
 
         if (capabilities == null) {
-            Log.d(TAG, "Capabilities not found")
+            Log.d(tag, "Capabilities not found")
             capabilities = fetchCapabilities(apiUrl = apiUrl, httpClient = context.httpClient)
         } else {
-            Log.d(TAG, "Reusing cached capabilities")
+            Log.d(tag, "Reusing cached capabilities")
         }
 
         val requestUrl = buildString {
@@ -173,7 +176,7 @@ class TorznabSearchProvider(
         }
 
         val responseXml = context.httpClient.get(url = requestUrl)
-        Log.d(TAG, "Received response of length ${responseXml.length}")
+        Log.d(tag, "Received response of length ${responseXml.length}")
 
         return withContext(Dispatchers.Default) {
             responseXmlParser.parse(xml = responseXml)
@@ -184,22 +187,22 @@ class TorznabSearchProvider(
         apiUrl: String,
         httpClient: HttpClient,
     ): TorznabCapabilities? {
-        Log.d(TAG, "Fetching ${config.searchProviderName} capabilities")
+        Log.d(tag, "Fetching ${config.searchProviderName} capabilities")
 
         val requestUrl = "$apiUrl?t=${TorznabFunctions.CAPS}&apikey=${config.apiKey}"
         val capabilitiesResponseXml = httpClient.get(url = requestUrl)
-        Log.d(TAG, "Capabilities fetch succeed")
+        Log.d(tag, "Capabilities fetch succeed")
 
         return withContext(Dispatchers.Default) {
             try {
-                Log.d(TAG, "Attempting to parse capabilities")
+                Log.d(tag, "Attempting to parse capabilities")
 
                 val capabilities = capabilitiesXmlParser.parse(xml = capabilitiesResponseXml)
-                Log.d(TAG, "Capabilities parse succeed")
+                Log.d(tag, "Capabilities parse succeed")
 
                 capabilities
             } catch (e: XmlPullParserException) {
-                Log.e(TAG, "Capabilities parse failed", e)
+                Log.e(tag, "Capabilities parse failed", e)
                 null
             }
         }
@@ -215,7 +218,7 @@ class TorznabSearchProvider(
     }
 
     companion object {
-        private const val TAG = "TorznabSearchProvider"
+        private const val BASE_TAG = "TorznabSearchProvider"
         private const val HTTP_STATUS_OK = 200
         private const val HTTP_STATUS_NOT_AUTHORIZED = 401
         private const val XML_DECLARATION = """<?xml version="1.0" encoding="UTF-8"?>"""
@@ -224,23 +227,23 @@ class TorznabSearchProvider(
             url: String,
             apiKey: String,
         ): TorznabConnectionCheckResult = withContext(Dispatchers.IO) {
-            Log.i(TAG, "Checking connection")
+            Log.i(BASE_TAG, "Checking connection")
 
             val apiUrl = normalizeUrl(url)
             val requestUrl = "$apiUrl?t=${TorznabFunctions.CAPS}&apikey=$apiKey"
 
             val response = try {
-                Log.d(TAG, "Attempting to fetch capabilities")
+                Log.d(BASE_TAG, "Attempting to fetch capabilities")
                 HttpClient.getResponse(url = requestUrl)
             } catch (e: UnknownHostException) {
-                Log.e(TAG, "Failed to resolve host IP address", e)
+                Log.e(BASE_TAG, "Failed to resolve host IP address", e)
                 return@withContext TorznabConnectionCheckResult.ConnectionFailed
             } catch (e: ConnectException) {
-                Log.e(TAG, "Failed to establish a connection to host", e)
+                Log.e(BASE_TAG, "Failed to establish a connection to host", e)
                 return@withContext TorznabConnectionCheckResult.ConnectionFailed
             }
 
-            Log.d(TAG, "Capabilities fetch succeed")
+            Log.d(BASE_TAG, "Capabilities fetch succeed")
 
             val responseStatusCode = response.status.value
 
@@ -254,7 +257,7 @@ class TorznabSearchProvider(
             }
 
             if (responseStatusCode != HTTP_STATUS_OK) {
-                Log.d(TAG, "Received unexpected HTTP status code $responseStatusCode")
+                Log.d(BASE_TAG, "Received unexpected HTTP status code $responseStatusCode")
                 return@withContext TorznabConnectionCheckResult.UnexpectedError
             }
 
@@ -267,7 +270,7 @@ class TorznabSearchProvider(
 
             if (!responseXmlWoDeclaration.startsWith("<error code=")) {
                 val startTag = responseXmlWoDeclaration.takeWhile { it != '>' }
-                Log.d(TAG, "Response starts with unexpected tag $startTag")
+                Log.d(BASE_TAG, "Response starts with unexpected tag $startTag")
 
                 return@withContext TorznabConnectionCheckResult.UnexpectedError
             }
