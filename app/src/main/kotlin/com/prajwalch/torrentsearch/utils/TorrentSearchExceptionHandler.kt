@@ -26,7 +26,7 @@ class TorrentSearchExceptionHandler(
         }
         context.startActivity(crashIntent)
 
-        Log.i(TAG, "${activityToLaunch.simpleName} started successfully")
+        Log.d(TAG, "${activityToLaunch.simpleName} started successfully")
     }
 
     companion object {
