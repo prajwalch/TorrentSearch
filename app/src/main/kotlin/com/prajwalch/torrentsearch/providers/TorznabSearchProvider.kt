@@ -24,6 +24,21 @@ import java.net.ConnectException
 import java.net.UnknownHostException
 
 /**
+ * Search provider (or indexer) specific category range start.
+ *
+ * Category IDs are divided into two groups i.e. predefined and custom.
+ * Every client is required to use predefined category IDs whereas custom
+ * varies for each indexer and it also depends on client implementation.
+ *
+ * Therefore, we only use predefined category range (1000-8999) to construct
+ * category IDs from the given [Category] during request and to detect the
+ * [Category] of a torrent using IDs available in the response we receive.
+ *
+ * See [API spec](https://torznab.github.io/spec-1.3-draft/external/newznab/api.html#predefined-categories).
+ */
+private const val CUSTOM_CATEGORY_RANGE_START = 100000
+
+/**
  *  Torznab functions.
  *
  * See [API spec](https://torznab.github.io/spec-1.3-draft/torznab/Specification-v1.3.html#function-overview).
@@ -473,10 +488,6 @@ private class TorznabResponseXmlParser(
         in 8000..8999 -> Category.Other
         else -> Category.Other
     }
-
-    private companion object {
-        private const val CUSTOM_CATEGORY_RANGE_START = 100000
-    }
 }
 
 /** Contains the capabilities of the search provider/indexer. */
@@ -529,7 +540,9 @@ private class TorznabCapabilitiesXmlParser {
         parser.require(XmlPullParser.START_TAG, namespace, "category")
 
         val parentCategoryId = parser.getAttributeValue(null, "id")
-        supportedCategoriesId.add(parentCategoryId)
+        if (parentCategoryId.toInt() < CUSTOM_CATEGORY_RANGE_START) {
+            supportedCategoriesId.add(parentCategoryId)
+        }
 
         // Some <category> can contain child tags <subcat>.
         parser.readParentTag(tagName = "category") {
@@ -545,7 +558,9 @@ private class TorznabCapabilitiesXmlParser {
         parser.require(XmlPullParser.START_TAG, namespace, "subcat")
 
         val subCategoryId = parser.getAttributeValue(null, "id")
-        supportedCategoriesId.add(subCategoryId)
+        if (subCategoryId.toInt() < CUSTOM_CATEGORY_RANGE_START) {
+            supportedCategoriesId.add(subCategoryId)
+        }
 
         parser.nextTag()
         parser.require(XmlPullParser.END_TAG, namespace, "subcat")
