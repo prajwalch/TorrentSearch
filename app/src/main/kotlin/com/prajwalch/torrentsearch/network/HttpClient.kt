@@ -80,6 +80,7 @@ object HttpClient {
      * if the `block` throws, and returns the error friendly structure with the
      * result returned by the `block` in it.
      */
+    @Deprecated(message = "This function is deprecated, use manual try/catch block.")
     suspend fun <T> withExceptionHandler(block: suspend () -> T): HttpClientResponse<T> {
         return try {
             val result = block()
