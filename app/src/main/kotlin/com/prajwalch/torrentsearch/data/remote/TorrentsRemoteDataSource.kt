@@ -25,6 +25,8 @@ class TorrentsRemoteDataSource @Inject constructor(
         category: Category,
         searchProviders: List<SearchProvider>,
     ): Flow<Result<List<Torrent>>> = channelFlow {
+        Log.i(TAG, "Searching torrents for $query ($category)")
+
         if (searchProviders.isEmpty()) {
             send(Result.success(emptyList()))
             return@channelFlow
@@ -32,10 +34,11 @@ class TorrentsRemoteDataSource @Inject constructor(
 
         val encodedQuery = encodeQuery(query = query)
         val searchContext = SearchContext(category = category, httpClient = httpClient)
-        Log.d(TAG, "Encoded query = $encodedQuery")
+        Log.d(TAG, "Query encoded as $encodedQuery")
 
         for (searchProvider in searchProviders) {
             Log.i(TAG, "Launching ${searchProvider.info.name}")
+
             launch {
                 val result = runCatchingSearchProvider(
                     provider = searchProvider,
