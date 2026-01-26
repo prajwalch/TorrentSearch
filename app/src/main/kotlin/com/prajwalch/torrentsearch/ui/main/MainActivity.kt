@@ -30,7 +30,7 @@ import dagger.hilt.android.AndroidEntryPoint
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
-        Log.i(TAG, "onCreate() called")
+        Log.d(TAG, "onCreate")
 
         installSplashScreen()
         super.onCreate(savedInstanceState)
@@ -73,11 +73,16 @@ class MainActivity : ComponentActivity() {
      * is supported and contains a valid text.
      */
     private fun getInitialSearchQuery(): String? {
+        Log.d(TAG, "getInitialSearchQuery")
         // Not started by any intent.
-        if (intent == null) return null
+        if (intent == null) {
+            Log.d(TAG, "Activity not started by any intent")
+            return null
+        }
 
         val action = intent.action
         val type = intent.type
+        Log.d(TAG, "Received action $action and type $type")
 
         if (type != "text/plain") {
             return null
@@ -90,9 +95,11 @@ class MainActivity : ComponentActivity() {
         }
 
         if (textReceivedFromIntent == null) {
-            Log.i(TAG, "Initial query not found in intent")
+            Log.d(TAG, "Text not found in intent")
             return null
         }
+
+        Log.d(TAG, "Received text '$textReceivedFromIntent'")
 
         if (textReceivedFromIntent.isBlank()) {
             val cannotSearchUsingBlankQueryMessage = getString(
@@ -105,8 +112,6 @@ class MainActivity : ComponentActivity() {
 
         val urlPatternMatcher = Patterns.WEB_URL.matcher(textReceivedFromIntent)
         if (urlPatternMatcher.matches()) {
-            Log.w(TAG, "Cannot perform search; text is a URL")
-
             val cannotSearchUsingUrlMessage = getString(
                 R.string.main_cannot_search_using_url_message,
             )
@@ -116,7 +121,7 @@ class MainActivity : ComponentActivity() {
         }
 
         val initialSearchQuery = urlPatternMatcher.replaceAll("").trim().trim('"', '\n')
-        Log.d(TAG, "Initial search query = $initialSearchQuery")
+        Log.d(TAG, "Initial search query is now '$initialSearchQuery'")
 
         return initialSearchQuery
     }
@@ -132,44 +137,49 @@ class MainActivity : ComponentActivity() {
      * @return `true` if the client starts successfully, `false` otherwise.
      */
     private fun downloadTorrentViaClient(magnetUri: MagnetUri): Boolean {
-        val torrentClientOpenIntent = Intent(Intent.ACTION_VIEW, magnetUri.toUri())
+        Log.d(TAG, "downloadTorrentClientViaClient")
 
         return try {
+            val torrentClientOpenIntent = Intent(Intent.ACTION_VIEW, magnetUri.toUri())
             startActivity(torrentClientOpenIntent)
             true
         } catch (_: ActivityNotFoundException) {
-            Log.e(TAG, "Torrent client launch failed. (Activity not found)")
+            Log.d(TAG, "Torrent client activity not found")
             false
         }
     }
 
     /** Starts the application chooser to share magnet uri with. */
     private fun shareMagnetLink(magnetUri: MagnetUri) {
-        Log.d(TAG, "Sharing magnet URI: $magnetUri")
+        Log.d(TAG, "shareMagnetLink")
+
         try {
             startTextShareIntent(magnetUri)
         } catch (_: ActivityNotFoundException) {
-            Log.e(TAG, "Magnet uri share intent launch failed. (Activity not found)")
+            Log.d(TAG, "Activity not found")
         }
     }
 
     /** Opens a description page in a default browser. */
     private fun openDescriptionPage(url: String) {
-        val openPageIntent = Intent(Intent.ACTION_VIEW, url.toUri())
+        Log.d(TAG, "openDescriptionPage")
 
         try {
+            val openPageIntent = Intent(Intent.ACTION_VIEW, url.toUri())
             startActivity(openPageIntent)
         } catch (_: ActivityNotFoundException) {
-            Log.e(TAG, "Failed to open description page. (Activity not found)")
+            Log.d(TAG, "Activity not found")
         }
     }
 
     /** Starts the application chooser to share url with. */
     private fun shareDescriptionPageUrl(url: String) {
+        Log.d(TAG, "shareDescriptionPage")
+
         try {
             startTextShareIntent(url)
         } catch (_: ActivityNotFoundException) {
-            Log.e(TAG, "Description page URL share intent launch failed. (Activity not found)")
+            Log.d(TAG, "Activity not found")
         }
     }
 
