@@ -375,12 +375,12 @@ private class TorznabResponseXmlParser(
                 //
                 // See: https://torznab.github.io/spec-1.3-draft/torznab/Specification-v1.3.html#extended-attributes
                 "torznab:attr" -> when (parser.getAttributeValue(null, "name")) {
-                    "seeders" -> seeders = readTorznabAttribute(name = "seeders")
-                    "peers" -> peers = readTorznabAttribute(name = "peers")
-                    "magneturl" -> magnetUri = readTorznabAttribute(name = "magneturl")
-                    "infohash" -> infoHash = readTorznabAttribute(name = "infohash")
+                    "seeders" -> seeders = readTorznabAttributeValue()
+                    "peers" -> peers = readTorznabAttributeValue()
+                    "magneturl" -> magnetUri = readTorznabAttributeValue()
+                    "infohash" -> infoHash = readTorznabAttributeValue()
                     "category" -> {
-                        val id = readTorznabAttribute("category").toInt()
+                        val id = readTorznabAttributeValue().toInt()
 
                         if (id < CUSTOM_CATEGORY_RANGE_START) {
                             categoryIds.add(id)
@@ -391,17 +391,13 @@ private class TorznabResponseXmlParser(
                     //
                     // Example: https://feed.animetosho.org/api?t=search&apikey=0&q=one
                     "size" if (size == null) -> {
-                        size = readTorznabAttribute(name = "size").let(FileSizeUtils::formatBytes)
+                        size = readTorznabAttributeValue().let(FileSizeUtils::formatBytes)
                     }
 
-                    else -> {
-                        parser.skipCurrentTag()
-                    }
+                    else -> parser.skipCurrentTag()
                 }
 
-                else -> {
-                    parser.skipCurrentTag()
-                }
+                else -> parser.skipCurrentTag()
             }
         }
 
@@ -466,7 +462,7 @@ private class TorznabResponseXmlParser(
         return text
     }
 
-    private fun readTorznabAttribute(name: String): String {
+    private fun readTorznabAttributeValue(): String {
         parser.require(XmlPullParser.START_TAG, namespace, "torznab:attr")
 
         val value = parser.getAttributeValue(null, "value")
