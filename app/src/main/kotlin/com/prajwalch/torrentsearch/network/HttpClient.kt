@@ -101,29 +101,6 @@ object HttpClient {
 
     /**
      * Makes a GET request and returns the response as raw text.
-     *
-     * This function throws an exception therefore it is recommended to wrap
-     * the calling function inside the [HttpClient.withExceptionHandler], as shown in the
-     * code below.
-     *
-     * ```kotlin
-     * suspend fun makeRequest(): SomeCustomData {
-     *     val res = httpClient.get(...)
-     *     // may parsing?
-     *     return ...
-     * }
-     *
-     * suspend fun fetchAllData(): List<SomeCustomData> {
-     *     for (i in 1..5) {
-     *         val response = httpClient.withExceptionHandler { makeRequest() }
-     *         // Handle response gracefully.
-     *     }
-     *     ...
-     * }
-     * ```
-     *
-     * Note: The optional headers are currently being used by Eztv provider only.
-     *       See its source code to understand why.
      */
     suspend fun get(url: String, headers: Map<String, String> = emptyMap()): String {
         Log.d(TAG, "get")
