@@ -18,6 +18,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
 import org.xmlpull.v1.XmlPullParser
+import org.xmlpull.v1.XmlPullParserException
 
 import java.net.ConnectException
 import java.net.UnknownHostException
@@ -146,10 +147,15 @@ class TorznabSearchProvider(
     private val responseXmlParser = TorznabResponseXmlParser(providerName = info.name)
 
     override suspend fun search(query: String, context: SearchContext): List<Torrent> {
+        Log.d(TAG, "search")
+
         val apiUrl = normalizeUrl(url = config.url)
 
         if (capabilities == null) {
+            Log.d(TAG, "Capabilities not found")
             capabilities = fetchCapabilities(apiUrl = apiUrl, httpClient = context.httpClient)
+        } else {
+            Log.d(TAG, "Reusing cached capabilities")
         }
 
         val requestUrl = buildString {
@@ -165,10 +171,9 @@ class TorznabSearchProvider(
                 append("&cat=$categoriesId")
             }
         }
-        Log.d(TAG, "Requesting $requestUrl")
 
         val responseXml = context.httpClient.get(url = requestUrl)
-        Log.d(TAG, "-> Got response; length = ${responseXml.length}")
+        Log.d(TAG, "Received response of length ${responseXml.length}")
 
         return withContext(Dispatchers.Default) {
             responseXmlParser.parse(xml = responseXml)
@@ -179,19 +184,24 @@ class TorznabSearchProvider(
         apiUrl: String,
         httpClient: HttpClient,
     ): TorznabCapabilities {
-        Log.i(TAG, "Fetching ${config.searchProviderName} capabilities ")
+        Log.d(TAG, "Fetching ${config.searchProviderName} capabilities")
 
         val requestUrl = "$apiUrl?t=${TorznabFunctions.CAPS}&apikey=${config.apiKey}"
         val capabilitiesResponseXml = httpClient.get(url = requestUrl)
-
-        Log.i(TAG, "-> Capabilities fetch succeed")
+        Log.d(TAG, "Capabilities fetch succeed")
 
         return withContext(Dispatchers.Default) {
-            Log.i(TAG, "Parsing capabilities")
-            val capabilities = capabilitiesXmlParser.parse(xml = capabilitiesResponseXml)
-            Log.i(TAG, "Capabilities parse succeed")
+            try {
+                Log.d(TAG, "Attempting to parse capabilities")
 
-            capabilities
+                val capabilities = capabilitiesXmlParser.parse(xml = capabilitiesResponseXml)
+                Log.d(TAG, "Capabilities parse succeed")
+
+                capabilities
+            } catch (e: XmlPullParserException) {
+                Log.e(TAG, "Capabilities parse failed", e)
+                throw e
+            }
         }
     }
 
@@ -214,18 +224,23 @@ class TorznabSearchProvider(
             url: String,
             apiKey: String,
         ): TorznabConnectionCheckResult = withContext(Dispatchers.IO) {
-            Log.d(TAG, "Checking connection [url = $url, apiKey = $apiKey]")
+            Log.i(TAG, "Checking connection")
 
             val apiUrl = normalizeUrl(url)
             val requestUrl = "$apiUrl?t=${TorznabFunctions.CAPS}&apikey=$apiKey"
 
             val response = try {
+                Log.d(TAG, "Attempting to fetch capabilities")
                 HttpClient.getResponse(url = requestUrl)
-            } catch (_: UnknownHostException) {
+            } catch (e: UnknownHostException) {
+                Log.e(TAG, "Failed to resolve host IP address", e)
                 return@withContext TorznabConnectionCheckResult.ConnectionFailed
-            } catch (_: ConnectException) {
+            } catch (e: ConnectException) {
+                Log.e(TAG, "Failed to establish a connection to host", e)
                 return@withContext TorznabConnectionCheckResult.ConnectionFailed
             }
+
+            Log.d(TAG, "Capabilities fetch succeed")
 
             val responseStatusCode = response.status.value
 
@@ -239,7 +254,7 @@ class TorznabSearchProvider(
             }
 
             if (responseStatusCode != HTTP_STATUS_OK) {
-                Log.w(TAG, "Unexpected http status code [code = $responseStatusCode]")
+                Log.d(TAG, "Received unexpected HTTP status code $responseStatusCode")
                 return@withContext TorznabConnectionCheckResult.UnexpectedError
             }
 
@@ -252,7 +267,7 @@ class TorznabSearchProvider(
 
             if (!responseXmlWoDeclaration.startsWith("<error code=")) {
                 val startTag = responseXmlWoDeclaration.takeWhile { it != '>' }
-                Log.w(TAG, "Unexpected xml start tag [tag = $startTag]")
+                Log.d(TAG, "Response starts with unexpected tag $startTag")
 
                 return@withContext TorznabConnectionCheckResult.UnexpectedError
             }
@@ -296,34 +311,26 @@ private class TorznabResponseXmlParser(
 
     private fun readRss() {
         parser.require(XmlPullParser.START_TAG, namespace, "rss")
-        Log.i(TAG, "Reading <rss>")
-
         parser.readParentTag(tagName = "rss") {
             if (parser.name == "channel") {
                 readChannel()
             } else {
-                Log.i(TAG, "-> Skipping <${parser.name}>")
                 parser.skipCurrentTag()
             }
         }
     }
 
     private fun readChannel() {
-        Log.i(TAG, "Reading <channel>")
-
         parser.readParentTag(tagName = "channel") {
             if (parser.name == "item") {
                 readItem()
             } else {
-                Log.i(TAG, "-> Skipping <${parser.name}>")
                 parser.skipCurrentTag()
             }
         }
     }
 
     private fun readItem() {
-        Log.i(TAG, "Reading <item>")
-
         var torrentName: String? = null
         var size: String? = null
         var seeders: String? = null
@@ -363,13 +370,11 @@ private class TorznabResponseXmlParser(
                     }
 
                     else -> {
-                        Log.d(TAG, "-> Skipping <${parser.name}>")
                         parser.skipCurrentTag()
                     }
                 }
 
                 else -> {
-                    Log.d(TAG, "-> Skipping <${parser.name}>")
                     parser.skipCurrentTag()
                 }
             }
@@ -378,10 +383,7 @@ private class TorznabResponseXmlParser(
         val infoHashOrMagnetUri = when {
             magnetUri != null -> InfoHashOrMagnetUri.MagnetUri(uri = magnetUri)
             infoHash != null -> InfoHashOrMagnetUri.InfoHash(hash = infoHash)
-            else -> {
-                Log.w(TAG, "Both info hash and magnet URI not found. Skipping..")
-                return
-            }
+            else -> return
         }
         val category = categoryIds.maxOrNull()?.let(::getCategoryFromId) ?: Category.Other
 
@@ -421,24 +423,19 @@ private class TorznabResponseXmlParser(
 
     private fun readTextContainedTag(tagName: String): String {
         parser.require(XmlPullParser.START_TAG, namespace, tagName)
-        Log.i(TAG, "Reading <$tagName>")
 
         val text = readText()
-        Log.d(TAG, "-> Extracted text = $text")
 
         parser.require(XmlPullParser.END_TAG, namespace, tagName)
         return text
     }
 
     private fun readText(): String {
-        Log.i(TAG, "Reading text from <${parser.name}>")
         var text = ""
 
         if (parser.next() == XmlPullParser.TEXT) {
             text = parser.text
             parser.nextTag()
-        } else {
-            Log.e(TAG, "-> Not a text")
         }
 
         return text
@@ -446,10 +443,8 @@ private class TorznabResponseXmlParser(
 
     private fun readTorznabAttribute(name: String): String {
         parser.require(XmlPullParser.START_TAG, namespace, "torznab:attr")
-        Log.i(TAG, "Reading <torrent:attr $name>")
 
         val value = parser.getAttributeValue(null, "value")
-        Log.d(TAG, "-> Attribute value = $value")
 
         parser.nextTag()
         parser.require(XmlPullParser.END_TAG, namespace, "torznab:attr")
@@ -470,7 +465,6 @@ private class TorznabResponseXmlParser(
     }
 
     private companion object {
-        private const val TAG = "TorznabResponseXmlParser"
         private const val CUSTOM_CATEGORY_RANGE_START = 100000
     }
 }
@@ -502,26 +496,20 @@ private class TorznabCapabilitiesXmlParser {
     }
 
     private fun readCaps() {
-        Log.i(TAG, "Reading <caps>")
-
         parser.readParentTag(tagName = "caps") {
             if (parser.name == "categories") {
                 readCategories()
             } else {
-                Log.d(TAG, "-> Skipping <${parser.name}>")
                 parser.skipCurrentTag()
             }
         }
     }
 
     private fun readCategories() {
-        Log.i(TAG, "Reading <categories>")
-
         parser.readParentTag(tagName = "categories") {
             if (parser.name == "category") {
                 readCategory()
             } else {
-                Log.d(TAG, "-> Skipping <${parser.name}>")
                 parser.skipCurrentTag()
             }
         }
@@ -529,10 +517,8 @@ private class TorznabCapabilitiesXmlParser {
 
     private fun readCategory() {
         parser.require(XmlPullParser.START_TAG, namespace, "category")
-        Log.i(TAG, "Reading <category>")
 
         val parentCategoryId = parser.getAttributeValue(null, "id")
-        Log.d(TAG, "-> Parent category id = $parentCategoryId")
         supportedCategoriesId.add(parentCategoryId)
 
         // Some <category> can contain child tags <subcat>.
@@ -540,7 +526,6 @@ private class TorznabCapabilitiesXmlParser {
             if (parser.name == "subcat") {
                 readSubCat()
             } else {
-                Log.d(TAG, "-> Skipping <${parser.name}>")
                 parser.skipCurrentTag()
             }
         }
@@ -548,18 +533,12 @@ private class TorznabCapabilitiesXmlParser {
 
     private fun readSubCat() {
         parser.require(XmlPullParser.START_TAG, namespace, "subcat")
-        Log.i(TAG, "Reading <subcat>")
 
         val subCategoryId = parser.getAttributeValue(null, "id")
-        Log.d(TAG, "-> Sub category id = $subCategoryId")
         supportedCategoriesId.add(subCategoryId)
 
         parser.nextTag()
         parser.require(XmlPullParser.END_TAG, namespace, "subcat")
-    }
-
-    private companion object {
-        private const val TAG = "TorznabCapabilitiesXmlParser"
     }
 }
 
