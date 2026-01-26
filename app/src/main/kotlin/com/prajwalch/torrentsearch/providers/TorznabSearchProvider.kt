@@ -183,7 +183,7 @@ class TorznabSearchProvider(
     private suspend fun fetchCapabilities(
         apiUrl: String,
         httpClient: HttpClient,
-    ): TorznabCapabilities {
+    ): TorznabCapabilities? {
         Log.d(TAG, "Fetching ${config.searchProviderName} capabilities")
 
         val requestUrl = "$apiUrl?t=${TorznabFunctions.CAPS}&apikey=${config.apiKey}"
@@ -200,7 +200,7 @@ class TorznabSearchProvider(
                 capabilities
             } catch (e: XmlPullParserException) {
                 Log.e(TAG, "Capabilities parse failed", e)
-                throw e
+                null
             }
         }
     }
