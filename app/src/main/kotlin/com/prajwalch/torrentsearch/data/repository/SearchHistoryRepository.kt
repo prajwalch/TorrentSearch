@@ -22,7 +22,7 @@ class SearchHistoryRepository @Inject constructor(private val dao: SearchHistory
      * is already saved.
      */
     suspend fun createNewSearchHistory(query: String) {
-        val searchHistory = SearchHistory(query = query)
+        val searchHistory = SearchHistory(query = query.trim())
         dao.insert(searchHistory.toEntity())
     }
 

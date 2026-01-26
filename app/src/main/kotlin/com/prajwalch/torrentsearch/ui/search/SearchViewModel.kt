@@ -126,15 +126,9 @@ class SearchViewModel @Inject constructor(
     }
 
     private fun saveSearchQueryToHistory() = viewModelScope.launch {
-        if (!settingsRepository.saveSearchHistory.first()) {
-            return@launch
+        if (settingsRepository.saveSearchHistory.first()) {
+            searchHistoryRepository.createNewSearchHistory(query = searchQuery)
         }
-        // TODO: Do this in repository.
-        //
-        // Trim the query to prevent same query (e.g. 'one' and 'one ')
-        // from end upping into the database.
-        val query = searchQuery.trim()
-        searchHistoryRepository.createNewSearchHistory(query = query)
     }
 
     private fun initializeCategoryAndSearch() = viewModelScope.launch {
