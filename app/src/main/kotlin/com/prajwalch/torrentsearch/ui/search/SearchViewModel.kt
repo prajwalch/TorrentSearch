@@ -119,7 +119,7 @@ class SearchViewModel @Inject constructor(
     private var searchJob: Job? = null
 
     init {
-        Log.i(TAG, "init is invoked")
+        Log.d(TAG, "init")
 
         // 1. Maintain search history
         saveSearchQueryToHistory()
@@ -157,8 +157,6 @@ class SearchViewModel @Inject constructor(
         filterQuery: String,
         nsfwModeEnabled: Boolean,
     ): SearchUiState {
-        Log.i(TAG, "Creating UI state")
-
         if (internalUiState.isLoading || internalUiState.isInternetError) {
             return internalUiState
         }
@@ -294,7 +292,7 @@ class SearchViewModel @Inject constructor(
         }
 
         if (!connectivityChecker.isInternetAvailable()) {
-            Log.w(TAG, "Internet connection not available. Returning")
+            Log.d(TAG, "Internet connection not available")
 
             _uiState.update {
                 it.copy(
@@ -331,7 +329,7 @@ class SearchViewModel @Inject constructor(
 
     /** Invoked when search results are received. */
     private fun onSearchResultsReceived(searchResults: SearchResults) {
-        Log.i(TAG, "onSearchResultsReceived() called")
+        Log.d(TAG, "onSearchResultsReceived")
 
         val searchFailures = searchResults.failures
         val searchResults = searchResults.successes
@@ -373,14 +371,12 @@ class SearchViewModel @Inject constructor(
 
     /** Invoked when search completes or cancelled. */
     private fun onSearchCompletion(cause: Throwable?) {
-        Log.i(TAG, "onSearchCompletion() called")
+        Log.i(TAG, "Search completed")
 
         if (cause is CancellationException) {
-            Log.w(TAG, "Search is cancelled")
             return
         }
 
-        Log.i(TAG, "Search completed", cause)
         val filterOptions = with(_uiState.value.filterOptions) {
             val searchProviders = this.searchProviders
                 .map { it.copy(enabled = true) }
