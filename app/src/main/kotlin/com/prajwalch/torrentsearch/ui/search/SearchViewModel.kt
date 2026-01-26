@@ -1,9 +1,11 @@
 package com.prajwalch.torrentsearch.ui.search
 
 import android.util.Log
+
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+
 import com.prajwalch.torrentsearch.data.repository.BookmarksRepository
 import com.prajwalch.torrentsearch.data.repository.SearchHistoryRepository
 import com.prajwalch.torrentsearch.data.repository.SettingsRepository
@@ -17,7 +19,9 @@ import com.prajwalch.torrentsearch.domain.models.SortOrder
 import com.prajwalch.torrentsearch.domain.models.Torrent
 import com.prajwalch.torrentsearch.network.ConnectivityChecker
 import com.prajwalch.torrentsearch.utils.createSortComparator
+
 import dagger.hilt.android.lifecycle.HiltViewModel
+
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toImmutableList
@@ -35,8 +39,10 @@ import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+
 import java.io.OutputStream
 import java.io.PrintWriter
+
 import javax.inject.Inject
 import kotlin.time.Duration.Companion.seconds
 
@@ -62,7 +68,6 @@ data class FilterOptions(
 
 data class SearchProviderFilterOption(
     val searchProviderName: String,
-    val enabled: Boolean = false,
     val selected: Boolean = false,
 )
 
@@ -366,16 +371,7 @@ class SearchViewModel @Inject constructor(
     private fun onSearchCompletion(cause: Throwable?) {
         Log.i(TAG, "Search completed")
 
-        val filterOptions = with(_uiState.value.filterOptions) {
-            val searchProviders = this.searchProviders
-                .map { it.copy(enabled = true) }
-                .toImmutableList()
-
-            this.copy(searchProviders = searchProviders)
-        }
-        _uiState.update {
-            it.copy(filterOptions = filterOptions, isSearching = false)
-        }
+        _uiState.update { it.copy(isSearching = false) }
     }
 
     private companion object {

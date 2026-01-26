@@ -198,6 +198,7 @@ fun SearchScreen(
             filterOptions = uiState.filterOptions,
             onToggleSearchProvider = viewModel::toggleSearchProviderResults,
             onToggleDeadTorrents = viewModel::toggleDeadTorrents,
+            isSearching = uiState.isSearching,
         )
     }
 
@@ -493,6 +494,7 @@ private fun FilterOptionsBottomSheet(
     filterOptions: FilterOptions,
     onToggleSearchProvider: (String) -> Unit,
     onToggleDeadTorrents: () -> Unit,
+    isSearching: Boolean,
     modifier: Modifier = Modifier,
 ) {
     ModalBottomSheet(modifier = modifier, onDismissRequest = onDismissRequest) {
@@ -503,6 +505,7 @@ private fun FilterOptionsBottomSheet(
                     modifier = Modifier.padding(horizontal = MaterialTheme.spaces.large),
                     filterOptions = filterOptions.searchProviders,
                     onToggleSearchProvider = onToggleSearchProvider,
+                    isSearching = isSearching,
                 )
             }
 
@@ -540,6 +543,7 @@ private fun FiltersSectionTitle(@StringRes titleId: Int, modifier: Modifier = Mo
 private fun SearchProvidersChipsRow(
     filterOptions: ImmutableList<SearchProviderFilterOption>,
     onToggleSearchProvider: (String) -> Unit,
+    isSearching: Boolean,
     modifier: Modifier = Modifier,
 ) {
     FlowRow(
@@ -553,7 +557,7 @@ private fun SearchProvidersChipsRow(
                 selected = filterOption.selected,
                 onClick = { onToggleSearchProvider(filterOption.searchProviderName) },
                 label = { Text(text = filterOption.searchProviderName) },
-                enabled = filterOption.enabled,
+                enabled = !isSearching,
             )
         }
     }
