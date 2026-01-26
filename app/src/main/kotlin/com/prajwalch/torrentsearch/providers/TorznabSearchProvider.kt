@@ -369,6 +369,13 @@ private class TorznabResponseXmlParser(
                         }
                     }
 
+                    // Some clients provide size inside the <torznab:size value../>
+                    //
+                    // Example: https://feed.animetosho.org/api?t=search&apikey=0&q=one
+                    "size" if (size == null) -> {
+                        size = readTorznabAttribute(name = "size").let(FileSizeUtils::formatBytes)
+                    }
+
                     else -> {
                         parser.skipCurrentTag()
                     }
