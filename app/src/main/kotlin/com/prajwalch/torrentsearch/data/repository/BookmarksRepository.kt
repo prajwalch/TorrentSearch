@@ -43,25 +43,31 @@ class BookmarksRepository @Inject constructor(private val dao: BookmarkedTorrent
 
     @OptIn(ExperimentalSerializationApi::class)
     suspend fun importBookmarks(inputStream: InputStream) = withContext(Dispatchers.IO) {
+        Log.i(TAG, "Importing bookmarks")
+
         try {
             val bookmarksEntity = Json.decodeFromStream<List<BookmarkedTorrent>>(inputStream)
             dao.insertAll(bookmarksEntity)
+            Log.i(TAG, "Import succeed")
         } catch (e: IllegalArgumentException) {
-            Log.e(TAG, "Bookmarks import failed", e)
+            Log.e(TAG, "Input cannot be represented as a valid Json type", e)
         } catch (e: IOException) {
-            Log.e(TAG, "Bookmarks import file read failed", e)
+            Log.e(TAG, "Input cannot be read from the input stream", e)
         }
     }
 
     @OptIn(ExperimentalSerializationApi::class)
     suspend fun exportBookmarks(outputStream: OutputStream) = withContext(Dispatchers.IO) {
+        Log.i(TAG, "Exporting bookmarks")
+
         try {
             val bookmarksEntity = dao.observeAll().firstOrNull() ?: return@withContext
             Json.encodeToStream(bookmarksEntity, outputStream)
+            Log.i(TAG, "Export succeed")
         } catch (e: IllegalArgumentException) {
-            Log.e(TAG, "Bookmarks export failed", e)
+            Log.e(TAG, "Input cannot be serialized to Json", e)
         } catch (e: IOException) {
-            Log.e(TAG, "Bookmarks export file write error", e)
+            Log.e(TAG, "Input cannot be write to output stream", e)
         }
     }
 
