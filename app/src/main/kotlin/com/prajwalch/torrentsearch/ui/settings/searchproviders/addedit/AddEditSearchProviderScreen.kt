@@ -3,7 +3,6 @@ package com.prajwalch.torrentsearch.ui.settings.searchproviders.addedit
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -13,10 +12,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
 import androidx.compose.material3.LinearProgressIndicator
-import androidx.compose.material3.LocalContentColor
-import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
@@ -25,14 +21,12 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalUriHandler
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -41,6 +35,7 @@ import com.prajwalch.torrentsearch.R
 import com.prajwalch.torrentsearch.constants.TorrentSearchConstants
 import com.prajwalch.torrentsearch.domain.models.Category
 import com.prajwalch.torrentsearch.ui.components.ArrowBackIconButton
+import com.prajwalch.torrentsearch.ui.components.BottomInfo
 import com.prajwalch.torrentsearch.ui.components.TextUrl
 import com.prajwalch.torrentsearch.ui.components.TorznabConfigForm
 import com.prajwalch.torrentsearch.ui.theme.spaces
@@ -223,27 +218,5 @@ private fun LearnHowToAddLinkInfo(modifier: Modifier = Modifier) {
             onClick = { uriHandler.openUri(TorrentSearchConstants.TORZNAB_HOW_TO_ADD_WIKI) },
             color = MaterialTheme.colorScheme.secondary,
         )
-    }
-}
-
-@Composable
-private fun BottomInfo(
-    modifier: Modifier = Modifier,
-    content: @Composable ColumnScope.() -> Unit,
-) {
-    Column(
-        modifier = modifier,
-        verticalArrangement = Arrangement.spacedBy(MaterialTheme.spaces.extraLarge)
-    ) {
-        CompositionLocalProvider(
-            LocalContentColor provides MaterialTheme.colorScheme.onSurfaceVariant,
-            LocalTextStyle provides MaterialTheme.typography.bodyMedium,
-        ) {
-            Icon(
-                painter = painterResource(R.drawable.ic_info),
-                contentDescription = null,
-            )
-            content()
-        }
     }
 }
