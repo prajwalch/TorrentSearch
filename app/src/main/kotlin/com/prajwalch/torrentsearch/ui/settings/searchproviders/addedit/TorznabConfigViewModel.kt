@@ -138,7 +138,7 @@ class TorznabConfigViewModel @Inject constructor(
     private fun isUrlValid(): Boolean = Patterns.WEB_URL.matcher(_uiState.value.url).matches()
 
     private suspend fun addConfig() {
-        searchProvidersRepository.addTorznabConfig(
+        searchProvidersRepository.createTorznabConfig(
             searchProviderName = _uiState.value.searchProviderName,
             url = _uiState.value.url,
             apiKey = _uiState.value.apiKey,

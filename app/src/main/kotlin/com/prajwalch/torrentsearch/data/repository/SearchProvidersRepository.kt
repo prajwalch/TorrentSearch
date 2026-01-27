@@ -143,7 +143,7 @@ class SearchProvidersRepository @Inject constructor(
         return TorznabSearchProvider.checkConnection(url = url.trimEnd('/'), apiKey = apiKey)
     }
 
-    suspend fun addTorznabConfig(
+    suspend fun createTorznabConfig(
         searchProviderName: String,
         url: String,
         apiKey: String,
