@@ -111,7 +111,7 @@ fun SearchScreen(
     val coroutineScope = rememberCoroutineScope()
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
     val torrentListState = rememberTorrentListState(
-        itemsCount = { uiState.searchResults.size },
+        itemsCount = { uiState.searchResults.successes.size },
     )
 
     // Torrent actions state.
@@ -182,7 +182,7 @@ fun SearchScreen(
     if (showSearchFailures) {
         SearchFailuresBottomSheet(
             onDismiss = { showSearchFailures = false },
-            failures = uiState.searchFailures,
+            failures = uiState.searchResults.failures,
             onExportErrorLogsToFile = {
                 errorLogsExportLocationChooser.launch(
                     TorrentSearchConstants.SEARCH_ERROR_LOGS_FILE_NAME
@@ -216,7 +216,7 @@ fun SearchScreen(
         val enableSearchResultsActions = when {
             uiState.resultsNotFound -> false
             uiState.resultsFilteredOut -> true
-            else -> uiState.searchResults.isNotEmpty()
+            else -> uiState.searchResults.successes.isNotEmpty()
         }
 
         if (!searchBarState.isVisible) {
@@ -271,7 +271,7 @@ fun SearchScreen(
                             contentDescription = null,
                         )
                     },
-                    enabled = uiState.searchFailures.isNotEmpty(),
+                    enabled = uiState.searchResults.failures.isNotEmpty(),
                 )
                 DropdownMenuItem(
                     text = { Text(text = stringResource(R.string.search_action_settings)) },
@@ -323,7 +323,7 @@ fun SearchScreen(
                 }
             }
 
-            uiState.isInternetError && uiState.searchResults.isEmpty() -> {
+            uiState.isInternetError && uiState.searchResults.successes.isEmpty() -> {
                 NoInternetConnection(
                     modifier = Modifier
                         .fillMaxSize()
@@ -352,7 +352,7 @@ fun SearchScreen(
             else -> {
                 SearchResults(
                     modifier = Modifier.padding(innerPadding),
-                    searchResults = uiState.searchResults,
+                    searchResults = uiState.searchResults.successes,
                     onResultClick = { selectedResult = it },
                     searchQuery = uiState.searchQuery,
                     searchCategory = uiState.searchCategory,

@@ -11,7 +11,6 @@ import com.prajwalch.torrentsearch.data.repository.SearchHistoryRepository
 import com.prajwalch.torrentsearch.data.repository.SettingsRepository
 import com.prajwalch.torrentsearch.domain.SearchTorrentsUseCase
 import com.prajwalch.torrentsearch.domain.models.Category
-import com.prajwalch.torrentsearch.domain.models.SearchException
 import com.prajwalch.torrentsearch.domain.models.SearchResults
 import com.prajwalch.torrentsearch.domain.models.SortCriteria
 import com.prajwalch.torrentsearch.domain.models.SortOptions
@@ -33,7 +32,6 @@ import kotlinx.coroutines.flow.WhileSubscribed
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.conflate
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
@@ -49,8 +47,7 @@ import kotlin.time.Duration.Companion.seconds
 data class SearchUiState(
     val searchQuery: String = "",
     val searchCategory: Category = Category.All,
-    val searchResults: ImmutableList<Torrent> = persistentListOf(),
-    val searchFailures: ImmutableList<SearchException> = persistentListOf(),
+    val searchResults: SearchResults = SearchResults(),
     val sortOptions: SortOptions = SortOptions(),
     val filterOptions: FilterOptions = FilterOptions(),
     val isLoading: Boolean = true,
@@ -84,12 +81,8 @@ class SearchViewModel @Inject constructor(
     /** Current search query. */
     private val searchQuery = savedStateHandle.get<String>("query")!!
 
-    /**
-     * Current search category.
-     *
-     * If the category is not given, default category is fetched from the settings.
-     */
-    private lateinit var searchCategory: Category
+    /** Current search category. */
+    private var searchCategory = Category.All
 
     /** The internal or mutable UI state. */
     private val _uiState = MutableStateFlow(SearchUiState(searchQuery = searchQuery))
@@ -119,28 +112,23 @@ class SearchViewModel @Inject constructor(
     init {
         Log.d(TAG, "init")
 
-        // 1. Maintain search history
-        saveSearchQueryToHistory()
-        // 2. Perform search
-        searchJob = initializeCategoryAndSearch()
-    }
-
-    private fun saveSearchQueryToHistory() = viewModelScope.launch {
-        if (settingsRepository.saveSearchHistory.first()) {
-            searchHistoryRepository.createNewSearchHistory(query = searchQuery)
+        // Save search history.
+        //
+        // We use different launch to prevent initial search delay.
+        viewModelScope.launch {
+            if (settingsRepository.saveSearchHistory.first()) {
+                searchHistoryRepository.createNewSearchHistory(searchQuery)
+            }
         }
-    }
 
-    private fun initializeCategoryAndSearch() = viewModelScope.launch {
-        val category = savedStateHandle.get<Category>("category")
-        // If the category is not given fallback to default one.
-            ?: settingsRepository.defaultCategory.firstOrNull()
-            ?: Category.All
+        viewModelScope.launch {
+            val savedCategory = savedStateHandle.get<Category>("category")
 
-        searchCategory = category
-        _uiState.update { it.copy(searchCategory = category) }
+            searchCategory = savedCategory ?: settingsRepository.defaultCategory.first()
+            _uiState.update { it.copy(searchCategory = searchCategory) }
 
-        performSearch()
+            load()
+        }
     }
 
     /** Produces UI state from the given internal state and other parameters. */
@@ -153,15 +141,18 @@ class SearchViewModel @Inject constructor(
             return internalUiState
         }
 
-        val enabledSearchProvidersName = internalUiState.filterOptions.searchProviders.mapNotNull {
-            if (it.selected) it.searchProviderName else null
-        }
+        val enabledSearchProvidersName = internalUiState
+            .filterOptions
+            .searchProviders
+            .filter { it.selected }
+            .map { it.searchProviderName }
         val sortComparator = createSortComparator(
             criteria = internalUiState.sortOptions.criteria,
             order = internalUiState.sortOptions.order,
         )
-        val filteredSearchResults = internalUiState
+        val processedSuccesses = internalUiState
             .searchResults
+            .successes
             .asSequence()
             .filter {
                 internalUiState.filterOptions.searchProviders.isEmpty()
@@ -173,12 +164,12 @@ class SearchViewModel @Inject constructor(
             .sortedWith(comparator = sortComparator)
             .toImmutableList()
 
-        val isSearchResultsEmpty = internalUiState.searchResults.isEmpty()
-        val resultsNotFound = isSearchResultsEmpty && !internalUiState.isSearching
-        val resultsFilteredOut = !isSearchResultsEmpty && filteredSearchResults.isEmpty()
+        val isSuccessesEmpty = internalUiState.searchResults.successes.isEmpty()
+        val resultsNotFound = isSuccessesEmpty && !internalUiState.isSearching
+        val resultsFilteredOut = !isSuccessesEmpty && processedSuccesses.isEmpty()
 
         return internalUiState.copy(
-            searchResults = filteredSearchResults,
+            searchResults = internalUiState.searchResults.copy(successes = processedSuccesses),
             resultsNotFound = resultsNotFound,
             resultsFilteredOut = resultsFilteredOut,
         )
@@ -190,7 +181,16 @@ class SearchViewModel @Inject constructor(
      */
     fun refreshSearchResults() {
         searchJob?.cancel()
-        searchJob = performSearch(refreshOnly = true)
+        searchJob = viewModelScope.launch {
+            if (!connectivityChecker.isInternetAvailable()) {
+                // Ignore this since we don't want to destroy existing search
+                // results.
+                return@launch
+            }
+
+            _uiState.update { it.copy(isRefreshing = true) }
+            search()
+        }
     }
 
     /**
@@ -199,7 +199,30 @@ class SearchViewModel @Inject constructor(
      */
     fun reload() {
         searchJob?.cancel()
-        searchJob = performSearch()
+        searchJob = viewModelScope.launch { load() }
+    }
+
+    /** Performs a fresh search. */
+    private suspend fun load() {
+        _uiState.update {
+            SearchUiState(
+                searchQuery = it.searchQuery,
+                searchCategory = it.searchCategory,
+                isLoading = true,
+            )
+        }
+
+        // Stop as soon as we have internet connection status.
+        if (!connectivityChecker.isInternetAvailable()) {
+            _uiState.update { it.copy(isLoading = false, isInternetError = true) }
+            return
+        }
+
+        // Since we're doing fresh search, reset current sort options to default.
+        val defaultSortOptions = settingsRepository.defaultSortOptions.first()
+        _uiState.update { it.copy(sortOptions = defaultSortOptions) }
+
+        search()
     }
 
     /** Shows only those search results that contains the given query. */
@@ -248,9 +271,7 @@ class SearchViewModel @Inject constructor(
         val filterOptions = with(_uiState.value.filterOptions) {
             this.copy(deadTorrents = !this.deadTorrents)
         }
-        _uiState.update {
-            it.copy(filterOptions = filterOptions)
-        }
+        _uiState.update { it.copy(filterOptions = filterOptions) }
     }
 
     /** Bookmarks the given [Torrent]. */
@@ -266,7 +287,7 @@ class SearchViewModel @Inject constructor(
             val printWriter = PrintWriter(outputStream.bufferedWriter(Charsets.UTF_8))
 
             printWriter.use {
-                for (exception in uiState.value.searchFailures) {
+                for (exception in uiState.value.searchResults.failures) {
                     it.println("----------${exception.searchProviderName}----------")
                     exception.printStackTrace(it)
                     it.println("----------${exception.searchProviderName}----------")
@@ -276,31 +297,7 @@ class SearchViewModel @Inject constructor(
         }
     }
 
-    private fun performSearch(refreshOnly: Boolean = false) = viewModelScope.launch {
-        if (refreshOnly) {
-            _uiState.update { it.copy(isRefreshing = true) }
-        } else {
-            _uiState.update { it.copy(isLoading = true, isInternetError = false) }
-        }
-
-        if (!connectivityChecker.isInternetAvailable()) {
-            Log.d(TAG, "Internet connection not available")
-
-            _uiState.update {
-                it.copy(
-                    isLoading = false,
-                    isRefreshing = false,
-                    isInternetError = true,
-                )
-            }
-            return@launch
-        }
-
-        if (!refreshOnly) {
-            val defaultSortOptions = settingsRepository.defaultSortOptions.first()
-            _uiState.update { it.copy(sortOptions = defaultSortOptions) }
-        }
-
+    private suspend fun search() {
         searchTorrentsUseCase(query = searchQuery, category = searchCategory)
             .onStart { onSearchStart() }
             .onCompletion { onSearchCompletion(cause = it) }
@@ -322,14 +319,10 @@ class SearchViewModel @Inject constructor(
     /** Invoked when search results are received. */
     private fun onSearchResultsReceived(searchResults: SearchResults) {
         Log.d(TAG, "onSearchResultsReceived")
-
-        val searchFailures = searchResults.failures
-        val searchResults = searchResults.successes
-
-        Log.i(TAG, "Received ${searchResults.size} results")
+        Log.i(TAG, "Received ${searchResults.successes.size} results")
 
         val searchProvidersFilterOption = createSearchProvidersFilterOption(
-            searchResults = searchResults,
+            searchResults = searchResults.successes,
         )
         _uiState.update {
             // It doesn't make sense to create search provider filter option
@@ -341,9 +334,8 @@ class SearchViewModel @Inject constructor(
             }
 
             it.copy(
-                filterOptions = filterOptions,
                 searchResults = searchResults,
-                searchFailures = searchFailures,
+                filterOptions = filterOptions,
             )
         }
     }
@@ -363,7 +355,7 @@ class SearchViewModel @Inject constructor(
 
     /** Invoked when search completes or cancelled. */
     private fun onSearchCompletion(cause: Throwable?) {
-        Log.i(TAG, "Search completed")
+        Log.i(TAG, "Search completed", cause)
 
         _uiState.update { it.copy(isSearching = false) }
     }
