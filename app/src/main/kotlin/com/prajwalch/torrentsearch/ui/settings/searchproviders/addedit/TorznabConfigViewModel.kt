@@ -126,7 +126,7 @@ class TorznabConfigViewModel @Inject constructor(
 
         viewModelScope.launch {
             if (searchProviderId == null) {
-                addConfig()
+                createConfig()
             } else {
                 updateConfig(searchProviderId)
             }
@@ -137,7 +137,7 @@ class TorznabConfigViewModel @Inject constructor(
 
     private fun isUrlValid(): Boolean = Patterns.WEB_URL.matcher(_uiState.value.url).matches()
 
-    private suspend fun addConfig() {
+    private suspend fun createConfig() {
         searchProvidersRepository.createTorznabConfig(
             searchProviderName = _uiState.value.searchProviderName,
             url = _uiState.value.url,
