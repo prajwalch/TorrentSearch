@@ -43,8 +43,11 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 
 import java.util.UUID
-import javax.inject.Inject
 
+import javax.inject.Inject
+import javax.inject.Singleton
+
+@Singleton
 class SearchProvidersRepository @Inject constructor(
     private val torznabConfigDao: TorznabConfigDao,
 ) {
