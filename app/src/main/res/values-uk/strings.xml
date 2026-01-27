@@ -134,7 +134,6 @@
     <string name="search_action_view_errors">Переглянути помилки</string>
     <string name="search_action_settings">Налаштування</string>
     <string name="search_errors_bottom_sheet_title">Невдалі пошукові системи</string>
-    <string name="search_button_export_error_logs">Експорт журналів помилок у файл</string>
     <string name="search_unexpected_error">Неочікувана помилка</string>
     <string name="torznab_conn_check_result_conn_established">З\'єднання встановлено</string>
     <string name="torznab_conn_check_result_conn_failed">Помилка з’єднання. Перевірте URL-адресу та стан сервера.</string>

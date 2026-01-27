@@ -28,9 +28,6 @@ object TorrentSearchConstants {
     /** Name of a crash logs file. */
     const val CRASH_LOGS_FILE_NAME = "torrentsearch_crash_logs.txt"
 
-    /** Name of a search errors logs file. */
-    const val SEARCH_ERROR_LOGS_FILE_NAME = "torrentsearch_search_error_logs.txt"
-
     /** Name a application main logs file. */
     const val APP_LOGS_FILE_NAME = "torrentsearch_logs.txt"
 }

@@ -1,7 +1,5 @@
 package com.prajwalch.torrentsearch.ui.search
 
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.StringRes
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
@@ -10,6 +8,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -57,7 +56,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalClipboard
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -66,7 +64,6 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 
 import com.prajwalch.torrentsearch.R
-import com.prajwalch.torrentsearch.constants.TorrentSearchConstants
 import com.prajwalch.torrentsearch.domain.models.Category
 import com.prajwalch.torrentsearch.domain.models.MagnetUri
 import com.prajwalch.torrentsearch.domain.models.SearchException
@@ -74,6 +71,7 @@ import com.prajwalch.torrentsearch.domain.models.Torrent
 import com.prajwalch.torrentsearch.extensions.copyText
 import com.prajwalch.torrentsearch.ui.components.AnimatedScrollToTopFAB
 import com.prajwalch.torrentsearch.ui.components.ArrowBackIconButton
+import com.prajwalch.torrentsearch.ui.components.BottomInfo
 import com.prajwalch.torrentsearch.ui.components.CollapsibleSearchBar
 import com.prajwalch.torrentsearch.ui.components.EmptyPlaceholder
 import com.prajwalch.torrentsearch.ui.components.LazyColumnWithScrollbar
@@ -169,25 +167,11 @@ fun SearchScreen(
         )
     }
 
-    val contentResolver = LocalContext.current.contentResolver
-    val errorLogsExportLocationChooser = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.CreateDocument(TorrentSearchConstants.LOGS_FILE_TYPE),
-    ) { fileUri ->
-        fileUri
-            ?.let(contentResolver::openOutputStream)
-            ?.let(viewModel::exportSearchFailures)
-    }
-
     var showSearchFailures by rememberSaveable { mutableStateOf(false) }
     if (showSearchFailures) {
         SearchFailuresBottomSheet(
             onDismiss = { showSearchFailures = false },
             failures = uiState.searchResults.failures,
-            onExportErrorLogsToFile = {
-                errorLogsExportLocationChooser.launch(
-                    TorrentSearchConstants.SEARCH_ERROR_LOGS_FILE_NAME
-                )
-            },
         )
     }
 
@@ -568,7 +552,6 @@ private fun SearchProvidersChipsRow(
 private fun SearchFailuresBottomSheet(
     onDismiss: () -> Unit,
     failures: ImmutableList<SearchException>,
-    onExportErrorLogsToFile: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val bottomSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
@@ -579,33 +562,21 @@ private fun SearchFailuresBottomSheet(
         sheetState = bottomSheetState,
     ) {
         Column(modifier = Modifier.fillMaxSize()) {
-            Column {
-                Text(
-                    modifier = Modifier.padding(horizontal = MaterialTheme.spaces.large),
-                    text = stringResource(R.string.search_errors_bottom_sheet_title),
-                    style = MaterialTheme.typography.headlineSmall,
-                )
-                Spacer(modifier = Modifier.height(MaterialTheme.spaces.small))
-                HorizontalDivider()
-            }
-
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(all = MaterialTheme.spaces.large),
-                verticalArrangement = Arrangement.SpaceBetween,
-            ) {
-                SearchExceptionList(
-                    modifier = Modifier.weight(1f),
-                    exceptions = failures,
-                )
-
-                Button(
-                    modifier = Modifier.fillMaxWidth(),
-                    onClick = onExportErrorLogsToFile,
-                ) {
-                    Text(text = stringResource(R.string.search_button_export_error_logs))
-                }
+            Text(
+                modifier = Modifier.padding(horizontal = MaterialTheme.spaces.large),
+                text = stringResource(R.string.search_errors_bottom_sheet_title),
+                style = MaterialTheme.typography.headlineSmall,
+            )
+            Spacer(modifier = Modifier.height(MaterialTheme.spaces.small))
+            HorizontalDivider()
+            SearchExceptionList(
+                modifier = Modifier.weight(1f),
+                exceptions = failures,
+                contentPadding = PaddingValues(MaterialTheme.spaces.large),
+            )
+            HorizontalDivider()
+            BottomInfo(modifier = Modifier.padding(MaterialTheme.spaces.large)) {
+                Text(text = stringResource(R.string.search_info_troubleshoot_help))
             }
         }
     }
@@ -637,7 +608,6 @@ private fun SearchFailuresBottomSheetPreview() {
         SearchFailuresBottomSheet(
             onDismiss = {},
             failures = failures,
-            onExportErrorLogsToFile = {},
         )
     }
 }
@@ -646,12 +616,14 @@ private fun SearchFailuresBottomSheetPreview() {
 private fun SearchExceptionList(
     exceptions: ImmutableList<SearchException>,
     modifier: Modifier = Modifier,
+    contentPadding: PaddingValues = PaddingValues(0.dp),
 ) {
     LazyColumn(
         modifier = modifier,
         verticalArrangement = Arrangement.spacedBy(
             space = MaterialTheme.spaces.small,
         ),
+        contentPadding = contentPadding,
     ) {
         items(items = exceptions, key = { it.searchProviderUrl }) {
             SearchExceptionListItem(

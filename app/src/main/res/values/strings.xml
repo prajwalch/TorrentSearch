@@ -85,8 +85,10 @@
     <string name="search_no_results_message">No results found</string>
     <string name="search_results_count_format">%1$s results for \'%2$s\' (%3$s)</string>
     <string name="search_errors_bottom_sheet_title">Failed search providers</string>
-    <string name="search_button_export_error_logs">Export error logs to file</string>
     <string name="search_unexpected_error">Unexpected error</string>
+    <string name="search_info_troubleshoot_help">
+        To help troubleshoot issues, export the logs from the settings screen and create a Github issue with the logs attached.
+    </string>
 
     <string name="bookmarks_screen_title">Bookmarks</string>
     <plurals name="bookmarks_count_format">
