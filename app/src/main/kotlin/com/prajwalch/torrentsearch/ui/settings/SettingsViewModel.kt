@@ -13,10 +13,10 @@ import com.prajwalch.torrentsearch.domain.models.Category
 import com.prajwalch.torrentsearch.domain.models.DarkTheme
 import com.prajwalch.torrentsearch.domain.models.MaxNumResults
 import com.prajwalch.torrentsearch.domain.models.SortOptions
+import com.prajwalch.torrentsearch.utils.LogsUtils
 
 import dagger.hilt.android.lifecycle.HiltViewModel
 
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.WhileSubscribed
@@ -27,7 +27,6 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 import java.io.OutputStream
-import java.io.PrintWriter
 
 import javax.inject.Inject
 import kotlin.time.Duration.Companion.seconds
@@ -242,14 +241,8 @@ class SettingsViewModel @Inject constructor(
     }
 
     fun exportLogs(outputStream: OutputStream) {
-        viewModelScope.launch(Dispatchers.IO) {
-            val printWriter = PrintWriter(outputStream.bufferedWriter(Charsets.UTF_8))
-
-            val logcatProcess = Runtime.getRuntime().exec("logcat -d")
-            val logsBufferedReader = logcatProcess.inputStream.bufferedReader(Charsets.UTF_8)
-
-            printWriter.use { logsBufferedReader.forEachLine(it::println) }
-            logcatProcess.destroy()
+        viewModelScope.launch {
+            LogsUtils.exportLogsToOutputStream(outputStream = outputStream)
         }
     }
 }
