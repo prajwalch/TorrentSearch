@@ -121,4 +121,33 @@
     <string name="settings_enable_dynamic_theme_summary">تولید پس زمینه برنامه بر اساس پس زمینه دستگاه</string>
     <string name="settings_pure_black_summary">‌حالت پس زمینه AMOLED را فعال می کند</string>
     <string name="settings_save_search_history_summary">جستجو های اخیر را به صورت محلی برای دسترسی سریع و پیشنهادات ذخیره می‌ کند</string>
+    <string name="crash_screen_title"></string>
+    <string name="crash_logs_export_success_message"></string>
+    <string name="torznab_conn_check_result_unexpected_error"></string>
+    <string name="crash_button_restart_application"></string>
+    <string name="torrent_client_gopeed" translatable="false"></string>
+    <string name="bookmarks_action_export"></string>
+    <string name="search_providers_button_check_connection"></string>
+    <string name="bookmarks_action_settings"></string>
+    <string name="settings_export_logs_to_file"></string>
+    <string name="torznab" translatable="false"></string>
+    <string name="settings_export_logs_to_file_summary"></string>
+    <string name="search_providers_button_save"></string>
+    <string name="torznab_conn_check_result_conn_established"></string>
+    <string name="torznab_conn_check_result_invalid_api_key"></string>
+    <string name="crash_button_export_crash_logs"></string>
+    <string name="torznab_conn_check_result_conn_failed"></string>
+    <string name="search_action_view_errors"></string>
+    <string name="search_action_settings"></string>
+    <string name="torrent_client_torrserve" translatable="false"></string>
+    <string name="torrent_client_libretorrent" translatable="false"></string>
+    <string name="torrent_client_aria2" translatable="false"></string>
+    <string name="search_unexpected_error"></string>
+    <string name="crash_screen_subtitle"></string>
+    <string name="bookmarks_action_import"></string>
+    <string name="torznab_conn_check_result_app_error"></string>
+    <string name="torrent_client_pikatorrent" translatable="false"></string>
+    <string name="app_name" translatable="false"></string>
+    <string name="search_errors_bottom_sheet_title"></string>
+    <string name="torznab_conn_check_result_unexpected_response"></string>
 </resources>
