@@ -151,4 +151,5 @@
     <string name="torrent_client_pikatorrent" translatable="false"></string>
     <string name="search_errors_bottom_sheet_title"></string>
     <string name="torznab_conn_check_result_unexpected_response"></string>
+    <string name="app_name" translatable="false"></string>
 </resources>
