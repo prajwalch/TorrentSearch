@@ -14,7 +14,7 @@ import org.jsoup.nodes.Element
 
 class Dmhy : SearchProvider {
     override val info = SearchProviderInfo(
-        id = "dmhy",
+        id = "Dmhy",
         name = "dmhy",
         url = "https://share.dmhy.org",
         specializedCategory = Category.All,
