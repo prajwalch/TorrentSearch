@@ -147,11 +147,4 @@
     <string name="torznab_conn_check_result_app_error">خطأ في التطبيق (%1$d)</string>
     <string name="search_errors_bottom_sheet_title">فشل في موفر البحث</string>
     <string name="torznab_conn_check_result_unexpected_response">استجابة غير متوقعة (%1$d)</string>
-    <string name="torrent_client_gopeed" translatable="false"></string>
-    <string name="torznab" translatable="false"></string>
-    <string name="torrent_client_torrserve" translatable="false"></string>
-    <string name="torrent_client_libretorrent" translatable="false"></string>
-    <string name="torrent_client_aria2" translatable="false"></string>
-    <string name="torrent_client_pikatorrent" translatable="false"></string>
-    <string name="app_name" translatable="false"></string>
 </resources>
