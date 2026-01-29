@@ -151,4 +151,5 @@
     <string name="search_button_try_again"></string>
     <string name="search_providers_learn_how_to_add"></string>
     <string name="torznab_conn_check_result_unexpected_response"></string>
+    <string name="app_name" translatable="false"></string>
 </resources>
