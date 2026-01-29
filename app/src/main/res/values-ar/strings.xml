@@ -125,4 +125,26 @@
     <string name="settings_save_search_history_summary">يخزن عمليات البحث الأخيرة محليًا للوصول السريع والاقتراحات</string>
     <string name="main_cannot_search_using_url_message">لا يمكن البحث باستخدام عنوان URL</string>
     <string name="main_cannot_search_blank_query_message">لا يمكن البحث باستخدام استعلام فارغ</string>
+    <string name="crash_screen_title">أُووبس!</string>
+    <string name="crash_logs_export_success_message">تم تصدير السجلات إلى ملف</string>
+    <string name="torznab_conn_check_result_unexpected_error">خطأ غير متوقع</string>
+    <string name="crash_button_restart_application">أعد تشغيل التطبيق</string>
+    <string name="bookmarks_action_export">تصدير إلى ملف</string>
+    <string name="search_providers_button_check_connection">تحقق من الاتصال</string>
+    <string name="bookmarks_action_settings">إعدادات</string>
+    <string name="settings_export_logs_to_file">تصدير السجلات إلى ملف</string>
+    <string name="settings_export_logs_to_file_summary">يقوم بإنشاء ملف يحتوي على أنشطة التطبيق التي يمكن أن تساعد في استكشاف المشكلات وإصلاحها</string>
+    <string name="search_providers_button_save">حفظ</string>
+    <string name="torznab_conn_check_result_conn_established">تم إنشاء الاتصال</string>
+    <string name="torznab_conn_check_result_invalid_api_key">مفتاح API غير صالح</string>
+    <string name="crash_button_export_crash_logs">تصدير سجلات الأعطال إلى ملف</string>
+    <string name="torznab_conn_check_result_conn_failed">فشل الاتصال. يرجى التحقق من عنوان URL وحالة الخادم.</string>
+    <string name="search_action_view_errors">عرض الأخطاء</string>
+    <string name="search_action_settings">الإعدادات</string>
+    <string name="search_unexpected_error">خطأ غير متوقع</string>
+    <string name="crash_screen_subtitle">حدث خطأ غير متوقع في %1$s. يرجى تصدير سجلات النظام وإنشاء مشكلة على GitHub مع إرفاق السجلات.</string>
+    <string name="bookmarks_action_import">الاستيراد من ملف</string>
+    <string name="torznab_conn_check_result_app_error">خطأ في التطبيق (%1$d)</string>
+    <string name="search_errors_bottom_sheet_title">فشل في موفر البحث</string>
+    <string name="torznab_conn_check_result_unexpected_response">استجابة غير متوقعة (%1$d)</string>
 </resources>
