@@ -94,6 +94,8 @@ class SearchProvidersRepository @Inject constructor(
             torznabSearchProvidersInfoFlow
         ) { builtinInfos, torznabInfos ->
             builtinInfos + torznabInfos
+        }.map { infos ->
+            infos.sortedBy { it.name }
         }
     }
 
