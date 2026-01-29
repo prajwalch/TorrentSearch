@@ -146,4 +146,10 @@
     <string name="app_name" translatable="false"></string>
     <string name="settings_export_logs_to_file">Експорт журналів у файл</string>
     <string name="settings_export_logs_to_file_summary">Генерує файл з діями програми, які можуть допомогти у вирішенні проблем</string>
+    <string name="torrent_client_gopeed" translatable="false"></string>
+    <string name="torznab" translatable="false"></string>
+    <string name="torrent_client_torrserve" translatable="false"></string>
+    <string name="torrent_client_libretorrent" translatable="false"></string>
+    <string name="torrent_client_aria2" translatable="false"></string>
+    <string name="torrent_client_pikatorrent" translatable="false"></string>
 </resources>
