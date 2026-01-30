@@ -1,7 +1,5 @@
 package com.prajwalch.torrentsearch.domain.models
 
-import androidx.annotation.Keep
-
 /** Represents a magnet URI. */
 typealias MagnetUri = String
 
@@ -45,7 +43,6 @@ data class Torrent(
 }
 
 /** Search category. */
-@Keep
 enum class Category(val isNSFW: Boolean = false) {
     All,
     Anime,
