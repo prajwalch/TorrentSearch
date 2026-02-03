@@ -121,4 +121,27 @@
     <string name="settings_enable_dynamic_theme_summary">تولید پس زمینه برنامه بر اساس پس زمینه دستگاه</string>
     <string name="settings_pure_black_summary">‌حالت پس زمینه AMOLED را فعال می کند</string>
     <string name="settings_save_search_history_summary">جستجو های اخیر را به صورت محلی برای دسترسی سریع و پیشنهادات ذخیره می‌ کند</string>
+    <string name="torznab_conn_check_result_conn_established">اتصال برقرار شد</string>
+    <string name="torznab_conn_check_result_conn_failed">اتصال برقرار نشد لینک و وضعیت سرور را بررسی کنید</string>
+    <string name="torznab_conn_check_result_invalid_api_key">کلید API نامعتبر است</string>
+    <string name="torznab_conn_check_result_app_error">‏خطای برنامه (%1$d)</string>
+    <string name="torznab_conn_check_result_unexpected_response">پاسخ غیرمنتظره (%1$d)</string>
+    <string name="torznab_conn_check_result_unexpected_error">خطای غیرمنتظره</string>
+    <string name="crash_screen_title">اوه</string>
+    <string name="crash_screen_subtitle">%1$s با یک خطای غیرمنتظره مواجه شد لطفا گزارش‌ ها را استخراج کنید و یک مشکل در گیت‌ هاب با گزارش‌ های پیوست‌ شده ایجاد کنید</string>
+    <string name="crash_button_export_crash_logs">ذخیره گزارش‌ های خرابی در یک فایل</string>
+    <string name="crash_button_restart_application">برنامه را ببندید و سپس دوباره باز کنید</string>
+    <string name="crash_logs_export_success_message">گزارش ها در یک فایل ذخیره می شوند</string>
+    <string name="search_action_view_errors">مشاهده خطا ها</string>
+    <string name="search_action_settings">تنظیمات</string>
+    <string name="search_errors_bottom_sheet_title">ارائه دهنده جستجو ناموفق بود</string>
+    <string name="search_unexpected_error">خطای غیرمنتظره</string>
+    <string name="search_info_troubleshoot_help">برای کمک به عیب‌ یابی مشکلات گزارش‌ ها را از صفحه تنظیمات استخراج کنید و یک مشکل گیت‌ هاب با گزارش‌ های پیوست شده ایجاد کنید</string>
+    <string name="bookmarks_action_import">وارد کردن از فایل</string>
+    <string name="bookmarks_action_export">استخراج در فایل</string>
+    <string name="bookmarks_action_settings">تنظیمات</string>
+    <string name="search_providers_button_save">ذخیره</string>
+    <string name="search_providers_button_check_connection">اتصال خود را بر رسی کنید</string>
+    <string name="settings_export_logs_to_file">استخراج گزارش ها در فایل</string>
+    <string name="settings_export_logs_to_file_summary">یک فایل شامل فعالیت‌ های برنامه ایجاد می‌ کند که می‌ تواند به عیب‌ یابی مشکلات کمک کند</string>
 </resources>
