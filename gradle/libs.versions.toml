@@ -1,7 +1,7 @@
 [versions]
-activityCompose = "1.12.2"
+activityCompose = "1.12.3"
 agp = "8.13.2"
-composeBom = "2026.01.00"
+composeBom = "2026.01.01"
 coreKtx = "1.17.0"
 coreSplashscreen = "1.2.0"
 datastorePreferences = "1.2.0"
@@ -18,7 +18,7 @@ ksp = "2.3.4"
 ktor = "3.4.0"
 lazycolumnscrollbar = "2.2.0"
 lifecycleRuntimeKtx = "2.10.0"
-navigationCompose = "2.9.6"
+navigationCompose = "2.9.7"
 room = "2.8.4"
 
 [libraries]
