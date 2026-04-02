@@ -2,12 +2,13 @@ package com.prajwalch.torrentsearch.domain.model
 
 import com.prajwalch.torrentsearch.util.TorrentUtils
 
+import java.util.UUID
+
 /** Represents a magnet URI. */
 typealias MagnetUri = String
 
 /** Metadata information of a torrent */
 data class Torrent(
-    val id: Long = 0,
     /** Name of the torrent. */
     val name: String,
     /** Torrent size (in pretty format). */
@@ -36,6 +37,14 @@ data class Torrent(
      */
     val fileDownloadLink: String? = null,
 ) {
+    /**
+     * Stable unique identifier for this torrent, generated from the info hash.
+     * Used for tracking viewed state and bookmarks.
+     */
+    val id: String by lazy {
+        UUID.nameUUIDFromBytes(infoHash().toByteArray()).toString()
+    }
+
     /** Returns `true` if this torrent is NSFW (Not Safe For Work). */
     fun isNSFW() = category?.isNSFW ?: true
 

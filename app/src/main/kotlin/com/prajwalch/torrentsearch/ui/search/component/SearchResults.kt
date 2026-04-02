@@ -33,6 +33,7 @@ fun SearchResults(
     onRefresh: () -> Unit,
     modifier: Modifier = Modifier,
     lazyListState: LazyListState = rememberLazyListState(),
+    viewedIds: Set<String> = emptySet(),
 ) {
     PullToRefreshBox(
         modifier = modifier,
@@ -65,6 +66,7 @@ fun SearchResults(
                     category = it.category,
                     providerName = it.providerName,
                     isNSFW = it.isNSFW(),
+                    isViewed = it.id in viewedIds,
                 )
                 HorizontalDivider()
             }

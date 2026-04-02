@@ -9,6 +9,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 
@@ -27,9 +28,12 @@ fun TorrentListItem(
     providerName: String,
     isNSFW: Boolean,
     modifier: Modifier = Modifier,
+    isViewed: Boolean = false,
 ) {
+    val contentAlpha = if (isViewed) 0.6f else 1f
+
     ListItem(
-        modifier = modifier,
+        modifier = modifier.alpha(contentAlpha),
         overlineContent = { Text(text = uploadDate) },
         headlineContent = {
             Text(

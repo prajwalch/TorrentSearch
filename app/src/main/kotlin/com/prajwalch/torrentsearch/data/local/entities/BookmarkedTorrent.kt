@@ -17,8 +17,8 @@ import kotlinx.serialization.Serializable
 )
 @Serializable
 data class BookmarkedTorrent(
-    @PrimaryKey(autoGenerate = true)
-    val id: Long = 0,
+    @PrimaryKey
+    val id: String,
     val name: String,
     val size: String,
     val seeders: Int,
@@ -34,7 +34,6 @@ data class BookmarkedTorrent(
 
 fun BookmarkedTorrent.toDomain() =
     Torrent(
-        id = this.id,
         name = this.name,
         size = this.size,
         seeders = this.seeders.toUInt(),

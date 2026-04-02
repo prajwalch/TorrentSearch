@@ -7,6 +7,7 @@ import androidx.lifecycle.viewModelScope
 import com.prajwalch.torrentsearch.data.repository.BookmarksRepository
 import com.prajwalch.torrentsearch.data.repository.SearchHistoryRepository
 import com.prajwalch.torrentsearch.data.repository.SettingsRepository
+import com.prajwalch.torrentsearch.data.repository.ViewedTorrentsRepository
 import com.prajwalch.torrentsearch.domain.SearchTorrentsUseCase
 import com.prajwalch.torrentsearch.domain.model.Category
 import com.prajwalch.torrentsearch.domain.model.SearchResults
@@ -85,6 +86,7 @@ class SearchViewModel @Inject constructor(
     private val bookmarksRepository: BookmarksRepository,
     private val searchHistoryRepository: SearchHistoryRepository,
     private val settingsRepository: SettingsRepository,
+    private val viewedTorrentsRepository: ViewedTorrentsRepository,
     private val connectivityChecker: ConnectivityChecker,
     private val torrentFileDownloader: TorrentFileDownloader,
     savedStateHandle: SavedStateHandle,
@@ -131,6 +133,17 @@ class SearchViewModel @Inject constructor(
      */
     val torrentFileDownloadEvents: Flow<TorrentFileDownloadEvent> =
         torrentFileDownloader.events
+
+    /**
+     * Set of viewed torrent IDs for efficient lookup.
+     */
+    val viewedIds: StateFlow<Set<String>> = viewedTorrentsRepository
+        .getAllViewedIds()
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5.seconds),
+            initialValue = emptySet()
+        )
 
     /**
      * The primary, read-only UI state.
@@ -272,6 +285,12 @@ class SearchViewModel @Inject constructor(
     fun bookmarkTorrent(torrent: Torrent) {
         viewModelScope.launch {
             bookmarksRepository.bookmarkTorrent(torrent = torrent)
+        }
+    }
+
+    fun markAsViewed(torrent: Torrent) {
+        viewModelScope.launch {
+            viewedTorrentsRepository.markAsViewed(torrent.id)
         }
     }
 

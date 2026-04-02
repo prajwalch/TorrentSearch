@@ -6,6 +6,7 @@ import com.prajwalch.torrentsearch.data.local.TorrentSearchDatabase
 import com.prajwalch.torrentsearch.data.local.dao.BookmarkedTorrentDao
 import com.prajwalch.torrentsearch.data.local.dao.SearchHistoryDao
 import com.prajwalch.torrentsearch.data.local.dao.TorznabConfigDao
+import com.prajwalch.torrentsearch.data.local.dao.ViewedTorrentDao
 
 import dagger.Module
 import dagger.Provides
@@ -34,4 +35,8 @@ object DatabaseModule {
     @Provides
     fun provideTorznabConfigDao(database: TorrentSearchDatabase): TorznabConfigDao =
         database.torznabConfigDao()
+
+    @Provides
+    fun provideViewedTorrentDao(database: TorrentSearchDatabase): ViewedTorrentDao =
+        database.viewedTorrentDao()
 }
