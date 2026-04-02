@@ -3,6 +3,8 @@ package com.prajwalch.torrentsearch.providers
 import com.prajwalch.torrentsearch.domain.model.Category
 import com.prajwalch.torrentsearch.domain.model.InfoHashOrMagnetUri
 import com.prajwalch.torrentsearch.domain.model.Torrent
+import com.prajwalch.torrentsearch.domain.model.TorrentDetails
+import com.prajwalch.torrentsearch.network.HttpClient
 import com.prajwalch.torrentsearch.util.DateUtils
 
 import kotlinx.coroutines.Dispatchers
@@ -21,6 +23,12 @@ class Nyaa : SearchProvider {
         enabledByDefault = true,
     )
 
+    private val resultsPageParser = NyaaResultsPageParser(
+        baseUrl = info.url,
+        providerName = info.name,
+        specializedCategory = info.specializedCategory,
+    )
+
     override suspend fun search(query: String, context: SearchContext): List<Torrent> {
         val requestUrl = buildString {
             append("${info.url}/")
@@ -32,19 +40,26 @@ class Nyaa : SearchProvider {
         }
 
         val responseHtml = context.httpClient.get(url = requestUrl)
-        val torrents = withContext(Dispatchers.Default) {
-            parseResultPage(html = responseHtml)
-        }
-
-        return torrents.orEmpty()
+        return resultsPageParser.parse(responseHtml).orEmpty()
     }
 
+    override suspend fun getDetails(detailsPageUrl: String): TorrentDetails? {
+        val responseHtml = HttpClient.get(detailsPageUrl)
+        return NyaaDetailsPageParser.parse(html = responseHtml, pageUrl = detailsPageUrl)
+    }
+}
+
+private class NyaaResultsPageParser(
+    private val baseUrl: String,
+    private val providerName: String,
+    private val specializedCategory: Category,
+) {
     /**
      * Parses the result page and returns all the extracted torrents, otherwise
      * returns `null` if the page has unexpected layout.
      */
-    private fun parseResultPage(html: String): List<Torrent>? {
-        return Jsoup
+    suspend fun parse(html: String): List<Torrent>? = withContext(Dispatchers.Default) {
+        Jsoup
             .parse(html)
             .selectFirst("table.torrent-list > tbody")
             ?.children()
@@ -63,13 +78,13 @@ class Nyaa : SearchProvider {
         val name = anchorElement.ownText()
 
         val descriptionPagePath = anchorElement.attr("href")
-        val descriptionPageUrl = "${info.url}$descriptionPagePath"
+        val descriptionPageUrl = "$baseUrl$descriptionPagePath"
 
         val downloadLinks = tr.selectFirst("td:nth-child(3)") ?: return null
         val fileDownloadLink = downloadLinks
             .selectFirst("a:nth-child(1)")
             ?.attr("href")
-            .let { "${info.url}$it" }
+            .let { "$baseUrl$it" }
         val magnetUri = downloadLinks
             .selectFirst("a:nth-child(2)")
             ?.attr("href")
@@ -88,12 +103,58 @@ class Nyaa : SearchProvider {
             size = size,
             seeders = seeders.toUIntOrNull() ?: 0u,
             peers = peers.toUIntOrNull() ?: 0u,
-            providerName = info.name,
+            providerName = providerName,
             uploadDate = uploadDate,
-            category = info.specializedCategory,
+            category = specializedCategory,
             descriptionPageUrl = descriptionPageUrl,
             infoHashOrMagnetUri = InfoHashOrMagnetUri.MagnetUri(magnetUri),
             fileDownloadLink = fileDownloadLink,
         )
     }
+}
+
+private object NyaaDetailsPageParser {
+    private const val TORRENT_NAME = "body > div > div:nth-child(1) > div.panel-heading > h3"
+    private const val SIZE =
+        "body > div > div:nth-child(1) > div.panel-body > div:nth-child(4) > div:nth-child(2)"
+    private const val SEEDERS =
+        "body > div > div:nth-child(1) > div.panel-body > div:nth-child(2) > div:nth-child(4)"
+    private const val PEERS =
+        "body > div > div:nth-child(1) > div.panel-body > div:nth-child(2) > div:nth-child(4)"
+    private const val UPLOAD_DATE =
+        "body > div > div:nth-child(1) > div.panel-body > div:nth-child(1) > div:nth-child(4)"
+    private const val UPLOADER =
+        "body > div > div:nth-child(1) > div.panel-body > div:nth-child(2) > div:nth-child(2)"
+    private const val DESCRIPTION = "#torrent-description"
+    private const val MAGNET_URI = """a[href^="magnet:"]"""
+    private const val FILE_DOWNLOAD_LINK = """a[href^="/download"]"""
+
+    suspend fun parse(html: String, pageUrl: String): TorrentDetails? =
+        withContext(Dispatchers.Default) {
+            val html = Jsoup.parse(html, pageUrl)
+
+            val name = html.selectFirst(TORRENT_NAME)?.ownText() ?: return@withContext null
+            val magnetUri = html.selectFirst(MAGNET_URI)?.attr("href") ?: return@withContext null
+
+            val size = html.selectFirst(SIZE)?.ownText() ?: "0 KB"
+            val seeders = html.selectFirst(SEEDERS)?.text()?.trim()?.toUIntOrNull() ?: 1U
+            val peers = html.selectFirst(PEERS)?.text()?.trim()?.toUIntOrNull() ?: 1U
+            val uploadDate = html.selectFirst(UPLOAD_DATE)?.ownText() ?: "0 min ago"
+            val uploader = html.selectFirst(UPLOADER)?.text()?.trim()
+            val description = html.selectFirst(DESCRIPTION)?.html()
+            val fileDownloadLink = html.selectFirst(FILE_DOWNLOAD_LINK)?.attr("abs:href")
+
+            TorrentDetails(
+                name = name,
+                size = size,
+                seeders = seeders,
+                peers = peers,
+                uploadDate = uploadDate,
+                category = "Anime",
+                uploader = uploader,
+                description = description,
+                infoHashOrMagnetUri = InfoHashOrMagnetUri.MagnetUri(magnetUri),
+                fileDownloadLink = fileDownloadLink,
+            )
+        }
 }
