@@ -3,6 +3,8 @@ package com.prajwalch.torrentsearch.providers
 import com.prajwalch.torrentsearch.domain.model.Category
 import com.prajwalch.torrentsearch.domain.model.InfoHashOrMagnetUri
 import com.prajwalch.torrentsearch.domain.model.Torrent
+import com.prajwalch.torrentsearch.domain.model.TorrentDetails
+import com.prajwalch.torrentsearch.network.HttpClient
 import com.prajwalch.torrentsearch.util.DateUtils
 
 import kotlinx.coroutines.Dispatchers
@@ -10,6 +12,7 @@ import kotlinx.coroutines.withContext
 
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Element
+import org.jsoup.nodes.TextNode
 
 class AnimeTosho : SearchProvider {
     override val info = SearchProviderInfo(
@@ -21,18 +24,30 @@ class AnimeTosho : SearchProvider {
         enabledByDefault = true,
     )
 
+    private val resultsPageParser = AnimeToshoResultsPageParser(
+//        baseUrl = info.url,
+        providerName = info.name,
+    )
+
     override suspend fun search(query: String, context: SearchContext): List<Torrent> {
         val requestUrl = "${info.url}/search?q=$query"
         val responseHtml = context.httpClient.get(url = requestUrl)
 
-        return withContext(Dispatchers.Default) {
-            parseHtml(html = responseHtml)
-        }
+        return resultsPageParser.parse(responseHtml)
     }
 
-    /** Parses the entire result HTML and returns all the extracted torrents. */
-    private fun parseHtml(html: String): List<Torrent> {
-        return Jsoup
+    override suspend fun getDetails(detailsPageUrl: String): TorrentDetails? {
+        val responseHtml = HttpClient.get(detailsPageUrl)
+        return AnimeToshoDetailsPageParser.parse(html = responseHtml, baseUrl = detailsPageUrl)
+    }
+}
+
+private class AnimeToshoResultsPageParser(
+//    private val baseUrl: String,
+    private val providerName: String,
+) {
+    suspend fun parse(html: String): List<Torrent> = withContext(Dispatchers.Default) {
+        Jsoup
             .parse(html)
             .select("div.home_list_entry")
             .mapNotNull { parseEntryDiv(it) }
@@ -58,9 +73,9 @@ class AnimeTosho : SearchProvider {
             size = size,
             seeders = seeders,
             peers = peers,
-            providerName = info.name,
+            providerName = providerName,
             uploadDate = uploadDate,
-            category = info.specializedCategory,
+            category = Category.Anime,
             descriptionPageUrl = descriptionPageUrl,
             infoHashOrMagnetUri = InfoHashOrMagnetUri.MagnetUri(magnetUri),
             fileDownloadLink = fileDownloadLink,
@@ -109,4 +124,51 @@ class AnimeTosho : SearchProvider {
         private const val DATE_PREFIX = "Date/time submitted: "
         private val STATS_REGEX = """\[(\d+)↑/(\d+)↓]""".toRegex()
     }
+}
+
+private object AnimeToshoDetailsPageParser {
+    private const val TORRENT_NAME = "#title"
+    private const val SIZE = """span[title^="File size:"]"""
+    private const val SEEDERS = """td[title="Seeders"][align="right"]"""
+    private const val PEERS = """td[title="Leechers"][align="right"]"""
+    private const val UPLOAD_DATE = "#content > table:nth-of-type(1) > tbody > tr:nth-child(2) > td"
+    private const val SCREENSHOT = "img.screenthumb"
+    private const val MAGNET_URI = """a[href^="magnet:"]"""
+    private const val FILE_DOWNLOAD_LINK = """a[href^="https://animetosho.org/storage/torrent"]"""
+
+    suspend fun parse(html: String, baseUrl: String): TorrentDetails? =
+        withContext(Dispatchers.Default) {
+            val html = Jsoup.parse(html, baseUrl)
+
+            val name = html.selectFirst(TORRENT_NAME)?.ownText() ?: return@withContext null
+            val magnetUriElem = html.selectFirst(MAGNET_URI) ?: return@withContext null
+            val magnetUri = magnetUriElem.attr("href").takeIf { it.isNotBlank() }
+                ?: return@withContext null
+
+            val unprocessedSize = html.selectFirst(SIZE)?.ownText()
+                ?: magnetUriElem.nextSibling()?.takeIf { it is TextNode }?.nodeValue()
+            val size = unprocessedSize
+                ?.trim()
+                ?.filterNot { it in setOf('(', ')', '|') }
+                ?.takeIf { it.isNotBlank() }
+                ?: "0 KB"
+
+            val seeders = html.selectFirst(SEEDERS)?.ownText()?.toUIntOrNull() ?: 1U
+            val peers = html.selectFirst(PEERS)?.ownText()?.toUIntOrNull() ?: 1U
+            val uploadDate = html.selectFirst(UPLOAD_DATE)?.ownText() ?: "0 min ago"
+            val screenshotUrls = html.select(SCREENSHOT)?.map { it.attr("src") }.orEmpty()
+            val fileDownloadLink = html.selectFirst(FILE_DOWNLOAD_LINK)?.attr("href")
+
+            TorrentDetails(
+                name = name,
+                size = size,
+                seeders = seeders,
+                peers = peers,
+                uploadDate = uploadDate,
+                category = Category.Anime.name,
+                screenshotUrls = screenshotUrls,
+                infoHashOrMagnetUri = InfoHashOrMagnetUri.MagnetUri(magnetUri),
+                fileDownloadLink = fileDownloadLink,
+            )
+        }
 }
