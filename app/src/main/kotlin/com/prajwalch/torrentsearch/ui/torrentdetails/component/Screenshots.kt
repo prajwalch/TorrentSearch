@@ -1,0 +1,59 @@
+package com.prajwalch.torrentsearch.ui.torrentdetails.component
+
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.unit.dp
+
+import coil3.compose.AsyncImage
+
+import com.prajwalch.torrentsearch.ui.theme.spaces
+
+@Composable
+fun ScreenShots(
+    urls: List<String>,
+    onScreenshotClick: (String) -> Unit,
+    modifier: Modifier = Modifier,
+    contentPadding: PaddingValues = PaddingValues(0.dp),
+) {
+    LazyRow(
+        modifier = modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.spacedBy(MaterialTheme.spaces.large),
+        verticalAlignment = Alignment.CenterVertically,
+        contentPadding = contentPadding,
+    ) {
+        items(items = urls, key = { it }) {
+            Screenshot(
+                modifier = Modifier
+                    .animateItem()
+                    .clickable { onScreenshotClick(it) },
+                url = it,
+            )
+        }
+    }
+}
+
+@Composable
+private fun Screenshot(url: String, modifier: Modifier = Modifier) {
+    AsyncImage(
+        modifier = Modifier
+            .clip(MaterialTheme.shapes.medium)
+            .height(180.dp)
+            .aspectRatio(16f / 9f)
+            .then(modifier),
+        model = url,
+        contentDescription = null,
+        contentScale = ContentScale.Crop,
+    )
+}

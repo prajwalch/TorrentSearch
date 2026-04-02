@@ -14,6 +14,7 @@ import androidx.navigation.compose.rememberNavController
 
 import com.prajwalch.torrentsearch.domain.model.Category
 import com.prajwalch.torrentsearch.domain.model.MagnetUri
+import com.prajwalch.torrentsearch.extension.childComposable
 import com.prajwalch.torrentsearch.extension.parentComposable
 import com.prajwalch.torrentsearch.ui.bookmarks.BookmarksScreen
 import com.prajwalch.torrentsearch.ui.component.TorrentClientNotFoundDialog
@@ -22,6 +23,7 @@ import com.prajwalch.torrentsearch.ui.search.SearchScreen
 import com.prajwalch.torrentsearch.ui.searchhistory.SearchHistoryScreen
 import com.prajwalch.torrentsearch.ui.settings.navigateToSettings
 import com.prajwalch.torrentsearch.ui.settings.settingsNavigation
+import com.prajwalch.torrentsearch.ui.torrentdetails.TorrentDetailsScreen
 
 import kotlinx.serialization.Serializable
 
@@ -32,6 +34,12 @@ private object Home
 private data class Search(
     val query: String,
     val category: Category = Category.All,
+)
+
+@Serializable
+private data class TorrentDetails(
+    val detailsPageUrl: String,
+    val providerName: String,
 )
 
 @Serializable
@@ -90,8 +98,18 @@ fun TorrentSearchApp(
                 onNavigateToSettings = { navController.navigateToSettings() },
                 onDownloadTorrent = { showTorrentClientNotFoundDialog = !onDownloadTorrent(it) },
                 onShareMagnetLink = onShareMagnetLink,
-                onOpenDescriptionPage = onOpenDescriptionPage,
+                onOpenDescriptionPage = { url, providerName ->
+                    val route = TorrentDetails(detailsPageUrl = url, providerName = providerName)
+                    navController.navigate(route)
+                },
                 onShareDescriptionPageUrl = onShareDescriptionPageUrl,
+            )
+        }
+
+        childComposable<TorrentDetails> {
+            TorrentDetailsScreen(
+                onNavigateBack = navController::navigateUp,
+                onShareDetailsPageLink = onShareDescriptionPageUrl,
             )
         }
 

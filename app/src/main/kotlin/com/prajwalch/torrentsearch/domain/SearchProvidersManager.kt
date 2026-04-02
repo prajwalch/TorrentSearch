@@ -73,6 +73,13 @@ class SearchProvidersManager @Inject constructor(
         .orEmpty()
 
     /**
+     * Attempts to fina a [SearchProvider] associated with the given name.
+     */
+    fun findSearchProviderByName(name: String): SearchProvider? {
+        return builtinProviders.find { it.info.name == name }
+    }
+
+    /**
      * Returns [SearchProviderInfo]s of all search providers.
      */
     fun getProviderInfos(): Flow<List<SearchProviderInfoItem>> =

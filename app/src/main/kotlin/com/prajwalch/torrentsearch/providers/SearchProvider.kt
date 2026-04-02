@@ -2,6 +2,7 @@ package com.prajwalch.torrentsearch.providers
 
 import com.prajwalch.torrentsearch.domain.model.Category
 import com.prajwalch.torrentsearch.domain.model.Torrent
+import com.prajwalch.torrentsearch.domain.model.TorrentDetails
 import com.prajwalch.torrentsearch.network.HttpClient
 
 /**
@@ -14,6 +15,8 @@ interface SearchProvider {
 
     /** Performs a search and returns the results. */
     suspend fun search(query: String, context: SearchContext): List<Torrent>
+
+    suspend fun getDetails(detailsPageUrl: String): TorrentDetails? = null
 }
 
 /** Search provider information. */

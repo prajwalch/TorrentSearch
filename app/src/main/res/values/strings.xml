@@ -100,6 +100,24 @@
         To help troubleshoot issues, export the logs from the settings screen and create a GitHub issue with the logs attached.
     </string>
 
+    <string name="torrent_details_action_share_link">Share page link</string>
+    <string name="torrent_details_error_unsupported_provider">Unsupported search provider</string>
+    <string name="torrent_details_error_not_found">Details not found on the provider</string>
+    <string name="torrent_details_title_info">Torrent info</string>
+    <string name="torrent_details_title_description">Description</string>
+    <string name="torrent_details_label_file_size">File size</string>
+    <string name="torrent_details_label_seeders">Seeders</string>
+    <string name="torrent_details_label_peers">Peers</string>
+    <string name="torrent_details_label_upload_date">Upload date</string>
+    <string name="torrent_details_label_category">Category</string>
+    <string name="torrent_details_label_uploader">Uploader</string>
+    <string name="torrent_details_label_last_checked">Last checked</string>
+    <string name="torrent_details_label_info_hash">Info hash</string>
+    <string name="torrent_details_message_not_available">Not available</string>
+    <string name="torrent_details_message_link_copied">Link copied to clipboard!</string>
+    <string name="torrent_details_button_open_magnet">Open magnet</string>
+    <string name="torrent_details_button_download_torrent">Download torrent</string>
+
     <string name="bookmarks_screen_title">Bookmarks</string>
     <plurals name="bookmarks_count_format">
         <item quantity="one">%1$d bookmark</item>
