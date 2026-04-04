@@ -32,7 +32,7 @@
     <string name="torznab_conn_check_result_unexpected_response">Respons tidak terduga (%1$d)</string>
     <string name="torznab_conn_check_result_unexpected_error">Kesalahan tidak terduga</string>
     <string name="crash_screen_title">Ups!</string>
-    <string name="crash_screen_subtitle">%1$s mengalami kesalahan tidak terduga. Harap ekspor log dan buat isu Github dengan log terlampir.</string>
+    <string name="crash_screen_subtitle">%1$s mengalami kesalahan tak terduga. Harap ekspor log dan buat isu GitHub dengan log terlampir.</string>
     <string name="crash_button_export_crash_logs">Ekspor log kerusakan ke file</string>
     <string name="crash_button_restart_application">Mulai ulang aplikasi</string>
     <string name="crash_logs_export_success_message">Log berhasil diekspor ke file</string>
@@ -65,7 +65,7 @@
     <string name="search_results_count_format">%1$s hasil untuk \'%2$s\' (%3$s)</string>
     <string name="search_errors_bottom_sheet_title">Penyedia pencarian yang gagal</string>
     <string name="search_unexpected_error">Kesalahan tidak terduga</string>
-    <string name="search_info_troubleshoot_help">Untuk membantu mengatasi masalah, ekspor log dari layar pengaturan dan buat isu Github dengan log terlampir.</string>
+    <string name="search_info_troubleshoot_help">Untuk membantu memecahkan masalah, ekspor log dari layar pengaturan dan buat isu GitHub dengan log terlampir.</string>
     <string name="bookmarks_screen_title">Penanda</string>
     <plurals name="bookmarks_count_format">
         <item quantity="other">%1$d penanda</item>
@@ -142,4 +142,14 @@
     <string name="settings_section_about">Tentang</string>
     <string name="settings_version">Versi</string>
     <string name="settings_source_code">Kode sumber</string>
+    <string name="torrent_file_downloading_message">Mengunduh file torrent…</string>
+    <string name="torrent_file_download_error">Unduhan gagal</string>
+    <string name="torrent_file_not_found_error">File torrent tidak ditemukan di penyedia</string>
+    <string name="torrent_file_saving_message">Menyimpan file torrent…</string>
+    <string name="torrent_file_saved_message">File torrent tersimpan</string>
+    <string name="torrent_file_save_error">Penyimpanan file torrent gagal</string>
+    <string name="search_filter_chip_search_providers">Cari penyedia</string>
+    <string name="search_filter_providers_action_select_all">Pilih semua</string>
+    <string name="search_filter_providers_action_deselect_all">Batalkan semua pilihan</string>
+    <string name="search_filter_providers_action_invert_selection">Balikkan pilihan</string>
 </resources>
