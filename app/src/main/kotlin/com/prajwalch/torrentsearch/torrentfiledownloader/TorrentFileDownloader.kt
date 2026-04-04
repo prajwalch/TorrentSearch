@@ -1,7 +1,7 @@
 package com.prajwalch.torrentsearch.torrentfiledownloader
 
 import com.prajwalch.torrentsearch.data.repository.TorrentFileId
-import com.prajwalch.torrentsearch.data.repository.TorrentsRepository
+import com.prajwalch.torrentsearch.data.repository.TorrentRepository
 
 import dagger.hilt.android.scopes.ViewModelScoped
 
@@ -37,7 +37,7 @@ sealed interface TorrentFileDownloadEvent {
 
 @ViewModelScoped
 class TorrentFileDownloader @Inject constructor(
-    private val torrentsRepository: TorrentsRepository,
+    private val torrentsRepository: TorrentRepository,
 ) {
     private val _state = MutableStateFlow<TorrentFileDownloadState>(TorrentFileDownloadState.Empty)
     val state = _state.asStateFlow()

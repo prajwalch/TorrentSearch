@@ -1,7 +1,7 @@
 package com.prajwalch.torrentsearch.domain
 
 import com.prajwalch.torrentsearch.data.repository.SettingsRepository
-import com.prajwalch.torrentsearch.data.repository.TorrentsRepository
+import com.prajwalch.torrentsearch.data.repository.TorrentRepository
 import com.prajwalch.torrentsearch.domain.model.Category
 import com.prajwalch.torrentsearch.domain.model.MaxNumResults
 import com.prajwalch.torrentsearch.domain.model.SearchResults
@@ -15,7 +15,7 @@ import kotlinx.coroutines.flow.transformWhile
 import javax.inject.Inject
 
 class SearchTorrentsUseCase @Inject constructor(
-    private val torrentsRepository: TorrentsRepository,
+    private val torrentsRepository: TorrentRepository,
     private val searchProvidersManager: SearchProvidersManager,
     private val settingsRepository: SettingsRepository,
 ) {

@@ -24,7 +24,7 @@ import kotlinx.io.readByteArray
 
 import javax.inject.Inject
 
-class TorrentsRemoteDataSource @Inject constructor(
+class TorrentRemoteDataSource @Inject constructor(
     private val httpClient: HttpClient,
 ) {
     suspend fun downloadTorrentFile(url: String) = withContext(Dispatchers.IO) {
