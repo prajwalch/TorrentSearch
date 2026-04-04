@@ -146,6 +146,7 @@ private object AnimeToshoDetailsPageParser {
             val magnetUriElem = html.selectFirst(MAGNET_URI) ?: return@withContext null
             val magnetUri = magnetUriElem.attr("href").takeIf { it.isNotBlank() }
                 ?: return@withContext null
+            val infoHash = TorrentUtils.getInfoHashFromMagnetUri(magnetUri)
 
             val unprocessedSize = html.selectFirst(SIZE)?.ownText()
                 ?: magnetUriElem.nextSibling()?.takeIf { it is TextNode }?.nodeValue()
@@ -158,10 +159,11 @@ private object AnimeToshoDetailsPageParser {
             val seeders = html.selectFirst(SEEDERS)?.ownText()?.toUIntOrNull() ?: 1U
             val peers = html.selectFirst(PEERS)?.ownText()?.toUIntOrNull() ?: 1U
             val uploadDate = html.selectFirst(UPLOAD_DATE)?.ownText() ?: "0 min ago"
-            val screenshotUrls = html.select(SCREENSHOT)?.map { it.attr("src") }.orEmpty()
+            val screenshotUrls = html.select(SCREENSHOT).map { it.attr("src") }
             val fileDownloadLink = html.selectFirst(FILE_DOWNLOAD_LINK)?.attr("href")
 
             TorrentDetails(
+                infoHash = infoHash,
                 name = name,
                 size = size,
                 seeders = seeders,
@@ -169,7 +171,7 @@ private object AnimeToshoDetailsPageParser {
                 uploadDate = uploadDate,
                 category = Category.Anime.name,
                 screenshotUrls = screenshotUrls,
-                infoHashOrMagnetUri = InfoHashOrMagnetUri.MagnetUri(magnetUri),
+                magnetUri = magnetUri,
                 fileDownloadLink = fileDownloadLink,
             )
         }

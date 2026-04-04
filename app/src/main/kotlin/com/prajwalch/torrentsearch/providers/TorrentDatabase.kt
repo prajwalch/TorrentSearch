@@ -5,8 +5,8 @@ import com.prajwalch.torrentsearch.domain.model.Torrent
 import com.prajwalch.torrentsearch.domain.model.TorrentDetails
 import com.prajwalch.torrentsearch.network.HttpClient
 import com.prajwalch.torrentsearch.util.DateUtils
-import com.prajwalch.torrentsearch.util.TorrentUtils
 import com.prajwalch.torrentsearch.util.FileSizeUtils
+import com.prajwalch.torrentsearch.util.TorrentUtils
 
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -152,6 +152,7 @@ private object TdDetailsPageParser {
 
             val name = html.selectFirst(TORRENT_NAME)?.ownText() ?: return@withContext null
             val magnetUri = html.selectFirst(MAGNET_URI)?.attr("href") ?: return@withContext null
+            val infoHash = TorrentUtils.getInfoHashFromMagnetUri(magnetUri)
 
             val size = html.selectFirst(SIZE)?.ownText()?.let(FileSizeUtils::normalizeSize)
                 ?: "0 KB"
@@ -164,6 +165,7 @@ private object TdDetailsPageParser {
             val description = html.selectFirst(DESCRIPTION)?.html()
 
             TorrentDetails(
+                infoHash = infoHash,
                 name = name,
                 size = size,
                 seeders = seeders,
@@ -173,7 +175,7 @@ private object TdDetailsPageParser {
                 uploader = uploader,
                 lastChecked = lastChecked,
                 description = description,
-                infoHashOrMagnetUri = InfoHashOrMagnetUri.MagnetUri(magnetUri),
+                magnetUri = magnetUri,
             )
         }
 }

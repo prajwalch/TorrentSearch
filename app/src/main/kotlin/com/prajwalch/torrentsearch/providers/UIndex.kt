@@ -152,6 +152,7 @@ private object UIndexDetailsPageParser {
             // Required data. Return early as possible.
             val name = html.selectFirst(NAME)?.ownText() ?: return@withContext null
             val magnetUri = html.selectFirst(MAGNET_URI)?.attr("href") ?: return@withContext null
+            val infoHash = TorrentUtils.getInfoHashFromMagnetUri(magnetUri)
 
             val size = html.selectFirst(SIZE)?.ownText() ?: "0 KB"
             val seeders = html.selectFirst(SEEDERS)?.ownText()?.toUIntOrNull() ?: 1U
@@ -164,6 +165,7 @@ private object UIndexDetailsPageParser {
             val previewImageUrls = html.select(PREVIEW_IMAGE).map { it.attr("src") }
 
             TorrentDetails(
+                infoHash = infoHash,
                 name = name,
                 size = size,
                 seeders = seeders,
@@ -173,8 +175,8 @@ private object UIndexDetailsPageParser {
                 lastChecked = lastChecked,
                 description = description,
                 posterUrl = thumbnailUrl,
-                infoHashOrMagnetUri = InfoHashOrMagnetUri.MagnetUri(magnetUri),
                 screenshotUrls = previewImageUrls,
+                magnetUri = magnetUri,
             )
         }
 }

@@ -137,6 +137,7 @@ private object NyaaDetailsPageParser {
 
             val name = html.selectFirst(TORRENT_NAME)?.ownText() ?: return@withContext null
             val magnetUri = html.selectFirst(MAGNET_URI)?.attr("href") ?: return@withContext null
+            val infoHash = TorrentUtils.getInfoHashFromMagnetUri(magnetUri)
 
             val size = html.selectFirst(SIZE)?.ownText() ?: "0 KB"
             val seeders = html.selectFirst(SEEDERS)?.text()?.trim()?.toUIntOrNull() ?: 1U
@@ -147,6 +148,7 @@ private object NyaaDetailsPageParser {
             val fileDownloadLink = html.selectFirst(FILE_DOWNLOAD_LINK)?.attr("abs:href")
 
             TorrentDetails(
+                infoHash = infoHash,
                 name = name,
                 size = size,
                 seeders = seeders,
@@ -155,7 +157,7 @@ private object NyaaDetailsPageParser {
                 category = "Anime",
                 uploader = uploader,
                 description = description,
-                infoHashOrMagnetUri = InfoHashOrMagnetUri.MagnetUri(magnetUri),
+                magnetUri = magnetUri,
                 fileDownloadLink = fileDownloadLink,
             )
         }

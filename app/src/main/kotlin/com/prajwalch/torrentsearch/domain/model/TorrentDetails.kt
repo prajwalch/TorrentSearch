@@ -1,8 +1,7 @@
 package com.prajwalch.torrentsearch.domain.model
 
-import com.prajwalch.torrentsearch.util.TorrentUtils
-
 data class TorrentDetails(
+    val infoHash: String,
     val name: String,
     val size: String,
     val seeders: UInt,
@@ -14,13 +13,6 @@ data class TorrentDetails(
     val description: String? = null,
     val posterUrl: String? = null,
     val screenshotUrls: List<String> = emptyList(),
-    val infoHashOrMagnetUri: InfoHashOrMagnetUri,
+    val magnetUri: String,
     val fileDownloadLink: String? = null,
-) {
-    fun infoHash(): String = when (infoHashOrMagnetUri) {
-        is InfoHashOrMagnetUri.InfoHash -> infoHashOrMagnetUri.hash
-        is InfoHashOrMagnetUri.MagnetUri -> {
-            TorrentUtils.getInfoHashFromMagnetUri(infoHashOrMagnetUri.uri)
-        }
-    }
-}
+)
