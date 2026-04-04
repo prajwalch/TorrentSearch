@@ -1,7 +1,6 @@
 package com.prajwalch.torrentsearch.providers
 
 import com.prajwalch.torrentsearch.domain.model.Category
-import com.prajwalch.torrentsearch.domain.model.InfoHashOrMagnetUri
 import com.prajwalch.torrentsearch.domain.model.Torrent
 import com.prajwalch.torrentsearch.extension.asObject
 import com.prajwalch.torrentsearch.extension.getArray
@@ -89,9 +88,10 @@ class InternetArchive : SearchProvider {
             .getString("identifier")
             ?.let { "${info.url}/details/$it" }
             ?: return null
-        val infoHash = obj.getString("btih")?.let(InfoHashOrMagnetUri::InfoHash) ?: return null
+        val infoHash = obj.getString("btih") ?: return null
 
         return Torrent(
+            infoHash = infoHash,
             name = name,
             size = size,
             seeders = 1U,
@@ -100,7 +100,6 @@ class InternetArchive : SearchProvider {
             category = category,
             providerName = info.name,
             descriptionPageUrl = descriptionPageUrl,
-            infoHashOrMagnetUri = infoHash,
         )
     }
 

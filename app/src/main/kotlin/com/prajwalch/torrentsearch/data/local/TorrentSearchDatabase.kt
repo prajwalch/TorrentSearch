@@ -1,6 +1,8 @@
 package com.prajwalch.torrentsearch.data.local
 
+import android.content.ContentValues
 import android.content.Context
+import android.database.sqlite.SQLiteDatabase
 
 import androidx.room.AutoMigration
 import androidx.room.Database
@@ -20,6 +22,7 @@ import com.prajwalch.torrentsearch.data.local.entities.BookmarkedTorrent
 import com.prajwalch.torrentsearch.data.local.entities.SearchHistoryEntity
 import com.prajwalch.torrentsearch.data.local.entities.TorznabConfigEntity
 import com.prajwalch.torrentsearch.data.local.entities.ViewedTorrentEntity
+import com.prajwalch.torrentsearch.util.TorrentUtils
 
 /** Application database. */
 @Database(
@@ -91,48 +94,76 @@ abstract class TorrentSearchDatabase : RoomDatabase() {
 
 /**
  * Migration from version 4 to 5:
- * - Changes `bookmarks.id` from `Long` to `String` (UUID based on infoHash).
+ * - Changes `bookmarks.id` from `Long` to `String` (info hash).
  * - Creates a new viewed_torrents table.
  */
 private val MIGRATION_4_5 = object : Migration(4, 5) {
     override fun migrate(db: SupportSQLiteDatabase) {
-        // 1. Create a new bookmarks table with an id of type string.
+        // 1. Rename old bookmarks table.
+        db.execSQL("ALTER TABLE bookmarks RENAME TO bookmarks_old")
+
+        // 2. Create new bookmarks table with an id of type string.
+        // language="RoomSql"
         db.execSQL(
             """
-            CREATE TABLE IF NOT EXISTS bookmarks_new (
-                id TEXT NOT NULL PRIMARY KEY,
-                name TEXT NOT NULL,
-                size TEXT NOT NULL,
-                seeders INTEGER NOT NULL,
-                peers INTEGER NOT NULL,
-                providerName TEXT NOT NULL,
-                uploadDate TEXT NOT NULL,
-                category TEXT NOT NULL,
-                descriptionPageUrl TEXT NOT NULL,
-                magnetUri TEXT NOT NULL,
-                fileDownloadLink TEXT DEFAULT NULL
+            CREATE TABLE IF NOT EXISTS `bookmarks` (
+                `id` TEXT PRIMARY KEY NOT NULL,
+                `name` TEXT NOT NULL,
+                `size` TEXT NOT NULL,
+                `seeders` INTEGER NOT NULL,
+                `peers` INTEGER NOT NULL,
+                `providerName` TEXT NOT NULL,
+                `uploadDate` TEXT NOT NULL,
+                `category` TEXT NOT NULL,
+                `descriptionPageUrl` TEXT NOT NULL,
+                `magnetUri` TEXT DEFAULT NULL,
+                `fileDownloadLink` TEXT DEFAULT NULL
             )
             """.trimIndent()
         )
 
-        // 2. Copy old bookmarks data, generating new id for each bookmark (UUID-like hex string).
-        db.execSQL(
-            """
-            INSERT INTO bookmarks_new (id, name, size, seeders, peers, providerName, 
-                uploadDate, category, descriptionPageUrl, magnetUri, fileDownloadLink)
-            SELECT 
-                lower(hex(randomblob(16))),
-                name, size, seeders, peers, providerName, 
-                uploadDate, category, descriptionPageUrl, magnetUri, fileDownloadLink
-            FROM bookmarks
-            """.trimIndent()
-        )
+        // 3. Migrate bookmarks from old table to new one.
+        db.query("SELECT * FROM bookmarks_old").use { cursor ->
+            while (cursor.moveToNext()) {
+                val name = cursor.getString(cursor.getColumnIndexOrThrow("name"))
+                val size = cursor.getString(cursor.getColumnIndexOrThrow("size"))
+                val seeders = cursor.getInt(cursor.getColumnIndexOrThrow("seeders"))
+                val peers = cursor.getInt(cursor.getColumnIndexOrThrow("peers"))
+                val providerName = cursor.getString(cursor.getColumnIndexOrThrow("providerName"))
+                val uploadDate = cursor.getString(cursor.getColumnIndexOrThrow("uploadDate"))
+                val category = cursor.getString(cursor.getColumnIndexOrThrow("category"))
+                val descriptionPageUrl = cursor
+                    .getString(cursor.getColumnIndexOrThrow("descriptionPageUrl"))
+                val magnetUri = cursor.getString(cursor.getColumnIndexOrThrow("magnetUri"))
 
-        // 3. Drop old bookmarks table.
-        db.execSQL("DROP TABLE bookmarks")
+                val fileDownloadLinkIndex = cursor.getColumnIndexOrThrow("fileDownloadLink")
+                val fileDownloadLink = if (cursor.isNull(fileDownloadLinkIndex)) {
+                    null
+                } else {
+                    cursor.getString(fileDownloadLinkIndex)
+                }
 
-        // 4. Rename new bookmarks table same as the old one.
-        db.execSQL("ALTER TABLE bookmarks_new RENAME TO bookmarks")
+                val infoHash = TorrentUtils.getInfoHashFromMagnetUri(magnetUri)
+
+                val columnValues = ContentValues().apply {
+                    put("id", infoHash)
+                    put("name", name)
+                    put("size", size)
+                    put("seeders", seeders)
+                    put("peers", peers)
+                    put("providerName", providerName)
+                    put("uploadDate", uploadDate)
+                    put("category", category)
+                    put("descriptionPageUrl", descriptionPageUrl)
+                    put("magnetUri", magnetUri)
+                    put("fileDownloadLink", fileDownloadLink)
+                }
+                db.insert("bookmarks", SQLiteDatabase.CONFLICT_REPLACE, columnValues)
+            }
+        }
+
+        // 4. Drop old bookmarks table.
+        db.execSQL("DROP TABLE bookmarks_old")
 
         // 5. Create unique index on name (must be after rename)
         db.execSQL("CREATE UNIQUE INDEX IF NOT EXISTS index_bookmarks_name ON bookmarks (name)")
@@ -141,7 +172,7 @@ private val MIGRATION_4_5 = object : Migration(4, 5) {
         db.execSQL(
             """
             CREATE TABLE IF NOT EXISTS viewed_torrents (
-                id TEXT NOT NULL PRIMARY KEY,
+                id TEXT PRIMARY KEY NOT NULL,
                 viewedAt INTEGER NOT NULL
             )
             """.trimIndent()

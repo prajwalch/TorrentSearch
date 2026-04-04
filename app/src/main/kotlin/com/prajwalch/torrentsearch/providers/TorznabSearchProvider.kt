@@ -5,12 +5,12 @@ import android.util.Log
 import android.util.Xml
 
 import com.prajwalch.torrentsearch.domain.model.Category
-import com.prajwalch.torrentsearch.domain.model.InfoHashOrMagnetUri
 import com.prajwalch.torrentsearch.domain.model.Torrent
 import com.prajwalch.torrentsearch.domain.model.TorznabConfig
 import com.prajwalch.torrentsearch.domain.model.TorznabConnectionCheckResult
 import com.prajwalch.torrentsearch.network.HttpClient
 import com.prajwalch.torrentsearch.util.FileSizeUtils
+import com.prajwalch.torrentsearch.util.TorrentUtils
 
 import io.ktor.client.statement.bodyAsText
 
@@ -400,14 +400,10 @@ private class TorznabResponseXmlParser(
             }
         }
 
-        val infoHashOrMagnetUri = when {
-            magnetUri != null -> InfoHashOrMagnetUri.MagnetUri(uri = magnetUri)
-            infoHash != null -> InfoHashOrMagnetUri.InfoHash(hash = infoHash)
-            else -> return
-        }
         val category = categoryIds.maxOrNull()?.let(::getCategoryFromId) ?: Category.Other
 
         val torrent = Torrent(
+            infoHash = infoHash ?: magnetUri?.let(TorrentUtils::getInfoHashFromMagnetUri) ?: return,
             name = torrentName ?: return,
             size = size ?: return,
             seeders = seeders?.toUIntOrNull() ?: return,
@@ -416,7 +412,7 @@ private class TorznabResponseXmlParser(
             uploadDate = uploadDate ?: return,
             category = category,
             descriptionPageUrl = descriptionPageUrl ?: return,
-            infoHashOrMagnetUri = infoHashOrMagnetUri,
+            magnetUri = magnetUri,
             fileDownloadLink = fileDownloadLink,
         )
         torrents.add(torrent)

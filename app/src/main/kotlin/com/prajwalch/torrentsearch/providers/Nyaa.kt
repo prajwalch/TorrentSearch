@@ -1,11 +1,11 @@
 package com.prajwalch.torrentsearch.providers
 
 import com.prajwalch.torrentsearch.domain.model.Category
-import com.prajwalch.torrentsearch.domain.model.InfoHashOrMagnetUri
 import com.prajwalch.torrentsearch.domain.model.Torrent
 import com.prajwalch.torrentsearch.domain.model.TorrentDetails
 import com.prajwalch.torrentsearch.network.HttpClient
 import com.prajwalch.torrentsearch.util.DateUtils
+import com.prajwalch.torrentsearch.util.TorrentUtils
 
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -89,6 +89,7 @@ private class NyaaResultsPageParser(
             .selectFirst("a:nth-child(2)")
             ?.attr("href")
             ?: return null
+        val infoHash = TorrentUtils.getInfoHashFromMagnetUri(magnetUri)
         val size = tr.selectFirst("td:nth-child(4)")?.ownText() ?: return null
         val uploadDate = tr
             .selectFirst("td:nth-child(5)")
@@ -99,6 +100,7 @@ private class NyaaResultsPageParser(
         val peers = tr.selectFirst("td:nth-child(7)")?.ownText() ?: return null
 
         return Torrent(
+            infoHash = infoHash,
             name = name,
             size = size,
             seeders = seeders.toUIntOrNull() ?: 0u,
@@ -107,7 +109,7 @@ private class NyaaResultsPageParser(
             uploadDate = uploadDate,
             category = specializedCategory,
             descriptionPageUrl = descriptionPageUrl,
-            infoHashOrMagnetUri = InfoHashOrMagnetUri.MagnetUri(magnetUri),
+            magnetUri = magnetUri,
             fileDownloadLink = fileDownloadLink,
         )
     }

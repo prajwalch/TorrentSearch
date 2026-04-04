@@ -85,6 +85,7 @@
     <string name="search_action_view_errors">View errors</string>
     <string name="search_action_settings">Settings</string>
     <string name="search_filter_chip_dead_torrents">Dead torrents</string>
+    <string name="search_filter_chip_hide_viewed">Hide viewed</string>
     <string name="search_filter_chip_search_providers">Search providers</string>
     <string name="search_filter_providers_title">Filter by search provider</string>
     <string name="search_filter_providers_action_select_all">Select all</string>

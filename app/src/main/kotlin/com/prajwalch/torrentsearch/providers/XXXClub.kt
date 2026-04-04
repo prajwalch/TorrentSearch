@@ -1,9 +1,9 @@
 package com.prajwalch.torrentsearch.providers
 
 import com.prajwalch.torrentsearch.domain.model.Category
-import com.prajwalch.torrentsearch.domain.model.InfoHashOrMagnetUri
 import com.prajwalch.torrentsearch.domain.model.Torrent
 import com.prajwalch.torrentsearch.network.HttpClient
+import com.prajwalch.torrentsearch.util.TorrentUtils
 
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -62,8 +62,10 @@ class XXXClub : SearchProvider {
                 descriptionPageUrl = descriptionPageUrl,
             )
         } ?: return null
+        val infoHash = TorrentUtils.getInfoHashFromMagnetUri(magnetUri)
 
         return Torrent(
+            infoHash = infoHash,
             name = torrentName,
             size = size,
             seeders = seeders.toUIntOrNull() ?: 0u,
@@ -72,7 +74,7 @@ class XXXClub : SearchProvider {
             uploadDate = uploadDate,
             category = info.specializedCategory,
             descriptionPageUrl = descriptionPageUrl,
-            infoHashOrMagnetUri = InfoHashOrMagnetUri.MagnetUri(magnetUri),
+            magnetUri = magnetUri,
             fileDownloadLink = fileDownloadLink,
         )
     }

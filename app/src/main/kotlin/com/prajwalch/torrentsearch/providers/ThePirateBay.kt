@@ -1,13 +1,13 @@
 package com.prajwalch.torrentsearch.providers
 
 import com.prajwalch.torrentsearch.domain.model.Category
-import com.prajwalch.torrentsearch.domain.model.InfoHashOrMagnetUri
 import com.prajwalch.torrentsearch.domain.model.Torrent
 import com.prajwalch.torrentsearch.extension.asArray
 import com.prajwalch.torrentsearch.extension.asObject
 import com.prajwalch.torrentsearch.extension.getString
 import com.prajwalch.torrentsearch.util.DateUtils
 import com.prajwalch.torrentsearch.util.FileSizeUtils
+
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.JsonObject
@@ -103,6 +103,7 @@ class ThePirateBay : SearchProvider {
         val category = getCategoryFromIndex(categoryIndex = categoryIndex.toInt())
 
         return Torrent(
+            infoHash = infoHash,
             name = name,
             size = size,
             seeders = seeders,
@@ -111,7 +112,6 @@ class ThePirateBay : SearchProvider {
             uploadDate = uploadDate,
             category = category,
             descriptionPageUrl = descriptionPageUrl,
-            infoHashOrMagnetUri = InfoHashOrMagnetUri.InfoHash(infoHash),
         )
     }
 

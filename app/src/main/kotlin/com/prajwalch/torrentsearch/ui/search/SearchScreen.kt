@@ -77,7 +77,7 @@ fun SearchScreen(
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val torrentFileDownloadState by viewModel.torrentFileDownloadState.collectAsStateWithLifecycle()
-    val viewedIds by viewModel.viewedIds.collectAsStateWithLifecycle()
+    val viewedTorrentHashes by viewModel.viewedTorrentHashes.collectAsStateWithLifecycle()
 
     val coroutineScope = rememberCoroutineScope()
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
@@ -125,7 +125,7 @@ fun SearchScreen(
                     )
                 } else {
                     viewModel.downloadTorrentFileFromInfoHash(
-                        infoHash = torrent.infoHash(),
+                        infoHash = torrent.infoHash,
                         fileName = torrentFileName,
                     )
                 }
@@ -252,6 +252,7 @@ fun SearchScreen(
                     SearchResultsFilter(
                         filterOptions = uiState.filterOptions,
                         onToggleDeadTorrents = viewModel::toggleDeadTorrents,
+                        onToggleHideViewed = viewModel::toggleHideViewedTorrents,
                         onToggleSearchProvider = viewModel::toggleSearchProviderResults,
                         onSelectAllSearchProviders = viewModel::selectAllSearchProviders,
                         onDeselectAllSearchProviders = viewModel::deselectAllSearchProviders,
@@ -266,15 +267,15 @@ fun SearchScreen(
                     SearchResults(
                         searchResults = uiState.searchResults.successes,
                         onResultClick = {
-                            viewModel.markAsViewed(it)
                             selectedResult = it
+                            viewModel.markAsViewed(it.infoHash)
                         },
                         searchQuery = uiState.searchQuery,
                         searchCategory = uiState.searchCategory,
                         isRefreshing = uiState.isRefreshing,
                         onRefresh = viewModel::refreshSearchResults,
                         lazyListState = torrentListState.lazyListState,
-                        viewedIds = viewedIds,
+                        viewedTorrentHashes = viewedTorrentHashes,
                     )
                 }
             }

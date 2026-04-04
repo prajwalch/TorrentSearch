@@ -3,6 +3,7 @@ package com.prajwalch.torrentsearch.extension
 import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.contentOrNull
 import kotlinx.serialization.json.int
 import kotlinx.serialization.json.jsonArray
 import kotlinx.serialization.json.jsonObject
@@ -30,8 +31,8 @@ fun JsonElement.asArray(): JsonArray = this.jsonArray
 /** Returns the json element as a [JsonObject]. */
 fun JsonElement.asObject(): JsonObject = this.jsonObject
 
-/** Returns the json element as string by properly removing the quotes. */
-fun JsonElement.asString(): String = this.toString().trim('"')
+/** Returns the json element as string, or null if the element is JsonNull. */
+fun JsonElement.asString(): String? = this.jsonPrimitive.contentOrNull
 
 /** Returns the json element as [Int]. */
 fun JsonElement.asInt(): Int = this.jsonPrimitive.int

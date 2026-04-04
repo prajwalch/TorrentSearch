@@ -1,7 +1,6 @@
 package com.prajwalch.torrentsearch.providers
 
 import com.prajwalch.torrentsearch.domain.model.Category
-import com.prajwalch.torrentsearch.domain.model.InfoHashOrMagnetUri
 import com.prajwalch.torrentsearch.domain.model.Torrent
 
 import kotlinx.coroutines.Dispatchers
@@ -63,7 +62,6 @@ class TorrentDownload : SearchProvider {
         val infoHash = descriptionPageRelativeUrl
             .split('/')
             .getOrNull(1)
-            ?.let(InfoHashOrMagnetUri::InfoHash)
             ?: return null
 
         val uploadDate = tr.selectFirst("td:nth-child(2)")?.ownText() ?: return null
@@ -72,6 +70,7 @@ class TorrentDownload : SearchProvider {
         val peers = tr.selectFirst("td:nth-child(5)")?.ownText()?.replace(",", "") ?: return null
 
         return Torrent(
+            infoHash = infoHash,
             name = torrentName,
             size = size,
             seeders = seeders.toUIntOrNull() ?: 0U,
@@ -80,7 +79,6 @@ class TorrentDownload : SearchProvider {
             category = category,
             providerName = info.name,
             descriptionPageUrl = descriptionPageUrl,
-            infoHashOrMagnetUri = infoHash,
         )
     }
 

@@ -1,11 +1,11 @@
 package com.prajwalch.torrentsearch.providers
 
 import com.prajwalch.torrentsearch.domain.model.Category
-import com.prajwalch.torrentsearch.domain.model.InfoHashOrMagnetUri
 import com.prajwalch.torrentsearch.domain.model.MagnetUri
 import com.prajwalch.torrentsearch.domain.model.Torrent
 import com.prajwalch.torrentsearch.network.HttpClient
 import com.prajwalch.torrentsearch.util.DateUtils
+import com.prajwalch.torrentsearch.util.TorrentUtils
 
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
@@ -105,6 +105,7 @@ class BitSearch : SearchProvider {
         val magnetUri = parseMagnetUri(downloadLinksDiv = downloadLinksDiv) ?: return null
 
         return Torrent(
+            infoHash = TorrentUtils.getInfoHashFromMagnetUri(magnetUri),
             name = torrentInfo.torrentName,
             size = torrentInfo.size,
             seeders = torrentInfo.seeders,
@@ -113,7 +114,7 @@ class BitSearch : SearchProvider {
             uploadDate = torrentInfo.uploadDate,
             category = torrentInfo.category,
             descriptionPageUrl = torrentInfo.descriptionPageUrl,
-            infoHashOrMagnetUri = InfoHashOrMagnetUri.MagnetUri(uri = magnetUri),
+            magnetUri = magnetUri,
         )
     }
 

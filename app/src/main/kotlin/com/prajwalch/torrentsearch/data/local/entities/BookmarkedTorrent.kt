@@ -6,7 +6,6 @@ import androidx.room.Index
 import androidx.room.PrimaryKey
 
 import com.prajwalch.torrentsearch.domain.model.Category
-import com.prajwalch.torrentsearch.domain.model.InfoHashOrMagnetUri
 import com.prajwalch.torrentsearch.domain.model.Torrent
 
 import kotlinx.serialization.Serializable
@@ -18,7 +17,8 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class BookmarkedTorrent(
     @PrimaryKey
-    val id: String,
+    @ColumnInfo(name = "id")
+    val infoHash: String,
     val name: String,
     val size: String,
     val seeders: Int,
@@ -27,13 +27,15 @@ data class BookmarkedTorrent(
     val uploadDate: String,
     val category: String,
     val descriptionPageUrl: String,
-    val magnetUri: String,
+    @ColumnInfo(defaultValue = "NULL")
+    val magnetUri: String? = null,
     @ColumnInfo(defaultValue = "NULL")
     val fileDownloadLink: String? = null,
 )
 
 fun BookmarkedTorrent.toDomain() =
     Torrent(
+        infoHash = this.infoHash,
         name = this.name,
         size = this.size,
         seeders = this.seeders.toUInt(),
@@ -46,13 +48,13 @@ fun BookmarkedTorrent.toDomain() =
             null
         },
         descriptionPageUrl = this.descriptionPageUrl,
-        infoHashOrMagnetUri = InfoHashOrMagnetUri.MagnetUri(uri = this.magnetUri),
+        magnetUri = this.magnetUri,
         fileDownloadLink = this.fileDownloadLink,
     )
 
 fun Torrent.toEntity() =
     BookmarkedTorrent(
-        id = this.id,
+        infoHash = this.infoHash,
         name = this.name,
         size = this.size,
         seeders = this.seeders.toInt(),
@@ -61,7 +63,7 @@ fun Torrent.toEntity() =
         uploadDate = this.uploadDate,
         category = this.category?.name ?: "",
         descriptionPageUrl = this.descriptionPageUrl,
-        magnetUri = this.magnetUri(),
+        magnetUri = this.magnetUri,
         fileDownloadLink = this.fileDownloadLink,
     )
 

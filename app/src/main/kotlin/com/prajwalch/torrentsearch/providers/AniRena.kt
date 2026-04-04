@@ -1,8 +1,8 @@
 package com.prajwalch.torrentsearch.providers
 
 import com.prajwalch.torrentsearch.domain.model.Category
-import com.prajwalch.torrentsearch.domain.model.InfoHashOrMagnetUri
 import com.prajwalch.torrentsearch.domain.model.Torrent
+import com.prajwalch.torrentsearch.util.TorrentUtils
 
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -58,8 +58,8 @@ class AniRena : SearchProvider {
         val magnetUri = tr
             .selectFirst("td.torrents_small_info_data2 > div > a:nth-child(2)")
             ?.attr("href")
-            ?.let(InfoHashOrMagnetUri::MagnetUri)
             ?: return null
+        val infoHash = TorrentUtils.getInfoHashFromMagnetUri(magnetUri)
         val size = tr
             .selectFirst("td.torrents_small_size_data1")
             ?.ownText()
@@ -85,6 +85,7 @@ class AniRena : SearchProvider {
          */
 
         return Torrent(
+            infoHash = infoHash,
             name = torrentName,
             size = size,
             seeders = seeders,
@@ -96,7 +97,7 @@ class AniRena : SearchProvider {
             category = info.specializedCategory,
             providerName = info.name,
             descriptionPageUrl = "",
-            infoHashOrMagnetUri = magnetUri,
+            magnetUri = magnetUri,
             fileDownloadLink = fileDownloadLink,
         )
     }

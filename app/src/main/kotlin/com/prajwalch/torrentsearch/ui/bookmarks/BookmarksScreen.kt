@@ -132,7 +132,7 @@ fun BookmarksScreen(
                     )
                 } else {
                     viewModel.downloadTorrentFileFromInfoHash(
-                        infoHash = bookmark.infoHash(),
+                        infoHash = bookmark.infoHash,
                         fileName = torrentFileName,
                     )
                 }

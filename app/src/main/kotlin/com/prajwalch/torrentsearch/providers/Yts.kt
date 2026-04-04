@@ -1,7 +1,6 @@
 package com.prajwalch.torrentsearch.providers
 
 import com.prajwalch.torrentsearch.domain.model.Category
-import com.prajwalch.torrentsearch.domain.model.InfoHashOrMagnetUri
 import com.prajwalch.torrentsearch.domain.model.Torrent
 import com.prajwalch.torrentsearch.extension.asObject
 import com.prajwalch.torrentsearch.extension.getArray
@@ -10,6 +9,7 @@ import com.prajwalch.torrentsearch.extension.getObject
 import com.prajwalch.torrentsearch.extension.getString
 import com.prajwalch.torrentsearch.extension.getUInt
 import com.prajwalch.torrentsearch.util.DateUtils
+
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.JsonObject
@@ -183,6 +183,7 @@ class Yts : SearchProvider {
             ?: return null
 
         return Torrent(
+            infoHash = infoHash,
             name = name,
             size = size,
             seeders = seeders,
@@ -191,7 +192,6 @@ class Yts : SearchProvider {
             uploadDate = uploadDate,
             category = info.specializedCategory,
             descriptionPageUrl = descriptionPageUrl,
-            infoHashOrMagnetUri = InfoHashOrMagnetUri.InfoHash(infoHash),
         )
     }
 }

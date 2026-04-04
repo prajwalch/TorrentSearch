@@ -2,14 +2,14 @@
   "formatVersion": 1,
   "database": {
     "version": 5,
-    "identityHash": "09d2ac773badcda575ccc985c63944df",
+    "identityHash": "a6af5f7e17fb26408d670e52e0d69958",
     "entities": [
       {
         "tableName": "bookmarks",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `name` TEXT NOT NULL, `size` TEXT NOT NULL, `seeders` INTEGER NOT NULL, `peers` INTEGER NOT NULL, `providerName` TEXT NOT NULL, `uploadDate` TEXT NOT NULL, `category` TEXT NOT NULL, `descriptionPageUrl` TEXT NOT NULL, `magnetUri` TEXT NOT NULL, `fileDownloadLink` TEXT DEFAULT NULL, PRIMARY KEY(`id`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `name` TEXT NOT NULL, `size` TEXT NOT NULL, `seeders` INTEGER NOT NULL, `peers` INTEGER NOT NULL, `providerName` TEXT NOT NULL, `uploadDate` TEXT NOT NULL, `category` TEXT NOT NULL, `descriptionPageUrl` TEXT NOT NULL, `magnetUri` TEXT DEFAULT NULL, `fileDownloadLink` TEXT DEFAULT NULL, PRIMARY KEY(`id`))",
         "fields": [
           {
-            "fieldPath": "id",
+            "fieldPath": "infoHash",
             "columnName": "id",
             "affinity": "TEXT",
             "notNull": true
@@ -66,7 +66,7 @@
             "fieldPath": "magnetUri",
             "columnName": "magnetUri",
             "affinity": "TEXT",
-            "notNull": true
+            "defaultValue": "NULL"
           },
           {
             "fieldPath": "fileDownloadLink",
@@ -186,7 +186,7 @@
         "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `viewedAt` INTEGER NOT NULL, PRIMARY KEY(`id`))",
         "fields": [
           {
-            "fieldPath": "id",
+            "fieldPath": "infoHash",
             "columnName": "id",
             "affinity": "TEXT",
             "notNull": true
@@ -208,7 +208,7 @@
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '09d2ac773badcda575ccc985c63944df')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'a6af5f7e17fb26408d670e52e0d69958')"
     ]
   }
 }

@@ -1,10 +1,10 @@
 package com.prajwalch.torrentsearch.providers
 
 import com.prajwalch.torrentsearch.domain.model.Category
-import com.prajwalch.torrentsearch.domain.model.InfoHashOrMagnetUri
 import com.prajwalch.torrentsearch.domain.model.Torrent
 import com.prajwalch.torrentsearch.util.DateUtils
 import com.prajwalch.torrentsearch.util.FileSizeUtils
+import com.prajwalch.torrentsearch.util.TorrentUtils
 
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -60,6 +60,7 @@ class TokyoToshokan : SearchProvider {
             .selectFirst("a:nth-child(1)")
             ?.attr("href")
             ?: return null
+        val infoHash = TorrentUtils.getInfoHashFromMagnetUri(magnetUri)
 
         val nameAnchor = tr1SecondTd.selectFirst("a:nth-child(2)") ?: return null
         val torrentName = nameAnchor.text().replace(oldValue = " ", newValue = "")
@@ -100,6 +101,7 @@ class TokyoToshokan : SearchProvider {
         val peers = tr2SecondTd.selectFirst("span:nth-child(2)")?.ownText() ?: return null
 
         return Torrent(
+            infoHash = infoHash,
             name = torrentName,
             size = size,
             seeders = seeders.toUIntOrNull() ?: 0u,
@@ -108,7 +110,7 @@ class TokyoToshokan : SearchProvider {
             uploadDate = uploadDate,
             category = info.specializedCategory,
             descriptionPageUrl = descriptionPageUrl,
-            infoHashOrMagnetUri = InfoHashOrMagnetUri.MagnetUri(magnetUri),
+            magnetUri = magnetUri,
             fileDownloadLink = fileDownloadLink,
         )
     }

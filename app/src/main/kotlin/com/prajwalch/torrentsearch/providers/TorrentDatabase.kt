@@ -1,11 +1,11 @@
 package com.prajwalch.torrentsearch.providers
 
 import com.prajwalch.torrentsearch.domain.model.Category
-import com.prajwalch.torrentsearch.domain.model.InfoHashOrMagnetUri
 import com.prajwalch.torrentsearch.domain.model.Torrent
 import com.prajwalch.torrentsearch.domain.model.TorrentDetails
 import com.prajwalch.torrentsearch.network.HttpClient
 import com.prajwalch.torrentsearch.util.DateUtils
+import com.prajwalch.torrentsearch.util.TorrentUtils
 import com.prajwalch.torrentsearch.util.FileSizeUtils
 
 import kotlinx.coroutines.Dispatchers
@@ -76,6 +76,7 @@ private class TdResultsPageParser(
         val magnetLinkHref = tr.selectFirst("td.title-cell > a.magnet-link") ?: return null
         val torrentName = magnetLinkHref.ownText()
         val magnetUri = magnetLinkHref.attr("href")
+        val infoHash = TorrentUtils.getInfoHashFromMagnetUri(magnetUri)
 
         val descriptionPageUrl = tr
             .selectFirst("td.title-cell > a.info-button")
@@ -100,6 +101,7 @@ private class TdResultsPageParser(
         val peers = statsCell.selectFirst("> div > span:nth-child(3)")?.ownText() ?: return null
 
         return Torrent(
+            infoHash = infoHash,
             name = torrentName,
             size = size,
             seeders = seeders.toUIntOrNull() ?: 0U,
@@ -108,7 +110,7 @@ private class TdResultsPageParser(
             category = category,
             providerName = providerName,
             descriptionPageUrl = descriptionPageUrl,
-            infoHashOrMagnetUri = InfoHashOrMagnetUri.MagnetUri(magnetUri),
+            magnetUri = magnetUri,
         )
     }
 

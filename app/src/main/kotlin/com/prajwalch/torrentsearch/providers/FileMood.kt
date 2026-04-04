@@ -1,7 +1,6 @@
 package com.prajwalch.torrentsearch.providers
 
 import com.prajwalch.torrentsearch.domain.model.Category
-import com.prajwalch.torrentsearch.domain.model.InfoHashOrMagnetUri
 import com.prajwalch.torrentsearch.domain.model.Torrent
 
 import kotlinx.coroutines.Dispatchers
@@ -57,9 +56,9 @@ class FileMood : SearchProvider {
         val infoHash = descriptionPageUrl
             .removeSuffix(".html")
             .takeLastWhile { it != '-' }
-            .let(InfoHashOrMagnetUri::InfoHash)
 
         return Torrent(
+            infoHash = infoHash,
             name = torrentName,
             size = size,
             seeders = seeders.toUIntOrNull() ?: 0U,
@@ -68,7 +67,6 @@ class FileMood : SearchProvider {
             category = null,
             providerName = info.name,
             descriptionPageUrl = descriptionPageUrl,
-            infoHashOrMagnetUri = infoHash,
         )
     }
 }

@@ -1,8 +1,8 @@
 package com.prajwalch.torrentsearch.providers
 
 import com.prajwalch.torrentsearch.domain.model.Category
-import com.prajwalch.torrentsearch.domain.model.InfoHashOrMagnetUri
 import com.prajwalch.torrentsearch.domain.model.Torrent
+import com.prajwalch.torrentsearch.util.TorrentUtils
 
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -45,10 +45,11 @@ class MyPornClub : SearchProvider {
         val relativeDetailsUrl = anchor.attr("href")
         val descriptionPageUrl = info.url + relativeDetailsUrl
 
-        val (magnetLink, fileDownloadLink) = extractMagnetUriAndFileDownloadLink(
+        val (magnetUri, fileDownloadLink) = extractMagnetUriAndFileDownloadLink(
             descriptionPageUrl = descriptionPageUrl,
             context = context,
         ) ?: return null
+        val infoHash = TorrentUtils.getInfoHashFromMagnetUri(magnetUri)
 
         val size = row.select("div.torrent_element_info span").getOrNull(3)?.text().orEmpty()
         val seeders = row
@@ -67,6 +68,7 @@ class MyPornClub : SearchProvider {
         val uploadDate = row.select("div.torrent_element_info span").getOrNull(1)?.text().orEmpty()
 
         return Torrent(
+            infoHash = infoHash,
             name = name,
             size = size,
             seeders = seeders,
@@ -75,7 +77,7 @@ class MyPornClub : SearchProvider {
             uploadDate = uploadDate,
             category = info.specializedCategory,
             descriptionPageUrl = descriptionPageUrl,
-            infoHashOrMagnetUri = InfoHashOrMagnetUri.MagnetUri(uri = magnetLink),
+            magnetUri = magnetUri,
             fileDownloadLink = fileDownloadLink,
         )
     }

@@ -44,7 +44,7 @@ fun BookmarkList(
         state = lazyListState,
         contentPadding = contentPadding,
     ) {
-        items(items = bookmarks, key = { it.id }, contentType = { it.category }) {
+        items(items = bookmarks, key = { it.infoHash }, contentType = { it.category }) {
             BookmarkListItem(
                 modifier = Modifier.animateItem(),
                 bookmark = it,

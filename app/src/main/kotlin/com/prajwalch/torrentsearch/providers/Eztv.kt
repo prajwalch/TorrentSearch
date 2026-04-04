@@ -1,8 +1,8 @@
 package com.prajwalch.torrentsearch.providers
 
 import com.prajwalch.torrentsearch.domain.model.Category
-import com.prajwalch.torrentsearch.domain.model.InfoHashOrMagnetUri
 import com.prajwalch.torrentsearch.domain.model.Torrent
+import com.prajwalch.torrentsearch.util.TorrentUtils
 
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -93,6 +93,7 @@ class Eztv : SearchProvider {
         val descriptionPageUrl = "${info.url}$descriptionPagePath"
 
         val magnetUri = tr.selectFirst("a.magnet")?.attr("href") ?: return null
+        val infoHash = TorrentUtils.getInfoHashFromMagnetUri(magnetUri)
         val size = tr.selectFirst("td:nth-child(4)")?.ownText() ?: return null
         // TODO: The date format used the results page is 'time ago'
         //       (e.g. '7h 8m', '1 week', '1 mo'). The format we want
@@ -111,6 +112,7 @@ class Eztv : SearchProvider {
         val peers = 0u
 
         return Torrent(
+            infoHash = infoHash,
             name = torrentName,
             size = size,
             seeders = seeders.toUIntOrNull() ?: 0u,
@@ -119,7 +121,7 @@ class Eztv : SearchProvider {
             uploadDate = uploadDate,
             category = info.specializedCategory,
             descriptionPageUrl = descriptionPageUrl,
-            infoHashOrMagnetUri = InfoHashOrMagnetUri.MagnetUri(magnetUri),
+            magnetUri = magnetUri,
         )
     }
 }

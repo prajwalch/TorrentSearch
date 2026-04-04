@@ -1,7 +1,6 @@
 package com.prajwalch.torrentsearch.providers
 
 import com.prajwalch.torrentsearch.domain.model.Category
-import com.prajwalch.torrentsearch.domain.model.InfoHashOrMagnetUri
 import com.prajwalch.torrentsearch.domain.model.Torrent
 import com.prajwalch.torrentsearch.extension.asObject
 import com.prajwalch.torrentsearch.extension.getArray
@@ -10,6 +9,8 @@ import com.prajwalch.torrentsearch.extension.getString
 import com.prajwalch.torrentsearch.extension.getUInt
 import com.prajwalch.torrentsearch.util.DateUtils
 import com.prajwalch.torrentsearch.util.FileSizeUtils
+import com.prajwalch.torrentsearch.util.TorrentUtils
+
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.JsonObject
@@ -84,6 +85,7 @@ class Knaben : SearchProvider {
     private fun parseTorrentObject(obj: JsonObject): Torrent? {
         val name = obj.getString("title") ?: return null
         val magnetUri = obj.getString("magnetUrl") ?: return null
+        val infoHash = TorrentUtils.getInfoHashFromMagnetUri(magnetUri)
         val sizeBytes = obj.getLong("bytes") ?: return null
         val size = FileSizeUtils.formatBytes(sizeBytes.toFloat())
 
@@ -94,6 +96,7 @@ class Knaben : SearchProvider {
         val category = extractCategory(obj)
 
         return Torrent(
+            infoHash = infoHash,
             name = name,
             size = size,
             seeders = seeders,
@@ -101,8 +104,8 @@ class Knaben : SearchProvider {
             providerName = info.name,
             uploadDate = uploadDate,
             descriptionPageUrl = descriptionPageUrl,
+            magnetUri = magnetUri,
             category = category,
-            infoHashOrMagnetUri = InfoHashOrMagnetUri.MagnetUri(magnetUri),
         )
     }
 

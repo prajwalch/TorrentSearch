@@ -1,8 +1,8 @@
 package com.prajwalch.torrentsearch.providers
 
 import com.prajwalch.torrentsearch.domain.model.Category
-import com.prajwalch.torrentsearch.domain.model.InfoHashOrMagnetUri
 import com.prajwalch.torrentsearch.domain.model.Torrent
+import com.prajwalch.torrentsearch.util.TorrentUtils
 
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -50,6 +50,7 @@ class XXXTracker : SearchProvider {
 
         val secondTd = tr.selectFirst("td:nth-child(2)") ?: return null
         val magnetUri = secondTd.selectFirst("a:nth-child(1)")?.attr("href") ?: return null
+        val infoHash = TorrentUtils.getInfoHashFromMagnetUri(magnetUri)
         val fileDownloadLink =
             secondTd.selectFirst("a:nth-child(2)")?.attr("href")?.let { "${info.url}$it" }
 
@@ -64,6 +65,7 @@ class XXXTracker : SearchProvider {
         val peers = fourthTd.selectFirst("span:nth-child(3)")?.ownText() ?: return null
 
         return Torrent(
+            infoHash = infoHash,
             name = name,
             size = size,
             seeders = seeders.toUIntOrNull() ?: 0U,
@@ -72,7 +74,7 @@ class XXXTracker : SearchProvider {
             category = info.specializedCategory,
             descriptionPageUrl = descriptionPageUrl,
             providerName = info.name,
-            infoHashOrMagnetUri = InfoHashOrMagnetUri.MagnetUri(magnetUri),
+            magnetUri = magnetUri,
             fileDownloadLink = fileDownloadLink,
         )
     }

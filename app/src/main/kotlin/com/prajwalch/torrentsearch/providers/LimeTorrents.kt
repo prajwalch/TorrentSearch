@@ -1,7 +1,6 @@
 package com.prajwalch.torrentsearch.providers
 
 import com.prajwalch.torrentsearch.domain.model.Category
-import com.prajwalch.torrentsearch.domain.model.InfoHashOrMagnetUri
 import com.prajwalch.torrentsearch.domain.model.Torrent
 
 import kotlinx.coroutines.Dispatchers
@@ -80,6 +79,7 @@ class LimeTorrents : SearchProvider {
         val category = extractCategory(row)
 
         return Torrent(
+            infoHash = infoHash,
             name = name,
             size = size,
             seeders = seeders,
@@ -88,7 +88,6 @@ class LimeTorrents : SearchProvider {
             uploadDate = uploadDate,
             category = category,
             descriptionPageUrl = descriptionPageUrl,
-            infoHashOrMagnetUri = InfoHashOrMagnetUri.InfoHash(infoHash),
         )
     }
 

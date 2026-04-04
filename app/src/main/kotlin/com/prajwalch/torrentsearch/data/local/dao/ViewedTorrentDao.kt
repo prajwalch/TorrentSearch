@@ -12,11 +12,11 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface ViewedTorrentDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insert(entity: ViewedTorrentEntity)
+    suspend fun insertViewedTorrent(entity: ViewedTorrentEntity)
 
     @Query("SELECT id FROM viewed_torrents")
-    fun getAllIds(): Flow<List<String>>
+    fun getAllViewedHashes(): Flow<List<String>>
 
     @Query("DELETE FROM viewed_torrents")
-    suspend fun deleteAll()
+    suspend fun deleteAllViewedTorrents()
 }

@@ -1,10 +1,10 @@
 package com.prajwalch.torrentsearch.providers
 
 import com.prajwalch.torrentsearch.domain.model.Category
-import com.prajwalch.torrentsearch.domain.model.InfoHashOrMagnetUri
 import com.prajwalch.torrentsearch.domain.model.Torrent
 import com.prajwalch.torrentsearch.util.DateUtils
 import com.prajwalch.torrentsearch.util.FileSizeUtils
+import com.prajwalch.torrentsearch.util.TorrentUtils
 
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -66,10 +66,10 @@ class Dmhy : SearchProvider {
         val descriptionPageUrl = titleHref.attr("href").let { "${info.url}$it" }
 
         val magnetUri = tr
-            .selectFirst("a[href^=\"magnet:\"]")
+            .selectFirst("""a[href^="magnet:"]""")
             ?.attr("href")
-            ?.let(InfoHashOrMagnetUri::MagnetUri)
             ?: return null
+        val infoHash = TorrentUtils.getInfoHashFromMagnetUri(magnetUri)
         val size = tr
             .selectFirst("td:nth-child(5)")
             ?.ownText()
@@ -87,6 +87,7 @@ class Dmhy : SearchProvider {
             ?: 0u
 
         return Torrent(
+            infoHash = infoHash,
             name = torrentName,
             size = size,
             seeders = seeders,
@@ -95,7 +96,7 @@ class Dmhy : SearchProvider {
             category = category,
             providerName = info.name,
             descriptionPageUrl = descriptionPageUrl,
-            infoHashOrMagnetUri = magnetUri,
+            magnetUri = magnetUri,
         )
     }
 

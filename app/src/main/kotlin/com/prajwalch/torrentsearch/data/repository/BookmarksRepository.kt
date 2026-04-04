@@ -10,7 +10,6 @@ import com.prajwalch.torrentsearch.domain.model.Torrent
 
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
@@ -40,40 +39,6 @@ class BookmarksRepository @Inject constructor(private val dao: BookmarkedTorrent
 
     suspend fun deleteAllBookmarks() {
         dao.deleteAllBookmarks()
-    }
-
-    /**
-     * Fixes bookmark IDs after migration from v4 to v5.
-     * The migration generates random IDs, but we need IDs derived from infoHash
-     * to match what Torrent.id computes. This method re-saves all bookmarks
-     * with their correct IDs.
-     */
-    suspend fun fixMigratedBookmarkIds() = withContext(Dispatchers.IO) {
-        Log.i(TAG, "Checking for bookmarks that need ID fix")
-        
-        val bookmarks = dao.getAllBookmarks().first()
-        var fixedCount = 0
-        
-        for (entity in bookmarks) {
-            // Convert to domain (computes correct ID from magnetUri)
-            val torrent = entity.toDomain()
-            val correctId = torrent.id
-            
-            // If the stored ID doesn't match the computed ID, fix it
-            if (entity.id != correctId) {
-                Log.d(TAG, "Fixing bookmark ID: ${entity.id} -> $correctId")
-                // Delete old entry and insert with correct ID
-                dao.deleteBookmark(entity)
-                dao.insertBookmark(torrent.toEntity())
-                fixedCount++
-            }
-        }
-        
-        if (fixedCount > 0) {
-            Log.i(TAG, "Fixed $fixedCount bookmark IDs")
-        } else {
-            Log.i(TAG, "No bookmark IDs needed fixing")
-        }
     }
 
     @OptIn(ExperimentalSerializationApi::class)

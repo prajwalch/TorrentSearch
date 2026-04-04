@@ -32,6 +32,7 @@ import com.prajwalch.torrentsearch.ui.theme.spaces
 fun SearchResultsFilter(
     filterOptions: FilterOptions,
     onToggleDeadTorrents: () -> Unit,
+    onToggleHideViewed: () -> Unit,
     onToggleSearchProvider: (providerName: String) -> Unit,
     onSelectAllSearchProviders: () -> Unit,
     onDeselectAllSearchProviders: () -> Unit,
@@ -81,6 +82,14 @@ fun SearchResultsFilter(
                 onClick = onToggleDeadTorrents,
                 label = { Text(text = stringResource(R.string.search_filter_chip_dead_torrents)) },
                 enabled = enableDeadTorrentsFilter,
+            )
+        }
+
+        item(key = "hide_viewed") {
+            FilterChip(
+                selected = filterOptions.hideViewed,
+                onClick = onToggleHideViewed,
+                label = { Text(text = stringResource(R.string.search_filter_chip_hide_viewed)) },
             )
         }
 
