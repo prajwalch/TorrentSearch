@@ -14,7 +14,7 @@ import javax.inject.Inject
  * Repository for managing viewed torrents.
  * Provides methods to mark torrents as viewed and retrieve viewed torrent IDs.
  */
-class ViewedTorrentsRepository @Inject constructor(
+class ViewedTorrentRepository @Inject constructor(
     private val dao: ViewedTorrentDao,
 ) {
     /**

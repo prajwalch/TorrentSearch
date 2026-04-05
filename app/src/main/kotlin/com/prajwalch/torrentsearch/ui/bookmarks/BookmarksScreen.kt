@@ -115,7 +115,7 @@ fun BookmarksScreen(
         TorrentActionsBottomSheet(
             onDismiss = { selectedBookmark = null },
             title = bookmark.name,
-            showNSFWBadge = bookmark.isNSFW(),
+            showNSFWBadge = bookmark.isNSFW,
             onDeleteBookmark = {
                 viewModel.deleteBookmarkedTorrent(torrent = bookmark)
             },

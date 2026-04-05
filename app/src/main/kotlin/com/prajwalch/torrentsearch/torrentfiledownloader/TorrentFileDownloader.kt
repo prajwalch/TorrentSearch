@@ -37,7 +37,7 @@ sealed interface TorrentFileDownloadEvent {
 
 @ViewModelScoped
 class TorrentFileDownloader @Inject constructor(
-    private val torrentsRepository: TorrentRepository,
+    private val torrentRepository: TorrentRepository,
 ) {
     private val _state = MutableStateFlow<TorrentFileDownloadState>(TorrentFileDownloadState.Empty)
     val state = _state.asStateFlow()
@@ -52,7 +52,7 @@ class TorrentFileDownloader @Inject constructor(
         _state.value = TorrentFileDownloadState.Downloading
 
         try {
-            val fileId = torrentsRepository.downloadTorrentFile(url)
+            val fileId = torrentRepository.downloadTorrentFile(url)
             if (fileId == null) {
                 _events.send(TorrentFileDownloadEvent.FileNotFound)
             } else {
@@ -79,7 +79,7 @@ class TorrentFileDownloader @Inject constructor(
         _state.value = TorrentFileDownloadState.Writing
 
         try {
-            torrentsRepository.writeTorrentFile(pendingFileId, outputStream)
+            torrentRepository.writeTorrentFile(pendingFileId, outputStream)
             _events.send(TorrentFileDownloadEvent.WriteSucceed)
         } catch (e: IOException) {
             _events.send(TorrentFileDownloadEvent.WriteFailed(e.message))

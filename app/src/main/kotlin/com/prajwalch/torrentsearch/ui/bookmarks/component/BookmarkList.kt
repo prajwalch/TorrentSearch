@@ -99,7 +99,7 @@ private fun BookmarkListItem(
             uploadDate = bookmark.uploadDate,
             category = bookmark.category,
             providerName = bookmark.providerName,
-            isNSFW = bookmark.isNSFW(),
+            isNSFW = bookmark.isNSFW,
         )
     }
 }

@@ -4,10 +4,10 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 
-import com.prajwalch.torrentsearch.data.repository.BookmarksRepository
+import com.prajwalch.torrentsearch.data.repository.BookmarkRepository
 import com.prajwalch.torrentsearch.data.repository.SearchHistoryRepository
 import com.prajwalch.torrentsearch.data.repository.SettingsRepository
-import com.prajwalch.torrentsearch.data.repository.ViewedTorrentsRepository
+import com.prajwalch.torrentsearch.data.repository.ViewedTorrentRepository
 import com.prajwalch.torrentsearch.domain.SearchTorrentsUseCase
 import com.prajwalch.torrentsearch.domain.model.Category
 import com.prajwalch.torrentsearch.domain.model.SearchResults
@@ -84,10 +84,10 @@ data class SearchProviderFilterOption(
 @HiltViewModel
 class SearchViewModel @Inject constructor(
     private val searchTorrentsUseCase: SearchTorrentsUseCase,
-    private val bookmarksRepository: BookmarksRepository,
+    private val bookmarkRepository: BookmarkRepository,
     private val searchHistoryRepository: SearchHistoryRepository,
     private val settingsRepository: SettingsRepository,
-    private val viewedTorrentsRepository: ViewedTorrentsRepository,
+    private val viewedTorrentRepository: ViewedTorrentRepository,
     private val connectivityChecker: ConnectivityChecker,
     private val torrentFileDownloader: TorrentFileDownloader,
     savedStateHandle: SavedStateHandle,
@@ -117,7 +117,7 @@ class SearchViewModel @Inject constructor(
      * Set of viewed torrent IDs for efficient lookup.
      */
     val viewedTorrentHashes: StateFlow<Set<String>> =
-        viewedTorrentsRepository
+        viewedTorrentRepository
             .getAllViewedHashes()
             .stateIn(
                 scope = viewModelScope,
@@ -294,13 +294,13 @@ class SearchViewModel @Inject constructor(
 
     fun bookmarkTorrent(torrent: Torrent) {
         viewModelScope.launch {
-            bookmarksRepository.bookmarkTorrent(torrent = torrent)
+            bookmarkRepository.bookmarkTorrent(torrent = torrent)
         }
     }
 
     fun markAsViewed(infoHash: String) {
         viewModelScope.launch {
-            viewedTorrentsRepository.markAsViewed(infoHash)
+            viewedTorrentRepository.markAsViewed(infoHash)
         }
     }
 
@@ -563,8 +563,8 @@ private class SearchResultsProcessor(
             .successes
             .asSequence()
             .filterNot { it.providerName in filters.excludedProviders }
-            .filter { nsfwModeEnabled || !it.isNSFW() }
-            .filter { filters.deadTorrents || !it.isDead() }
+            .filter { nsfwModeEnabled || !it.isNSFW }
+            .filter { filters.deadTorrents || !it.isDead }
             .filter { !filters.hideViewed || it.infoHash !in hidenViewedHashes }
             .filter { filters.query.isBlank() || it.name.contains(filters.query, true) }
             .filter { filters.category == Category.All || filters.category == it.category }

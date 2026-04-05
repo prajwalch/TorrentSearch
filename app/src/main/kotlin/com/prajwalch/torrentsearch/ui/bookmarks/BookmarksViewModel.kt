@@ -3,7 +3,7 @@ package com.prajwalch.torrentsearch.ui.bookmarks
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 
-import com.prajwalch.torrentsearch.data.repository.BookmarksRepository
+import com.prajwalch.torrentsearch.data.repository.BookmarkRepository
 import com.prajwalch.torrentsearch.data.repository.SettingsRepository
 import com.prajwalch.torrentsearch.domain.model.SortCriteria
 import com.prajwalch.torrentsearch.domain.model.SortOptions
@@ -36,7 +36,7 @@ data class BookmarksUiState(
 /** ViewModel that handles the business logic of Bookmarks screen. */
 @HiltViewModel
 class BookmarksViewModel @Inject constructor(
-    private val bookmarksRepository: BookmarksRepository,
+    private val bookmarkRepository: BookmarkRepository,
     private val settingsRepository: SettingsRepository,
     private val torrentFileDownloader: TorrentFileDownloader,
 ) : ViewModel() {
@@ -46,12 +46,12 @@ class BookmarksViewModel @Inject constructor(
     val torrentFileDownloadEvents = torrentFileDownloader.events
     val uiState = combine(
         filterQuery,
-        bookmarksRepository.getAllBookmarks(),
+        bookmarkRepository.getAllBookmarks(),
         settingsRepository.enableNSFWMode,
         settingsRepository.bookmarksSortOptions,
     ) { filterQuery, bookmarks, nsfwModeEnabled, sortOptions ->
         val bookmarks = bookmarks
-            .filter { nsfwModeEnabled || !it.isNSFW() }
+            .filter { nsfwModeEnabled || !it.isNSFW }
             .filter { filterQuery.isBlank() || it.name.contains(filterQuery, ignoreCase = true) }
             .sortedWith(
                 createSortComparator(criteria = sortOptions.criteria, order = sortOptions.order)
@@ -70,14 +70,14 @@ class BookmarksViewModel @Inject constructor(
     /** Deletes the given bookmarked torrent. */
     fun deleteBookmarkedTorrent(torrent: Torrent) {
         viewModelScope.launch {
-            bookmarksRepository.deleteBookmarkedTorrent(torrent)
+            bookmarkRepository.deleteBookmarkedTorrent(torrent)
         }
     }
 
     /** Deletes all bookmarks. */
     fun deleteAllBookmarks() {
         viewModelScope.launch {
-            bookmarksRepository.deleteAllBookmarks()
+            bookmarkRepository.deleteAllBookmarks()
         }
     }
 
@@ -103,14 +103,14 @@ class BookmarksViewModel @Inject constructor(
     /** Attempts to import bookmarks from the given stream. */
     fun importBookmarks(inputStream: InputStream) {
         viewModelScope.launch {
-            bookmarksRepository.importBookmarks(inputStream = inputStream)
+            bookmarkRepository.importBookmarks(inputStream = inputStream)
         }
     }
 
     /** Attempts to export bookmarks to the given stream. */
     fun exportBookmarks(outputStream: OutputStream) {
         viewModelScope.launch {
-            bookmarksRepository.exportBookmarks(outputStream = outputStream)
+            bookmarkRepository.exportBookmarks(outputStream = outputStream)
         }
     }
 

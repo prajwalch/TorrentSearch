@@ -84,7 +84,7 @@ private class UIndexResultsPageParser(
         val infoHash = TorrentUtils.getInfoHashFromMagnetUri(magnetUri)
         // Anchor which contains a name and description page URL.
         val nameHref = secondTd.selectFirst("a.sr-torrent-link") ?: return null
-        val torrentName = nameHref.ownText()
+        val torrentName = nameHref.text()
         val descriptionPageUrl = baseUrl + nameHref.attr("href")
 
         val size = tr.selectFirst("td.sr-col-size")?.ownText() ?: return null

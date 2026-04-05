@@ -53,11 +53,7 @@ fun SearchResults(
                 )
             }
 
-            items(
-                items = searchResults,
-                key = { "${it.name}_${it.providerName}" },
-                contentType = { it.category },
-            ) {
+            items(items = searchResults, contentType = { it.category }) {
                 TorrentListItem(
                     modifier = Modifier
                         .animateItem()
@@ -69,7 +65,7 @@ fun SearchResults(
                     uploadDate = it.uploadDate,
                     category = it.category,
                     providerName = it.providerName,
-                    isNSFW = it.isNSFW(),
+                    isNSFW = it.isNSFW,
                     isViewed = it.infoHash in viewedTorrentHashes,
                 )
                 HorizontalDivider()

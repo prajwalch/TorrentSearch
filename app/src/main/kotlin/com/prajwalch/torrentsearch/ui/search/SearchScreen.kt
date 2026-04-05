@@ -105,7 +105,7 @@ fun SearchScreen(
         TorrentActionsBottomSheet(
             onDismiss = { selectedResult = null },
             title = torrent.name,
-            showNSFWBadge = torrent.isNSFW(),
+            showNSFWBadge = torrent.isNSFW,
             onBookmarkTorrent = {
                 viewModel.bookmarkTorrent(torrent = torrent)
                 coroutineScope.launch {

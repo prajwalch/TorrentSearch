@@ -15,7 +15,7 @@ import kotlinx.coroutines.flow.transformWhile
 import javax.inject.Inject
 
 class SearchTorrentsUseCase @Inject constructor(
-    private val torrentsRepository: TorrentRepository,
+    private val torrentRepository: TorrentRepository,
     private val searchProvidersManager: SearchProvidersManager,
     private val settingsRepository: SettingsRepository,
 ) {
@@ -23,7 +23,7 @@ class SearchTorrentsUseCase @Inject constructor(
         val enabledSearchProviders = searchProvidersManager.getEnabledProvidersByCategory(category)
         val limit = getSearchResultsLimit()
 
-        torrentsRepository.search(
+        torrentRepository.search(
             query = query,
             category = category,
             searchProviders = enabledSearchProviders,
