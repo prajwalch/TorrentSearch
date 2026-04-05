@@ -25,20 +25,20 @@ fun JsonObject.getUInt(key: String): UInt? = this[key]?.asUInt()
 /** Returns the value of a given key as a [Long]. */
 fun JsonObject.getLong(key: String): Long? = this[key]?.asLong()
 
-/** Returns the json element as a [JsonArray]. */
+/** Returns the JSON element as a [JsonArray]. */
 fun JsonElement.asArray(): JsonArray = this.jsonArray
 
-/** Returns the json element as a [JsonObject]. */
+/** Returns the JSON element as a [JsonObject]. */
 fun JsonElement.asObject(): JsonObject = this.jsonObject
 
-/** Returns the json element as string, or null if the element is JsonNull. */
+/** Returns the JSON element as string, or null if the element is JsonNull. */
 fun JsonElement.asString(): String? = this.jsonPrimitive.contentOrNull
 
-/** Returns the json element as [Int]. */
+/** Returns the JSON element as [Int]. */
 fun JsonElement.asInt(): Int = this.jsonPrimitive.int
 
-/** Returns the json element as [UInt]. */
+/** Returns the JSON element as [UInt]. */
 fun JsonElement.asUInt(): UInt = this.asInt().toUInt()
 
-/** Returns the json element as [Long]. */
+/** Returns the JSON element as [Long]. */
 fun JsonElement.asLong(): Long = this.jsonPrimitive.long

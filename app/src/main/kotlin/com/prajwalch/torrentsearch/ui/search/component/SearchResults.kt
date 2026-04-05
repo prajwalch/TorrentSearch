@@ -32,8 +32,8 @@ fun SearchResults(
     isRefreshing: Boolean,
     onRefresh: () -> Unit,
     modifier: Modifier = Modifier,
-    lazyListState: LazyListState = rememberLazyListState(),
     viewedTorrentHashes: Set<String> = emptySet(),
+    lazyListState: LazyListState = rememberLazyListState(),
 ) {
     PullToRefreshBox(
         modifier = modifier,

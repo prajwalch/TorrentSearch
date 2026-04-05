@@ -77,7 +77,6 @@ fun SearchScreen(
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val torrentFileDownloadState by viewModel.torrentFileDownloadState.collectAsStateWithLifecycle()
-    val viewedTorrentHashes by viewModel.viewedTorrentHashes.collectAsStateWithLifecycle()
 
     val coroutineScope = rememberCoroutineScope()
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
@@ -274,8 +273,8 @@ fun SearchScreen(
                         searchCategory = uiState.searchCategory,
                         isRefreshing = uiState.isRefreshing,
                         onRefresh = viewModel::refreshSearchResults,
+                        viewedTorrentHashes = uiState.viewedTorrentHashes,
                         lazyListState = torrentListState.lazyListState,
-                        viewedTorrentHashes = viewedTorrentHashes,
                     )
                 }
             }

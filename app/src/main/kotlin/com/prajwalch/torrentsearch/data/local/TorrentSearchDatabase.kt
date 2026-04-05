@@ -125,6 +125,14 @@ private val MIGRATION_4_5 = object : Migration(4, 5) {
         // 3. Migrate bookmarks from old table to new one.
         db.query("SELECT * FROM bookmarks_old").use { cursor ->
             while (cursor.moveToNext()) {
+                val magnetUri = cursor.getString(cursor.getColumnIndexOrThrow("magnetUri"))
+                // Previously, due to an issue some bookmarks magnet URI got ended up
+                // with 'null' string.
+                //
+                // See https://github.com/prajwalch/TorrentSearch/pull/94.
+                if (magnetUri == "null") continue
+
+                val infoHash = TorrentUtils.getInfoHashFromMagnetUri(magnetUri)
                 val name = cursor.getString(cursor.getColumnIndexOrThrow("name"))
                 val size = cursor.getString(cursor.getColumnIndexOrThrow("size"))
                 val seeders = cursor.getInt(cursor.getColumnIndexOrThrow("seeders"))
@@ -134,7 +142,6 @@ private val MIGRATION_4_5 = object : Migration(4, 5) {
                 val category = cursor.getString(cursor.getColumnIndexOrThrow("category"))
                 val descriptionPageUrl = cursor
                     .getString(cursor.getColumnIndexOrThrow("descriptionPageUrl"))
-                val magnetUri = cursor.getString(cursor.getColumnIndexOrThrow("magnetUri"))
 
                 val fileDownloadLinkIndex = cursor.getColumnIndexOrThrow("fileDownloadLink")
                 val fileDownloadLink = if (cursor.isNull(fileDownloadLinkIndex)) {
@@ -142,8 +149,6 @@ private val MIGRATION_4_5 = object : Migration(4, 5) {
                 } else {
                     cursor.getString(fileDownloadLinkIndex)
                 }
-
-                val infoHash = TorrentUtils.getInfoHashFromMagnetUri(magnetUri)
 
                 val columnValues = ContentValues().apply {
                     put("id", infoHash)
