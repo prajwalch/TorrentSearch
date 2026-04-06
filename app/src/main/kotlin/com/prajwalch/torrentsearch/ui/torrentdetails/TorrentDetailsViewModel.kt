@@ -4,13 +4,17 @@ import androidx.compose.runtime.Stable
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+
 import com.prajwalch.torrentsearch.domain.SearchProvidersManager
+import com.prajwalch.torrentsearch.domain.TorrentFileDownloader
 import com.prajwalch.torrentsearch.domain.model.TorrentDetails
-import com.prajwalch.torrentsearch.torrentfiledownloader.TorrentFileDownloader
+
 import dagger.hilt.android.lifecycle.HiltViewModel
+
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+
 import java.io.OutputStream
 import javax.inject.Inject
 
@@ -67,13 +71,13 @@ class TorrentDetailsViewModel @Inject constructor(
 
     fun downloadTorrentFile(url: String, fileName: String) {
         viewModelScope.launch {
-            torrentFileDownloader.downloadFile(url = url, fileName = fileName)
+            torrentFileDownloader.download(url = url, fileName = fileName)
         }
     }
 
     fun downloadTorrentFileFromInfoHash(infoHash: String, fileName: String) {
         viewModelScope.launch {
-            torrentFileDownloader.downloadFileFromInfoHash(
+            torrentFileDownloader.tryDownloadUsingInfoHash(
                 infoHash = infoHash,
                 fileName = fileName,
             )
@@ -82,7 +86,7 @@ class TorrentDetailsViewModel @Inject constructor(
 
     fun writeTorrentFile(outputStream: OutputStream) {
         viewModelScope.launch {
-            torrentFileDownloader.writeFile(outputStream = outputStream)
+            torrentFileDownloader.writeFileContent(outputStream = outputStream)
         }
     }
 }
