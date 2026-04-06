@@ -13,20 +13,12 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.scan
-import kotlinx.coroutines.withContext
-
-import java.io.OutputStream
-import java.util.UUID
 
 import javax.inject.Inject
-
-typealias TorrentFileId = UUID
 
 class TorrentRepository @Inject constructor(
     private val remoteDataSource: TorrentRemoteDataSource,
 ) {
-    private val torrentFileContentCache = mutableMapOf<TorrentFileId, ByteArray>()
-
     fun search(
         query: String,
         category: Category,
@@ -48,24 +40,6 @@ class TorrentRepository @Inject constructor(
         onSuccess = { currentSearchResults.appendSuccesses(it) },
         onFailure = { currentSearchResults.appendFailure(it as SearchException) },
     )
-
-    suspend fun downloadTorrentFile(url: String): TorrentFileId? {
-        val id = UUID.nameUUIDFromBytes(url.toByteArray())
-        if (torrentFileContentCache.containsKey(id)) return id
-
-        val fileContent = remoteDataSource.downloadTorrentFile(url = url) ?: return null
-        torrentFileContentCache[id] = fileContent
-
-        return id
-    }
-
-    suspend fun writeTorrentFile(
-        fileId: TorrentFileId,
-        outputStream: OutputStream,
-    ) = withContext(Dispatchers.IO) {
-        val fileContent = torrentFileContentCache[fileId]
-        fileContent?.let(outputStream::write)
-    }
 }
 
 private fun SearchResults.appendSuccesses(successes: List<Torrent>): SearchResults {

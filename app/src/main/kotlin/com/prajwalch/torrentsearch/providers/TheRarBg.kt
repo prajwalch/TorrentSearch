@@ -1,5 +1,6 @@
 package com.prajwalch.torrentsearch.providers
 
+import com.prajwalch.torrentsearch.R
 import com.prajwalch.torrentsearch.domain.model.Category
 import com.prajwalch.torrentsearch.domain.model.Torrent
 import com.prajwalch.torrentsearch.network.HttpClient
@@ -44,7 +45,7 @@ class TheRarBg : SearchProvider {
         url = "https://therarbg.com",
         specializedCategory = Category.All,
         safetyStatus = SearchProviderSafetyStatus.Unsafe(
-            reason = "Clone of original RARBG with many fake torrents. Use extreme caution."
+            reason = R.string.therarbg_unsafe_reason,
         ),
         enabledByDefault = false,
     )

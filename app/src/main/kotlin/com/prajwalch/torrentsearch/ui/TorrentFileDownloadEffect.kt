@@ -10,8 +10,8 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 
 import com.prajwalch.torrentsearch.R
-import com.prajwalch.torrentsearch.torrentfiledownloader.TorrentFileDownloadEvent
-import com.prajwalch.torrentsearch.torrentfiledownloader.TorrentFileDownloadState
+import com.prajwalch.torrentsearch.domain.TorrentFileDownloadEvent
+import com.prajwalch.torrentsearch.domain.TorrentFileDownloadState
 
 import kotlinx.coroutines.flow.Flow
 import java.io.OutputStream
@@ -76,7 +76,7 @@ fun TorrentFileDownloadEffect(
 
     LaunchedEffect(state) {
         when (state) {
-            TorrentFileDownloadState.Empty -> {
+            TorrentFileDownloadState.Idle -> {
                 /* Do nothing */
             }
 

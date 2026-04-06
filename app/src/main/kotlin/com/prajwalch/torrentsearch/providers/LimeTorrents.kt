@@ -1,5 +1,6 @@
 package com.prajwalch.torrentsearch.providers
 
+import com.prajwalch.torrentsearch.R
 import com.prajwalch.torrentsearch.domain.model.Category
 import com.prajwalch.torrentsearch.domain.model.Torrent
 
@@ -22,7 +23,7 @@ class LimeTorrents : SearchProvider {
         url = "https://limetorrents.lol",
         specializedCategory = Category.All,
         safetyStatus = SearchProviderSafetyStatus.Unsafe(
-            reason = "Not technically unsafe, but it ignores category selection. Choose carefully."
+            reason = R.string.limetorrents_unsafe_reason,
         ),
         enabledByDefault = false,
     )

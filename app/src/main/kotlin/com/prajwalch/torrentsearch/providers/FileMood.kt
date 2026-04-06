@@ -56,6 +56,8 @@ class FileMood : SearchProvider {
         val infoHash = descriptionPageUrl
             .removeSuffix(".html")
             .takeLastWhile { it != '-' }
+            .lowercase()
+            .trim()
 
         return Torrent(
             infoHash = infoHash,

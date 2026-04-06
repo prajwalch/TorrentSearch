@@ -40,7 +40,7 @@ object TorrentUtils {
             "Can't extract info hash from '$magnetUri'"
         }
 
-        return magnetUri.removePrefix(MAGNET_URI_PREFIX).takeWhile { it != '&' }
+        return magnetUri.removePrefix(MAGNET_URI_PREFIX).takeWhile { it != '&' }.lowercase().trim()
     }
 
     fun createMagnetUri(infoHash: String): String =

@@ -88,7 +88,7 @@ class InternetArchive : SearchProvider {
             .getString("identifier")
             ?.let { "${info.url}/details/$it" }
             ?: return null
-        val infoHash = obj.getString("btih") ?: return null
+        val infoHash = obj.getString("btih")?.lowercase()?.trim() ?: return null
 
         return Torrent(
             infoHash = infoHash,

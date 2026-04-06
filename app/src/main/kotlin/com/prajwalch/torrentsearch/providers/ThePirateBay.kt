@@ -1,5 +1,6 @@
 package com.prajwalch.torrentsearch.providers
 
+import com.prajwalch.torrentsearch.R
 import com.prajwalch.torrentsearch.domain.model.Category
 import com.prajwalch.torrentsearch.domain.model.Torrent
 import com.prajwalch.torrentsearch.extension.asArray
@@ -18,9 +19,7 @@ class ThePirateBay : SearchProvider {
         name = "ThePirateBay",
         url = "https://thepiratebay.org",
         specializedCategory = Category.All,
-        safetyStatus = SearchProviderSafetyStatus.Unsafe(
-            reason = "Many malware reports due to inadequate moderation."
-        ),
+        safetyStatus = SearchProviderSafetyStatus.Unsafe(reason = R.string.tpb_unsafe_reason),
         enabledByDefault = false,
     )
 
@@ -88,7 +87,7 @@ class ThePirateBay : SearchProvider {
         val id = torrentObject.getString("id") ?: return null
         val descriptionPageUrl = "${info.url}/description.php?id=$id"
 
-        val infoHash = torrentObject.getString("info_hash") ?: return null
+        val infoHash = torrentObject.getString("info_hash")?.lowercase()?.trim() ?: return null
         val sizeBytes = torrentObject.getString("size") ?: return null
         val size = FileSizeUtils.formatBytes(bytes = sizeBytes)
         val seeders = torrentObject.getString("seeders")?.toUIntOrNull() ?: return null

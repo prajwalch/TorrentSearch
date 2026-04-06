@@ -205,4 +205,8 @@
     <string name="settings_section_about">About</string>
     <string name="settings_version">Version</string>
     <string name="settings_source_code">Source code</string>
+
+    <string name="limetorrents_unsafe_reason">Not technically unsafe, but it ignores category selection. Choose carefully.</string>
+    <string name="tpb_unsafe_reason">Many malware reports due to inadequate moderation.</string>
+    <string name="therarbg_unsafe_reason">Clone of original RARBG with many fake torrents. Use extreme caution.</string>
 </resources>

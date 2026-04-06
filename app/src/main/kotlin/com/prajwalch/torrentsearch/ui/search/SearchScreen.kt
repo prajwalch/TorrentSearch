@@ -123,7 +123,7 @@ fun SearchScreen(
                         fileName = torrentFileName,
                     )
                 } else {
-                    viewModel.downloadTorrentFileFromInfoHash(
+                    viewModel.downloadTorrentFileUsingInfoHash(
                         infoHash = torrent.infoHash,
                         fileName = torrentFileName,
                     )

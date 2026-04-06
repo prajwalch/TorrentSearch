@@ -1,5 +1,7 @@
 package com.prajwalch.torrentsearch.providers
 
+import androidx.annotation.StringRes
+
 import com.prajwalch.torrentsearch.domain.model.Category
 import com.prajwalch.torrentsearch.domain.model.Torrent
 import com.prajwalch.torrentsearch.domain.model.TorrentDetails
@@ -46,7 +48,7 @@ sealed class SearchProviderSafetyStatus {
     object Safe : SearchProviderSafetyStatus()
 
     /** Search provider is not safe and requires special care to use it. */
-    data class Unsafe(val reason: String) : SearchProviderSafetyStatus()
+    data class Unsafe(@field:StringRes val reason: Int) : SearchProviderSafetyStatus()
 
     /** Returns `true` if the status is [SearchProviderSafetyStatus.Unsafe]. */
     fun isUnsafe(): Boolean = this is Unsafe
