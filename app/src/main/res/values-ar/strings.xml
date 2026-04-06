@@ -156,4 +156,9 @@
     <string name="search_filter_providers_action_select_all">تحديد الكل</string>
     <string name="search_filter_providers_action_deselect_all">إلغاء تحديد الكل</string>
     <string name="search_filter_providers_action_invert_selection">عكس التحديد</string>
+    <string name="torrent_file_not_found_error">لم يتم العثور على ملف التورنت لدى المزود</string>
+    <string name="search_filter_chip_hide_viewed">إخفاء المشاهدات</string>
+    <string name="limetorrents_unsafe_reason">ليس الأمر غير آمن من الناحية الفنية، ولكنه يتجاهل اختيار الفئة. اختر بعناية.</string>
+    <string name="tpb_unsafe_reason">العديد من تقارير البرامج الضارة ناتجة عن عدم كفاية الرقابة.</string>
+    <string name="therarbg_unsafe_reason">نسخة مقلدة من RARBG الأصلية مع العديد من ملفات التورنت المزيفة. توخّ الحذر الشديد.</string>
 </resources>

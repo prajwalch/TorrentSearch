@@ -8,6 +8,7 @@ import androidx.lifecycle.viewModelScope
 
 import com.prajwalch.torrentsearch.BuildConfig
 import com.prajwalch.torrentsearch.data.repository.SettingsRepository
+import com.prajwalch.torrentsearch.data.repository.ViewedTorrentRepository
 import com.prajwalch.torrentsearch.domain.SearchProvidersManager
 import com.prajwalch.torrentsearch.domain.model.Category
 import com.prajwalch.torrentsearch.domain.model.DarkTheme
@@ -75,6 +76,7 @@ data class AdvancedSettingsUiState(
 class SettingsViewModel @Inject constructor(
     private val settingsRepository: SettingsRepository,
     private val searchProvidersManager: SearchProvidersManager,
+    private val viewedTorrentRepository: ViewedTorrentRepository,
 ) : ViewModel() {
     val uiState = combine(
         settingsRepository.getAppearanceSettings(),
@@ -115,6 +117,13 @@ class SettingsViewModel @Inject constructor(
         viewModelScope.launch {
             settingsRepository.enableNSFWMode(enable = enable)
             if (!enable) searchProvidersManager.disableRestrictedProviders()
+        }
+    }
+
+    /** Clears the list of viewed torrents. */
+    fun clearViewedTorrents() {
+        viewModelScope.launch {
+            viewedTorrentRepository.clearAll()
         }
     }
 

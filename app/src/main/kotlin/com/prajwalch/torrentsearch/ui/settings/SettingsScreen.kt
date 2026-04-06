@@ -46,6 +46,7 @@ import com.prajwalch.torrentsearch.domain.model.MaxNumResults
 import com.prajwalch.torrentsearch.ui.categoryStringResource
 import com.prajwalch.torrentsearch.ui.component.ArrowBackIconButton
 import com.prajwalch.torrentsearch.ui.darkThemeStringResource
+import com.prajwalch.torrentsearch.ui.settings.component.ClearViewedTorrentsDialog
 import com.prajwalch.torrentsearch.ui.settings.component.DarkThemeOptionsMenu
 import com.prajwalch.torrentsearch.ui.settings.component.MaxNumResultsDialog
 import com.prajwalch.torrentsearch.ui.settings.component.SettingsListItem
@@ -102,6 +103,7 @@ fun SettingsScreen(
             GeneralSettings(
                 uiState = uiState.generalSettings,
                 onEnableNSFWMode = viewModel::enableNSFWMode,
+                onClearViewedTorrents = viewModel::clearViewedTorrents,
             )
             SearchSettings(
                 uiState = uiState.searchSettings,
@@ -212,8 +214,20 @@ private fun AppearanceSettings(
 private fun GeneralSettings(
     uiState: GeneralSettingsUiState,
     onEnableNSFWMode: (Boolean) -> Unit,
+    onClearViewedTorrents: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    var showClearViewedTorrentsDialog by rememberSaveable { mutableStateOf(false) }
+    if (showClearViewedTorrentsDialog) {
+        ClearViewedTorrentsDialog(
+            onDismiss = { showClearViewedTorrentsDialog = false },
+            onConfirm = {
+                onClearViewedTorrents()
+                showClearViewedTorrentsDialog = false
+            },
+        )
+    }
+
     Column(modifier = modifier) {
         SettingsSectionTitle(title = R.string.settings_section_general)
 
@@ -245,6 +259,13 @@ private fun GeneralSettings(
                     onCheckedChange = onEnableNSFWMode,
                 )
             },
+        )
+
+        SettingsListItem(
+            onClick = { showClearViewedTorrentsDialog = true },
+            icon = R.drawable.ic_history,
+            headline = R.string.settings_clear_viewed_torrents,
+            supportingContent = stringResource(R.string.settings_clear_viewed_torrents_summary),
         )
     }
 }
