@@ -81,9 +81,9 @@
     <string name="home_search_query_hint">Search…</string>
     <string name="home_button_search">Search</string>
 
-    <string name="search_query_hint">Search results</string>
     <string name="search_action_view_errors">View errors</string>
     <string name="search_action_settings">Settings</string>
+    <string name="search_filter_query_hint">Filter by name</string>
     <string name="search_filter_chip_dead_torrents">Dead torrents</string>
     <string name="search_filter_chip_hide_viewed">Hide viewed</string>
     <string name="search_filter_chip_search_providers">Search providers</string>

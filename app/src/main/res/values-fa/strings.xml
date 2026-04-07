@@ -33,7 +33,7 @@
     <string name="torrent_list_url_copied_message">لینک در کلیپ‌ بورد کپی شد</string>
     <string name="home_search_query_hint">جستجو…</string>
     <string name="home_button_search">جستجو</string>
-    <string name="search_query_hint">نتایج جستجو</string>
+    <string name="search_filter_query_hint">نتایج جستجو</string>
     <string name="search_filter_providers_title">ارائه دهندگان جستجو</string>
     <string name="search_filter_chip_dead_torrents">تورنت های مرده</string>
     <string name="search_internet_connection_error">بدون اتصال به اینترنت</string>

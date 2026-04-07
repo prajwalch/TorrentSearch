@@ -235,7 +235,7 @@ class SearchViewModel @Inject constructor(
         searchOrchestrator.refresh(searchQuery, searchCategory)
     }
 
-    fun filterSearchResults(query: String) {
+    fun filterSearchResultsByName(query: String) {
         resultsProcessor.updateFilterQuery(query)
     }
 

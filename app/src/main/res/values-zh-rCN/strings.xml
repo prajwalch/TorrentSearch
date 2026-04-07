@@ -37,7 +37,7 @@
     <string name="torrent_list_url_copied_message">已复制链接！</string>
     <string name="home_search_query_hint">搜索……</string>
     <string name="home_button_search">搜索</string>
-    <string name="search_query_hint">搜索结果</string>
+    <string name="search_filter_query_hint">搜索结果</string>
     <string name="search_filter_providers_title">搜索源</string>
     <string name="search_filter_chip_dead_torrents">死种</string>
     <string name="search_internet_connection_error">无网络连接</string>

@@ -25,6 +25,7 @@ import com.prajwalch.torrentsearch.R
 import com.prajwalch.torrentsearch.domain.model.Category
 import com.prajwalch.torrentsearch.ui.categoryStringResource
 import com.prajwalch.torrentsearch.ui.component.RoundedDropdownMenu
+import com.prajwalch.torrentsearch.ui.iconResId
 import com.prajwalch.torrentsearch.ui.search.FilterOptions
 import com.prajwalch.torrentsearch.ui.theme.spaces
 
@@ -80,6 +81,13 @@ fun SearchResultsFilter(
             FilterChip(
                 selected = filterOptions.deadTorrents,
                 onClick = onToggleDeadTorrents,
+                leadingIcon = {
+                    Icon(
+                        modifier = Modifier.size(FilterChipDefaults.IconSize),
+                        painter = painterResource(R.drawable.ic_heart_broken),
+                        contentDescription = null,
+                    )
+                },
                 label = { Text(text = stringResource(R.string.search_filter_chip_dead_torrents)) },
                 enabled = enableDeadTorrentsFilter,
             )
@@ -89,6 +97,13 @@ fun SearchResultsFilter(
             FilterChip(
                 selected = filterOptions.hideViewed,
                 onClick = onToggleHideViewed,
+                leadingIcon = {
+                    Icon(
+                        modifier = Modifier.size(FilterChipDefaults.IconSize),
+                        painter = painterResource(R.drawable.ic_visibility_off),
+                        contentDescription = null,
+                    )
+                },
                 label = { Text(text = stringResource(R.string.search_filter_chip_hide_viewed)) },
             )
         }
@@ -103,6 +118,13 @@ fun SearchResultsFilter(
                 modifier = Modifier.animateItem(),
                 selected = selected,
                 onClick = { showSearchProvidersFilter = true },
+                leadingIcon = {
+                    Icon(
+                        modifier = Modifier.size(FilterChipDefaults.IconSize),
+                        painter = painterResource(R.drawable.ic_travel_explore),
+                        contentDescription = null,
+                    )
+                },
                 label = { Text(text = label) },
                 trailingIcon = arrowDownIcon,
                 enabled = enableSearchProvidersFilter,
@@ -119,6 +141,13 @@ fun SearchResultsFilter(
                 FilterChip(
                     selected = !isDefaultCategorySelected,
                     onClick = { showCategoryOptions = true },
+                    leadingIcon = {
+                        Icon(
+                            modifier = Modifier.size(FilterChipDefaults.IconSize),
+                            painter = painterResource(filterOptions.category.iconResId()),
+                            contentDescription = null,
+                        )
+                    },
                     label = { Text(text = categoryStringResource(filterOptions.category)) },
                     trailingIcon = arrowDownIcon,
                     enabled = enableCategoryFilter,

@@ -60,7 +60,7 @@
     <string name="torrent_list_url_copied_message">Bağlantı panoya kopyalandı!</string>
     <string name="home_search_query_hint">Ara…</string>
     <string name="home_button_search">Ara</string>
-    <string name="search_query_hint">Arama sonuçları</string>
+    <string name="search_filter_query_hint">Arama sonuçları</string>
     <string name="search_filter_providers_title">Arama sağlayıcıları</string>
     <string name="search_history_screen_title">Arama geçmişi</string>
     <string name="search_history_dialog_title_clear_history">Arama geçmişini temizle?</string>

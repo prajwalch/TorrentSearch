@@ -91,7 +91,7 @@
     <string name="category_porn">പോർൺ</string>
     <string name="category_series">സീരീസ്</string>
     <string name="category_other">മറ്റുള്ളവ</string>
-    <string name="search_query_hint">സേർച്ച് റിസൾട്ടുകൾ</string>
+    <string name="search_filter_query_hint">സേർച്ച് റിസൾട്ടുകൾ</string>
     <string name="search_filter_providers_title">സേർച്ച് പ്രൊവൈഡർമാർ</string>
     <string name="search_filter_chip_dead_torrents">ഡെഡ് ടോറന്റുകൾ</string>
     <plurals name="bookmarks_count_format">

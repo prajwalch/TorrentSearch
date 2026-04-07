@@ -16,7 +16,11 @@ import com.prajwalch.torrentsearch.R
 
 @Composable
 fun TryAgainButton(onClick: () -> Unit, modifier: Modifier = Modifier) {
-    Button(modifier = modifier, onClick = onClick) {
+    Button(
+        modifier = modifier,
+        onClick = onClick,
+        contentPadding = ButtonDefaults.ButtonWithIconContentPadding,
+    ) {
         Icon(
             modifier = Modifier.size(ButtonDefaults.IconSize),
             painter = painterResource(R.drawable.ic_refresh),

@@ -40,7 +40,7 @@
     <string name="torrent_list_url_copied_message">تم نسخ الرابط إلى الحافظة!</string>
     <string name="home_search_query_hint">البحث…</string>
     <string name="home_button_search">أبحث</string>
-    <string name="search_query_hint">نتائج البحث</string>
+    <string name="search_filter_query_hint">نتائج البحث</string>
     <string name="search_filter_providers_title">مزوّدو البحث</string>
     <string name="search_filter_chip_dead_torrents">التورنت الميتة</string>
     <string name="search_internet_connection_error">لا يوجد اتصال بالإنترنت</string>

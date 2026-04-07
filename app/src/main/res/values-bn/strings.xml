@@ -42,7 +42,7 @@
     <string name="torrent_list_url_copied_message">ইউআরএল ক্লিপবোর্ডে কপি করা হয়েছে!</string>
     <string name="home_search_query_hint">অনুসন্ধান করুন…</string>
     <string name="home_button_search">অনুসন্ধান করুন</string>
-    <string name="search_query_hint">অনুসন্ধানের ফলাফল</string>
+    <string name="search_filter_query_hint">অনুসন্ধানের ফলাফল</string>
     <string name="search_filter_providers_title">সরবরাহকারীদের অনুসন্ধান করুন</string>
     <string name="search_filter_chip_dead_torrents">মৃত টরেন্ট</string>
     <string name="search_internet_connection_error">ইন্টারনেট সংযোগ নেই</string>

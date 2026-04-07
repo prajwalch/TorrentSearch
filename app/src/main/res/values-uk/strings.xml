@@ -30,7 +30,7 @@
     <string name="torrent_list_url_copied_message">URL-адресу скопійовано!</string>
     <string name="home_search_query_hint">Пошук…</string>
     <string name="home_button_search">Пошук</string>
-    <string name="search_query_hint">Результати пошуку</string>
+    <string name="search_filter_query_hint">Результати пошуку</string>
     <string name="search_filter_providers_title">Пошукові системи</string>
     <string name="search_filter_chip_dead_torrents">Неактивні торенти</string>
     <string name="search_internet_connection_error">Нема з\\\'єднання з інтернетом</string>

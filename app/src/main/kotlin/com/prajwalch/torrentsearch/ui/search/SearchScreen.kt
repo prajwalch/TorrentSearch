@@ -178,7 +178,7 @@ fun SearchScreen(
             SearchScreenTopBar(
                 uiState = uiState,
                 onNavigateBack = onNavigateBack,
-                onFilterQueryChange = viewModel::filterSearchResults,
+                onFilterQueryChange = viewModel::filterSearchResultsByName,
                 onChangeSortCriteria = viewModel::updateSortCriteria,
                 onChangeSortOrder = viewModel::updateSortOrder,
                 onShowSearchFailures = { showSearchFailures = true },
@@ -353,7 +353,7 @@ private fun SearchScreenTopBar(
                 state = searchBarState,
                 onQueryChange = onFilterQueryChange,
                 placeholder = {
-                    Text(text = stringResource(R.string.search_query_hint))
+                    Text(text = stringResource(R.string.search_filter_query_hint))
                 },
             )
         },

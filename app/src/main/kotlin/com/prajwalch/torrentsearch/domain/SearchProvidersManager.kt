@@ -58,7 +58,10 @@ class SearchProvidersManager @Inject constructor(
         val enabledProviders = getEnabledProviders()
         if (category == Category.All) return enabledProviders
 
-        return enabledProviders.filter { it.info.specializedCategory == category }
+        return enabledProviders.filter {
+            val specializedCategory = it.info.specializedCategory
+            specializedCategory == Category.All || specializedCategory == category
+        }
     }
 
     /**
