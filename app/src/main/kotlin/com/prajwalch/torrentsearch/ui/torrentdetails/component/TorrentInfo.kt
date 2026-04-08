@@ -35,7 +35,7 @@ fun TorrentInfo(
     category: String?,
     uploader: String?,
     lastChecked: String?,
-    infoHash: () -> String,
+    infoHash: String,
     modifier: Modifier = Modifier,
 ) {
     SectionCard(
@@ -85,7 +85,7 @@ fun TorrentInfo(
                 InfoText(
                     icon = R.drawable.ic_info,
                     label = stringResource(R.string.torrent_details_label_info_hash),
-                    text = infoHash(),
+                    text = infoHash,
                 )
             }
         }
@@ -137,6 +137,6 @@ private fun TorrentInfoPreview() {
         category = "Movies",
         uploader = "prajwalch",
         lastChecked = "2025-05-06",
-        infoHash = { "dkfdskfjek3rdfkdjfkdjfkdjfkdjfkdjfdkfj4434fk3k43AAdg" },
+        infoHash = "dkfdskfjek3rdfkdjfkdjfkdjfkdjfkdjfdkfj4434fk3k43AAdg",
     )
 }

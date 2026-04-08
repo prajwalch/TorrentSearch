@@ -210,7 +210,7 @@ private fun TorrentDetailsScreenContent(
             category = details.category,
             uploader = details.uploader,
             lastChecked = details.lastChecked,
-            infoHash = { details.infoHash },
+            infoHash = details.infoHash,
         )
         // Download buttons.
         Row(
