@@ -3,6 +3,7 @@ package com.prajwalch.torrentsearch.providers
 import com.prajwalch.torrentsearch.domain.model.Category
 import com.prajwalch.torrentsearch.domain.model.MagnetUri
 import com.prajwalch.torrentsearch.domain.model.Torrent
+import com.prajwalch.torrentsearch.domain.model.TorrentDetails
 import com.prajwalch.torrentsearch.network.HttpClient
 import com.prajwalch.torrentsearch.util.DateUtils
 import com.prajwalch.torrentsearch.util.TorrentUtils
@@ -26,6 +27,8 @@ class BitSearch : SearchProvider {
         enabledByDefault = false,
         type = SearchProviderType.Builtin,
     )
+
+    private val resultsPageParser = BitSearchResultsPageParser(info.name)
 
     override suspend fun search(query: String, context: SearchContext): List<Torrent> =
         coroutineScope {
@@ -64,11 +67,7 @@ class BitSearch : SearchProvider {
         }
 
         val responseHtml = httpClient.get(url = requestUrl)
-        val torrents = withContext(Dispatchers.Default) {
-            parseResponseHtml(html = responseHtml)
-        }
-
-        return torrents.orEmpty()
+        return resultsPageParser.parse(html = responseHtml, pageUrl = requestUrl).orEmpty()
     }
 
     private fun getCategoryId(category: Category): Int? = when (category) {
@@ -84,13 +83,31 @@ class BitSearch : SearchProvider {
         Category.Other -> 1
     }
 
-    private fun parseResponseHtml(html: String): List<Torrent>? {
-        return Jsoup
-            .parse(html)
-            .selectFirst("div.space-y-4")
-            ?.children()
-            ?.mapNotNull { parseInfoDiv(it) }
+    override suspend fun getDetails(detailsPageUrl: String): TorrentDetails? {
+        val responseHtml = HttpClient.get(detailsPageUrl)
+        return BitSearchDetailsPageParser.parse(html = responseHtml, pageUrl = detailsPageUrl)
     }
+}
+
+private data class TorrentInfo(
+    val torrentName: String,
+    val size: String,
+    val seeders: UInt,
+    val peers: UInt,
+    val category: Category,
+    val uploadDate: String,
+    val descriptionPageUrl: String,
+)
+
+private class BitSearchResultsPageParser(private val providerName: String) {
+    suspend fun parse(html: String, pageUrl: String): List<Torrent>? =
+        withContext(Dispatchers.Default) {
+            Jsoup
+                .parse(html, pageUrl)
+                .selectFirst("div.space-y-4")
+                ?.children()
+                ?.mapNotNull { parseInfoDiv(it) }
+        }
 
     private fun parseInfoDiv(div: Element): Torrent? {
         val innerDivChildren = div
@@ -110,13 +127,14 @@ class BitSearch : SearchProvider {
             size = torrentInfo.size,
             seeders = torrentInfo.seeders,
             peers = torrentInfo.peers,
-            providerName = info.name,
+            providerName = providerName,
             uploadDate = torrentInfo.uploadDate,
             category = torrentInfo.category,
             descriptionPageUrl = torrentInfo.descriptionPageUrl,
             magnetUri = magnetUri,
         )
     }
+
 
     private fun parseTorrentInfoDiv(div: Element): TorrentInfo? {
         // First child contains torrent name and description page URL which
@@ -125,7 +143,7 @@ class BitSearch : SearchProvider {
             .selectFirst("div:nth-child(1) > h3 > a")
             ?: return null
         val torrentName = torrentNameAnchor.ownText()
-        val descriptionPageUrl = "${info.url}${torrentNameAnchor.attr("href")}"
+        val descriptionPageUrl = torrentNameAnchor.attr("abs:href")
 
         // Second child contains category, size and upload date respectively
         // wrapped inside a <span> tag which in-turn contains two tags i.e.
@@ -236,12 +254,51 @@ class BitSearch : SearchProvider {
     }
 }
 
-private data class TorrentInfo(
-    val torrentName: String,
-    val size: String,
-    val seeders: UInt,
-    val peers: UInt,
-    val category: Category,
-    val uploadDate: String,
-    val descriptionPageUrl: String,
-)
+private object BitSearchDetailsPageParser {
+    private const val NAME =
+        "body > div > main > div > main > div > div.lg\\:col-span-2.space-y-4.sm\\:space-y-6.lg\\:space-y-8 > div.bg-white.rounded-xl.shadow-lg.border.border-gray-200.overflow-hidden > div.bg-gradient-to-r.from-blue-600.to-purple-600.p-3.sm\\:p-4.text-white > div > div.flex.flex-col.sm\\:flex-row.gap-3.sm\\:gap-4 > div.flex-1.min-w-0.text-center.sm\\:text-left > h1"
+    private const val SIZE =
+        "body > div > main > div > main > div > div.lg\\:col-span-2.space-y-4.sm\\:space-y-6.lg\\:space-y-8 > div.bg-white.rounded-xl.shadow-lg.border.border-gray-200.overflow-hidden > div.bg-gradient-to-r.from-blue-600.to-purple-600.p-3.sm\\:p-4.text-white > div > div.grid.grid-cols-2.sm\\:grid-cols-4.gap-2.sm\\:gap-3 > div:nth-child(3) > div.text-lg.sm\\:text-xl.font-bold.text-white"
+    private const val SEEDERS =
+        "body > div > main > div > main > div > div.lg\\:col-span-2.space-y-4.sm\\:space-y-6.lg\\:space-y-8 > div.bg-white.rounded-xl.shadow-lg.border.border-gray-200.overflow-hidden > div.bg-gradient-to-r.from-blue-600.to-purple-600.p-3.sm\\:p-4.text-white > div > div.grid.grid-cols-2.sm\\:grid-cols-4.gap-2.sm\\:gap-3 > div:nth-child(1) > div.text-lg.sm\\:text-xl.font-bold.text-white"
+    private const val PEERS =
+        "body > div > main > div > main > div > div.lg\\:col-span-2.space-y-4.sm\\:space-y-6.lg\\:space-y-8 > div.bg-white.rounded-xl.shadow-lg.border.border-gray-200.overflow-hidden > div.bg-gradient-to-r.from-blue-600.to-purple-600.p-3.sm\\:p-4.text-white > div > div.grid.grid-cols-2.sm\\:grid-cols-4.gap-2.sm\\:gap-3 > div:nth-child(2) > div.text-lg.sm\\:text-xl.font-bold.text-white"
+    private const val UPLOAD_DATE =
+        "body > div > main > div > main > div > div.lg\\:col-span-2.space-y-4.sm\\:space-y-6.lg\\:space-y-8 > div.flex.flex-col.gap-6 > div:nth-child(1) > div.p-6 > div.grid.grid-cols-1.md\\:grid-cols-2.gap-8 > div.space-y-4 > div > div:nth-child(1) > div.text-sm.font-bold.text-gray-900"
+    private const val LAST_CHECKED =
+        "body > div > main > div > main > div > div.lg\\:col-span-2.space-y-4.sm\\:space-y-6.lg\\:space-y-8 > div.flex.flex-col.gap-6 > div:nth-child(1) > div.p-6 > div.grid.grid-cols-1.md\\:grid-cols-2.gap-8 > div.space-y-4 > div > div:nth-child(2) > div.text-sm.font-bold.text-gray-900"
+    private const val CATEGORY =
+        "body > div > main > div > main > div > div.lg\\:col-span-2.space-y-4.sm\\:space-y-6.lg\\:space-y-8 > div.bg-white.rounded-xl.shadow-lg.border.border-gray-200.overflow-hidden > div.bg-gradient-to-r.from-blue-600.to-purple-600.p-3.sm\\:p-4.text-white > div > div.flex.flex-col.sm\\:flex-row.gap-3.sm\\:gap-4 > div.flex-1.min-w-0.text-center.sm\\:text-left > div.flex.flex-wrap.justify-center.sm\\:justify-start.gap-1\\.5.sm\\:gap-2.mb-2.sm\\:mb-3 > span.inline-flex.items-center.px-2.sm\\:px-3.py-1.rounded-full.text-xs.font-semibold.bg-white.bg-opacity-20.text-white.backdrop-blur-sm"
+    private const val MAGNET_URI = """a[href^="magnet:?"]"""
+    private const val FILE_DOWNLOAD_LINK = """a[href^="/download/torrent/"]"""
+
+    suspend fun parse(html: String, pageUrl: String): TorrentDetails? =
+        withContext(Dispatchers.Default) {
+            val html = Jsoup.parse(html, pageUrl)
+
+            val name = html.selectFirst(NAME)?.ownText() ?: return@withContext null
+            val magnetUri = html.selectFirst(MAGNET_URI)?.attr("href") ?: return@withContext null
+            val infoHash = TorrentUtils.getInfoHashFromMagnetUri(magnetUri)
+
+            val size = html.selectFirst(SIZE)?.ownText() ?: "0 KB"
+            val seeders = html.selectFirst(SEEDERS)?.ownText()?.toUIntOrNull() ?: 1U
+            val peers = html.selectFirst(PEERS)?.ownText()?.toUIntOrNull() ?: 1U
+            val uploadDate = html.selectFirst(UPLOAD_DATE)?.ownText() ?: "0 min ago"
+            val lastChecked = html.selectFirst(LAST_CHECKED)?.ownText()
+            val category = html.selectFirst(CATEGORY)?.ownText()
+            val fileDownloadLink = html.selectFirst(FILE_DOWNLOAD_LINK)?.attr("abs:href")
+
+            TorrentDetails(
+                infoHash = infoHash,
+                name = name,
+                size = size,
+                seeders = seeders,
+                peers = peers,
+                uploadDate = uploadDate,
+                category = category,
+                lastChecked = lastChecked,
+                magnetUri = magnetUri,
+                fileDownloadLink = fileDownloadLink,
+            )
+        }
+}
