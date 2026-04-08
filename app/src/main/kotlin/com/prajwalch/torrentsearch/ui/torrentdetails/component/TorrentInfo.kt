@@ -1,17 +1,21 @@
 package com.prajwalch.torrentsearch.ui.torrentdetails.component
 
+import androidx.annotation.DrawableRes
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.text.selection.SelectionContainer
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.style.TextAlign
@@ -44,34 +48,42 @@ fun TorrentInfo(
                 verticalArrangement = Arrangement.spacedBy(MaterialTheme.spaces.small),
             ) {
                 InfoText(
+                    icon = R.drawable.ic_storage,
                     label = stringResource(R.string.torrent_details_label_file_size),
                     text = size,
                 )
                 InfoText(
+                    icon = R.drawable.ic_upload,
                     label = stringResource(R.string.torrent_details_label_seeders),
                     text = seeders.toString(),
                 )
                 InfoText(
+                    icon = R.drawable.ic_download,
                     label = stringResource(R.string.torrent_details_label_peers),
                     text = peers.toString(),
                 )
                 InfoText(
+                    icon = R.drawable.ic_calendar_month,
                     label = stringResource(R.string.torrent_details_label_upload_date),
                     text = uploadDate,
                 )
                 InfoText(
+                    icon = R.drawable.ic_category,
                     label = stringResource(R.string.torrent_details_label_category),
                     text = category,
                 )
                 InfoText(
+                    icon = R.drawable.ic_person,
                     label = stringResource(R.string.torrent_details_label_uploader),
                     text = uploader,
                 )
                 InfoText(
+                    icon = R.drawable.ic_update,
                     label = stringResource(R.string.torrent_details_label_last_checked),
                     text = lastChecked,
                 )
                 InfoText(
+                    icon = R.drawable.ic_info,
                     label = stringResource(R.string.torrent_details_label_info_hash),
                     text = infoHash(),
                 )
@@ -82,6 +94,7 @@ fun TorrentInfo(
 
 @Composable
 private fun InfoText(
+    @DrawableRes icon: Int,
     label: String,
     text: String?,
     modifier: Modifier = Modifier,
@@ -91,8 +104,20 @@ private fun InfoText(
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        Text(modifier = Modifier.width(120.dp), text = label)
+        Row(
+            modifier = Modifier.width(120.dp),
+            horizontalArrangement = Arrangement.spacedBy(MaterialTheme.spaces.small),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Icon(
+                modifier = Modifier.size(16.dp),
+                painter = painterResource(icon),
+                contentDescription = null,
+            )
+            Text(text = label)
+        }
         Text(
+            modifier = Modifier.weight(1f),
             text = text ?: stringResource(R.string.torrent_details_message_not_available),
             color = MaterialTheme.colorScheme.onSurface,
             textAlign = TextAlign.End,
