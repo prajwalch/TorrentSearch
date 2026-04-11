@@ -161,4 +161,9 @@
     <string name="limetorrents_unsafe_reason">ليس الأمر غير آمن من الناحية الفنية، ولكنه يتجاهل اختيار الفئة. اختر بعناية.</string>
     <string name="tpb_unsafe_reason">العديد من تقارير البرامج الضارة ناتجة عن عدم كفاية الرقابة.</string>
     <string name="therarbg_unsafe_reason">نسخة مقلدة من RARBG الأصلية مع العديد من ملفات التورنت المزيفة. توخّ الحذر الشديد.</string>
+    <string name="settings_clear_viewed_torrents">حذف ملفات التورنت التي تم عرضها</string>
+    <string name="settings_clear_viewed_torrents_summary">مسح قائمة torrents المفتوحة مسبقاً</string>
+    <string name="settings_clear_viewed_torrents_dialog_text">هل أنت متأكد أنك تريد مسح جميع ملفات التورنت التي تمت مشاهدتها ؟</string>
+    <string name="settings_clear_viewed_torrents_dialog_button_clear">مسح</string>
+    <string name="settings_clear_viewed_torrents_dialog_button_cancel">إلغاء</string>
 </resources>
