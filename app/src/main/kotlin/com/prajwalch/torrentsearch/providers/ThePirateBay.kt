@@ -3,14 +3,19 @@ package com.prajwalch.torrentsearch.providers
 import com.prajwalch.torrentsearch.R
 import com.prajwalch.torrentsearch.domain.model.Category
 import com.prajwalch.torrentsearch.domain.model.Torrent
+import com.prajwalch.torrentsearch.domain.model.TorrentDetails
 import com.prajwalch.torrentsearch.extension.asArray
 import com.prajwalch.torrentsearch.extension.asObject
+import com.prajwalch.torrentsearch.extension.getLong
 import com.prajwalch.torrentsearch.extension.getString
+import com.prajwalch.torrentsearch.network.HttpClient
 import com.prajwalch.torrentsearch.util.DateUtils
 import com.prajwalch.torrentsearch.util.FileSizeUtils
+import com.prajwalch.torrentsearch.util.TorrentUtils
 
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonObject
 
 class ThePirateBay : SearchProvider {
@@ -23,6 +28,12 @@ class ThePirateBay : SearchProvider {
         enabledByDefault = false,
     )
 
+    private val resultsJsonParser = TBPResultsJsonParser(
+        providerName = info.name,
+        providerUrl = info.url,
+        getCategory = ::getCategoryFromIndex,
+    )
+
     override suspend fun search(query: String, context: SearchContext): List<Torrent> {
         val requestUrl = buildString {
             append(URL)
@@ -33,16 +44,15 @@ class ThePirateBay : SearchProvider {
         }
 
         val responseJson = context.httpClient.getJson(requestUrl) ?: return emptyList()
-        val torrents = withContext(Dispatchers.Default) {
-            responseJson
-                .asArray()
-                .map { rawArrayItem -> rawArrayItem.asObject() }
-                .mapNotNull { torrentObject ->
-                    parseTorrentObject(torrentObject = torrentObject)
-                }
-        }
+        return resultsJsonParser.parse(responseJson)
+    }
 
-        return torrents
+    override suspend fun getDetails(detailsPageUrl: String): TorrentDetails? {
+        val id = detailsPageUrl.takeLastWhile { it != '=' }
+        val requestUrl = "https://apibay.org/t.php?id=$id"
+        val responseJson = HttpClient.getJson(requestUrl) ?: return null
+
+        return TBPDetailsJsonParser.parse(json = responseJson, getCategory = ::getCategoryFromIndex)
     }
 
     /**
@@ -59,59 +69,6 @@ class ThePirateBay : SearchProvider {
         Category.Music -> 101u
         Category.Porn -> 500u
         Category.Other -> 600u
-    }
-
-    /**
-     * Parses the torrent object and returns [Torrent] if the object has a
-     * expected layout, otherwise returns `null`.
-     *
-     * Object layout (only shown necessary fields).
-     *
-     *     id:                 <string>
-     *     name:               <string>
-     *     info_hash:          <string>
-     *     leechers:           <number>
-     *     seeders:            <number>
-     *     size:               <bytes in string>
-     *     added:              <seconds in string>
-     *     category:           <seconds in string>
-     */
-    private fun parseTorrentObject(torrentObject: JsonObject): Torrent? {
-        val name = torrentObject.getString("name") ?: return null
-
-        // Yeah, this is how it returns empty results.
-        if (name == "No results returned") {
-            return null
-        }
-
-        val id = torrentObject.getString("id") ?: return null
-        val descriptionPageUrl = "${info.url}/description.php?id=$id"
-
-        val infoHash = torrentObject.getString("info_hash")?.lowercase()?.trim() ?: return null
-        val sizeBytes = torrentObject.getString("size") ?: return null
-        val size = FileSizeUtils.formatBytes(bytes = sizeBytes)
-        val seeders = torrentObject.getString("seeders")?.toUIntOrNull() ?: return null
-        val peers = torrentObject.getString("leechers")?.toUIntOrNull() ?: return null
-        val uploadDate = torrentObject
-            .getString("added")
-            ?.toLongOrNull()
-            ?.let { DateUtils.formatEpochSecond(it) }
-            ?: return null
-
-        val categoryIndex = torrentObject.getString("category") ?: return null
-        val category = getCategoryFromIndex(categoryIndex = categoryIndex.toInt())
-
-        return Torrent(
-            infoHash = infoHash,
-            name = name,
-            size = size,
-            seeders = seeders,
-            peers = peers,
-            providerName = info.name,
-            uploadDate = uploadDate,
-            category = category,
-            descriptionPageUrl = descriptionPageUrl,
-        )
     }
 
     /** Returns the [Category] that matches the index. */
@@ -140,4 +97,104 @@ class ThePirateBay : SearchProvider {
     private companion object {
         private const val URL = "https://apibay.org/q.php"
     }
+}
+
+private class TBPResultsJsonParser(
+    private val providerName: String,
+    private val providerUrl: String,
+    private val getCategory: (Int) -> Category,
+) {
+    suspend fun parse(json: JsonElement): List<Torrent> = withContext(Dispatchers.Default) {
+        json
+            .asArray()
+            .map { rawArrayItem -> rawArrayItem.asObject() }
+            .mapNotNull { torrentObject ->
+                parseTorrentObject(torrentObject = torrentObject)
+            }
+    }
+
+    /**
+     * Parses the torrent object and returns [Torrent] if the object has a
+     * expected layout, otherwise returns `null`.
+     *
+     * Object layout (only shown necessary fields).
+     *
+     *     id:                 <string>
+     *     name:               <string>
+     *     info_hash:          <string>
+     *     leechers:           <number>
+     *     seeders:            <number>
+     *     size:               <bytes in string>
+     *     added:              <seconds in string>
+     *     category:           <seconds in string>
+     */
+    private fun parseTorrentObject(torrentObject: JsonObject): Torrent? {
+        val name = torrentObject.getString("name") ?: return null
+
+        // Yeah, this is how it returns empty results.
+        if (name == "No results returned") {
+            return null
+        }
+
+        val id = torrentObject.getString("id") ?: return null
+        val descriptionPageUrl = "$providerUrl/description.php?id=$id"
+
+        val infoHash = torrentObject.getString("info_hash")?.lowercase()?.trim() ?: return null
+        val sizeBytes = torrentObject.getString("size") ?: return null
+        val size = FileSizeUtils.formatBytes(bytes = sizeBytes)
+        val seeders = torrentObject.getString("seeders")?.toUIntOrNull() ?: return null
+        val peers = torrentObject.getString("leechers")?.toUIntOrNull() ?: return null
+        val uploadDate = torrentObject
+            .getString("added")
+            ?.toLongOrNull()
+            ?.let { DateUtils.formatEpochSecond(it) }
+            ?: return null
+
+        val categoryIndex = torrentObject.getString("category") ?: return null
+        val category = getCategory(categoryIndex.toInt())
+
+        return Torrent(
+            infoHash = infoHash,
+            name = name,
+            size = size,
+            seeders = seeders,
+            peers = peers,
+            providerName = providerName,
+            uploadDate = uploadDate,
+            category = category,
+            descriptionPageUrl = descriptionPageUrl,
+        )
+    }
+
+}
+
+private object TBPDetailsJsonParser {
+    suspend fun parse(json: JsonElement, getCategory: (Int) -> Category): TorrentDetails? =
+        withContext(Dispatchers.Default) {
+            val json = json.asObject()
+
+            val infoHash = json.getString("info_hash")?.lowercase() ?: return@withContext null
+            val name = json.getString("name") ?: return@withContext null
+            val size = json.getLong("size")?.toFloat()?.let(FileSizeUtils::formatBytes) ?: "0 KB"
+            val seeders = json.getLong("seeders")?.toUInt() ?: 1U
+            val peers = json.getLong("leechers")?.toUInt() ?: 1U
+            val uploadDate = json.getLong("added")?.let(DateUtils::formatEpochSecond) ?: "0 min ago"
+            val category = json.getLong("category")?.toInt()?.let(getCategory)?.name
+            val uploader = json.getString("username")
+            val description = json.getString("descr")
+            val magnetUri = TorrentUtils.createMagnetUri(infoHash)
+
+            TorrentDetails(
+                infoHash = infoHash,
+                name = name,
+                size = size,
+                seeders = seeders,
+                peers = peers,
+                uploadDate = uploadDate,
+                category = category,
+                uploader = uploader,
+                description = description,
+                magnetUri = magnetUri,
+            )
+        }
 }
