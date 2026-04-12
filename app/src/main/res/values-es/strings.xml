@@ -33,7 +33,7 @@
     <string name="torrent_list_action_copy_description_page_url">Copiar URL de la página de descripción</string>
     <string name="torrent_list_action_share_description_page_url">Compartir URL de la página de descripción</string>
     <string name="torrent_list_magnet_link_copied_message">Se copió el enlace magnet en el portapapeles.</string>
-    <string name="torrent_list_url_copied_message">¡URL copiada al portapapeles!</string>
+    <string name="torrent_list_url_copied_message">¡Url copiada al portapapeles!</string>
     <string name="home_search_query_hint">Buscar…</string>
     <string name="home_button_search">Buscar</string>
     <string name="search_filter_query_hint">Resultados de búsqueda</string>
@@ -154,4 +154,13 @@
     <string name="settings_export_logs_to_file_summary">Genera un archivo con las actividades de la aplicación que puede ayudar a solucionar problemas</string>
     <string name="search_errors_bottom_sheet_title">Proveedores de búsqueda fallidos</string>
     <string name="crash_screen_subtitle">%1$s detectó un error inesperado. Exporte los registros y cree un informe en GitHub adjuntándolos.</string>
+    <string name="limetorrents_unsafe_reason">No es técnicamente inseguro, pero ignora la selección de categoría. Elija con cuidado.</string>
+    <string name="tpb_unsafe_reason">Muchos informes de malware debido a una moderación inadecuada.</string>
+    <string name="therarbg_unsafe_reason">Clon del RARBG original con muchos torrents falsos. Tenga extrema precaución.</string>
+    <string name="search_filter_chip_hide_viewed">Ocultar vistos</string>
+    <string name="settings_clear_viewed_torrents">Limpiar torrents vistos</string>
+    <string name="settings_clear_viewed_torrents_summary">Limpia la lista de torrents que ya has abierto</string>
+    <string name="settings_clear_viewed_torrents_dialog_text">¿Estás seguro de que quieres limpiar todos los torrents vistos?</string>
+    <string name="settings_clear_viewed_torrents_dialog_button_clear">Limpiar</string>
+    <string name="settings_clear_viewed_torrents_dialog_button_cancel">Cancelar</string>
 </resources>
