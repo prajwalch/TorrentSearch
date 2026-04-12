@@ -37,6 +37,7 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 
 import com.prajwalch.torrentsearch.R
+import com.prajwalch.torrentsearch.domain.model.MagnetUri
 import com.prajwalch.torrentsearch.domain.model.TorrentDetails
 import com.prajwalch.torrentsearch.extension.copyText
 import com.prajwalch.torrentsearch.ui.TorrentFileDownloadEffect
@@ -56,6 +57,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun TorrentDetailsScreen(
     onNavigateBack: () -> Unit,
+    onDownloadTorrent: (MagnetUri) -> Unit,
     onShareDetailsPageLink: (url: String) -> Unit,
     modifier: Modifier = Modifier,
     viewModel: TorrentDetailsViewModel = hiltViewModel(),
@@ -125,7 +127,7 @@ fun TorrentDetailsScreen(
                             snackbarHostState.showSnackbar(linkCopiedMessage)
                         }
                     },
-                    onOpenMagnet = {/* TODO */ },
+                    onOpenMagnet = { onDownloadTorrent(uiState.details.magnetUri) },
                     onDownloadTorrent = {
                         val details = uiState.details
                         val torrentFileName = details.name.replace(' ', '-')

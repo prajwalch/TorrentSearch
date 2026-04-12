@@ -109,6 +109,7 @@ fun TorrentSearchApp(
         childComposable<TorrentDetails> {
             TorrentDetailsScreen(
                 onNavigateBack = navController::navigateUp,
+                onDownloadTorrent = { showTorrentClientNotFoundDialog = !onDownloadTorrent(it) },
                 onShareDetailsPageLink = onShareDescriptionPageUrl,
             )
         }
