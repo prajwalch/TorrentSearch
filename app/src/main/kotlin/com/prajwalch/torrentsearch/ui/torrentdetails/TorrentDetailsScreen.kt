@@ -112,7 +112,7 @@ fun TorrentDetailsScreen(
 
             is TorrentDetailsUiState.Ready -> {
                 val torrentDetails = uiState.details
-                
+
                 Box(
                     modifier = Modifier
                         .fillMaxSize()
@@ -194,7 +194,7 @@ private fun TorrentDetailsScreenContent(
 ) {
     Column(
         modifier = modifier,
-        verticalArrangement = Arrangement.spacedBy(MaterialTheme.spaces.large),
+        verticalArrangement = Arrangement.spacedBy(MaterialTheme.spaces.extraLarge),
     ) {
         val horizontalPaddingModifier = Modifier.padding(
             horizontal = MaterialTheme.spaces.large,
