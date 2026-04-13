@@ -24,6 +24,7 @@ fun DetailsSection(
         verticalArrangement = Arrangement.spacedBy(MaterialTheme.spaces.large),
     ) {
         CompositionLocalProvider(
+            LocalContentColor provides MaterialTheme.colorScheme.primary,
             LocalTextStyle provides MaterialTheme.typography.titleMedium,
         ) {
             title()
