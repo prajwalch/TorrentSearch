@@ -13,9 +13,9 @@ import dev.jeziellago.compose.markdowntext.MarkdownText
 
 @Composable
 fun TorrentDescription(description: String?, modifier: Modifier = Modifier) {
-    SectionCard(
+    DetailsSection(
         modifier = modifier,
-        title = stringResource(R.string.torrent_details_title_description),
+        title = { Text(stringResource(R.string.torrent_details_title_description)) },
     ) {
         if (description != null) {
             // TODO: Normalize HTML contained description.

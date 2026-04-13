@@ -4,7 +4,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -12,6 +11,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -25,11 +25,10 @@ import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
-import androidx.compose.ui.platform.LocalClipboard
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -39,19 +38,16 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.prajwalch.torrentsearch.R
 import com.prajwalch.torrentsearch.domain.model.MagnetUri
 import com.prajwalch.torrentsearch.domain.model.TorrentDetails
-import com.prajwalch.torrentsearch.extension.copyText
 import com.prajwalch.torrentsearch.ui.TorrentFileDownloadEffect
 import com.prajwalch.torrentsearch.ui.component.ArrowBackIconButton
 import com.prajwalch.torrentsearch.ui.theme.spaces
-import com.prajwalch.torrentsearch.ui.torrentdetails.component.DetailsPageUrlPreview
-import com.prajwalch.torrentsearch.ui.torrentdetails.component.DownloadTorrentButton
+import com.prajwalch.torrentsearch.ui.torrentdetails.component.CallToActionButton
+import com.prajwalch.torrentsearch.ui.torrentdetails.component.HeroBackgroundImage
 import com.prajwalch.torrentsearch.ui.torrentdetails.component.LoadFailedMessage
-import com.prajwalch.torrentsearch.ui.torrentdetails.component.OpenMagnetButton
+import com.prajwalch.torrentsearch.ui.torrentdetails.component.MediaPoster
 import com.prajwalch.torrentsearch.ui.torrentdetails.component.ScreenShots
 import com.prajwalch.torrentsearch.ui.torrentdetails.component.TorrentDescription
 import com.prajwalch.torrentsearch.ui.torrentdetails.component.TorrentInfo
-
-import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -66,11 +62,11 @@ fun TorrentDetailsScreen(
     val torrentFileDownloadState by viewModel.torrentFileDownloadState.collectAsStateWithLifecycle()
 
     val uriHandler = LocalUriHandler.current
-    val clipboard = LocalClipboard.current
+//    val clipboard = LocalClipboard.current
 
-    val coroutineScope = rememberCoroutineScope()
+//    val coroutineScope = rememberCoroutineScope()
     val snackbarHostState = remember { SnackbarHostState() }
-    val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
+    val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
 
     TorrentFileDownloadEffect(
         onWrite = viewModel::writeTorrentFile,
@@ -86,6 +82,7 @@ fun TorrentDetailsScreen(
         topBar = {
             TorrentDetailsScreenTopBar(
                 onNavigateBack = onNavigateBack,
+                onOpenPageLink = { uriHandler.openUri(viewModel.detailsPageUrl) },
                 onSharePageLink = { onShareDetailsPageLink(viewModel.detailsPageUrl) },
                 scrollBehavior = scrollBehavior,
             )
@@ -114,37 +111,43 @@ fun TorrentDetailsScreen(
             }
 
             is TorrentDetailsUiState.Ready -> {
-                val linkCopiedMessage = stringResource(R.string.torrent_details_message_link_copied)
+                val torrentDetails = uiState.details
+                
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .verticalScroll(rememberScrollState())
+                ) {
+                    torrentDetails.posterUrl?.let { HeroBackgroundImage(it) }
 
-                TorrentDetailsScreenContent(
-                    modifier = innerPaddingModifier.verticalScroll(rememberScrollState()),
-                    detailsPageUrl = viewModel.detailsPageUrl,
-                    details = uiState.details,
-                    onOpenUrl = { uriHandler.openUri(viewModel.detailsPageUrl) },
-                    onCopyUrl = {
-                        coroutineScope.launch {
-                            clipboard.copyText(viewModel.detailsPageUrl)
-                            snackbarHostState.showSnackbar(linkCopiedMessage)
-                        }
-                    },
-                    onOpenMagnet = { onDownloadTorrent(uiState.details.magnetUri) },
-                    onDownloadTorrent = {
-                        val details = uiState.details
-                        val torrentFileName = details.name.replace(' ', '-')
+                    TorrentDetailsScreenContent(
+                        modifier = innerPaddingModifier,
+                        details = torrentDetails,
+//                        onOpenUrl = { uriHandler.openUri(viewModel.detailsPageUrl) },
+//                        onCopyUrl = {
+//                            coroutineScope.launch {
+//                                clipboard.copyText(viewModel.detailsPageUrl)
+//                                snackbarHostState.showSnackbar(linkCopiedMessage)
+//                            }
+//                        },
+                        onOpenMagnet = { onDownloadTorrent(torrentDetails.magnetUri) },
+                        onDownloadTorrent = {
+                            val torrentFileName = torrentDetails.name.replace(' ', '-')
 
-                        if (details.fileDownloadLink != null) {
-                            viewModel.downloadTorrentFile(
-                                url = details.fileDownloadLink,
-                                fileName = torrentFileName,
-                            )
-                        } else {
-                            viewModel.downloadTorrentFileFromInfoHash(
-                                infoHash = details.infoHash,
-                                fileName = torrentFileName,
-                            )
-                        }
-                    },
-                )
+                            if (torrentDetails.fileDownloadLink != null) {
+                                viewModel.downloadTorrentFile(
+                                    url = torrentDetails.fileDownloadLink,
+                                    fileName = torrentFileName,
+                                )
+                            } else {
+                                viewModel.downloadTorrentFileFromInfoHash(
+                                    infoHash = torrentDetails.infoHash,
+                                    fileName = torrentFileName,
+                                )
+                            }
+                        },
+                    )
+                }
             }
         }
     }
@@ -154,6 +157,7 @@ fun TorrentDetailsScreen(
 @Composable
 private fun TorrentDetailsScreenTopBar(
     onNavigateBack: () -> Unit,
+    onOpenPageLink: () -> Unit,
     onSharePageLink: () -> Unit,
     modifier: Modifier = Modifier,
     scrollBehavior: TopAppBarScrollBehavior? = null,
@@ -163,6 +167,12 @@ private fun TorrentDetailsScreenTopBar(
         navigationIcon = { ArrowBackIconButton(onClick = onNavigateBack) },
         title = {},
         actions = {
+            IconButton(onClick = onOpenPageLink) {
+                Icon(
+                    painter = painterResource(R.drawable.ic_open_in_browser),
+                    contentDescription = stringResource(R.string.torrent_details_action_open_link),
+                )
+            }
             IconButton(onClick = onSharePageLink) {
                 Icon(
                     painter = painterResource(R.drawable.ic_share),
@@ -170,16 +180,14 @@ private fun TorrentDetailsScreenTopBar(
                 )
             }
         },
+        colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Transparent),
         scrollBehavior = scrollBehavior,
     )
 }
 
 @Composable
 private fun TorrentDetailsScreenContent(
-    detailsPageUrl: String,
     details: TorrentDetails,
-    onOpenUrl: () -> Unit,
-    onCopyUrl: () -> Unit,
     onOpenMagnet: () -> Unit,
     onDownloadTorrent: () -> Unit,
     modifier: Modifier = Modifier,
@@ -192,19 +200,29 @@ private fun TorrentDetailsScreenContent(
             horizontal = MaterialTheme.spaces.large,
         )
 
+        details.posterUrl?.let {
+            MediaPoster(
+                modifier = Modifier.align(Alignment.CenterHorizontally),
+                url = it,
+            )
+        }
         Text(
             modifier = Modifier.then(horizontalPaddingModifier),
             text = details.name,
             style = MaterialTheme.typography.titleLarge,
         )
-        DetailsPageUrlPreview(
-            modifier = Modifier.then(horizontalPaddingModifier),
-            url = detailsPageUrl,
-            onClick = onOpenUrl,
-            onLongClick = onCopyUrl,
+        CallToActionButton(
+            modifier = Modifier
+                .fillMaxWidth()
+                .then(horizontalPaddingModifier),
+            onOpenMagnet = onOpenMagnet,
+            onDownloadTorrent = onDownloadTorrent,
         )
+        HorizontalDivider()
         TorrentInfo(
-            modifier = Modifier.then(horizontalPaddingModifier),
+            modifier = Modifier
+                .fillMaxWidth()
+                .then(horizontalPaddingModifier),
             size = details.size,
             seeders = details.seeders,
             peers = details.peers,
@@ -214,18 +232,6 @@ private fun TorrentDetailsScreenContent(
             lastChecked = details.lastChecked,
             infoHash = details.infoHash,
         )
-        // Download buttons.
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .then(horizontalPaddingModifier),
-            horizontalArrangement = Arrangement.spacedBy(MaterialTheme.spaces.small),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            OpenMagnetButton(modifier = Modifier.weight(1f), onClick = onOpenMagnet)
-            DownloadTorrentButton(onClick = onDownloadTorrent)
-        }
-        // Screenshots/previews
         if (details.screenshotUrls.isNotEmpty()) {
             ScreenShots(
                 modifier = Modifier.fillMaxWidth(),
@@ -234,7 +240,7 @@ private fun TorrentDetailsScreenContent(
                 contentPadding = PaddingValues(horizontal = MaterialTheme.spaces.large)
             )
         }
-        // Description
+        HorizontalDivider()
         TorrentDescription(
             modifier = Modifier
                 .fillMaxWidth()

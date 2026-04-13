@@ -1,5 +1,7 @@
 package com.prajwalch.torrentsearch.ui.torrentdetails.component
 
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -7,16 +9,35 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 
 import com.prajwalch.torrentsearch.R
+import com.prajwalch.torrentsearch.ui.theme.spaces
 
 @Composable
-fun OpenMagnetButton(onClick: () -> Unit, modifier: Modifier = Modifier) {
+fun CallToActionButton(
+    onOpenMagnet: () -> Unit,
+    onDownloadTorrent: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Row(
+        modifier = modifier,
+        horizontalArrangement = Arrangement.spacedBy(MaterialTheme.spaces.small),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        OpenMagnetButton(modifier = Modifier.weight(1f), onClick = onOpenMagnet)
+        DownloadTorrentButton(onClick = onDownloadTorrent)
+    }
+}
+
+@Composable
+private fun OpenMagnetButton(onClick: () -> Unit, modifier: Modifier = Modifier) {
     Button(
         modifier = modifier,
         onClick = onClick,
@@ -33,7 +54,7 @@ fun OpenMagnetButton(onClick: () -> Unit, modifier: Modifier = Modifier) {
 }
 
 @Composable
-fun DownloadTorrentButton(onClick: () -> Unit, modifier: Modifier = Modifier) {
+private fun DownloadTorrentButton(onClick: () -> Unit, modifier: Modifier = Modifier) {
     FilledTonalButton(
         modifier = modifier,
         onClick = onClick,

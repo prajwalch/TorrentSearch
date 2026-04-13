@@ -101,6 +101,7 @@
         To help troubleshoot issues, export the logs from the settings screen and create a GitHub issue with the logs attached.
     </string>
 
+    <string name="torrent_details_action_open_link">Open link in browser</string>
     <string name="torrent_details_action_share_link">Share page link</string>
     <string name="torrent_details_error_unsupported_provider">Unsupported search provider</string>
     <string name="torrent_details_error_not_found">Details not found on the provider</string>
