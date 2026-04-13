@@ -2,6 +2,9 @@ package com.prajwalch.torrentsearch.providers
 
 import com.prajwalch.torrentsearch.domain.model.Category
 import com.prajwalch.torrentsearch.domain.model.Torrent
+import com.prajwalch.torrentsearch.domain.model.TorrentDetails
+import com.prajwalch.torrentsearch.network.HttpClient
+import com.prajwalch.torrentsearch.util.TorrentUtils
 
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -19,6 +22,8 @@ class TorrentDownload : SearchProvider {
         enabledByDefault = false,
     )
 
+    private val resultsPageParser = TorrentDownloadResultsParser(info.name)
+
     override suspend fun search(query: String, context: SearchContext): List<Torrent> {
         val requestUrl = buildString {
             append(info.url)
@@ -27,21 +32,25 @@ class TorrentDownload : SearchProvider {
         }
 
         val responseHtml = context.httpClient.get(url = requestUrl)
-        val torrents = withContext(Dispatchers.Default) {
-            parseResponseHtml(html = responseHtml)
+        return resultsPageParser.parse(html = responseHtml, pageUrl = requestUrl).orEmpty()
+    }
+
+    override suspend fun getDetails(detailsPageUrl: String): TorrentDetails? {
+        val responseHtml = HttpClient.get(detailsPageUrl)
+        return TorrentDownloadDetailsPageParser.parse(responseHtml)
+    }
+}
+
+private class TorrentDownloadResultsParser(private val providerName: String) {
+    suspend fun parse(html: String, pageUrl: String): List<Torrent>? =
+        withContext(Dispatchers.Default) {
+            Jsoup
+                .parse(html, pageUrl)
+                .select("table.table2")
+                .last()
+                ?.select("tbody > tr")
+                ?.mapNotNull(::parseTableRow)
         }
-
-        return torrents.orEmpty()
-    }
-
-    private fun parseResponseHtml(html: String): List<Torrent>? {
-        return Jsoup
-            .parse(html)
-            .select("table.table2")
-            .last()
-            ?.select("tbody > tr")
-            ?.mapNotNull(::parseTableRow)
-    }
 
     private fun parseTableRow(tr: Element): Torrent? {
         val torrentNameDiv = tr.selectFirst("td:nth-child(1) > div.tt-name") ?: return null
@@ -57,12 +66,13 @@ class TorrentDownload : SearchProvider {
             ?.let(::getCategory)
             ?: return null
 
-        val descriptionPageRelativeUrl = nameHref.attr("href")
-        val descriptionPageUrl = "${info.url}$descriptionPageRelativeUrl"
-        val infoHash = descriptionPageRelativeUrl
-            .split('/')
-            .getOrNull(1)
-            ?: return null
+        val descriptionPageUrl = nameHref.attr("abs:href")
+        val infoHash = nameHref
+            .attr("href")
+            .removePrefix("/")
+            .takeWhile { it != '/' }
+            .trim()
+            .lowercase()
 
         val uploadDate = tr.selectFirst("td:nth-child(2)")?.ownText() ?: return null
         val size = tr.selectFirst("td:nth-child(3)")?.ownText() ?: return null
@@ -77,7 +87,7 @@ class TorrentDownload : SearchProvider {
             peers = peers.toUIntOrNull() ?: 0U,
             uploadDate = uploadDate,
             category = category,
-            providerName = info.name,
+            providerName = providerName,
             descriptionPageUrl = descriptionPageUrl,
         )
     }
@@ -155,5 +165,59 @@ class TorrentDownload : SearchProvider {
 
     private companion object {
         private val CategoryTextFilterRegex = Regex("[^A-Za-z]+")
+    }
+}
+
+private object TorrentDownloadDetailsPageParser {
+    private const val NAME =
+        "body > div > table.table3.torrentinfo > tbody > tr:nth-child(1) > td:nth-child(2)"
+    private const val SIZE =
+        "body > div > table.table3.torrentinfo > tbody > tr:nth-child(6) > td:nth-child(2)"
+    private const val SEEDERS =
+        "body > div > table.table3.torrentinfo > tbody > tr:nth-child(5) > td:nth-child(2) > span:nth-child(1)"
+    private const val PEERS =
+        "body > div > table.table3.torrentinfo > tbody > tr:nth-child(5) > td:nth-child(2) > span:nth-child(2)"
+    private const val UPLOAD_DATE =
+        "body > div > table.table3.torrentinfo > tbody > tr:nth-child(8) > td:nth-child(2)"
+    private const val CATEGORY =
+        "body > div > table.table3.torrentinfo > tbody > tr:nth-child(4) > td:nth-child(2)"
+    private const val MAGNET_URI = """a[href^="magnet:?"]"""
+    private const val FILE_DOWNLOAD_LINK =
+        "body > div > table:nth-child(7) > tbody > tr:nth-child(3) > td > span > a"
+
+    suspend fun parse(html: String): TorrentDetails? = withContext(Dispatchers.Default) {
+        val html = Jsoup.parse(html)
+
+        val name = html.selectFirst(NAME)?.ownText() ?: return@withContext null
+        val magnetUri = html.selectFirst(MAGNET_URI)?.attr("href") ?: return@withContext null
+        val infoHash = TorrentUtils.getInfoHashFromMagnetUri(magnetUri)
+        val size = html.selectFirst(SIZE)?.ownText() ?: "0 KB"
+        val seeders = html.selectFirst(SEEDERS)
+            ?.ownText()
+            ?.removePrefix("Seeds: ")
+            ?.trim()
+            ?.toUIntOrNull()
+            ?: 1U
+        val peers = html.selectFirst(PEERS)
+            ?.ownText()
+            ?.removePrefix("Leechers: ")
+            ?.trim()
+            ?.toUIntOrNull()
+            ?: 1U
+        val uploadDate = html.selectFirst(UPLOAD_DATE)?.ownText() ?: "0 min ago"
+        val category = html.selectFirst(CATEGORY)?.ownText()
+        val fileDownloadLink = html.selectFirst(FILE_DOWNLOAD_LINK)?.attr("href")
+
+        TorrentDetails(
+            infoHash = infoHash,
+            name = name,
+            size = size,
+            seeders = seeders,
+            peers = peers,
+            uploadDate = uploadDate,
+            category = category,
+            magnetUri = magnetUri,
+            fileDownloadLink = fileDownloadLink,
+        )
     }
 }
