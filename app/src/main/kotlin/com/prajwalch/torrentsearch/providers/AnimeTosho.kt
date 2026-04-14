@@ -154,11 +154,10 @@ private object AnimeToshoDetailsPageParser {
                 ?.trim()
                 ?.filterNot { it in setOf('(', ')', '|') }
                 ?.takeIf { it.isNotBlank() }
-                ?: "0 KB"
 
-            val seeders = html.selectFirst(SEEDERS)?.ownText()?.toUIntOrNull() ?: 1U
-            val peers = html.selectFirst(PEERS)?.ownText()?.toUIntOrNull() ?: 1U
-            val uploadDate = html.selectFirst(UPLOAD_DATE)?.ownText() ?: "0 min ago"
+            val seeders = html.selectFirst(SEEDERS)?.ownText()?.toUIntOrNull()
+            val peers = html.selectFirst(PEERS)?.ownText()?.toUIntOrNull()
+            val uploadDate = html.selectFirst(UPLOAD_DATE)?.ownText()
             val screenshotUrls = html.select(SCREENSHOT).map { it.attr("src") }
             val fileDownloadLink = html.selectFirst(FILE_DOWNLOAD_LINK)?.attr("href")
 
@@ -170,9 +169,9 @@ private object AnimeToshoDetailsPageParser {
                 peers = peers,
                 uploadDate = uploadDate,
                 category = Category.Anime.name,
-                screenshotUrls = screenshotUrls,
                 magnetUri = magnetUri,
                 fileDownloadLink = fileDownloadLink,
+                screenshotUrls = screenshotUrls,
             )
         }
 }

@@ -155,10 +155,9 @@ private object TdDetailsPageParser {
             val infoHash = TorrentUtils.getInfoHashFromMagnetUri(magnetUri)
 
             val size = html.selectFirst(SIZE)?.ownText()?.let(FileSizeUtils::normalizeSize)
-                ?: "0 KB"
-            val seeders = html.selectFirst(SEEDERS)?.ownText()?.toUIntOrNull() ?: 1U
-            val peers = html.selectFirst(PEERS)?.ownText()?.toUIntOrNull() ?: 1U
-            val uploadDate = html.selectFirst(UPLOAD_DATE)?.ownText() ?: "0 min ago"
+            val seeders = html.selectFirst(SEEDERS)?.ownText()?.toUIntOrNull()
+            val peers = html.selectFirst(PEERS)?.ownText()?.toUIntOrNull()
+            val uploadDate = html.selectFirst(UPLOAD_DATE)?.ownText()
             val category = html.selectFirst(CATEGORY)?.ownText()
             val uploader = html.selectFirst(UPLOADER)?.ownText()
             val lastChecked = html.selectFirst(LAST_CHECKED)?.ownText()
@@ -174,8 +173,8 @@ private object TdDetailsPageParser {
                 category = category,
                 uploader = uploader,
                 lastChecked = lastChecked,
-                description = description,
                 magnetUri = magnetUri,
+                description = description,
             )
         }
 }

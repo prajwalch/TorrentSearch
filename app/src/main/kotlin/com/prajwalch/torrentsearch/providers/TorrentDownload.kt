@@ -191,20 +191,18 @@ private object TorrentDownloadDetailsPageParser {
         val name = html.selectFirst(NAME)?.ownText() ?: return@withContext null
         val magnetUri = html.selectFirst(MAGNET_URI)?.attr("href") ?: return@withContext null
         val infoHash = TorrentUtils.getInfoHashFromMagnetUri(magnetUri)
-        val size = html.selectFirst(SIZE)?.ownText() ?: "0 KB"
+        val size = html.selectFirst(SIZE)?.ownText()
         val seeders = html.selectFirst(SEEDERS)
             ?.ownText()
             ?.removePrefix("Seeds: ")
             ?.trim()
             ?.toUIntOrNull()
-            ?: 1U
         val peers = html.selectFirst(PEERS)
             ?.ownText()
             ?.removePrefix("Leechers: ")
             ?.trim()
             ?.toUIntOrNull()
-            ?: 1U
-        val uploadDate = html.selectFirst(UPLOAD_DATE)?.ownText() ?: "0 min ago"
+        val uploadDate = html.selectFirst(UPLOAD_DATE)?.ownText()
         val category = html.selectFirst(CATEGORY)?.ownText()
         val fileDownloadLink = html.selectFirst(FILE_DOWNLOAD_LINK)?.attr("href")
 

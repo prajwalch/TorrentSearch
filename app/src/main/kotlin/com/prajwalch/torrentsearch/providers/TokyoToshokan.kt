@@ -156,10 +156,9 @@ private object TokyoToshokanDetailsPageParser {
             val magnetUri = html.selectFirst(MAGNET_URI)?.attr("href")
                 ?: TorrentUtils.createMagnetUri(infoHash)
             val size = html.selectFirst(SIZE)?.ownText()?.let(FileSizeUtils::normalizeSize)
-                ?: "0 KB"
-            val seeders = html.selectFirst(SEEDERS)?.ownText()?.toUIntOrNull() ?: 1U
-            val peers = html.selectFirst(PEERS)?.ownText()?.toUIntOrNull() ?: 1U
-            val uploadDate = html.selectFirst(UPLOAD_DATE)?.ownText() ?: "0 min ago"
+            val seeders = html.selectFirst(SEEDERS)?.ownText()?.toUIntOrNull()
+            val peers = html.selectFirst(PEERS)?.ownText()?.toUIntOrNull()
+            val uploadDate = html.selectFirst(UPLOAD_DATE)?.ownText()
             val category = html.selectFirst(CATEGORY)?.text()
             val uploader = html.selectFirst(UPLOADER)?.ownText()
 

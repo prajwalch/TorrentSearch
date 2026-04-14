@@ -139,14 +139,13 @@ private object MyPornClubDetailsPageParser {
                 ?.takeWhile { it != '#' }
                 ?.trim()
                 ?: return@withContext null
-            val size = html.selectFirst(SIZE)?.ownText()?.uppercase() ?: "0 KB"
-            val seeders = html.selectFirst(SEEDERS)?.ownText()?.toUIntOrNull() ?: 1U
-            val peers = html.selectFirst(PEERS)?.ownText()?.toUIntOrNull() ?: 1U
+            val size = html.selectFirst(SIZE)?.ownText()?.uppercase()
+            val seeders = html.selectFirst(SEEDERS)?.ownText()?.toUIntOrNull()
+            val peers = html.selectFirst(PEERS)?.ownText()?.toUIntOrNull()
             val uploadDate = html.selectFirst(UPLOAD_DATE)
                 ?.ownText()
                 ?.removePrefix("[uploaded]:")
                 ?.trim()
-                ?: "0 min ago"
             val uploader = html.selectFirst(UPLOADER)?.ownText()?.removePrefix("@")
             val lastChecked = html.selectFirst(LAST_CHECKED)
                 ?.ownText()

@@ -96,19 +96,19 @@ private object FileMoodDetailsPageParser {
         val html = Jsoup.parse(html)
 
         val name = html.selectFirst(NAME)?.ownText() ?: return@withContext null
-        val infoHash = html.selectFirst(INFO_HASH)?.ownText()?.lowercase()?.trim()
+        val infoHash = html.selectFirst(INFO_HASH)
+            ?.ownText()
+            ?.lowercase()
+            ?.trim()
             ?: return@withContext null
         val magnetUri = TorrentUtils.createMagnetUri(infoHash)
-        val size = html.selectFirst(SIZE)?.ownText() ?: "0 KB"
+        val size = html.selectFirst(SIZE)?.ownText()
         val lastChecked = html.selectFirst(LAST_CHECKED)?.ownText()
 
         TorrentDetails(
             infoHash = infoHash,
             name = name,
             size = size,
-            seeders = 1U,
-            peers = 1U,
-            uploadDate = "0 min ago",
             lastChecked = lastChecked,
             magnetUri = magnetUri,
         )

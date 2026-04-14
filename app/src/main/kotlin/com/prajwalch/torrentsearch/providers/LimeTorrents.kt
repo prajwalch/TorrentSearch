@@ -168,23 +168,21 @@ private object LimeTorrentsDetailsPageParser {
             ?: return@withContext null
         val magnetUri = html.selectFirst(MAGNET_URI)?.attr("href") ?: return@withContext null
         val name = html.selectFirst(NAME)?.ownText() ?: return@withContext null
-        val size = html.selectFirst(SIZE)?.ownText() ?: "0 KB"
+        val size = html.selectFirst(SIZE)?.ownText()
         val seeders = html.selectFirst(SEEDERS)
             ?.ownText()
             ?.removePrefix("Seeders : ")
             ?.trim()
             ?.toUIntOrNull()
-            ?: 1U
         val peers = html.selectFirst(PEERS)
             ?.ownText()
             ?.removePrefix("Leechers : ")
             ?.trim()
             ?.toUIntOrNull()
-            ?: 1U
         val (uploadDate, category) = html.selectFirst(UPLOAD_DATE_AND_CATEGORY)
             ?.text()
             ?.split("in", limit = 2)
-            ?: return@withContext null
+            ?: listOf(null, null)
         val fileDownloadLink = html.selectFirst(FILE_DOWNLOAD_LINK)?.attr("href")
 
         TorrentDetails(
@@ -193,8 +191,8 @@ private object LimeTorrentsDetailsPageParser {
             size = size,
             seeders = seeders,
             peers = peers,
-            uploadDate = uploadDate.trim(),
-            category = category.trim(),
+            uploadDate = uploadDate?.trim(),
+            category = category?.trim(),
             magnetUri = magnetUri,
             fileDownloadLink = fileDownloadLink,
         )

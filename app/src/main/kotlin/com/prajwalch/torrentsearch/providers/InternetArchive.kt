@@ -129,14 +129,11 @@ private object IAMetadataJsonParser {
     suspend fun parse(json: JsonObject): TorrentDetails? =
         withContext(Dispatchers.Default) {
             val lastChecked = json.getLong("item_last_updated")?.let(DateUtils::formatEpochSecond)
-            val size = json.getLong("item_size")
-                ?.toFloat()
-                ?.let(FileSizeUtils::formatBytes)
-                ?: "0 KB"
+            val size = json.getLong("item_size")?.toFloat()?.let(FileSizeUtils::formatBytes)
 
             val metadataObj = json.getObject("metadata") ?: return@withContext null
             val name = metadataObj.getString("title") ?: return@withContext null
-            val uploadDate = metadataObj.getString("publicdate") ?: "0 min ago"
+            val uploadDate = metadataObj.getString("publicdate")
             val uploader = metadataObj.getString("uploader")
             val description = metadataObj.getString("description")
 
@@ -153,14 +150,12 @@ private object IAMetadataJsonParser {
                 infoHash = infoHash,
                 name = name,
                 size = size,
-                seeders = 1U,
-                peers = 1U,
                 uploadDate = uploadDate,
                 uploader = uploader,
                 lastChecked = lastChecked,
-                description = description,
                 magnetUri = TorrentUtils.createMagnetUri(infoHash),
                 fileDownloadLink = fileDownloadLink,
+                description = description,
             )
         }
 }

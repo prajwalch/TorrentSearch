@@ -154,10 +154,10 @@ private object UIndexDetailsPageParser {
             val magnetUri = html.selectFirst(MAGNET_URI)?.attr("href") ?: return@withContext null
             val infoHash = TorrentUtils.getInfoHashFromMagnetUri(magnetUri)
 
-            val size = html.selectFirst(SIZE)?.ownText() ?: "0 KB"
-            val seeders = html.selectFirst(SEEDERS)?.ownText()?.toUIntOrNull() ?: 1U
-            val peers = html.selectFirst(PEERS)?.ownText()?.toUIntOrNull() ?: 1U
-            val uploadDate = html.selectFirst(UPLOAD_DATE)?.ownText() ?: "0 min ago"
+            val size = html.selectFirst(SIZE)?.ownText()
+            val seeders = html.selectFirst(SEEDERS)?.ownText()?.toUIntOrNull()
+            val peers = html.selectFirst(PEERS)?.ownText()?.toUIntOrNull()
+            val uploadDate = html.selectFirst(UPLOAD_DATE)?.ownText()
             val category = html.selectFirst(CATEGORY)?.ownText()
             val lastChecked = html.selectFirst(PEERS_UPDATED)?.text()?.takeIf { it.isNotBlank() }
             val description = html.selectFirst(DESCRIPTION)?.html()
@@ -173,10 +173,10 @@ private object UIndexDetailsPageParser {
                 uploadDate = uploadDate,
                 category = category,
                 lastChecked = lastChecked,
+                magnetUri = magnetUri,
                 description = description,
                 posterUrl = thumbnailUrl,
                 screenshotUrls = previewImageUrls,
-                magnetUri = magnetUri,
             )
         }
 }

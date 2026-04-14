@@ -28,10 +28,10 @@ import com.prajwalch.torrentsearch.ui.theme.spaces
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun TorrentInfo(
-    size: String,
-    seeders: UInt,
-    peers: UInt,
-    uploadDate: String,
+    size: String?,
+    seeders: UInt?,
+    peers: UInt?,
+    uploadDate: String?,
     category: String?,
     uploader: String?,
     lastChecked: String?,
@@ -58,12 +58,12 @@ fun TorrentInfo(
                 InfoListItem(
                     icon = R.drawable.ic_upload,
                     label = stringResource(R.string.torrent_details_label_seeders),
-                    text = seeders.toString(),
+                    text = seeders?.toString(),
                 )
                 InfoListItem(
                     icon = R.drawable.ic_download,
                     label = stringResource(R.string.torrent_details_label_peers),
-                    text = peers.toString(),
+                    text = peers?.toString(),
                 )
                 InfoListItem(
                     icon = R.drawable.ic_calendar_month,

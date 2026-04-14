@@ -125,14 +125,14 @@ private object SukebeiDetailsPageParser {
             val magnetUri = html.selectFirst(MAGNET_URI)?.attr("href") ?: return@withContext null
             val infoHash = TorrentUtils.getInfoHashFromMagnetUri(magnetUri)
 
-            val size = html.selectFirst(SIZE)?.ownText() ?: "0 KB"
-            val seeders = html.selectFirst(SEEDERS)?.text()?.trim()?.toUIntOrNull() ?: 1U
-            val peers = html.selectFirst(PEERS)?.text()?.trim()?.toUIntOrNull() ?: 1U
-            val uploadDate = html.selectFirst(UPLOAD_DATE)?.ownText() ?: "0 min ago"
+            val size = html.selectFirst(SIZE)?.ownText()
+            val seeders = html.selectFirst(SEEDERS)?.text()?.trim()?.toUIntOrNull()
+            val peers = html.selectFirst(PEERS)?.text()?.trim()?.toUIntOrNull()
+            val uploadDate = html.selectFirst(UPLOAD_DATE)?.ownText()
             val category = html.selectFirst(CATEGORY)?.text()
             val uploader = html.selectFirst(UPLOADER)?.text()?.trim()
-            val description = html.selectFirst(DESCRIPTION)?.html()
             val fileDownloadLink = html.selectFirst(FILE_DOWNLOAD_LINK)?.attr("abs:href")
+            val description = html.selectFirst(DESCRIPTION)?.html()
 
             TorrentDetails(
                 infoHash = infoHash,
@@ -143,9 +143,9 @@ private object SukebeiDetailsPageParser {
                 uploadDate = uploadDate,
                 category = category,
                 uploader = uploader,
-                description = description,
                 magnetUri = magnetUri,
                 fileDownloadLink = fileDownloadLink,
+                description = description,
             )
         }
 }
