@@ -175,10 +175,10 @@ private object TBPDetailsJsonParser {
 
             val infoHash = json.getString("info_hash")?.lowercase() ?: return@withContext null
             val name = json.getString("name") ?: return@withContext null
-            val size = json.getLong("size")?.toFloat()?.let(FileSizeUtils::formatBytes) ?: "0 KB"
-            val seeders = json.getLong("seeders")?.toUInt() ?: 1U
-            val peers = json.getLong("leechers")?.toUInt() ?: 1U
-            val uploadDate = json.getLong("added")?.let(DateUtils::formatEpochSecond) ?: "0 min ago"
+            val size = json.getLong("size")?.toFloat()?.let(FileSizeUtils::formatBytes)
+            val seeders = json.getLong("seeders")?.toUInt()
+            val peers = json.getLong("leechers")?.toUInt()
+            val uploadDate = json.getLong("added")?.let(DateUtils::formatEpochSecond)
             val category = json.getLong("category")?.toInt()?.let(getCategory)?.name
             val uploader = json.getString("username")
             val description = json.getString("descr")
@@ -193,8 +193,8 @@ private object TBPDetailsJsonParser {
                 uploadDate = uploadDate,
                 category = category,
                 uploader = uploader,
-                description = description,
                 magnetUri = magnetUri,
+                description = description,
             )
         }
 }
