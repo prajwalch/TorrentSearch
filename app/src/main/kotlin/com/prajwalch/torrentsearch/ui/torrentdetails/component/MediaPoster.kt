@@ -5,18 +5,34 @@ import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 
 import coil3.compose.AsyncImage
 import coil3.request.ImageRequest
 import coil3.request.crossfade
 
+import com.prajwalch.torrentsearch.R
+
 @Composable
 fun MediaPoster(url: String, modifier: Modifier = Modifier) {
+    var isSuccess by rememberSaveable(url) { mutableStateOf(false) }
+    val contentScale = if (isSuccess) ContentScale.Crop else ContentScale.Fit
+    val colorFilter = if (isSuccess) {
+        null
+    } else {
+        ColorFilter.tint(MaterialTheme.colorScheme.onSurfaceVariant)
+    }
+
     AsyncImage(
         modifier = Modifier
             .width(120.dp)
@@ -32,6 +48,11 @@ fun MediaPoster(url: String, modifier: Modifier = Modifier) {
             .crossfade(true)
             .build(),
         contentDescription = null,
-        contentScale = ContentScale.Crop,
+        placeholder = painterResource(R.drawable.ic_image),
+        error = painterResource(R.drawable.ic_broken_image),
+        fallback = painterResource(R.drawable.ic_image),
+        onSuccess = { isSuccess = true },
+        contentScale = contentScale,
+        colorFilter = colorFilter,
     )
 }
