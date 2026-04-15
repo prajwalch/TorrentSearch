@@ -3,6 +3,7 @@ package com.prajwalch.torrentsearch.providers
 import com.prajwalch.torrentsearch.R
 import com.prajwalch.torrentsearch.domain.model.Category
 import com.prajwalch.torrentsearch.domain.model.Torrent
+import com.prajwalch.torrentsearch.domain.model.TorrentDetails
 import com.prajwalch.torrentsearch.network.HttpClient
 import com.prajwalch.torrentsearch.network.HttpClientResponse
 import com.prajwalch.torrentsearch.util.DateUtils
@@ -73,6 +74,11 @@ class TheRarBg : SearchProvider {
                 httpClient = context.httpClient
             )
         }.orEmpty()
+    }
+
+    override suspend fun getDetails(detailsPageUrl: String): TorrentDetails? {
+        val responseHtml = HttpClient.get(detailsPageUrl)
+        return TheRarBgDetailsPageParser.parse(responseHtml)
     }
 
     /** Returns the compatible category string. */
@@ -217,5 +223,47 @@ class TheRarBg : SearchProvider {
         "Tv" -> Category.Series
         "Other" -> Category.Other
         else -> Category.Other
+    }
+}
+
+private object TheRarBgDetailsPageParser {
+    private const val NAME = "div.postContL > h4:has(+ div.table-responsive)"
+    private const val MAGNET_URI = """a[href^="magnet:?"]"""
+
+    suspend fun parse(html: String): TorrentDetails? = withContext(Dispatchers.Default) {
+        val html = Jsoup.parse(html)
+
+        val name = html.selectFirst(NAME)?.ownText() ?: return@withContext null
+        val magnetUri = html.selectFirst(MAGNET_URI)?.attr("href") ?: return@withContext null
+        val infoHash = TorrentUtils.getInfoHashFromMagnetUri(magnetUri)
+
+        val detailRows = html.select("table.detailTable > tbody > tr")
+            .mapNotNull { tr ->
+                val label = tr.selectFirst("th")?.ownText() ?: return@mapNotNull null
+                val value = tr.selectFirst("td") ?: return@mapNotNull null
+                label to value
+            }
+            .toMap()
+        val size = detailRows["Size:"]?.ownText()
+        val seedersPeers = detailRows["Peers:"]?.ownText()?.trim()?.split(',')
+        val seeders = seedersPeers?.firstOrNull()?.removePrefix("Seeders: ")?.toUIntOrNull()
+        val peers = seedersPeers?.lastOrNull()?.trim()?.removePrefix("Leechers: ")?.toUIntOrNull()
+        val uploadDate = detailRows["Added:"]?.ownText()
+        val category = detailRows["Category:"]?.text()
+        val uploader = detailRows["Uploader:"]?.text()
+        val description = detailRows["Description:"]?.wholeText()
+
+        TorrentDetails(
+            infoHash = infoHash,
+            name = name,
+            size = size,
+            seeders = seeders,
+            peers = peers,
+            uploadDate = uploadDate,
+            category = category,
+            uploader = uploader,
+            magnetUri = magnetUri,
+            description = description,
+        )
     }
 }
