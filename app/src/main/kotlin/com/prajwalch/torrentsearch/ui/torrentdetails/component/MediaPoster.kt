@@ -16,8 +16,8 @@ fun MediaPoster(url: String, modifier: Modifier = Modifier) {
     AsyncImage(
         modifier = Modifier
             .width(120.dp)
-            .clip(MaterialTheme.shapes.medium)
             .aspectRatio(2f / 3f)
+            .clip(MaterialTheme.shapes.medium)
             .then(modifier),
         model = url,
         contentDescription = null,
