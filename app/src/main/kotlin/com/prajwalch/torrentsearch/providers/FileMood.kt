@@ -103,7 +103,7 @@ private object FileMoodDetailsPageParser {
             ?: return@withContext null
         val magnetUri = TorrentUtils.createMagnetUri(infoHash)
         val size = html.selectFirst(SIZE)?.ownText()
-        val lastChecked = html.selectFirst(LAST_CHECKED)?.ownText()
+        val lastChecked = html.selectFirst(LAST_CHECKED)?.ownText()?.takeIf { it.isNotBlank() }
 
         TorrentDetails(
             infoHash = infoHash,
