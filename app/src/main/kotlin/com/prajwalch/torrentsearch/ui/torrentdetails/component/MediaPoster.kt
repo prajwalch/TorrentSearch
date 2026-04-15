@@ -1,5 +1,6 @@
 package com.prajwalch.torrentsearch.ui.torrentdetails.component
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.MaterialTheme
@@ -21,6 +22,10 @@ fun MediaPoster(url: String, modifier: Modifier = Modifier) {
             .width(120.dp)
             .aspectRatio(2f / 3f)
             .clip(MaterialTheme.shapes.medium)
+            .background(
+                color = MaterialTheme.colorScheme.surfaceContainer,
+                shape = MaterialTheme.shapes.medium,
+            )
             .then(modifier),
         model = ImageRequest.Builder(LocalContext.current)
             .data(url)
