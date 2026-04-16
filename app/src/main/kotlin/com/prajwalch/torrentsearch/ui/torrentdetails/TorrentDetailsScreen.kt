@@ -25,10 +25,12 @@ import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.platform.LocalClipboard
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -38,6 +40,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.prajwalch.torrentsearch.R
 import com.prajwalch.torrentsearch.domain.model.MagnetUri
 import com.prajwalch.torrentsearch.domain.model.TorrentDetails
+import com.prajwalch.torrentsearch.extension.copyText
 import com.prajwalch.torrentsearch.ui.TorrentFileDownloadEffect
 import com.prajwalch.torrentsearch.ui.component.ArrowBackIconButton
 import com.prajwalch.torrentsearch.ui.component.EmptyPlaceholder
@@ -53,6 +56,8 @@ import com.prajwalch.torrentsearch.ui.torrentdetails.component.SomethingWentWron
 import com.prajwalch.torrentsearch.ui.torrentdetails.component.TorrentDescription
 import com.prajwalch.torrentsearch.ui.torrentdetails.component.TorrentInfo
 
+import kotlinx.coroutines.launch
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TorrentDetailsScreen(
@@ -66,11 +71,12 @@ fun TorrentDetailsScreen(
     val torrentFileDownloadState by viewModel.torrentFileDownloadState.collectAsStateWithLifecycle()
 
     val uriHandler = LocalUriHandler.current
-//    val clipboard = LocalClipboard.current
+    val clipboard = LocalClipboard.current
 
-//    val coroutineScope = rememberCoroutineScope()
+    val coroutineScope = rememberCoroutineScope()
     val snackbarHostState = remember { SnackbarHostState() }
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
+    val linkCopiedMessage = stringResource(R.string.torrent_details_message_link_copied)
 
     TorrentFileDownloadEffect(
         onWrite = viewModel::writeTorrentFile,
@@ -88,14 +94,12 @@ fun TorrentDetailsScreen(
                 onNavigateBack = onNavigateBack,
                 onOpenPageLink = { uriHandler.openUri(viewModel.detailsPageUrl) },
                 onSharePageLink = { onShareDetailsPageLink(viewModel.detailsPageUrl) },
-                /*
                 onCopyPageLink = {
                     coroutineScope.launch {
                         clipboard.copyText(viewModel.detailsPageUrl)
                         snackbarHostState.showSnackbar(linkCopiedMessage)
                     }
                 },
-                */
                 scrollBehavior = scrollBehavior,
             )
         },
@@ -195,6 +199,7 @@ fun TorrentDetailsScreen(
 private fun TorrentDetailsScreenTopBar(
     onNavigateBack: () -> Unit,
     onOpenPageLink: () -> Unit,
+    onCopyPageLink: () -> Unit,
     onSharePageLink: () -> Unit,
     modifier: Modifier = Modifier,
     scrollBehavior: TopAppBarScrollBehavior? = null,
@@ -208,6 +213,12 @@ private fun TorrentDetailsScreenTopBar(
                 Icon(
                     painter = painterResource(R.drawable.ic_open_in_browser),
                     contentDescription = stringResource(R.string.torrent_details_action_open_link),
+                )
+            }
+            IconButton(onClick = onCopyPageLink) {
+                Icon(
+                    painter = painterResource(R.drawable.ic_copy),
+                    contentDescription = stringResource(R.string.torrent_details_action_copy_link),
                 )
             }
             IconButton(onClick = onSharePageLink) {

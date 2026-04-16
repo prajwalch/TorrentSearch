@@ -102,6 +102,7 @@
     </string>
 
     <string name="torrent_details_action_open_link">Open link in browser</string>
+    <string name="torrent_details_action_copy_link">Copy page link</string>
     <string name="torrent_details_action_share_link">Share page link</string>
     <string name="torrent_details_error_provider_not_supported">Search provider \'%1$s\' is not supported</string>
     <string name="torrent_details_error_not_found">Details not found on the provider</string>
