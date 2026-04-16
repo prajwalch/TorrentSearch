@@ -2,6 +2,7 @@ package com.prajwalch.torrentsearch.providers
 
 import com.prajwalch.torrentsearch.R
 import com.prajwalch.torrentsearch.domain.model.Category
+import com.prajwalch.torrentsearch.domain.model.GetTorrentDetailsResponse
 import com.prajwalch.torrentsearch.domain.model.Torrent
 import com.prajwalch.torrentsearch.domain.model.TorrentDetails
 import com.prajwalch.torrentsearch.network.HttpClient
@@ -76,9 +77,12 @@ class TheRarBg : SearchProvider {
         }.orEmpty()
     }
 
-    override suspend fun getDetails(detailsPageUrl: String): TorrentDetails? {
+    override suspend fun getDetails(detailsPageUrl: String): GetTorrentDetailsResponse {
         val responseHtml = HttpClient.get(detailsPageUrl)
+        
         return TheRarBgDetailsPageParser.parse(responseHtml)
+            ?.let(GetTorrentDetailsResponse::Success)
+            ?: GetTorrentDetailsResponse.DetailsNotFound
     }
 
     /** Returns the compatible category string. */

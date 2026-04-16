@@ -3,8 +3,8 @@ package com.prajwalch.torrentsearch.providers
 import androidx.annotation.StringRes
 
 import com.prajwalch.torrentsearch.domain.model.Category
+import com.prajwalch.torrentsearch.domain.model.GetTorrentDetailsResponse
 import com.prajwalch.torrentsearch.domain.model.Torrent
-import com.prajwalch.torrentsearch.domain.model.TorrentDetails
 import com.prajwalch.torrentsearch.network.HttpClient
 
 /**
@@ -18,7 +18,8 @@ interface SearchProvider {
     /** Performs a search and returns the results. */
     suspend fun search(query: String, context: SearchContext): List<Torrent>
 
-    suspend fun getDetails(detailsPageUrl: String): TorrentDetails? = null
+    suspend fun getDetails(detailsPageUrl: String): GetTorrentDetailsResponse =
+        GetTorrentDetailsResponse.RequestNotSupported
 }
 
 /** Search provider information. */

@@ -1,6 +1,7 @@
 package com.prajwalch.torrentsearch.providers
 
 import com.prajwalch.torrentsearch.domain.model.Category
+import com.prajwalch.torrentsearch.domain.model.GetTorrentDetailsResponse
 import com.prajwalch.torrentsearch.domain.model.MagnetUri
 import com.prajwalch.torrentsearch.domain.model.Torrent
 import com.prajwalch.torrentsearch.domain.model.TorrentDetails
@@ -83,9 +84,12 @@ class BitSearch : SearchProvider {
         Category.Other -> 1
     }
 
-    override suspend fun getDetails(detailsPageUrl: String): TorrentDetails? {
+    override suspend fun getDetails(detailsPageUrl: String): GetTorrentDetailsResponse {
         val responseHtml = HttpClient.get(detailsPageUrl)
+        
         return BitSearchDetailsPageParser.parse(html = responseHtml, pageUrl = detailsPageUrl)
+            ?.let(GetTorrentDetailsResponse::Success)
+            ?: GetTorrentDetailsResponse.DetailsNotFound
     }
 }
 

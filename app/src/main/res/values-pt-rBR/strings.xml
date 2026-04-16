@@ -5,8 +5,8 @@
     <string name="torrent_client_not_found_recommended_client_hint">Aplicativos Recomendados</string>
     <string name="button_done">Concluído</string>
     <string name="home_search_query_hint">Pesquisa…</string>
-    <string name="search_internet_connection_error">Sem conexão de internet</string>
-    <string name="search_button_try_again">Tente novamente</string>
+    <string name="internet_connection_error">Sem conexão de internet</string>
+    <string name="button_try_again">Tente novamente</string>
     <string name="search_no_results_message">Nenhum resultado encontrado</string>
     <string name="action_sort">Abrir opções de ordenação</string>
     <string name="torrent_list_action_bookmark_torrent">Favoritar torrent</string>

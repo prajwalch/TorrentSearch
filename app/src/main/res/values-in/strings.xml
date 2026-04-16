@@ -59,8 +59,8 @@
     <string name="search_action_settings">Pengaturan</string>
     <string name="search_filter_providers_title">Penyedia pencarian</string>
     <string name="search_filter_chip_dead_torrents">Torrent tidak aktif</string>
-    <string name="search_internet_connection_error">Tidak ada koneksi internet</string>
-    <string name="search_button_try_again">Coba lagi</string>
+    <string name="internet_connection_error">Tidak ada koneksi internet</string>
+    <string name="button_try_again">Coba lagi</string>
     <string name="search_no_results_message">Tidak ada hasil yang ditemukan</string>
     <string name="search_results_count_format">%1$s hasil untuk \'%2$s\' (%3$s)</string>
     <string name="search_errors_bottom_sheet_title">Penyedia pencarian yang gagal</string>

@@ -1,6 +1,7 @@
 package com.prajwalch.torrentsearch.providers
 
 import com.prajwalch.torrentsearch.domain.model.Category
+import com.prajwalch.torrentsearch.domain.model.GetTorrentDetailsResponse
 import com.prajwalch.torrentsearch.domain.model.Torrent
 import com.prajwalch.torrentsearch.domain.model.TorrentDetails
 import com.prajwalch.torrentsearch.network.HttpClient
@@ -52,9 +53,12 @@ class UIndex : SearchProvider {
         return resultsPageParser.parse(responseHtml).orEmpty()
     }
 
-    override suspend fun getDetails(detailsPageUrl: String): TorrentDetails? {
+    override suspend fun getDetails(detailsPageUrl: String): GetTorrentDetailsResponse {
         val responseHtml = HttpClient.get(detailsPageUrl)
+        
         return UIndexDetailsPageParser.parse(responseHtml, detailsPageUrl)
+            ?.let(GetTorrentDetailsResponse::Success)
+            ?: GetTorrentDetailsResponse.DetailsNotFound
     }
 }
 

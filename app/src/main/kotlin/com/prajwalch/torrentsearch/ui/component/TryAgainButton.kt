@@ -1,4 +1,4 @@
-package com.prajwalch.torrentsearch.ui.search.component
+package com.prajwalch.torrentsearch.ui.component
 
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.size
@@ -27,6 +27,6 @@ fun TryAgainButton(onClick: () -> Unit, modifier: Modifier = Modifier) {
             contentDescription = null,
         )
         Spacer(modifier = Modifier.width(ButtonDefaults.IconSpacing))
-        Text(text = stringResource(R.string.search_button_try_again))
+        Text(text = stringResource(R.string.button_try_again))
     }
 }

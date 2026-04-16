@@ -40,12 +40,16 @@ import com.prajwalch.torrentsearch.domain.model.MagnetUri
 import com.prajwalch.torrentsearch.domain.model.TorrentDetails
 import com.prajwalch.torrentsearch.ui.TorrentFileDownloadEffect
 import com.prajwalch.torrentsearch.ui.component.ArrowBackIconButton
+import com.prajwalch.torrentsearch.ui.component.EmptyPlaceholder
+import com.prajwalch.torrentsearch.ui.component.NoInternetConnection
+import com.prajwalch.torrentsearch.ui.component.TryAgainButton
 import com.prajwalch.torrentsearch.ui.theme.spaces
 import com.prajwalch.torrentsearch.ui.torrentdetails.component.CallToActionButton
 import com.prajwalch.torrentsearch.ui.torrentdetails.component.HeroBackgroundImage
-import com.prajwalch.torrentsearch.ui.torrentdetails.component.LoadFailedMessage
 import com.prajwalch.torrentsearch.ui.torrentdetails.component.MediaPoster
+import com.prajwalch.torrentsearch.ui.torrentdetails.component.ProviderNotSupportedError
 import com.prajwalch.torrentsearch.ui.torrentdetails.component.ScreenShots
+import com.prajwalch.torrentsearch.ui.torrentdetails.component.SomethingWentWrong
 import com.prajwalch.torrentsearch.ui.torrentdetails.component.TorrentDescription
 import com.prajwalch.torrentsearch.ui.torrentdetails.component.TorrentInfo
 
@@ -84,33 +88,71 @@ fun TorrentDetailsScreen(
                 onNavigateBack = onNavigateBack,
                 onOpenPageLink = { uriHandler.openUri(viewModel.detailsPageUrl) },
                 onSharePageLink = { onShareDetailsPageLink(viewModel.detailsPageUrl) },
+                /*
+                onCopyPageLink = {
+                    coroutineScope.launch {
+                        clipboard.copyText(viewModel.detailsPageUrl)
+                        snackbarHostState.showSnackbar(linkCopiedMessage)
+                    }
+                },
+                */
                 scrollBehavior = scrollBehavior,
             )
         },
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
     ) { innerPadding ->
-        val innerPaddingModifier = Modifier
-            .fillMaxSize()
-            .padding(innerPadding)
-
         when (val uiState = uiState) {
-            is TorrentDetailsUiState.LoadFailed -> {
-                LoadFailedMessage(
-                    modifier = innerPaddingModifier,
-                    message = uiState.error.displayName(),
-                )
-            }
-
             TorrentDetailsUiState.Loading -> {
                 Box(
-                    modifier = innerPaddingModifier,
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(innerPadding),
                     contentAlignment = Alignment.Center
                 ) {
                     CircularProgressIndicator()
                 }
             }
 
-            is TorrentDetailsUiState.Ready -> {
+            TorrentDetailsUiState.NoInternetConnection -> {
+                NoInternetConnection(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(innerPadding),
+                    onTryAgain = viewModel::loadDetails,
+                )
+            }
+
+            TorrentDetailsUiState.DetailsNotFound -> {
+                EmptyPlaceholder(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(innerPadding),
+                    title = R.string.torrent_details_error_not_found,
+                    actions = { TryAgainButton(onClick = viewModel::loadDetails) }
+                )
+            }
+
+            is TorrentDetailsUiState.ProviderNotSupported -> {
+                ProviderNotSupportedError(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(innerPadding)
+                        .padding(horizontal = MaterialTheme.spaces.large),
+                    providerName = viewModel.providerName,
+                )
+            }
+
+            is TorrentDetailsUiState.SomethingWentWrong -> {
+                SomethingWentWrong(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(innerPadding)
+                        .padding(horizontal = MaterialTheme.spaces.large),
+                    message = uiState.message,
+                )
+            }
+
+            is TorrentDetailsUiState.LoadSucceed -> {
                 val torrentDetails = uiState.details
 
                 Box(
@@ -121,15 +163,10 @@ fun TorrentDetailsScreen(
                     torrentDetails.posterUrl?.let { HeroBackgroundImage(it) }
 
                     TorrentDetailsScreenContent(
-                        modifier = innerPaddingModifier,
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(innerPadding),
                         details = torrentDetails,
-//                        onOpenUrl = { uriHandler.openUri(viewModel.detailsPageUrl) },
-//                        onCopyUrl = {
-//                            coroutineScope.launch {
-//                                clipboard.copyText(viewModel.detailsPageUrl)
-//                                snackbarHostState.showSnackbar(linkCopiedMessage)
-//                            }
-//                        },
                         onOpenMagnet = { onDownloadTorrent(torrentDetails.magnetUri) },
                         onDownloadTorrent = {
                             val torrentFileName = torrentDetails.name.replace(' ', '-')
@@ -248,14 +285,4 @@ private fun TorrentDetailsScreenContent(
             description = details.description,
         )
     }
-}
-
-@Composable
-private fun LoadError.displayName(): String {
-    val resId = when (this) {
-        LoadError.UnsupportedSearchProvider -> R.string.torrent_details_error_unsupported_provider
-        LoadError.DetailsNotFound -> R.string.torrent_details_error_not_found
-    }
-
-    return stringResource(resId)
 }

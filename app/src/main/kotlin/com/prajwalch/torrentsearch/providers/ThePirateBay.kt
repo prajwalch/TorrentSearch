@@ -2,6 +2,7 @@ package com.prajwalch.torrentsearch.providers
 
 import com.prajwalch.torrentsearch.R
 import com.prajwalch.torrentsearch.domain.model.Category
+import com.prajwalch.torrentsearch.domain.model.GetTorrentDetailsResponse
 import com.prajwalch.torrentsearch.domain.model.Torrent
 import com.prajwalch.torrentsearch.domain.model.TorrentDetails
 import com.prajwalch.torrentsearch.extension.asArray
@@ -47,12 +48,15 @@ class ThePirateBay : SearchProvider {
         return resultsJsonParser.parse(responseJson)
     }
 
-    override suspend fun getDetails(detailsPageUrl: String): TorrentDetails? {
+    override suspend fun getDetails(detailsPageUrl: String): GetTorrentDetailsResponse {
         val id = detailsPageUrl.takeLastWhile { it != '=' }
         val requestUrl = "https://apibay.org/t.php?id=$id"
-        val responseJson = HttpClient.getJson(requestUrl) ?: return null
+        val responseJson = HttpClient.getJson(requestUrl)
+            ?: return GetTorrentDetailsResponse.DetailsNotFound
 
         return TBPDetailsJsonParser.parse(json = responseJson, getCategory = ::getCategoryFromIndex)
+            ?.let(GetTorrentDetailsResponse::Success)
+            ?: GetTorrentDetailsResponse.DetailsNotFound
     }
 
     /**

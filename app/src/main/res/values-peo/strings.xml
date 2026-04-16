@@ -5,5 +5,5 @@
     <string name="button_cancel">لغو</string>
     <string name="torrent_client_not_found_recommended_client_hint">برنامه دانلود پیشنهادی</string>
     <string name="button_done">انجام شد</string>
-    <string name="search_internet_connection_error">بدون اتصال به اینترنت</string>
+    <string name="internet_connection_error">بدون اتصال به اینترنت</string>
 </resources>

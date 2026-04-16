@@ -3,10 +3,12 @@
 
     <string name="button_done">Done</string>
     <string name="button_cancel">Cancel</string>
+    <string name="button_try_again">Try again</string>
     <string name="nsfw">NSFW</string>
     <string name="torznab" translatable="false">Torznab</string>
     <string name="safety_status_unsafe">Unsafe</string>
     <string name="bookmarked_message">Bookmarked</string>
+    <string name="internet_connection_error">No internet connection</string>
 
     <string name="main_cannot_search_using_url_message">Cannot search using a URL</string>
     <string name="main_cannot_search_blank_query_message">Cannot search using a blank query</string>
@@ -91,8 +93,6 @@
     <string name="search_filter_providers_action_select_all">Select all</string>
     <string name="search_filter_providers_action_deselect_all">Deselect all</string>
     <string name="search_filter_providers_action_invert_selection">Invert selection</string>
-    <string name="search_internet_connection_error">No internet connection</string>
-    <string name="search_button_try_again">Try again</string>
     <string name="search_no_results_message">No results found</string>
     <string name="search_results_count_format">%1$s results for \'%2$s\' (%3$s)</string>
     <string name="search_errors_bottom_sheet_title">Failed search providers</string>
@@ -103,8 +103,9 @@
 
     <string name="torrent_details_action_open_link">Open link in browser</string>
     <string name="torrent_details_action_share_link">Share page link</string>
-    <string name="torrent_details_error_unsupported_provider">Unsupported search provider</string>
+    <string name="torrent_details_error_provider_not_supported">Search provider \'%1$s\' is not supported</string>
     <string name="torrent_details_error_not_found">Details not found on the provider</string>
+    <string name="torrent_details_error_something_wrong">Something went wrong</string>
     <string name="torrent_details_title_info">Torrent info</string>
     <string name="torrent_details_title_description">Description</string>
     <string name="torrent_details_label_file_size">File size</string>

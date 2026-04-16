@@ -5,6 +5,7 @@ import androidx.compose.ui.Modifier
 
 import com.prajwalch.torrentsearch.R
 import com.prajwalch.torrentsearch.ui.component.EmptyPlaceholder
+import com.prajwalch.torrentsearch.ui.component.TryAgainButton
 
 @Composable
 fun ResultsNotFound(modifier: Modifier = Modifier) {

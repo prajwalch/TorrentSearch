@@ -78,7 +78,7 @@ class SearchProvidersManager @Inject constructor(
     /**
      * Attempts to fina a [SearchProvider] associated with the given name.
      */
-    fun findSearchProviderByName(name: String): SearchProvider? {
+    fun findProviderByName(name: String): SearchProvider? {
         return builtinProviders.find { it.info.name == name }
     }
 

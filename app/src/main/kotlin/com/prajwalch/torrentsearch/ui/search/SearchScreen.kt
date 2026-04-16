@@ -48,6 +48,7 @@ import com.prajwalch.torrentsearch.ui.TorrentFileDownloadEffect
 import com.prajwalch.torrentsearch.ui.component.AnimatedScrollToTopFAB
 import com.prajwalch.torrentsearch.ui.component.ArrowBackIconButton
 import com.prajwalch.torrentsearch.ui.component.CollapsibleSearchBar
+import com.prajwalch.torrentsearch.ui.component.NoInternetConnection
 import com.prajwalch.torrentsearch.ui.component.RoundedDropdownMenu
 import com.prajwalch.torrentsearch.ui.component.SearchIconButton
 import com.prajwalch.torrentsearch.ui.component.SortDropdownMenu
@@ -55,7 +56,6 @@ import com.prajwalch.torrentsearch.ui.component.SortIconButton
 import com.prajwalch.torrentsearch.ui.component.TorrentActionsBottomSheet
 import com.prajwalch.torrentsearch.ui.component.rememberCollapsibleSearchBarState
 import com.prajwalch.torrentsearch.ui.rememberTorrentListState
-import com.prajwalch.torrentsearch.ui.search.component.NoInternetConnection
 import com.prajwalch.torrentsearch.ui.search.component.ResultsNotFound
 import com.prajwalch.torrentsearch.ui.search.component.SearchFailuresBottomSheet
 import com.prajwalch.torrentsearch.ui.search.component.SearchResults

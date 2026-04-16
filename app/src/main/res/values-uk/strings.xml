@@ -33,8 +33,8 @@
     <string name="search_filter_query_hint">Результати пошуку</string>
     <string name="search_filter_providers_title">Пошукові системи</string>
     <string name="search_filter_chip_dead_torrents">Неактивні торенти</string>
-    <string name="search_internet_connection_error">Нема з\\\'єднання з інтернетом</string>
-    <string name="search_button_try_again">Повторити спробу</string>
+    <string name="internet_connection_error">Нема з\\\'єднання з інтернетом</string>
+    <string name="button_try_again">Повторити спробу</string>
     <string name="search_no_results_message">Результатів не знайдено</string>
     <string name="search_results_count_format">%1$s результатів для «%2$s» (%3$s)</string>
     <string name="bookmarks_search_query_hint">Пошук вподобаного</string>

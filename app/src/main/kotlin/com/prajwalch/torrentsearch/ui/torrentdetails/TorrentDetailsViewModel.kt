@@ -7,10 +7,13 @@ import androidx.lifecycle.viewModelScope
 
 import com.prajwalch.torrentsearch.domain.SearchProvidersManager
 import com.prajwalch.torrentsearch.domain.TorrentFileDownloader
+import com.prajwalch.torrentsearch.domain.model.GetTorrentDetailsResponse
 import com.prajwalch.torrentsearch.domain.model.TorrentDetails
+import com.prajwalch.torrentsearch.network.ConnectivityChecker
 
 import dagger.hilt.android.lifecycle.HiltViewModel
 
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
@@ -22,27 +25,31 @@ import javax.inject.Inject
 sealed interface TorrentDetailsUiState {
     data object Loading : TorrentDetailsUiState
 
-    data class LoadFailed(val error: LoadError) : TorrentDetailsUiState
+    data object NoInternetConnection : TorrentDetailsUiState
 
-    data class Ready(val details: TorrentDetails) : TorrentDetailsUiState
-}
+    data object DetailsNotFound : TorrentDetailsUiState
 
-enum class LoadError {
-    UnsupportedSearchProvider,
-    DetailsNotFound,
+    data object ProviderNotSupported : TorrentDetailsUiState
+
+    data class SomethingWentWrong(val message: String?) : TorrentDetailsUiState
+
+    data class LoadSucceed(val details: TorrentDetails) : TorrentDetailsUiState
 }
 
 @HiltViewModel
 class TorrentDetailsViewModel @Inject constructor(
-    private val searchProvidersManager: SearchProvidersManager,
+    searchProvidersManager: SearchProvidersManager,
     private val torrentFileDownloader: TorrentFileDownloader,
+    private val connectivityChecker: ConnectivityChecker,
     savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
     val detailsPageUrl: String = savedStateHandle["detailsPageUrl"]
         ?: error("TorrentDetailsViewModel can't function without details page URL")
 
-    private val providerName: String = savedStateHandle["providerName"]
+    val providerName: String = savedStateHandle["providerName"]
         ?: error("TorrentDetailsViewModel can't function without provider name")
+
+    private val provider = searchProvidersManager.findProviderByName(providerName)
 
     private val _uiState = MutableStateFlow<TorrentDetailsUiState>(TorrentDetailsUiState.Loading)
     val uiState = _uiState.asStateFlow()
@@ -54,18 +61,39 @@ class TorrentDetailsViewModel @Inject constructor(
         loadDetails()
     }
 
-    private fun loadDetails() = viewModelScope.launch {
-        val searchProvider = searchProvidersManager.findSearchProviderByName(providerName)
-        if (searchProvider == null) {
-            _uiState.value = TorrentDetailsUiState.LoadFailed(LoadError.UnsupportedSearchProvider)
-            return@launch
-        }
+    fun loadDetails() {
+        viewModelScope.launch {
+            _uiState.value = TorrentDetailsUiState.Loading
 
-        val details = searchProvider.getDetails(detailsPageUrl)
-        if (details == null) {
-            _uiState.value = TorrentDetailsUiState.LoadFailed(LoadError.DetailsNotFound)
-        } else {
-            _uiState.value = TorrentDetailsUiState.Ready(details)
+            if (!connectivityChecker.isInternetAvailable()) {
+                _uiState.value = TorrentDetailsUiState.NoInternetConnection
+                return@launch
+            }
+
+            if (provider == null) {
+                _uiState.value = TorrentDetailsUiState.ProviderNotSupported
+                return@launch
+            }
+
+            _uiState.value = try {
+                when (val response = provider.getDetails(detailsPageUrl)) {
+                    GetTorrentDetailsResponse.DetailsNotFound -> {
+                        TorrentDetailsUiState.DetailsNotFound
+                    }
+
+                    GetTorrentDetailsResponse.RequestNotSupported -> {
+                        TorrentDetailsUiState.ProviderNotSupported
+                    }
+
+                    is GetTorrentDetailsResponse.Success -> {
+                        TorrentDetailsUiState.LoadSucceed(response.details)
+                    }
+                }
+            } catch (e: CancellationException) {
+                throw e
+            } catch (e: Throwable) {
+                TorrentDetailsUiState.SomethingWentWrong(e.message)
+            }
         }
     }
 
@@ -86,7 +114,7 @@ class TorrentDetailsViewModel @Inject constructor(
 
     fun writeTorrentFile(outputStream: OutputStream) {
         viewModelScope.launch {
-            torrentFileDownloader.writeFileContent(outputStream = outputStream)
+            torrentFileDownloader.writeFileContent(outputStream)
         }
     }
 }

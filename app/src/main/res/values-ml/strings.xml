@@ -4,8 +4,8 @@
     <string name="torrent_client_not_found_content">ഡൗൺലോഡ് ഉപയോഗിക്കാൻ, ആദ്യം ഒരു ടോറന്റ് ക്ലയന്റ് ഇൻസ്റ്റാൾ ചെയ്ത് ക്രമീകരിക്കുക. പിന്നെ ഈ ആപ്പിലേക്ക് തിരികെ വരിക.</string>
     <string name="torrent_client_not_found_recommended_client_hint">പറ്റിയ ക്ലയന്റ്</string>
     <string name="button_done">പൂർത്തിയായി</string>
-    <string name="search_internet_connection_error">ഇന്റർനെറ്റ് കണക്ഷൻ ഇല്ല</string>
-    <string name="search_button_try_again">വീണ്ടും ശ്രമിക്കുക</string>
+    <string name="internet_connection_error">ഇന്റർനെറ്റ് കണക്ഷൻ ഇല്ല</string>
+    <string name="button_try_again">വീണ്ടും ശ്രമിക്കുക</string>
     <string name="search_no_results_message">ഫലങ്ങൾ ഒന്നും കണ്ടെത്തിയില്ല</string>
     <string name="search_results_count_format">\'%2$s\' ന് %1$s റിസൾട്ടുകൾ (%3$s)</string>
     <string name="action_sort">സോർട്ട് ഓപ്ഷനുകൾ തുറക്കുക</string>

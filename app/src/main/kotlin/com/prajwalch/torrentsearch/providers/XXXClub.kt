@@ -1,6 +1,7 @@
 package com.prajwalch.torrentsearch.providers
 
 import com.prajwalch.torrentsearch.domain.model.Category
+import com.prajwalch.torrentsearch.domain.model.GetTorrentDetailsResponse
 import com.prajwalch.torrentsearch.domain.model.Torrent
 import com.prajwalch.torrentsearch.domain.model.TorrentDetails
 import com.prajwalch.torrentsearch.network.HttpClient
@@ -33,9 +34,12 @@ class XXXClub : SearchProvider {
         return torrents.orEmpty()
     }
 
-    override suspend fun getDetails(detailsPageUrl: String): TorrentDetails? {
+    override suspend fun getDetails(detailsPageUrl: String): GetTorrentDetailsResponse {
         val responseHtml = HttpClient.get(detailsPageUrl)
+        
         return XXXClubDetailsPageParser.parse(responseHtml, detailsPageUrl)
+            ?.let(GetTorrentDetailsResponse::Success)
+            ?: GetTorrentDetailsResponse.DetailsNotFound
     }
 
     private suspend fun parseHtml(html: String, httpClient: HttpClient): List<Torrent>? {

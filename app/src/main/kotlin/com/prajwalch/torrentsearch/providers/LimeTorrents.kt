@@ -2,6 +2,7 @@ package com.prajwalch.torrentsearch.providers
 
 import com.prajwalch.torrentsearch.R
 import com.prajwalch.torrentsearch.domain.model.Category
+import com.prajwalch.torrentsearch.domain.model.GetTorrentDetailsResponse
 import com.prajwalch.torrentsearch.domain.model.Torrent
 import com.prajwalch.torrentsearch.domain.model.TorrentDetails
 import com.prajwalch.torrentsearch.network.HttpClient
@@ -40,9 +41,12 @@ class LimeTorrents : SearchProvider {
         return resultsPageParser.parse(html = responseHtml, pageUrl = requestUrl)
     }
 
-    override suspend fun getDetails(detailsPageUrl: String): TorrentDetails? {
+    override suspend fun getDetails(detailsPageUrl: String): GetTorrentDetailsResponse {
         val responseHtml = HttpClient.get(detailsPageUrl)
+        
         return LimeTorrentsDetailsPageParser.parse(responseHtml)
+            ?.let(GetTorrentDetailsResponse::Success)
+            ?: GetTorrentDetailsResponse.DetailsNotFound
     }
 
     /** Returns the category string used by it. */
