@@ -197,6 +197,8 @@
     <string name="settings_show_search_history">Show search history</string>
     <string name="settings_show_search_history_summary">Show search history in search bar</string>
     <string name="settings_section_advanced">Advanced</string>
+    <string name="settings_open_torrent_details_in_app">Open torrent details in app</string>
+    <string name="settings_open_torrent_details_in_app_summary">Opens torrent details directly in the app\'s native screen</string>
     <string name="settings_enable_share_integration">Enable share integration</string>
     <string name="settings_enable_share_integration_summary">
         When enabled, adds this app in the share menu.

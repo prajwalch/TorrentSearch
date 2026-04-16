@@ -60,9 +60,9 @@ class MainActivity : ComponentActivity() {
                     TorrentSearchApp(
                         onDownloadTorrent = ::downloadTorrentViaClient,
                         onShareMagnetLink = ::shareMagnetLink,
-                        onOpenDescriptionPage = ::openDescriptionPage,
                         onShareDescriptionPageUrl = ::shareDescriptionPageUrl,
                         initialSearchQuery = initialSearchQuery,
+                        openTorrentDetailsInApp = uiState.openTorrentDetailsInApp,
                     )
                 }
             }
@@ -151,18 +151,6 @@ class MainActivity : ComponentActivity() {
 
         try {
             startTextShareIntent(magnetUri)
-        } catch (_: ActivityNotFoundException) {
-            Log.d(TAG, "Activity not found")
-        }
-    }
-
-    /** Opens a description page in a default browser. */
-    private fun openDescriptionPage(url: String) {
-        Log.d(TAG, "openDescriptionPage")
-
-        try {
-            val openPageIntent = Intent(Intent.ACTION_VIEW, url.toUri())
-            startActivity(openPageIntent)
         } catch (_: ActivityNotFoundException) {
             Log.d(TAG, "Activity not found")
         }

@@ -119,6 +119,7 @@ fun SettingsScreen(
             )
             AdvancedSettings(
                 uiState = uiState.advancedSettings,
+                onEnableOpenTorrentDetailsInApp = viewModel::enableOpenTorrentDetailsInApp,
                 onEnableShareIntegration = viewModel::enableShareIntegration,
                 onEnableQuickSearch = viewModel::enableQuickSearch,
                 onExportLogsToFile = {
@@ -389,6 +390,7 @@ private fun SearchHistorySettings(
 @Composable
 private fun AdvancedSettings(
     uiState: AdvancedSettingsUiState,
+    onEnableOpenTorrentDetailsInApp: (Boolean) -> Unit,
     onEnableShareIntegration: (Boolean, PackageManager) -> Unit,
     onEnableQuickSearch: (Boolean, PackageManager) -> Unit,
     onExportLogsToFile: () -> Unit,
@@ -400,6 +402,18 @@ private fun AdvancedSettings(
     Column(modifier = modifier) {
         SettingsSectionTitle(R.string.settings_section_advanced)
 
+        SettingsListItem(
+            onClick = { onEnableOpenTorrentDetailsInApp(!uiState.openTorrentDetailsInApp) },
+            icon = R.drawable.ic_link,
+            headline = R.string.settings_open_torrent_details_in_app,
+            supportingContent = stringResource(R.string.settings_open_torrent_details_in_app_summary),
+            trailingContent = {
+                Switch(
+                    checked = uiState.openTorrentDetailsInApp,
+                    onCheckedChange = onEnableOpenTorrentDetailsInApp,
+                )
+            }
+        )
         SettingsListItem(
             onClick = { onEnableShareIntegration(!uiState.enableShareIntegration, packageManager) },
             icon = R.drawable.ic_share,

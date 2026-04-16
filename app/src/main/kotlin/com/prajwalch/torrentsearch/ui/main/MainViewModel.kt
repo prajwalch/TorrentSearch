@@ -20,6 +20,7 @@ data class MainUiState(
     val enableDynamicTheme: Boolean = true,
     val darkTheme: DarkTheme = DarkTheme.FollowSystem,
     val pureBlack: Boolean = false,
+    val openTorrentDetailsInApp: Boolean = false,
 )
 
 @HiltViewModel
@@ -30,6 +31,7 @@ class MainViewModel @Inject constructor(
         settingsRepository.enableDynamicTheme,
         settingsRepository.darkTheme,
         settingsRepository.pureBlack,
+        settingsRepository.openTorrentDetailsInApp,
         ::MainUiState,
     ).stateIn(
         scope = viewModelScope,

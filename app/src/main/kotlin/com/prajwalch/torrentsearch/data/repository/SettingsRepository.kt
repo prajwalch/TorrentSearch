@@ -82,6 +82,9 @@ class SettingsRepository @Inject constructor(
     val showSearchHistory: Flow<Boolean> = dataStore
         .getOrDefault(key = SHOW_SEARCH_HISTORY, default = true)
 
+    val openTorrentDetailsInApp: Flow<Boolean> = dataStore
+        .getOrDefault(key = OPEN_TORRENT_DETAILS_IN_APP, default = false)
+
     val enableShareIntegration: Flow<Boolean> = dataStore
         .getOrDefault(key = ENABLE_SHARE_INTEGRATION, default = true)
 
@@ -160,6 +163,10 @@ class SettingsRepository @Inject constructor(
         dataStore.setOrUpdate(key = SHOW_SEARCH_HISTORY, value = show)
     }
 
+    suspend fun enableOpenTorrentDetailsInApp(enable: Boolean) {
+        dataStore.setOrUpdate(key = OPEN_TORRENT_DETAILS_IN_APP, value = enable)
+    }
+
     suspend fun enableShareIntegration(enable: Boolean) {
         dataStore.setOrUpdate(key = ENABLE_SHARE_INTEGRATION, value = enable)
     }
@@ -197,6 +204,7 @@ class SettingsRepository @Inject constructor(
         val SHOW_SEARCH_HISTORY = booleanPreferencesKey("show_search_history")
 
         // Advanced
+        val OPEN_TORRENT_DETAILS_IN_APP = booleanPreferencesKey("open_torrent_details_in_app")
         val ENABLE_SHARE_INTEGRATION = booleanPreferencesKey("enable_share_integration")
         val ENABLE_QUICK_SEARCH = booleanPreferencesKey("enable_quick_search")
 

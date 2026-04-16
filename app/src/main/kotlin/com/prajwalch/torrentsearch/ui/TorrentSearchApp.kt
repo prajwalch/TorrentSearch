@@ -8,6 +8,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.platform.LocalUriHandler
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -52,13 +53,26 @@ private object SearchHistory
 fun TorrentSearchApp(
     onDownloadTorrent: (MagnetUri) -> Boolean,
     onShareMagnetLink: (MagnetUri) -> Unit,
-    onOpenDescriptionPage: (String) -> Unit,
     onShareDescriptionPageUrl: (String) -> Unit,
     initialSearchQuery: String? = null,
+    openTorrentDetailsInApp: Boolean = false,
 ) {
+    val uriHandler = LocalUriHandler.current
     val navController = rememberNavController()
-    var showTorrentClientNotFoundDialog by rememberSaveable { mutableStateOf(false) }
 
+    val openDescriptionPage = { url: String, providerName: String ->
+        if (!openTorrentDetailsInApp) {
+            uriHandler.openUri(url)
+        } else {
+            val detailsRoute = TorrentDetails(
+                detailsPageUrl = url,
+                providerName = providerName,
+            )
+            navController.navigate(detailsRoute)
+        }
+    }
+
+    var showTorrentClientNotFoundDialog by rememberSaveable { mutableStateOf(false) }
     if (showTorrentClientNotFoundDialog) {
         TorrentClientNotFoundDialog(
             onConfirmation = { showTorrentClientNotFoundDialog = false },
@@ -98,10 +112,7 @@ fun TorrentSearchApp(
                 onNavigateToSettings = { navController.navigateToSettings() },
                 onDownloadTorrent = { showTorrentClientNotFoundDialog = !onDownloadTorrent(it) },
                 onShareMagnetLink = onShareMagnetLink,
-                onOpenDescriptionPage = { url, providerName ->
-                    val route = TorrentDetails(detailsPageUrl = url, providerName = providerName)
-                    navController.navigate(route)
-                },
+                onOpenDescriptionPage = openDescriptionPage,
                 onShareDescriptionPageUrl = onShareDescriptionPageUrl,
             )
         }
@@ -120,7 +131,7 @@ fun TorrentSearchApp(
                 onNavigateToSettings = { navController.navigateToSettings() },
                 onDownloadTorrent = { showTorrentClientNotFoundDialog = !onDownloadTorrent(it) },
                 onShareMagnetLink = onShareMagnetLink,
-                onOpenDescriptionPage = onOpenDescriptionPage,
+                onOpenDescriptionPage = openDescriptionPage,
                 onShareDescriptionPageUrl = onShareDescriptionPageUrl,
             )
         }

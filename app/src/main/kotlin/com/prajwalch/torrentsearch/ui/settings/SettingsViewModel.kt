@@ -67,6 +67,7 @@ data class SearchHistorySettingsUiState(
 )
 
 data class AdvancedSettingsUiState(
+    val openTorrentDetailsInApp: Boolean = false,
     val enableShareIntegration: Boolean = true,
     val enableQuickSearch: Boolean = true,
 )
@@ -145,6 +146,12 @@ class SettingsViewModel @Inject constructor(
     fun enableShowSearchHistory(show: Boolean) {
         viewModelScope.launch {
             settingsRepository.enableShowSearchHistory(show = show)
+        }
+    }
+
+    fun enableOpenTorrentDetailsInApp(enable: Boolean) {
+        viewModelScope.launch {
+            settingsRepository.enableOpenTorrentDetailsInApp(enable)
         }
     }
 
@@ -236,6 +243,7 @@ private fun SettingsRepository.getSearchHistorySettings() =
 
 private fun SettingsRepository.getAdvancedSettings() =
     combine(
+        this.openTorrentDetailsInApp,
         this.enableShareIntegration,
         this.enableQuickSearch,
         ::AdvancedSettingsUiState,

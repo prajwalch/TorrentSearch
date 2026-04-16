@@ -72,7 +72,7 @@ fun BookmarksScreen(
     onNavigateToSettings: () -> Unit,
     onDownloadTorrent: (MagnetUri) -> Unit,
     onShareMagnetLink: (MagnetUri) -> Unit,
-    onOpenDescriptionPage: (String) -> Unit,
+    onOpenDescriptionPage: (url: String, providerName: String) -> Unit,
     onShareDescriptionPageUrl: (String) -> Unit,
     modifier: Modifier = Modifier,
     viewModel: BookmarksViewModel = hiltViewModel(),
@@ -147,7 +147,7 @@ fun BookmarksScreen(
                 onShareMagnetLink(bookmark.magnetUri())
             },
             onOpenDescriptionPage = {
-                onOpenDescriptionPage(bookmark.descriptionPageUrl)
+                onOpenDescriptionPage(bookmark.descriptionPageUrl, bookmark.providerName)
             },
             onCopyDescriptionPageUrl = {
                 coroutineScope.launch {
