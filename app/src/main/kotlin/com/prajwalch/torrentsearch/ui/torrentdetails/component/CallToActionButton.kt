@@ -49,7 +49,7 @@ private fun OpenMagnetButton(onClick: () -> Unit, modifier: Modifier = Modifier)
             contentDescription = null,
         )
         Spacer(Modifier.width(ButtonDefaults.IconSpacing))
-        Text(stringResource(R.string.torrent_details_button_open_magnet))
+        Text(stringResource(R.string.torrent_details_button_download_torrent))
     }
 }
 
@@ -66,6 +66,6 @@ private fun DownloadTorrentButton(onClick: () -> Unit, modifier: Modifier = Modi
             contentDescription = null,
         )
         Spacer(Modifier.width(ButtonDefaults.IconSpacing))
-        Text(stringResource(R.string.torrent_details_button_download_torrent))
+        Text(stringResource(R.string.torrent_details_button_download_torrent_file))
     }
 }
