@@ -39,7 +39,7 @@ class AnimeTosho : SearchProvider {
 
     override suspend fun getDetails(detailsPageUrl: String): GetTorrentDetailsResponse {
         val responseHtml = HttpClient.get(detailsPageUrl)
-        
+
         return AnimeToshoDetailsPageParser.parse(html = responseHtml, baseUrl = detailsPageUrl)
             ?.let(GetTorrentDetailsResponse::Success)
             ?: GetTorrentDetailsResponse.DetailsNotFound
@@ -138,7 +138,7 @@ private object AnimeToshoDetailsPageParser {
     private const val SEEDERS = """td[title="Seeders"][align="right"]"""
     private const val PEERS = """td[title="Leechers"][align="right"]"""
     private const val UPLOAD_DATE = "#content > table:nth-of-type(1) > tbody > tr:nth-child(2) > td"
-    private const val SCREENSHOT = "img.screenthumb"
+    private const val SCREENSHOT = "a.screenthumb"
     private const val MAGNET_URI = """a[href^="magnet:"]"""
     private const val FILE_DOWNLOAD_LINK = """a[href^="https://animetosho.org/storage/torrent"]"""
 
@@ -162,7 +162,7 @@ private object AnimeToshoDetailsPageParser {
             val seeders = html.selectFirst(SEEDERS)?.ownText()?.toUIntOrNull()
             val peers = html.selectFirst(PEERS)?.ownText()?.toUIntOrNull()
             val uploadDate = html.selectFirst(UPLOAD_DATE)?.ownText()
-            val screenshotUrls = html.select(SCREENSHOT).map { it.attr("src") }
+            val screenshotUrls = html.select(SCREENSHOT).map { it.attr("href") }
             val fileDownloadLink = html.selectFirst(FILE_DOWNLOAD_LINK)?.attr("href")
 
             TorrentDetails(
