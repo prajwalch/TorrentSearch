@@ -2,7 +2,7 @@ package com.prajwalch.torrentsearch.ui.torrentdetails.component
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.aspectRatio
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.height
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -35,8 +35,8 @@ fun MediaPoster(url: String, modifier: Modifier = Modifier) {
 
     AsyncImage(
         modifier = Modifier
-            .width(120.dp)
-            .aspectRatio(2f / 3f)
+            .height(200.dp)
+            .aspectRatio(ratio = 2f / 3f, matchHeightConstraintsFirst = true)
             .clip(MaterialTheme.shapes.medium)
             .background(
                 color = MaterialTheme.colorScheme.surfaceContainer,
