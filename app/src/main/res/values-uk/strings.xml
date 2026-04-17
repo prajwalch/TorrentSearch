@@ -31,7 +31,7 @@
     <string name="home_search_query_hint">Пошук…</string>
     <string name="home_button_search">Пошук</string>
     <string name="search_filter_query_hint">Результати пошуку</string>
-    <string name="search_filter_providers_title">Пошукові системи</string>
+    <string name="search_filter_providers_title">Фільтрувати за пошуковою системою</string>
     <string name="search_filter_chip_dead_torrents">Неактивні торенти</string>
     <string name="internet_connection_error">Нема з\\\'єднання з інтернетом</string>
     <string name="button_try_again">Повторити спробу</string>
@@ -143,4 +143,25 @@
     <string name="search_providers_button_check_connection">Перевірте з\'єднання</string>
     <string name="settings_export_logs_to_file">Експорт журналів у файл</string>
     <string name="settings_export_logs_to_file_summary">Генерує файл з діями програми, які можуть допомогти у вирішенні проблем</string>
+    <string name="torrent_file_downloading_message">Завантаження торент-файлу…</string>
+    <string name="torrent_file_download_error">Помилка завантаження</string>
+    <string name="torrent_file_not_found_error">Торент-файлу не знайдено в провайдера</string>
+    <string name="torrent_file_saving_message">Збереження торент-файлу…</string>
+    <string name="torrent_file_saved_message">Торент-файл збережено</string>
+    <string name="torrent_file_save_error">Помилка збереження торент-файлу</string>
+    <string name="torrent_list_action_download_torrent_file">Завантажити торент-файл</string>
+    <string name="search_filter_chip_hide_viewed">Сховати переглянуте</string>
+    <string name="search_filter_chip_search_providers">Пошукові системи</string>
+    <string name="search_filter_providers_action_select_all">Вибрати все</string>
+    <string name="search_filter_providers_action_deselect_all">Скасувати вибір</string>
+    <string name="search_filter_providers_action_invert_selection">Вибрати навпаки</string>
+    <string name="search_info_troubleshoot_help">Щоб допомогти усунути несправності, експортуйте журнали за допомогою екрана параметрів і створіть задачу на GitHub, прикріпивши журнали.</string>
+    <string name="settings_clear_viewed_torrents">Очистити переглянуті торенти</string>
+    <string name="settings_clear_viewed_torrents_summary">Очищає список торентів, які ви вже відкривали</string>
+    <string name="settings_clear_viewed_torrents_dialog_text">Точно очистити переглянуті торенти?</string>
+    <string name="settings_clear_viewed_torrents_dialog_button_clear">Очистити</string>
+    <string name="settings_clear_viewed_torrents_dialog_button_cancel">Скасувати</string>
+    <string name="limetorrents_unsafe_reason">Технічно безпечно, але нехтує вибором категорій. Вибирайте уважно.</string>
+    <string name="tpb_unsafe_reason">Багато скарг на віруси через недостатню модерацію.</string>
+    <string name="therarbg_unsafe_reason">Клон справжнього RARBG з багатьма несправжніми торентами. Будьте дуже обачні.</string>
 </resources>
