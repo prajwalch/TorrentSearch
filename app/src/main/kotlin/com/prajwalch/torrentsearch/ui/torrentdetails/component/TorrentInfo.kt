@@ -113,7 +113,7 @@ private fun InfoListItem(
         )
         Spacer(Modifier.width(MaterialTheme.spaces.small))
         Column(verticalArrangement = Arrangement.Center) {
-            Text(text = label, style = MaterialTheme.typography.bodySmall)
+            Text(text = label, style = MaterialTheme.typography.labelMedium)
             Text(
                 text = text ?: stringResource(R.string.torrent_details_message_not_available),
                 color = MaterialTheme.colorScheme.onSurface,
