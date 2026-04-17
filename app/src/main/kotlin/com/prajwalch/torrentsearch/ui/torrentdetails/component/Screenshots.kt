@@ -50,7 +50,7 @@ private fun Screenshot(url: String, modifier: Modifier = Modifier) {
         modifier = Modifier
             .clip(MaterialTheme.shapes.medium)
             .height(180.dp)
-            .aspectRatio(16f / 9f)
+            .aspectRatio(16f / 9f, matchHeightConstraintsFirst = true)
             .then(modifier),
         model = url,
         contentDescription = null,
