@@ -7,10 +7,16 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.FilledTonalButton
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedIconButton
+import androidx.compose.material3.PlainTooltip
 import androidx.compose.material3.Text
+import androidx.compose.material3.TooltipAnchorPosition
+import androidx.compose.material3.TooltipBox
+import androidx.compose.material3.TooltipDefaults
+import androidx.compose.material3.rememberTooltipState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -31,8 +37,8 @@ fun CallToActionButton(
         horizontalArrangement = Arrangement.spacedBy(MaterialTheme.spaces.small),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        OpenMagnetButton(modifier = Modifier.weight(1f), onClick = onOpenMagnet)
         DownloadTorrentButton(onClick = onDownloadTorrent)
+        OpenMagnetButton(onClick = onOpenMagnet)
     }
 }
 
@@ -53,19 +59,23 @@ private fun OpenMagnetButton(onClick: () -> Unit, modifier: Modifier = Modifier)
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun DownloadTorrentButton(onClick: () -> Unit, modifier: Modifier = Modifier) {
-    FilledTonalButton(
-        modifier = modifier,
-        onClick = onClick,
-        contentPadding = ButtonDefaults.ButtonWithIconContentPadding,
+    val tooltipPositionProvider = TooltipDefaults
+        .rememberTooltipPositionProvider(TooltipAnchorPosition.Above)
+    val buttonText = stringResource(R.string.torrent_details_button_download_torrent_file)
+
+    TooltipBox(
+        positionProvider = tooltipPositionProvider,
+        tooltip = { PlainTooltip { Text(text = buttonText) } },
+        state = rememberTooltipState(),
     ) {
-        Icon(
-            modifier = Modifier.size(ButtonDefaults.IconSize),
-            painter = painterResource(R.drawable.ic_download),
-            contentDescription = null,
-        )
-        Spacer(Modifier.width(ButtonDefaults.IconSpacing))
-        Text(stringResource(R.string.torrent_details_button_download_torrent_file))
+        OutlinedIconButton(modifier = modifier, onClick = onClick) {
+            Icon(
+                painter = painterResource(R.drawable.ic_download),
+                contentDescription = buttonText,
+            )
+        }
     }
 }
