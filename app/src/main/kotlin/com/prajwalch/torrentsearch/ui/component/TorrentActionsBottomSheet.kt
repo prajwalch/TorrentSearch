@@ -168,7 +168,7 @@ object Actions {
     fun DownloadTorrent(onClick: () -> Unit, modifier: Modifier = Modifier) {
         Action(
             modifier = modifier,
-            icon = R.drawable.ic_download,
+            icon = R.drawable.ic_magnet,
             label = R.string.torrent_list_action_download_torrent,
             onClick = onClick,
         )
