@@ -4,7 +4,7 @@
     <string name="button_cancel">Abbrechen</string>
     <string name="nsfw">NSFW</string>
     <string name="safety_status_unsafe">Unsicher</string>
-    <string name="bookmarked_message">Lesezeichen</string>
+    <string name="bookmarked_message">Mit Lesezeichen versehen</string>
     <string name="main_cannot_search_using_url_message">Suche über URL nicht möglich</string>
     <string name="main_cannot_search_blank_query_message">Suche mit leerer Suchanfrage nicht möglich</string>
     <string name="action_sort">Sortieren</string>
@@ -43,7 +43,7 @@
     <string name="home_search_query_hint">Suche…</string>
     <string name="home_button_search">Suche</string>
     <string name="search_filter_query_hint">Suchergebnisse</string>
-    <string name="search_filter_providers_title">Suchanbieter</string>
+    <string name="search_filter_providers_title">Filtern Sie nach Suchanbieter</string>
     <string name="search_filter_chip_dead_torrents">Tote Torrents</string>
     <string name="internet_connection_error">Keine Internet Verbindung</string>
     <string name="button_try_again">Erneut versuchen</string>
@@ -51,8 +51,8 @@
     <string name="search_results_count_format">%1$s Ergebnisse für \'%2$s\' (%3$s)</string>
     <string name="bookmarks_screen_title">Lesezeichen</string>
     <plurals name="bookmarks_count_format">
-        <item quantity="one">%1$dLesezeichen</item>
-        <item quantity="other">%1$dLesezeichen</item>
+        <item quantity="one">%1$d Lesezeichen</item>
+        <item quantity="other">%1$d Lesezeichen</item>
     </plurals>
     <string name="bookmarks_search_query_hint">Such Lesezeichen</string>
     <string name="bookmarks_action_delete_all">Alles löschen</string>
