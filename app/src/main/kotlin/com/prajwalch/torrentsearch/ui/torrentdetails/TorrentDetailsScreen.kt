@@ -170,7 +170,8 @@ fun TorrentDetailsScreen(
                     TorrentDetailsScreenContent(
                         modifier = Modifier
                             .fillMaxSize()
-                            .padding(innerPadding),
+                            .padding(innerPadding)
+                            .padding(vertical = MaterialTheme.spaces.large),
                         details = torrentDetails,
                         providerName = viewModel.providerName,
                         onOpenMagnet = { onDownloadTorrent(torrentDetails.magnetUri) },
