@@ -2,6 +2,8 @@ package com.prajwalch.torrentsearch.ui.torrentdetails.component
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -12,13 +14,20 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 
 import com.prajwalch.torrentsearch.R
+import com.prajwalch.torrentsearch.ui.component.TryAgainButton
+import com.prajwalch.torrentsearch.ui.theme.TorrentSearchTheme
 import com.prajwalch.torrentsearch.ui.theme.spaces
 
 @Composable
-fun SomethingWentWrong(message: String?, modifier: Modifier = Modifier) {
+fun SomethingWentWrong(
+    message: String?,
+    onTryAgain: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
     Column(
         modifier = modifier,
         verticalArrangement = Arrangement.spacedBy(
@@ -53,5 +62,19 @@ fun SomethingWentWrong(message: String?, modifier: Modifier = Modifier) {
                 )
             }
         }
+
+        Spacer(modifier = Modifier.height(MaterialTheme.spaces.extraSmall))
+        TryAgainButton(onClick = onTryAgain)
+    }
+}
+
+@Preview
+@Composable
+private fun SomethingWentWrongPreview() {
+    TorrentSearchTheme {
+        SomethingWentWrong(
+            message = "SearchProviderException in [one=1, two=2]: Unable to connect to https://example.com",
+            onTryAgain = {},
+        )
     }
 }

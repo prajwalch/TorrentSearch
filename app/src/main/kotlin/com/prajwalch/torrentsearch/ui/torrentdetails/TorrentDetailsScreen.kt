@@ -154,6 +154,7 @@ fun TorrentDetailsScreen(
                         .padding(innerPadding)
                         .padding(horizontal = MaterialTheme.spaces.large),
                     message = uiState.message,
+                    onTryAgain = viewModel::loadDetails,
                 )
             }
 
