@@ -26,7 +26,7 @@ import com.prajwalch.torrentsearch.R
 @Composable
 fun MediaPoster(url: String, modifier: Modifier = Modifier) {
     var isSuccess by rememberSaveable(url) { mutableStateOf(false) }
-    val contentScale = if (isSuccess) ContentScale.Crop else ContentScale.Fit
+    val contentScale = if (isSuccess) ContentScale.Crop else ContentScale.None
     val colorFilter = if (isSuccess) {
         null
     } else {
@@ -48,8 +48,8 @@ fun MediaPoster(url: String, modifier: Modifier = Modifier) {
             .crossfade(true)
             .build(),
         contentDescription = null,
-        placeholder = painterResource(R.drawable.ic_image),
-        error = painterResource(R.drawable.ic_broken_image),
+        placeholder = painterResource(R.drawable.ic_downloading),
+        error = painterResource(R.drawable.ic_error),
         fallback = painterResource(R.drawable.ic_image),
         onSuccess = { isSuccess = true },
         contentScale = contentScale,
