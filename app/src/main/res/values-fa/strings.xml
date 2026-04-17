@@ -55,7 +55,7 @@
     <string name="action_sort_criteria_peers">اشتراک گذارندگان</string>
     <string name="action_sort_order_ascending">صعودی</string>
     <string name="action_sort_order_descending">نزولی</string>
-    <string name="torrent_list_seeders_format">"آپلود کنندگان  %1$s"</string>
+    <string name="torrent_list_seeders_format">آپلود کنندگان %1$s</string>
     <string name="torrent_list_peers_format">اشتراک گذارندگان %1$s</string>
     <string name="search_history_screen_title">تاریخچه جستجو</string>
     <string name="search_history_action_delete_all">حذف همه</string>
