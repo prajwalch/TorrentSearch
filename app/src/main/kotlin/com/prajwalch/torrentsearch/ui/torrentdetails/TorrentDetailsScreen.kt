@@ -45,6 +45,7 @@ import com.prajwalch.torrentsearch.ui.TorrentFileDownloadEffect
 import com.prajwalch.torrentsearch.ui.component.ArrowBackIconButton
 import com.prajwalch.torrentsearch.ui.component.EmptyPlaceholder
 import com.prajwalch.torrentsearch.ui.component.NoInternetConnection
+import com.prajwalch.torrentsearch.ui.component.SearchProviderBadge
 import com.prajwalch.torrentsearch.ui.component.TryAgainButton
 import com.prajwalch.torrentsearch.ui.theme.spaces
 import com.prajwalch.torrentsearch.ui.torrentdetails.component.CallToActionButton
@@ -171,6 +172,7 @@ fun TorrentDetailsScreen(
                             .fillMaxSize()
                             .padding(innerPadding),
                         details = torrentDetails,
+                        providerName = viewModel.providerName,
                         onOpenMagnet = { onDownloadTorrent(torrentDetails.magnetUri) },
                         onDownloadTorrent = {
                             val torrentFileName = torrentDetails.name.replace(' ', '-')
@@ -236,6 +238,7 @@ private fun TorrentDetailsScreenTopBar(
 @Composable
 private fun TorrentDetailsScreenContent(
     details: TorrentDetails,
+    providerName: String,
     onOpenMagnet: () -> Unit,
     onDownloadTorrent: () -> Unit,
     modifier: Modifier = Modifier,
@@ -254,11 +257,15 @@ private fun TorrentDetailsScreenContent(
                 url = it,
             )
         }
-        Text(
-            modifier = Modifier.then(horizontalPaddingModifier),
-            text = details.name,
-            style = MaterialTheme.typography.titleLarge,
-        )
+
+        Column(modifier = Modifier.then(horizontalPaddingModifier)) {
+            Text(
+                text = details.name,
+                style = MaterialTheme.typography.titleLarge,
+            )
+            SearchProviderBadge(providerName)
+        }
+
         CallToActionButton(
             modifier = Modifier
                 .fillMaxWidth()
