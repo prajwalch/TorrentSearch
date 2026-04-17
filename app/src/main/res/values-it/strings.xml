@@ -161,4 +161,6 @@
     <string name="limetorrents_unsafe_reason">Non è tecnicamente insicuro, ma ignora la categoria selezionata. Utilizzare con cautela.</string>
     <string name="tpb_unsafe_reason">Numerosi report di malware dovuti a moderazione inadeguata.</string>
     <string name="therarbg_unsafe_reason">Clone dell\'originale RARBG con numerosi torrent falsi. Usare con estrema cautela.</string>
+    <string name="button_try_again">Riprova</string>
+    <string name="internet_connection_error">Nessuna connessione a internet</string>
 </resources>
