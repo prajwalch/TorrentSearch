@@ -560,6 +560,9 @@ private class SearchResultsProcessor(
             criteria = sortOptions.criteria,
             order = sortOptions.order,
         )
+        val filterQueryWords = filters.query
+            .split(' ', ignoreCase = true)
+            .filter { it.isNotBlank() }
         val processedSuccesses = rawSearchResults
             .successes
             .asSequence()
@@ -567,7 +570,11 @@ private class SearchResultsProcessor(
             .filter { nsfwModeEnabled || !it.isNSFW }
             .filter { filters.deadTorrents || !it.isDead }
             .filter { !filters.hideViewed || it.infoHash !in viewedTorrentHashes }
-            .filter { filters.query.isBlank() || it.name.contains(filters.query, true) }
+            .filter {
+                filters.query.isBlank() || filterQueryWords.any { word ->
+                    it.name.contains(word, ignoreCase = true)
+                }
+            }
             .filter { filters.category == Category.All || filters.category == it.category }
             .sortedWith(comparator = sortComparator)
             .toImmutableList()
