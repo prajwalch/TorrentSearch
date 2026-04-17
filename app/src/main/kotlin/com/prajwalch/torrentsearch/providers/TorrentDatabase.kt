@@ -57,7 +57,7 @@ class TorrentDatabase : SearchProvider {
 
     override suspend fun getDetails(detailsPageUrl: String): GetTorrentDetailsResponse {
         val responseHtml = HttpClient.get(detailsPageUrl)
-        
+
         return TdDetailsPageParser.parse(responseHtml, detailsPageUrl)
             ?.let(GetTorrentDetailsResponse::Success)
             ?: GetTorrentDetailsResponse.DetailsNotFound
@@ -79,8 +79,12 @@ private class TdResultsPageParser(
     private fun parseTableRow(tr: Element): Torrent? {
         val magnetLinkHref = tr.selectFirst("td.title-cell > a.magnet-link") ?: return null
         val torrentName = magnetLinkHref.ownText()
-        val magnetUri = magnetLinkHref.attr("href")
-        val infoHash = TorrentUtils.getInfoHashFromMagnetUri(magnetUri)
+        val infoHash = magnetLinkHref.attr("href")
+            .removePrefix("/track/magnet/")
+            .takeWhile { it != '?' }
+        val magnetUri = TorrentUtils.createMagnetUri(infoHash).let {
+            "$it&tr=$TORRENT_DATABASE_TRACKER_URL"
+        }
 
         val descriptionPageUrl = tr
             .selectFirst("td.title-cell > a.info-button")
@@ -128,6 +132,10 @@ private class TdResultsPageParser(
         "TV" -> Category.Series
         else -> Category.Other
     }
+
+    private companion object {
+        private const val TORRENT_DATABASE_TRACKER_URL = "https%3A%2F%2Fdevelopify.ca%2Fannounce"
+    }
 }
 
 private object TdDetailsPageParser {
@@ -155,7 +163,7 @@ private object TdDetailsPageParser {
             val html = Jsoup.parse(html)
 
             val name = html.selectFirst(TORRENT_NAME)?.ownText() ?: return@withContext null
-            val magnetUri = html.selectFirst(MAGNET_URI)?.attr("href") ?: return@withContext null
+            val magnetUri = html.selectFirst(MAGNET_URI)?.ownText() ?: return@withContext null
             val infoHash = TorrentUtils.getInfoHashFromMagnetUri(magnetUri)
 
             val size = html.selectFirst(SIZE)?.ownText()?.let(FileSizeUtils::normalizeSize)
