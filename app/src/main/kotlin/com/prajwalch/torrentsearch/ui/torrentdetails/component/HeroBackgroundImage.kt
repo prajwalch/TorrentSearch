@@ -20,7 +20,7 @@ fun HeroBackgroundImage(url: String, modifier: Modifier = Modifier) {
     AsyncImage(
         modifier = modifier
             .fillMaxWidth()
-            .height(240.dp)
+            .height(280.dp)
             .drawWithContent {
                 drawContent()
                 drawRect(color = Color.Black.copy(alpha = 0.3f))
