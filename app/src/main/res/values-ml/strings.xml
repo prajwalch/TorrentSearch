@@ -71,7 +71,7 @@
     <string name="home_button_search">സേർച്ച്</string>
     <string name="bookmarks_empty_message">ബുക്ക്മാർക്കുകളൊന്നുമില്ല</string>
     <string name="search_history_empty_message">സേർച്ച് ഹിസ്റ്ററിയൊന്നുമില്ല</string>
-    <string name="bookmarked_message">"ബുക്ക്മാർക്ക്  ചെയ്തു"</string>
+    <string name="bookmarked_message">ബുക്ക്മാർക്ക് ചെയ്തു</string>
     <string name="main_cannot_search_using_url_message">URL ഉപയോഗിച്ച് സേർച്ച് ചെയ്യാനാകില്ല</string>
     <string name="main_cannot_search_blank_query_message">ഒന്നും അടിക്കാതെ സേർച്ച് ചെയ്യാനാകില്ല</string>
     <string name="action_sort_criteria_name">പേര്</string>
