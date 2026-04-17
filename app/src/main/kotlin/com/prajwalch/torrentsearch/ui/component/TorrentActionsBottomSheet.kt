@@ -93,7 +93,7 @@ fun TorrentActionsBottomSheet(
                 Actions.DownloadTorrent(onClick = actionWithDismiss(onDownloadTorrent))
                 onDownloadTorrentFile?.let {
                     Action(
-                        icon = R.drawable.ic_file_save,
+                        icon = R.drawable.ic_download,
                         label = R.string.torrent_list_action_download_torrent_file,
                         onClick = actionWithDismiss(it),
                     )
