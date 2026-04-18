@@ -58,7 +58,7 @@ class TorrentDatabase : SearchProvider {
     override suspend fun getDetails(detailsPageUrl: String): GetTorrentDetailsResponse {
         val responseHtml = HttpClient.get(detailsPageUrl)
 
-        return TdDetailsPageParser.parse(responseHtml, detailsPageUrl)
+        return TdDetailsPageParser.parse(responseHtml)
             ?.let(GetTorrentDetailsResponse::Success)
             ?: GetTorrentDetailsResponse.DetailsNotFound
     }
@@ -158,7 +158,7 @@ private object TdDetailsPageParser {
         "body > div.main-container > div.container.mt-5 > div.card.shadow-sm.mb-5.torrent-info-card > div.card-body.torrent-info-content"
     private const val MAGNET_URI = ".magnet-link"
 
-    suspend fun parse(html: String, baseUrl: String): TorrentDetails? =
+    suspend fun parse(html: String): TorrentDetails? =
         withContext(Dispatchers.Default) {
             val html = Jsoup.parse(html)
 
