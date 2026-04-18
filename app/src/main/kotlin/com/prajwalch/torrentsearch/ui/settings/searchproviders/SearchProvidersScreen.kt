@@ -1,5 +1,6 @@
 package com.prajwalch.torrentsearch.ui.settings.searchproviders
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
@@ -8,6 +9,8 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.LocalContentColor
+import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -15,6 +18,7 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
@@ -55,6 +59,14 @@ fun SearchProvidersScreen(
                 onEnableAllSearchProviders = viewModel::enableAllSearchProviders,
                 onDisableAllSearchProviders = viewModel::disableAllSearchProviders,
                 onResetToDefault = viewModel::resetEnabledSearchProvidersToDefault,
+                subtitle = {
+                    val searchProvidersSummary = stringResource(
+                        R.string.settings_search_providers_summary_format,
+                        uiState.enabledProvidersCount,
+                        uiState.totalNumProviders,
+                    )
+                    Text(searchProvidersSummary)
+                },
                 scrollBehavior = scrollBehavior,
             )
         },
@@ -93,11 +105,22 @@ private fun SearchProvidersScreenTopBar(
     onDisableAllSearchProviders: () -> Unit,
     onResetToDefault: () -> Unit,
     modifier: Modifier = Modifier,
+    subtitle: @Composable (() -> Unit)? = null,
     scrollBehavior: TopAppBarScrollBehavior? = null,
 ) {
     TopAppBar(
         modifier = modifier,
-        title = { Text(text = stringResource(R.string.search_providers_screen_title)) },
+        title = {
+            Column(verticalArrangement = Arrangement.Center) {
+                Text(text = stringResource(R.string.search_providers_screen_title))
+                CompositionLocalProvider(
+                    LocalContentColor provides MaterialTheme.colorScheme.onSurfaceVariant,
+                    LocalTextStyle provides MaterialTheme.typography.labelMedium,
+                ) {
+                    subtitle?.let { it() }
+                }
+            }
+        },
         navigationIcon = { ArrowBackIconButton(onClick = onNavigateBack) },
         actions = {
             IconButton(onClick = onEnableAllSearchProviders) {

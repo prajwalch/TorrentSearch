@@ -2,6 +2,7 @@ package com.prajwalch.torrentsearch.ui.settings.searchproviders
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.prajwalch.torrentsearch.data.repository.SettingsRepository
 
 import com.prajwalch.torrentsearch.domain.SearchProviderInfoItem
 import com.prajwalch.torrentsearch.domain.SearchProvidersManager
@@ -16,6 +17,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.WhileSubscribed
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
@@ -25,6 +27,8 @@ import kotlin.time.Duration.Companion.seconds
 data class SearchProvidersUiState(
     val selectedCategory: Category? = null,
     val searchProviders: List<SearchProviderListItem> = emptyList(),
+    val totalNumProviders: Int = 0,
+    val enabledProvidersCount: Int = 0,
 )
 
 data class SearchProviderListItem(
@@ -41,12 +45,15 @@ data class SearchProviderListItem(
 @HiltViewModel
 class SearchProvidersViewModel @Inject constructor(
     private val searchProvidersManager: SearchProvidersManager,
+    settingsRepository: SettingsRepository,
 ) : ViewModel() {
     private val selectedCategory = MutableStateFlow<Category?>(null)
 
     val uiState = combine(
         selectedCategory,
         searchProvidersManager.getProviderInfos(),
+        searchProvidersManager.getProvidersCount(),
+        settingsRepository.enabledSearchProvidersId.map { it.size },
         ::createUiState,
     ).stateIn(
         scope = viewModelScope,
@@ -57,6 +64,8 @@ class SearchProvidersViewModel @Inject constructor(
     private fun createUiState(
         selectedCategory: Category?,
         searchProvidersInfo: List<SearchProviderInfoItem>,
+        totalNumProviders: Int,
+        enabledProvidersCount: Int,
     ): SearchProvidersUiState {
         val searchProviders = searchProvidersInfo
             .filter { selectedCategory == null || it.specializedCategory == selectedCategory }
@@ -75,6 +84,8 @@ class SearchProvidersViewModel @Inject constructor(
         return SearchProvidersUiState(
             selectedCategory = selectedCategory,
             searchProviders = searchProviders,
+            totalNumProviders = totalNumProviders,
+            enabledProvidersCount = enabledProvidersCount,
         )
     }
 
