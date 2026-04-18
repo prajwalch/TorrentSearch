@@ -119,4 +119,5 @@
     <string name="settings_enable_share_integration_summary">ഓണാക്കുമ്പോൾ, ഈ ആപ്പിനെ ഷെയർ മെനുവിൽ ചേർക്കും.</string>
     <string name="settings_enable_quick_search">ക്വിക്ക് സേർച്ച് ഓണാക്കുക</string>
     <string name="settings_enable_quick_search_summary">ഓണാക്കുമ്പോൾ, ടെക്സ്റ്റ് സെലക്ഷൻ മെനുവിൽ (കോപ്പി അല്ലെങ്കിൽ കട്ട് പോലെ) ഈ ആപ്പിനെ ചേർക്കും.</string>
+    <string name="torznab_conn_check_result_conn_established">കണക്ഷൻ സ്ഥാപിച്ചു</string>
 </resources>
