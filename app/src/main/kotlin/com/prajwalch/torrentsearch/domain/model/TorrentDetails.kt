@@ -15,4 +15,6 @@ data class TorrentDetails(
     val description: String? = null,
     val posterUrl: String? = null,
     val screenshotUrls: List<String> = emptyList(),
-)
+) {
+    val isNSFW: Boolean = category?.isNSFW ?: false
+}

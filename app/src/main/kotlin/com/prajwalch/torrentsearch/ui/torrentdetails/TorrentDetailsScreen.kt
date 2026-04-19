@@ -43,7 +43,9 @@ import com.prajwalch.torrentsearch.domain.model.TorrentDetails
 import com.prajwalch.torrentsearch.extension.copyText
 import com.prajwalch.torrentsearch.ui.TorrentFileDownloadEffect
 import com.prajwalch.torrentsearch.ui.component.ArrowBackIconButton
+import com.prajwalch.torrentsearch.ui.component.BadgesRow
 import com.prajwalch.torrentsearch.ui.component.EmptyPlaceholder
+import com.prajwalch.torrentsearch.ui.component.NSFWBadge
 import com.prajwalch.torrentsearch.ui.component.NoInternetConnection
 import com.prajwalch.torrentsearch.ui.component.SearchProviderBadge
 import com.prajwalch.torrentsearch.ui.component.TryAgainButton
@@ -265,7 +267,10 @@ private fun TorrentDetailsScreenContent(
                 text = details.name,
                 style = MaterialTheme.typography.titleLarge,
             )
-            SearchProviderBadge(providerName)
+            BadgesRow {
+                SearchProviderBadge(providerName)
+                if (details.isNSFW) NSFWBadge()
+            }
         }
 
         CallToActionButton(
