@@ -33,7 +33,7 @@ data class Torrent(
     val fileDownloadLink: String? = null,
 ) {
     /** Indicates if this torrent is NSFW (Not Safe For Work). */
-    val isNSFW get() = category?.isNSFW ?: true
+    val isNSFW get() = category?.isNSFW ?: false
 
     /** Indicates if this torrent is dead. */
     val isDead get() = (seeders == 0u && peers == 0u)
