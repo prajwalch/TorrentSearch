@@ -40,7 +40,7 @@ class XXXTracker : SearchProvider {
 
     override suspend fun getDetails(detailsPageUrl: String): GetTorrentDetailsResponse {
         val responseHtml = HttpClient.get(detailsPageUrl)
-        
+
         return XXXTrackerDetailsPageParser.parse(html = responseHtml, pageUrl = detailsPageUrl)
             ?.let(GetTorrentDetailsResponse::Success)
             ?: GetTorrentDetailsResponse.DetailsNotFound
@@ -127,7 +127,7 @@ private object XXXTrackerDetailsPageParser {
                 seeders = seeders,
                 peers = peers,
                 uploadDate = uploadDate,
-                category = Category.Porn.name,
+                category = Category.Porn,
                 magnetUri = magnetUri,
                 fileDownloadLink = fileDownloadLink,
                 description = description,

@@ -55,7 +55,7 @@ class UIndex : SearchProvider {
 
     override suspend fun getDetails(detailsPageUrl: String): GetTorrentDetailsResponse {
         val responseHtml = HttpClient.get(detailsPageUrl)
-        
+
         return UIndexDetailsPageParser.parse(responseHtml, detailsPageUrl)
             ?.let(GetTorrentDetailsResponse::Success)
             ?: GetTorrentDetailsResponse.DetailsNotFound
@@ -80,7 +80,7 @@ private class UIndexResultsPageParser(
             ?.selectFirst("a")
             ?.ownText()
             ?: return null
-        val category = getCategoryFromString(string = categoryString)
+        val category = categoryFromRawString(raw = categoryString)
 
         // It contains magnet link and torrent name.
         val secondTd = tr.selectFirst("td.sr-col-name") ?: return null
@@ -119,18 +119,6 @@ private class UIndexResultsPageParser(
             magnetUri = magnetUri,
         )
     }
-
-    private fun getCategoryFromString(string: String): Category = when (string) {
-        "Anime" -> Category.Anime
-        "Apps" -> Category.Apps
-        "Games" -> Category.Games
-        "Movies" -> Category.Movies
-        "Music" -> Category.Music
-        "XXX" -> Category.Porn
-        "TV" -> Category.Series
-        "Other" -> Category.Other
-        else -> Category.Other
-    }
 }
 
 private object UIndexDetailsPageParser {
@@ -162,7 +150,7 @@ private object UIndexDetailsPageParser {
             val seeders = html.selectFirst(SEEDERS)?.ownText()?.toUIntOrNull()
             val peers = html.selectFirst(PEERS)?.ownText()?.toUIntOrNull()
             val uploadDate = html.selectFirst(UPLOAD_DATE)?.ownText()
-            val category = html.selectFirst(CATEGORY)?.ownText()
+            val category = html.selectFirst(CATEGORY)?.ownText()?.let(::categoryFromRawString)
             val lastChecked = html.selectFirst(PEERS_UPDATED)?.text()?.takeIf { it.isNotBlank() }
             val description = html.selectFirst(DESCRIPTION)?.html()
             val thumbnailUrl = html.selectFirst(THUMBNAIL)?.attr("abs:src")
@@ -183,4 +171,16 @@ private object UIndexDetailsPageParser {
                 screenshotUrls = previewImageUrls,
             )
         }
+}
+
+private fun categoryFromRawString(raw: String): Category = when (raw) {
+    "Anime" -> Category.Anime
+    "Apps" -> Category.Apps
+    "Games" -> Category.Games
+    "Movies" -> Category.Movies
+    "Music" -> Category.Music
+    "XXX" -> Category.Porn
+    "TV" -> Category.Series
+    "Other" -> Category.Other
+    else -> Category.Other
 }

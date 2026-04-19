@@ -167,7 +167,7 @@ private object MyPornClubDetailsPageParser {
                 seeders = seeders,
                 peers = peers,
                 uploadDate = uploadDate,
-                category = "Porn",
+                category = Category.Porn,
                 uploader = uploader,
                 lastChecked = lastChecked,
                 magnetUri = magnetUri,

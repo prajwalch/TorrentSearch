@@ -172,7 +172,7 @@ private object AnimeToshoDetailsPageParser {
                 seeders = seeders,
                 peers = peers,
                 uploadDate = uploadDate,
-                category = Category.Anime.name,
+                category = Category.Anime,
                 magnetUri = magnetUri,
                 fileDownloadLink = fileDownloadLink,
                 screenshotUrls = screenshotUrls,

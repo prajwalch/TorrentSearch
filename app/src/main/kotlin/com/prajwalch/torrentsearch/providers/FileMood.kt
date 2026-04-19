@@ -38,7 +38,7 @@ class FileMood : SearchProvider {
 
     override suspend fun getDetails(detailsPageUrl: String): GetTorrentDetailsResponse {
         val responseHtml = HttpClient.get(detailsPageUrl)
-        
+
         return FileMoodDetailsPageParser.parse(responseHtml)
             ?.let(GetTorrentDetailsResponse::Success)
             ?: GetTorrentDetailsResponse.DetailsNotFound
@@ -113,6 +113,7 @@ private object FileMoodDetailsPageParser {
             infoHash = infoHash,
             name = name,
             size = size,
+            category = Category.Other,
             lastChecked = lastChecked,
             magnetUri = magnetUri,
         )

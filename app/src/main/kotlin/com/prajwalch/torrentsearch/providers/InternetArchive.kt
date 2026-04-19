@@ -52,7 +52,7 @@ class InternetArchive : SearchProvider {
     override suspend fun getDetails(detailsPageUrl: String): GetTorrentDetailsResponse {
         val jsonMetadataPageUrl = detailsPageUrl.takeLastWhile { it != '/' }
             .let { "https://archive.org/metadata/$it" }
-        
+
         return HttpClient.getJson(jsonMetadataPageUrl)
             ?.asObject()
             ?.let { IAMetadataJsonParser.parse(it) }
@@ -102,7 +102,7 @@ private class IAResultsJsonParser(
             ?.let { FileSizeUtils.formatBytes(it.toFloat()) }
             ?: return null
         val uploadDate = obj.getString("publicdate")?.let(DateUtils::formatIsoDate) ?: return null
-        val category = obj.getString("mediatype")?.let(::inferMediaType) ?: return null
+        val category = obj.getString("mediatype")?.let(::categoryFromMediaType) ?: return null
         val descriptionPageUrl = obj.getString("identifier")
             ?.let { "$providerUrl/details/$it" }
             ?: return null
@@ -120,46 +120,47 @@ private class IAResultsJsonParser(
             descriptionPageUrl = descriptionPageUrl,
         )
     }
-
-    private fun inferMediaType(mediaType: String) = when (mediaType) {
-        "software" -> Category.Apps
-        "texts" -> Category.Books
-        "movies" -> Category.Movies
-        else -> Category.Other
-    }
 }
 
 private object IAMetadataJsonParser {
-    suspend fun parse(json: JsonObject): TorrentDetails? =
-        withContext(Dispatchers.Default) {
-            val lastChecked = json.getLong("item_last_updated")?.let(DateUtils::formatEpochSecond)
-            val size = json.getLong("item_size")?.toFloat()?.let(FileSizeUtils::formatBytes)
+    suspend fun parse(json: JsonObject): TorrentDetails? = withContext(Dispatchers.Default) {
+        val lastChecked = json.getLong("item_last_updated")?.let(DateUtils::formatEpochSecond)
+        val size = json.getLong("item_size")?.toFloat()?.let(FileSizeUtils::formatBytes)
 
-            val metadataObj = json.getObject("metadata") ?: return@withContext null
-            val name = metadataObj.getString("title") ?: return@withContext null
-            val uploadDate = metadataObj.getString("publicdate")
-            val uploader = metadataObj.getString("uploader")
-            val description = metadataObj.getString("description")
+        val metadataObj = json.getObject("metadata") ?: return@withContext null
+        val name = metadataObj.getString("title") ?: return@withContext null
+        val uploadDate = metadataObj.getString("publicdate")
+        val uploader = metadataObj.getString("uploader")
+        val description = metadataObj.getString("description")
+        val category = metadataObj.getString("metadata")?.let(::categoryFromMediaType)
 
-            val torrentObj = json.getArray("files")
-                ?.map { it.asObject() }
-                ?.find { it.containsKey("btih") }
-                ?: return@withContext null
-            val id = metadataObj.getString("identifier") ?: return@withContext null
-            val infoHash = torrentObj.getString("btih") ?: return@withContext null
-            val torrentFileName = torrentObj.getString("name") ?: return@withContext null
-            val fileDownloadLink = "https://archive.org/download/$id/$torrentFileName"
+        val torrentObj = json.getArray("files")
+            ?.map { it.asObject() }
+            ?.find { it.containsKey("btih") }
+            ?: return@withContext null
+        val id = metadataObj.getString("identifier") ?: return@withContext null
+        val infoHash = torrentObj.getString("btih") ?: return@withContext null
+        val torrentFileName = torrentObj.getString("name") ?: return@withContext null
+        val fileDownloadLink = "https://archive.org/download/$id/$torrentFileName"
 
-            TorrentDetails(
-                infoHash = infoHash,
-                name = name,
-                size = size,
-                uploadDate = uploadDate,
-                uploader = uploader,
-                lastChecked = lastChecked,
-                magnetUri = TorrentUtils.createMagnetUri(infoHash),
-                fileDownloadLink = fileDownloadLink,
-                description = description,
-            )
-        }
+        TorrentDetails(
+            infoHash = infoHash,
+            name = name,
+            size = size,
+            uploadDate = uploadDate,
+            category = category,
+            uploader = uploader,
+            lastChecked = lastChecked,
+            magnetUri = TorrentUtils.createMagnetUri(infoHash),
+            fileDownloadLink = fileDownloadLink,
+            description = description,
+        )
+    }
+}
+
+private fun categoryFromMediaType(mediaType: String) = when (mediaType) {
+    "software" -> Category.Apps
+    "texts" -> Category.Books
+    "movies" -> Category.Movies
+    else -> Category.Other
 }

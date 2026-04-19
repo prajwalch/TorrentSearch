@@ -46,7 +46,7 @@ class Nyaa : SearchProvider {
 
     override suspend fun getDetails(detailsPageUrl: String): GetTorrentDetailsResponse {
         val responseHtml = HttpClient.get(detailsPageUrl)
-        
+
         return NyaaDetailsPageParser.parse(html = responseHtml, pageUrl = detailsPageUrl)
             ?.let(GetTorrentDetailsResponse::Success)
             ?: GetTorrentDetailsResponse.DetailsNotFound
@@ -158,7 +158,7 @@ private object NyaaDetailsPageParser {
                 seeders = seeders,
                 peers = peers,
                 uploadDate = uploadDate,
-                category = "Anime",
+                category = Category.Anime,
                 uploader = uploader,
                 magnetUri = magnetUri,
                 fileDownloadLink = fileDownloadLink,

@@ -43,8 +43,9 @@ class LimeTorrents : SearchProvider {
 
     override suspend fun getDetails(detailsPageUrl: String): GetTorrentDetailsResponse {
         val responseHtml = HttpClient.get(detailsPageUrl)
-        
-        return LimeTorrentsDetailsPageParser.parse(responseHtml)
+
+        return LimeTorrentsDetailsPageParser
+            .parse(responseHtml)
             ?.let(GetTorrentDetailsResponse::Success)
             ?: GetTorrentDetailsResponse.DetailsNotFound
     }
@@ -132,18 +133,13 @@ private class LimeTorrentsResultsPageParser(
 
     /** Detects category heuristically from the second column's text. */
     private fun extractCategory(row: Element): Category {
-        val rawText = row.selectFirst("td:nth-child(2)")?.text().orEmpty()
-
-        return when {
-            rawText.contains("TV", ignoreCase = true) -> Category.Series
-            rawText.contains("Movie", ignoreCase = true) -> Category.Movies
-            rawText.contains("Music", ignoreCase = true) -> Category.Music
-            rawText.contains("App", ignoreCase = true) -> Category.Apps
-            rawText.contains("E-book", ignoreCase = true) -> Category.Books
-            rawText.contains("Anime", ignoreCase = true) -> Category.Anime
-            rawText.contains("Games", ignoreCase = true) -> Category.Games
-            else -> Category.Other
-        }
+        return row.selectFirst("td:nth-child(2)")
+            ?.ownText()
+            ?.takeLastWhile { !it.isWhitespace() }
+            ?.removeSuffix(".")
+            ?.trim()
+            ?.let(::categoryFromRawString)
+            ?: Category.Other
     }
 
     private companion object {
@@ -183,10 +179,11 @@ private object LimeTorrentsDetailsPageParser {
             ?.removePrefix("Leechers : ")
             ?.trim()
             ?.toUIntOrNull()
-        val (uploadDate, category) = html.selectFirst(UPLOAD_DATE_AND_CATEGORY)
+        val (uploadDate, rawCategory) = html.selectFirst(UPLOAD_DATE_AND_CATEGORY)
             ?.text()
             ?.split("in", limit = 2)
             ?: listOf(null, null)
+        val category = rawCategory?.removeSuffix(".")?.let(::categoryFromRawString)
         val fileDownloadLink = html.selectFirst(FILE_DOWNLOAD_LINK)?.attr("href")
 
         TorrentDetails(
@@ -196,9 +193,20 @@ private object LimeTorrentsDetailsPageParser {
             seeders = seeders,
             peers = peers,
             uploadDate = uploadDate?.trim(),
-            category = category?.trim(),
+            category = category,
             magnetUri = magnetUri,
             fileDownloadLink = fileDownloadLink,
         )
     }
+}
+
+private fun categoryFromRawString(raw: String): Category = when (raw) {
+    "TV" -> Category.Series
+    "Movie" -> Category.Movies
+    "Music" -> Category.Music
+    "App" -> Category.Apps
+    "E-book" -> Category.Books
+    "Anime" -> Category.Anime
+    "Games" -> Category.Games
+    else -> Category.Other
 }

@@ -7,7 +7,7 @@ data class TorrentDetails(
     val seeders: UInt? = null,
     val peers: UInt? = null,
     val uploadDate: String? = null,
-    val category: String? = null,
+    val category: Category? = null,
     val uploader: String? = null,
     val lastChecked: String? = null,
     val magnetUri: String,

@@ -47,12 +47,11 @@ class TokyoToshokan : SearchProvider {
 
     override suspend fun getDetails(detailsPageUrl: String): GetTorrentDetailsResponse {
         val responseHtml = HttpClient.get(detailsPageUrl)
-        
+
         return TokyoToshokanDetailsPageParser.parse(html = responseHtml, pageUrl = detailsPageUrl)
             ?.let(GetTorrentDetailsResponse::Success)
             ?: GetTorrentDetailsResponse.DetailsNotFound
     }
-
 }
 
 private class TokyoToshokanResultsPageParser(
@@ -141,7 +140,8 @@ private object TokyoToshokanDetailsPageParser {
     private const val SEEDERS = "#main > div.details > ul > li:nth-child(20)"
     private const val PEERS = "#main > div.details > ul > li:nth-child(22)"
     private const val UPLOAD_DATE = "#main > div.details > ul > li:nth-child(8)"
-    private const val CATEGORY = "#main > div.details > ul > li:nth-child(2)"
+
+    //    private const val CATEGORY = "#main > div.details > ul > li:nth-child(2)"
     private const val UPLOADER = "#main > div.details > ul > li:nth-child(28)"
     private const val MAGNET_URI = """a[href^="magnet:?"]"""
 
@@ -163,7 +163,7 @@ private object TokyoToshokanDetailsPageParser {
             val seeders = html.selectFirst(SEEDERS)?.ownText()?.toUIntOrNull()
             val peers = html.selectFirst(PEERS)?.ownText()?.toUIntOrNull()
             val uploadDate = html.selectFirst(UPLOAD_DATE)?.ownText()
-            val category = html.selectFirst(CATEGORY)?.text()
+//            val category = html.selectFirst(CATEGORY)?.text()
             val uploader = html.selectFirst(UPLOADER)?.ownText()
 
             TorrentDetails(
@@ -173,7 +173,7 @@ private object TokyoToshokanDetailsPageParser {
                 seeders = seeders,
                 peers = peers,
                 uploadDate = uploadDate,
-                category = category,
+                category = Category.Anime,
                 uploader = uploader,
                 magnetUri = magnetUri,
                 fileDownloadLink = fileDownloadLink,

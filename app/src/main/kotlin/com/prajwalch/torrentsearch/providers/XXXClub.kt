@@ -36,7 +36,7 @@ class XXXClub : SearchProvider {
 
     override suspend fun getDetails(detailsPageUrl: String): GetTorrentDetailsResponse {
         val responseHtml = HttpClient.get(detailsPageUrl)
-        
+
         return XXXClubDetailsPageParser.parse(responseHtml, detailsPageUrl)
             ?.let(GetTorrentDetailsResponse::Success)
             ?: GetTorrentDetailsResponse.DetailsNotFound
@@ -123,7 +123,8 @@ private object XXXClubDetailsPageParser {
     private const val SEEDERS = "div.detailsdescr font.see"
     private const val PEERS = "div.detailsdescr font.lee"
     private const val UPLOAD_DATE = "div.detailsdescr > ul > li:nth-child(3) > span:nth-child(3)"
-    private const val CATEGORY = "div.detailsdescr > ul > li:nth-child(1) > span:nth-child(3)"
+
+    //    private const val CATEGORY = "div.detailsdescr > ul > li:nth-child(1) > span:nth-child(3)"
     private const val UPLOADER = "div.detailsdescr > ul > li:nth-child(6) > span:nth-child(3)"
     private const val LAST_CHECKED = "div.detailsdescr > ul > li:nth-child(5) > span:nth-child(3)"
     private const val MAGNET_URI = """a[href^="magnet:?"]"""
@@ -143,7 +144,7 @@ private object XXXClubDetailsPageParser {
             val seeders = html.selectFirst(SEEDERS)?.ownText()?.toUIntOrNull()
             val peers = html.selectFirst(PEERS)?.ownText()?.toUIntOrNull()
             val uploadDate = html.selectFirst(UPLOAD_DATE)?.ownText()
-            val category = html.selectFirst(CATEGORY)?.text()
+//            val category = html.selectFirst(CATEGORY)?.text()
             val uploader = html.selectFirst(UPLOADER)?.ownText()
             val lastChecked = html.selectFirst(LAST_CHECKED)?.ownText()
             val fileDownloadLink = html.selectFirst(FILE_DOWNLOAD_LINK)?.attr("abs:href")
@@ -157,7 +158,7 @@ private object XXXClubDetailsPageParser {
                 seeders = seeders,
                 peers = peers,
                 uploadDate = uploadDate,
-                category = category,
+                category = Category.Porn,
                 uploader = uploader,
                 lastChecked = lastChecked,
                 magnetUri = magnetUri,

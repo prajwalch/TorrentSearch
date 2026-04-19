@@ -92,8 +92,8 @@ private class TdResultsPageParser(
             ?.let { "$baseUrl$it" }
             ?: return null
 
-        val categoryId = tr.selectFirst("span.category-bubble")?.ownText() ?: return null
-        val category = getCategoryFromId(id = categoryId)
+        val rawCategory = tr.selectFirst("span.category-bubble")?.ownText() ?: return null
+        val category = categoryFromRawString(rawCategory)
 
         val size = tr.selectFirst("td.size-cell")?.ownText() ?: return null
         val uploadDate = tr
@@ -120,17 +120,6 @@ private class TdResultsPageParser(
             descriptionPageUrl = descriptionPageUrl,
             magnetUri = magnetUri,
         )
-    }
-
-    private fun getCategoryFromId(id: String) = when (id) {
-        "Software" -> Category.Apps
-        "E-Books", "AudioBooks" -> Category.Books
-        "Games" -> Category.Games
-        "Movies" -> Category.Movies
-        "Music" -> Category.Music
-        "Porn" -> Category.Porn
-        "TV" -> Category.Series
-        else -> Category.Other
     }
 
     private companion object {
@@ -170,7 +159,7 @@ private object TdDetailsPageParser {
             val seeders = html.selectFirst(SEEDERS)?.ownText()?.toUIntOrNull()
             val peers = html.selectFirst(PEERS)?.ownText()?.toUIntOrNull()
             val uploadDate = html.selectFirst(UPLOAD_DATE)?.ownText()
-            val category = html.selectFirst(CATEGORY)?.ownText()
+            val category = html.selectFirst(CATEGORY)?.ownText()?.let(::categoryFromRawString)
             val uploader = html.selectFirst(UPLOADER)?.ownText()
             val lastChecked = html.selectFirst(LAST_CHECKED)?.ownText()
             val description = html.selectFirst(DESCRIPTION)?.html()
@@ -189,4 +178,15 @@ private object TdDetailsPageParser {
                 description = description,
             )
         }
+}
+
+private fun categoryFromRawString(raw: String) = when (raw) {
+    "Software" -> Category.Apps
+    "E-Books", "AudioBooks" -> Category.Books
+    "Games" -> Category.Games
+    "Movies" -> Category.Movies
+    "Music" -> Category.Music
+    "Porn" -> Category.Porn
+    "TV" -> Category.Series
+    else -> Category.Other
 }

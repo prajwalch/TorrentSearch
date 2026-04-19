@@ -86,7 +86,7 @@ class BitSearch : SearchProvider {
 
     override suspend fun getDetails(detailsPageUrl: String): GetTorrentDetailsResponse {
         val responseHtml = HttpClient.get(detailsPageUrl)
-        
+
         return BitSearchDetailsPageParser.parse(html = responseHtml, pageUrl = detailsPageUrl)
             ?.let(GetTorrentDetailsResponse::Success)
             ?: GetTorrentDetailsResponse.DetailsNotFound
@@ -103,7 +103,9 @@ private data class TorrentInfo(
     val descriptionPageUrl: String,
 )
 
-private class BitSearchResultsPageParser(private val providerName: String) {
+private class BitSearchResultsPageParser(
+    private val providerName: String,
+) {
     suspend fun parse(html: String, pageUrl: String): List<Torrent>? =
         withContext(Dispatchers.Default) {
             Jsoup
@@ -156,7 +158,7 @@ private class BitSearchResultsPageParser(private val providerName: String) {
         val category = categoryAndStatsDiv
             .selectFirst("> span:nth-child(1) > span")
             ?.ownText()
-            ?.let { getCategoryFromId(it) }
+            ?.let(::categoryFromRawString)
             ?: return null
         val size = categoryAndStatsDiv
             .selectFirst("> span:nth-child(2) > span")
@@ -193,61 +195,6 @@ private class BitSearchResultsPageParser(private val providerName: String) {
             uploadDate = uploadDate,
             descriptionPageUrl = descriptionPageUrl,
         )
-    }
-
-    private fun getCategoryFromId(categoryId: String): Category = when (categoryId) {
-        "Other",
-        "Other/Audio",
-        "Other/Video",
-        "Other/Image",
-        "Other/Document",
-        "Other/Program",
-        "Other/Android",
-        "Other/DiskImage",
-        "Other/Source Code",
-        "Other/Database",
-        "Other/Archive",
-            -> Category.Other
-
-        "Movies",
-        "Movies/Dub/Dual Audio",
-            -> Category.Movies
-
-        "TV" -> Category.Series
-
-        "Anime",
-        "Anime/Dub/Dual Audio",
-        "Anime/Subbed",
-        "Anime/Raw",
-            -> Category.Anime
-
-        "Softwares",
-        "Softwares/Windows",
-        "Softwares/Mac",
-        "Softwares/Android",
-            -> Category.Apps
-
-        "Games",
-        "Games/PC",
-        "Games/Mac",
-        "Games/Linux",
-        "Games/Android",
-            -> Category.Games
-
-        "Music",
-        "Music/mp3",
-        "Music/Lossless",
-        "Music/Album",
-        "Music/Video",
-            -> Category.Music
-
-        "AudioBook",
-        "Ebook/Course",
-            -> Category.Books
-
-        "XXX" -> Category.Porn
-
-        else -> Category.Other
     }
 
     private fun parseMagnetUri(downloadLinksDiv: Element): MagnetUri? {
@@ -288,7 +235,7 @@ private object BitSearchDetailsPageParser {
             val peers = html.selectFirst(PEERS)?.ownText()?.toUIntOrNull()
             val uploadDate = html.selectFirst(UPLOAD_DATE)?.ownText()
             val lastChecked = html.selectFirst(LAST_CHECKED)?.ownText()
-            val category = html.selectFirst(CATEGORY)?.ownText()
+            val category = html.selectFirst(CATEGORY)?.ownText()?.let(::categoryFromRawString)
             val fileDownloadLink = html.selectFirst(FILE_DOWNLOAD_LINK)?.attr("abs:href")
 
             TorrentDetails(
@@ -304,4 +251,59 @@ private object BitSearchDetailsPageParser {
                 fileDownloadLink = fileDownloadLink,
             )
         }
+}
+
+private fun categoryFromRawString(raw: String): Category = when (raw) {
+    "Other",
+    "Other/Audio",
+    "Other/Video",
+    "Other/Image",
+    "Other/Document",
+    "Other/Program",
+    "Other/Android",
+    "Other/DiskImage",
+    "Other/Source Code",
+    "Other/Database",
+    "Other/Archive",
+        -> Category.Other
+
+    "Movies",
+    "Movies/Dub/Dual Audio",
+        -> Category.Movies
+
+    "TV" -> Category.Series
+
+    "Anime",
+    "Anime/Dub/Dual Audio",
+    "Anime/Subbed",
+    "Anime/Raw",
+        -> Category.Anime
+
+    "Softwares",
+    "Softwares/Windows",
+    "Softwares/Mac",
+    "Softwares/Android",
+        -> Category.Apps
+
+    "Games",
+    "Games/PC",
+    "Games/Mac",
+    "Games/Linux",
+    "Games/Android",
+        -> Category.Games
+
+    "Music",
+    "Music/mp3",
+    "Music/Lossless",
+    "Music/Album",
+    "Music/Video",
+        -> Category.Music
+
+    "AudioBook",
+    "Ebook/Course",
+        -> Category.Books
+
+    "XXX" -> Category.Porn
+
+    else -> Category.Other
 }

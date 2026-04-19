@@ -32,7 +32,6 @@ class ThePirateBay : SearchProvider {
     private val resultsJsonParser = TBPResultsJsonParser(
         providerName = info.name,
         providerUrl = info.url,
-        getCategory = ::getCategoryFromIndex,
     )
 
     override suspend fun search(query: String, context: SearchContext): List<Torrent> {
@@ -40,7 +39,7 @@ class ThePirateBay : SearchProvider {
             append(URL)
             append("?q=$query")
 
-            val categoryIndex = categoryIndex(context.category)
+            val categoryIndex = categoryId(context.category)
             append("&cat=$categoryIndex")
         }
 
@@ -54,7 +53,7 @@ class ThePirateBay : SearchProvider {
         val responseJson = HttpClient.getJson(requestUrl)
             ?: return GetTorrentDetailsResponse.DetailsNotFound
 
-        return TBPDetailsJsonParser.parse(json = responseJson, getCategory = ::getCategoryFromIndex)
+        return TBPDetailsJsonParser.parse(responseJson)
             ?.let(GetTorrentDetailsResponse::Success)
             ?: GetTorrentDetailsResponse.DetailsNotFound
     }
@@ -64,38 +63,15 @@ class ThePirateBay : SearchProvider {
      *
      * Visit https://thepiratebay.org/browse.php to see all the supported index.
      */
-    private fun categoryIndex(category: Category): UInt = when (category) {
-        Category.All, Category.Anime -> 0u
-        Category.Apps -> 300u
-        Category.Books -> 601u
-        Category.Games -> 400u
-        Category.Movies, Category.Series -> 200u
-        Category.Music -> 101u
-        Category.Porn -> 500u
-        Category.Other -> 600u
-    }
-
-    /** Returns the [Category] that matches the index. */
-    private fun getCategoryFromIndex(categoryIndex: Int): Category = when (categoryIndex) {
-        // Apps
-        in 300..306, 399 -> Category.Apps
-        // Books
-        601 -> Category.Books
-        // Games
-        in 400..408, 499 -> Category.Games
-        // Movies
-        201, 202, 204, 207, 209, 210, 211 -> Category.Movies
-        // Music
-        in 100..104, 199 -> Category.Music
-        // Porn
-        in 500..507, 599 -> Category.Porn
-        // Series
-        205, 208, 212 -> Category.Series
-        // All, Anime
-        //
-        // TPB doesn't have dedicated anime category instead it mostly falls
-        // under the series category.
-        else -> Category.Other
+    private fun categoryId(category: Category): Int = when (category) {
+        Category.All, Category.Anime -> 0
+        Category.Apps -> 300
+        Category.Books -> 601
+        Category.Games -> 400
+        Category.Movies, Category.Series -> 200
+        Category.Music -> 101
+        Category.Porn -> 500
+        Category.Other -> 600
     }
 
     private companion object {
@@ -106,7 +82,6 @@ class ThePirateBay : SearchProvider {
 private class TBPResultsJsonParser(
     private val providerName: String,
     private val providerUrl: String,
-    private val getCategory: (Int) -> Category,
 ) {
     suspend fun parse(json: JsonElement): List<Torrent> = withContext(Dispatchers.Default) {
         json
@@ -154,8 +129,8 @@ private class TBPResultsJsonParser(
             ?.let { DateUtils.formatEpochSecond(it) }
             ?: return null
 
-        val categoryIndex = torrentObject.getString("category") ?: return null
-        val category = getCategory(categoryIndex.toInt())
+        val categoryId = torrentObject.getString("category") ?: return null
+        val category = categoryFromId(categoryId.toInt())
 
         return Torrent(
             infoHash = infoHash,
@@ -173,7 +148,7 @@ private class TBPResultsJsonParser(
 }
 
 private object TBPDetailsJsonParser {
-    suspend fun parse(json: JsonElement, getCategory: (Int) -> Category): TorrentDetails? =
+    suspend fun parse(json: JsonElement): TorrentDetails? =
         withContext(Dispatchers.Default) {
             val json = json.asObject()
 
@@ -183,7 +158,7 @@ private object TBPDetailsJsonParser {
             val seeders = json.getLong("seeders")?.toUInt()
             val peers = json.getLong("leechers")?.toUInt()
             val uploadDate = json.getLong("added")?.let(DateUtils::formatEpochSecond)
-            val category = json.getLong("category")?.toInt()?.let(getCategory)?.name
+            val category = json.getLong("category")?.toInt()?.let(::categoryFromId)
             val uploader = json.getString("username")
             val description = json.getString("descr")
             val magnetUri = TorrentUtils.createMagnetUri(infoHash)
@@ -201,4 +176,27 @@ private object TBPDetailsJsonParser {
                 description = description,
             )
         }
+}
+
+/** Returns the [Category] that matches the index. */
+private fun categoryFromId(id: Int): Category = when (id) {
+    // Apps
+    in 300..306, 399 -> Category.Apps
+    // Books
+    601 -> Category.Books
+    // Games
+    in 400..408, 499 -> Category.Games
+    // Movies
+    201, 202, 204, 207, 209, 210, 211 -> Category.Movies
+    // Music
+    in 100..104, 199 -> Category.Music
+    // Porn
+    in 500..507, 599 -> Category.Porn
+    // Series
+    205, 208, 212 -> Category.Series
+    // All, Anime
+    //
+    // TPB doesn't have dedicated anime category instead it mostly falls
+    // under the series category.
+    else -> Category.Other
 }

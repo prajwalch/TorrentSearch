@@ -45,7 +45,7 @@ class Sukebei : SearchProvider {
 
     override suspend fun getDetails(detailsPageUrl: String): GetTorrentDetailsResponse {
         val responseHtml = HttpClient.get(detailsPageUrl)
-        
+
         return SukebeiDetailsPageParser.parse(html = responseHtml, pageUrl = detailsPageUrl)
             ?.let(GetTorrentDetailsResponse::Success)
             ?: GetTorrentDetailsResponse.DetailsNotFound
@@ -113,8 +113,9 @@ private object SukebeiDetailsPageParser {
         "body > div > div:nth-child(7) > div.panel-body > div:nth-child(3) > div:nth-child(4)"
     private const val UPLOAD_DATE =
         "body > div > div:nth-child(7) > div.panel-body > div:nth-child(1) > div:nth-child(4)"
-    private const val CATEGORY =
-        "body > div > div:nth-child(7) > div.panel-body > div:nth-child(1) > div:nth-child(2)"
+
+    //    private const val CATEGORY =
+//        "body > div > div:nth-child(7) > div.panel-body > div:nth-child(1) > div:nth-child(2)"
     private const val UPLOADER =
         "body > div > div:nth-child(7) > div.panel-body > div:nth-child(2) > div:nth-child(2)"
     private const val DESCRIPTION = "#torrent-description"
@@ -133,7 +134,6 @@ private object SukebeiDetailsPageParser {
             val seeders = html.selectFirst(SEEDERS)?.text()?.trim()?.toUIntOrNull()
             val peers = html.selectFirst(PEERS)?.text()?.trim()?.toUIntOrNull()
             val uploadDate = html.selectFirst(UPLOAD_DATE)?.ownText()
-            val category = html.selectFirst(CATEGORY)?.text()
             val uploader = html.selectFirst(UPLOADER)?.text()?.trim()
             val fileDownloadLink = html.selectFirst(FILE_DOWNLOAD_LINK)?.attr("abs:href")
             val description = html.selectFirst(DESCRIPTION)?.html()
@@ -145,7 +145,7 @@ private object SukebeiDetailsPageParser {
                 seeders = seeders,
                 peers = peers,
                 uploadDate = uploadDate,
-                category = category,
+                category = Category.Porn,
                 uploader = uploader,
                 magnetUri = magnetUri,
                 fileDownloadLink = fileDownloadLink,

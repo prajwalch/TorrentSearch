@@ -59,7 +59,7 @@ class TheRarBg : SearchProvider {
             append("/keywords:$query")
 
             if (context.category != Category.All) {
-                val category = getCategoryString(category = context.category)
+                val category = categoryName(raw = context.category)
                 append(":category:$category")
             }
         }
@@ -79,14 +79,14 @@ class TheRarBg : SearchProvider {
 
     override suspend fun getDetails(detailsPageUrl: String): GetTorrentDetailsResponse {
         val responseHtml = HttpClient.get(detailsPageUrl)
-        
+
         return TheRarBgDetailsPageParser.parse(responseHtml)
             ?.let(GetTorrentDetailsResponse::Success)
             ?: GetTorrentDetailsResponse.DetailsNotFound
     }
 
     /** Returns the compatible category string. */
-    private fun getCategoryString(category: Category): String = when (category) {
+    private fun categoryName(raw: Category): String = when (raw) {
         Category.All -> ""
         Category.Anime -> "Anime"
         Category.Apps -> "Apps"
@@ -180,7 +180,7 @@ class TheRarBg : SearchProvider {
         ) ?: return null
         val infoHash = TorrentUtils.getInfoHashFromMagnetUri(magnetUri)
 
-        val category = getCategoryFromString(string = parsedResult.category)
+        val category = categoryFromRawString(parsedResult.category)
 
         return Torrent(
             infoHash = infoHash,
@@ -215,19 +215,6 @@ class TheRarBg : SearchProvider {
         }
     }
 
-    /** Returns the [Category] that matches the string extracted from page. */
-    private fun getCategoryFromString(string: String): Category = when (string) {
-        "Anime" -> Category.Anime
-        "Apps" -> Category.Apps
-        "Books" -> Category.Books
-        "Games" -> Category.Games
-        "Movies" -> Category.Movies
-        "Music" -> Category.Music
-        "XXX" -> Category.Porn
-        "Tv" -> Category.Series
-        "Other" -> Category.Other
-        else -> Category.Other
-    }
 }
 
 private object TheRarBgDetailsPageParser {
@@ -251,9 +238,10 @@ private object TheRarBgDetailsPageParser {
         val size = detailRows["Size:"]?.ownText()
         val seedersPeers = detailRows["Peers:"]?.ownText()?.trim()?.split(',')
         val seeders = seedersPeers?.firstOrNull()?.removePrefix("Seeders: ")?.toUIntOrNull()
-        val peers = seedersPeers?.lastOrNull()?.trim()?.removePrefix("Leechers: ")?.toUIntOrNull()
+        val peers =
+            seedersPeers?.lastOrNull()?.trim()?.removePrefix("Leechers: ")?.toUIntOrNull()
         val uploadDate = detailRows["Added:"]?.ownText()
-        val category = detailRows["Category:"]?.text()
+        val category = detailRows["Category:"]?.text()?.let(::categoryFromRawString)
         val uploader = detailRows["Uploader:"]?.text()
         val description = detailRows["Description:"]?.wholeText()
 
@@ -270,4 +258,18 @@ private object TheRarBgDetailsPageParser {
             description = description,
         )
     }
+}
+
+/** Returns the [Category] that matches the string extracted from page. */
+private fun categoryFromRawString(raw: String): Category = when (raw) {
+    "Anime" -> Category.Anime
+    "Apps" -> Category.Apps
+    "Books" -> Category.Books
+    "Games" -> Category.Games
+    "Movies" -> Category.Movies
+    "Music" -> Category.Music
+    "XXX" -> Category.Porn
+    "Tv" -> Category.Series
+    "Other" -> Category.Other
+    else -> Category.Other
 }

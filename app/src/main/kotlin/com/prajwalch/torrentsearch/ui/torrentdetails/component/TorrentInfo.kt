@@ -11,9 +11,12 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material3.Icon
+import androidx.compose.material3.LocalContentColor
+import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
@@ -23,6 +26,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 
 import com.prajwalch.torrentsearch.R
+import com.prajwalch.torrentsearch.domain.model.Category
+import com.prajwalch.torrentsearch.ui.component.CategoryBadge
 import com.prajwalch.torrentsearch.ui.theme.spaces
 
 @OptIn(ExperimentalLayoutApi::class)
@@ -32,7 +37,7 @@ fun TorrentInfo(
     seeders: UInt?,
     peers: UInt?,
     uploadDate: String?,
-    category: String?,
+    category: Category?,
     uploader: String?,
     lastChecked: String?,
     infoHash: String,
@@ -53,42 +58,42 @@ fun TorrentInfo(
                 InfoListItem(
                     icon = R.drawable.ic_storage,
                     label = stringResource(R.string.torrent_details_label_file_size),
-                    text = size,
+                    value = { InfoText(size) },
                 )
                 InfoListItem(
                     icon = R.drawable.ic_upload,
                     label = stringResource(R.string.torrent_details_label_seeders),
-                    text = seeders?.toString(),
+                    value = { InfoText(seeders?.toString()) },
                 )
                 InfoListItem(
                     icon = R.drawable.ic_download,
                     label = stringResource(R.string.torrent_details_label_peers),
-                    text = peers?.toString(),
+                    value = { InfoText(peers?.toString()) },
                 )
                 InfoListItem(
                     icon = R.drawable.ic_calendar_month,
                     label = stringResource(R.string.torrent_details_label_upload_date),
-                    text = uploadDate,
+                    value = { InfoText(uploadDate) },
                 )
                 InfoListItem(
                     icon = R.drawable.ic_category,
                     label = stringResource(R.string.torrent_details_label_category),
-                    text = category,
+                    value = { category?.let { CategoryBadge(it) } ?: InfoNotAvailable() },
                 )
                 InfoListItem(
                     icon = R.drawable.ic_person,
                     label = stringResource(R.string.torrent_details_label_uploader),
-                    text = uploader,
+                    value = { InfoText(uploader) },
                 )
                 InfoListItem(
                     icon = R.drawable.ic_update,
                     label = stringResource(R.string.torrent_details_label_last_checked),
-                    text = lastChecked,
+                    value = { InfoText(lastChecked) },
                 )
                 InfoListItem(
                     icon = R.drawable.ic_info,
                     label = stringResource(R.string.torrent_details_label_info_hash),
-                    text = infoHash,
+                    value = { InfoText(infoHash) },
                 )
             }
         }
@@ -96,10 +101,24 @@ fun TorrentInfo(
 }
 
 @Composable
+private fun InfoText(text: String?, modifier: Modifier = Modifier) {
+    text?.let { Text(modifier = modifier, text = it) } ?: InfoNotAvailable()
+}
+
+@Composable
+private fun InfoNotAvailable(modifier: Modifier = Modifier) {
+    Text(
+        modifier = modifier,
+        text = stringResource(R.string.torrent_details_message_not_available),
+        fontStyle = FontStyle.Italic,
+    )
+}
+
+@Composable
 private fun InfoListItem(
     @DrawableRes icon: Int,
     label: String,
-    text: String?,
+    value: @Composable () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Row(
@@ -113,11 +132,15 @@ private fun InfoListItem(
         )
         Spacer(Modifier.width(MaterialTheme.spaces.small))
         Column(verticalArrangement = Arrangement.Center) {
-            Text(text = label, style = MaterialTheme.typography.labelMedium)
             Text(
-                text = text ?: stringResource(R.string.torrent_details_message_not_available),
-                color = MaterialTheme.colorScheme.onSurface,
-                fontStyle = if (text == null) FontStyle.Italic else FontStyle.Normal,
+                text = label,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                style = MaterialTheme.typography.labelMedium,
+            )
+            CompositionLocalProvider(
+                LocalContentColor provides MaterialTheme.colorScheme.onSurface,
+                LocalTextStyle provides MaterialTheme.typography.bodyMedium,
+                content = value,
             )
         }
     }
@@ -131,7 +154,7 @@ private fun TorrentInfoPreview() {
         seeders = 20U,
         peers = 5U,
         uploadDate = "2025-0506 13:00 GMT+ dkfdfdkfdkfj",
-        category = "Movies",
+        category = Category.Movies,
         uploader = "prajwalch",
         lastChecked = "2025-05-06",
         infoHash = "dkfdskfjek3rdfkdjfkdjfkdjfkdjfkdjfdkfj4434fk3k43AAdg",
