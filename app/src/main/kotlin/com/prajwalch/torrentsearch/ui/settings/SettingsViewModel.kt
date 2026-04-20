@@ -47,6 +47,7 @@ data class AppearanceSettingsUiState(
 
 data class GeneralSettingsUiState(
     val enableNSFWMode: Boolean = false,
+    val blurNSFWImages: Boolean = true,
 )
 
 data class SearchSettingsUiState(
@@ -118,6 +119,12 @@ class SettingsViewModel @Inject constructor(
         viewModelScope.launch {
             settingsRepository.enableNSFWMode(enable = enable)
             if (!enable) searchProvidersManager.disableRestrictedProviders()
+        }
+    }
+
+    fun enableBlurNSFWImages(enable: Boolean) {
+        viewModelScope.launch {
+            settingsRepository.enableBlurNSFWImages(enable)
         }
     }
 
@@ -214,7 +221,11 @@ private fun SettingsRepository.getAppearanceSettings() =
     )
 
 private fun SettingsRepository.getGeneralSettings() =
-    this.enableNSFWMode.map(::GeneralSettingsUiState)
+    combine(
+        this.enableNSFWMode,
+        this.blurNSFWImages,
+        ::GeneralSettingsUiState,
+    )
 
 private fun SettingsRepository.getSearchSettings(
     searchProvidersCount: Flow<Int>,

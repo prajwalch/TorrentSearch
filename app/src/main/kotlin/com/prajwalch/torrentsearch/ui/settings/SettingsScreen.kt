@@ -103,6 +103,7 @@ fun SettingsScreen(
             GeneralSettings(
                 uiState = uiState.generalSettings,
                 onEnableNSFWMode = viewModel::enableNSFWMode,
+                onEnableBlurNSFWImages = viewModel::enableBlurNSFWImages,
                 onClearViewedTorrents = viewModel::clearViewedTorrents,
             )
             SearchSettings(
@@ -215,6 +216,7 @@ private fun AppearanceSettings(
 private fun GeneralSettings(
     uiState: GeneralSettingsUiState,
     onEnableNSFWMode: (Boolean) -> Unit,
+    onEnableBlurNSFWImages: (Boolean) -> Unit,
     onClearViewedTorrents: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -260,6 +262,19 @@ private fun GeneralSettings(
                     onCheckedChange = onEnableNSFWMode,
                 )
             },
+        )
+
+        SettingsListItem(
+            onClick = { onEnableBlurNSFWImages(!uiState.blurNSFWImages) },
+            icon = R.drawable.ic_18_up_rating,
+            headline = R.string.settings_blur_nsfw_images,
+            supportingContent = stringResource(R.string.settings_blur_nsfw_images_summary),
+            trailingContent = {
+                Switch(
+                    checked = uiState.blurNSFWImages,
+                    onCheckedChange = onEnableBlurNSFWImages,
+                )
+            }
         )
 
         SettingsListItem(

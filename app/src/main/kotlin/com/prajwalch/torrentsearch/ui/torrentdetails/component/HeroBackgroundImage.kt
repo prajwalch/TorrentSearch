@@ -9,12 +9,21 @@ import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 
 import coil3.compose.AsyncImage
+import coil3.request.ImageRequest
+import coil3.request.crossfade
+import coil3.request.transformations
 
 @Composable
-fun HeroBackgroundImage(url: String, modifier: Modifier = Modifier) {
+fun HeroBackgroundImage(url: String, modifier: Modifier = Modifier, enableBlur: Boolean = false) {
+    val imageRequest = ImageRequest.Builder(LocalContext.current)
+        .data(url)
+        .crossfade(true)
+        .let { if (enableBlur) it.transformations(BlurTransformation()) else it }
+        .build()
     val surfaceColor = MaterialTheme.colorScheme.surface
 
     AsyncImage(
@@ -26,7 +35,7 @@ fun HeroBackgroundImage(url: String, modifier: Modifier = Modifier) {
                 drawRect(color = Color.Black.copy(alpha = 0.3f))
                 drawRect(brush = Brush.verticalGradient(listOf(Color.Transparent, surfaceColor)))
             },
-        model = url,
+        model = imageRequest,
         contentDescription = null,
         contentScale = ContentScale.Crop,
     )

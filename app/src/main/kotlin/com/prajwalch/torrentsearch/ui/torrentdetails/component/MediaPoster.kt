@@ -20,11 +20,17 @@ import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import coil3.request.ImageRequest
 import coil3.request.crossfade
+import coil3.request.transformations
 
 import com.prajwalch.torrentsearch.R
 
 @Composable
-fun MediaPoster(url: String, modifier: Modifier = Modifier) {
+fun MediaPoster(
+    url: String,
+    modifier: Modifier = Modifier,
+    onSuccess: (() -> Unit)? = null,
+    enableBlur: Boolean = false,
+) {
     var isSuccess by rememberSaveable(url) { mutableStateOf(false) }
     val contentScale = if (isSuccess) ContentScale.Crop else ContentScale.None
     val colorFilter = if (isSuccess) {
@@ -32,6 +38,19 @@ fun MediaPoster(url: String, modifier: Modifier = Modifier) {
     } else {
         ColorFilter.tint(MaterialTheme.colorScheme.onSurfaceVariant)
     }
+
+    val imageRequest = ImageRequest.Builder(LocalContext.current)
+        .data(url)
+        .crossfade(true)
+        .let {
+            if (isSuccess && enableBlur) {
+                it.transformations(BlurTransformation())
+            } else {
+                it
+            }
+        }
+        .build()
+
 
     AsyncImage(
         modifier = Modifier
@@ -43,15 +62,15 @@ fun MediaPoster(url: String, modifier: Modifier = Modifier) {
                 shape = MaterialTheme.shapes.medium,
             )
             .then(modifier),
-        model = ImageRequest.Builder(LocalContext.current)
-            .data(url)
-            .crossfade(true)
-            .build(),
+        model = imageRequest,
         contentDescription = null,
         placeholder = painterResource(R.drawable.ic_downloading),
         error = painterResource(R.drawable.ic_error),
         fallback = painterResource(R.drawable.ic_image),
-        onSuccess = { isSuccess = true },
+        onSuccess = {
+            isSuccess = true
+            onSuccess?.let { it() }
+        },
         contentScale = contentScale,
         colorFilter = colorFilter,
     )

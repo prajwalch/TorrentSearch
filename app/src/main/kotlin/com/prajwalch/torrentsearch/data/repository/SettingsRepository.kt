@@ -42,6 +42,9 @@ class SettingsRepository @Inject constructor(
     val enableNSFWMode: Flow<Boolean> = dataStore
         .getOrDefault(key = ENABLE_NSFW_MODE, default = false)
 
+    val blurNSFWImages: Flow<Boolean> = dataStore
+        .getOrDefault(key = BLUR_NSFW_IMAGES, default = true)
+
     val enabledSearchProvidersId: Flow<Set<SearchProviderId>> = dataStore
         .getOrDefault(
             key = ENABLED_SEARCH_PROVIDERS_ID,
@@ -121,6 +124,10 @@ class SettingsRepository @Inject constructor(
         dataStore.setOrUpdate(key = ENABLE_NSFW_MODE, value = enable)
     }
 
+    suspend fun enableBlurNSFWImages(enable: Boolean) {
+        dataStore.setOrUpdate(key = BLUR_NSFW_IMAGES, value = enable)
+    }
+
     suspend fun setEnabledSearchProvidersId(providersId: Set<SearchProviderId>) {
         dataStore.setOrUpdate(key = ENABLED_SEARCH_PROVIDERS_ID, value = providersId)
     }
@@ -191,6 +198,7 @@ class SettingsRepository @Inject constructor(
 
         // General
         val ENABLE_NSFW_MODE = booleanPreferencesKey("enable_nsfw_mode")
+        val BLUR_NSFW_IMAGES = booleanPreferencesKey("blur_nsfw_images")
 
         // Search
         val ENABLED_SEARCH_PROVIDERS_ID = stringSetPreferencesKey("enabled_search_providers_id")

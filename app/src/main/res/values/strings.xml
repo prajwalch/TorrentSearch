@@ -104,6 +104,7 @@
     <string name="torrent_details_action_open_link">Open link in browser</string>
     <string name="torrent_details_action_copy_link">Copy page link</string>
     <string name="torrent_details_action_share_link">Share page link</string>
+    <string name="torrent_details_tap_to_reveal_hint">Tap to reveal</string>
     <string name="torrent_details_error_provider_not_supported">Search provider \'%1$s\' is not supported</string>
     <string name="torrent_details_error_not_found">Details not found on the provider</string>
     <string name="torrent_details_error_something_wrong">Something went wrong</string>
@@ -177,6 +178,8 @@
     <string name="settings_language">Language</string>
     <string name="settings_enable_nsfw_mode">Enable NSFW mode</string>
     <string name="settings_enable_nsfw_mode_summary">When disabled, hides NSFW categories and search results.</string>
+    <string name="settings_blur_nsfw_images">Blur NSFW images</string>
+    <string name="settings_blur_nsfw_images_summary">Automatically blurs the NSFW images</string>
     <string name="settings_clear_viewed_torrents">Clear viewed torrents</string>
     <string name="settings_clear_viewed_torrents_summary">Clears the list of torrents you\'ve already opened</string>
     <string name="settings_clear_viewed_torrents_dialog_text">Are you sure you want to clear all viewed torrents?</string>

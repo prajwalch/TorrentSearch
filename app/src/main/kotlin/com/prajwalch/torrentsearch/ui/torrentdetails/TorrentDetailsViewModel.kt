@@ -5,6 +5,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 
+import com.prajwalch.torrentsearch.data.repository.SettingsRepository
 import com.prajwalch.torrentsearch.domain.SearchProvidersManager
 import com.prajwalch.torrentsearch.domain.TorrentFileDownloader
 import com.prajwalch.torrentsearch.domain.model.GetTorrentDetailsResponse
@@ -15,25 +16,33 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 import java.io.OutputStream
 import javax.inject.Inject
 
+
+data class TorrentDetailsUiState(
+    val contentState: TorrentDetailsContentState = TorrentDetailsContentState.Loading,
+    val blurNSFWImages: Boolean = true,
+)
+
 @Stable
-sealed interface TorrentDetailsUiState {
-    data object Loading : TorrentDetailsUiState
+sealed interface TorrentDetailsContentState {
+    data object Loading : TorrentDetailsContentState
 
-    data object NoInternetConnection : TorrentDetailsUiState
+    data object NoInternetConnection : TorrentDetailsContentState
 
-    data object DetailsNotFound : TorrentDetailsUiState
+    data object DetailsNotFound : TorrentDetailsContentState
 
-    data object ProviderNotSupported : TorrentDetailsUiState
+    data object ProviderNotSupported : TorrentDetailsContentState
 
-    data class SomethingWentWrong(val message: String?) : TorrentDetailsUiState
+    data class SomethingWentWrong(val message: String?) : TorrentDetailsContentState
 
-    data class LoadSucceed(val details: TorrentDetails) : TorrentDetailsUiState
+    data class LoadSucceed(val details: TorrentDetails) : TorrentDetailsContentState
 }
 
 @HiltViewModel
@@ -41,6 +50,7 @@ class TorrentDetailsViewModel @Inject constructor(
     searchProvidersManager: SearchProvidersManager,
     private val torrentFileDownloader: TorrentFileDownloader,
     private val connectivityChecker: ConnectivityChecker,
+    private val settingsRepository: SettingsRepository,
     savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
     val detailsPageUrl: String = savedStateHandle["detailsPageUrl"]
@@ -51,8 +61,18 @@ class TorrentDetailsViewModel @Inject constructor(
 
     private val provider = searchProvidersManager.findProviderByName(providerName)
 
-    private val _uiState = MutableStateFlow<TorrentDetailsUiState>(TorrentDetailsUiState.Loading)
-    val uiState = _uiState.asStateFlow()
+    private val contentState: MutableStateFlow<TorrentDetailsContentState> =
+        MutableStateFlow(TorrentDetailsContentState.Loading)
+
+    val uiState = combine(
+        contentState,
+        settingsRepository.blurNSFWImages,
+        ::TorrentDetailsUiState
+    ).stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5000),
+        initialValue = TorrentDetailsUiState(),
+    )
 
     val torrentFileDownloadState = torrentFileDownloader.state
     val torrentFileDownloadEvents = torrentFileDownloader.events
@@ -63,36 +83,36 @@ class TorrentDetailsViewModel @Inject constructor(
 
     fun loadDetails() {
         viewModelScope.launch {
-            _uiState.value = TorrentDetailsUiState.Loading
+            contentState.value = TorrentDetailsContentState.Loading
 
             if (!connectivityChecker.isInternetAvailable()) {
-                _uiState.value = TorrentDetailsUiState.NoInternetConnection
+                contentState.value = TorrentDetailsContentState.NoInternetConnection
                 return@launch
             }
 
             if (provider == null) {
-                _uiState.value = TorrentDetailsUiState.ProviderNotSupported
+                contentState.value = TorrentDetailsContentState.ProviderNotSupported
                 return@launch
             }
 
-            _uiState.value = try {
+            contentState.value = try {
                 when (val response = provider.getDetails(detailsPageUrl)) {
                     GetTorrentDetailsResponse.DetailsNotFound -> {
-                        TorrentDetailsUiState.DetailsNotFound
+                        TorrentDetailsContentState.DetailsNotFound
                     }
 
                     GetTorrentDetailsResponse.RequestNotSupported -> {
-                        TorrentDetailsUiState.ProviderNotSupported
+                        TorrentDetailsContentState.ProviderNotSupported
                     }
 
                     is GetTorrentDetailsResponse.Success -> {
-                        TorrentDetailsUiState.LoadSucceed(response.details)
+                        TorrentDetailsContentState.LoadSucceed(response.details)
                     }
                 }
             } catch (e: CancellationException) {
                 throw e
             } catch (e: Throwable) {
-                TorrentDetailsUiState.SomethingWentWrong(e.message)
+                TorrentDetailsContentState.SomethingWentWrong(e.message)
             }
         }
     }
