@@ -25,7 +25,7 @@ import coil3.request.transformations
 fun HeroBackgroundImage(
     url: String,
     modifier: Modifier = Modifier,
-    height: Dp = 200.dp,
+    height: Dp = 280.dp,
     revealed: Boolean = true,
 ) {
     // A semi-transparent black background which sits between the image
