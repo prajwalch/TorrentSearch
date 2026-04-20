@@ -11,15 +11,17 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 
 import coil3.compose.AsyncImage
 import coil3.request.ImageRequest
-import coil3.request.crossfade
 import coil3.request.transformations
 
 import com.prajwalch.torrentsearch.R
@@ -28,12 +30,17 @@ import com.prajwalch.torrentsearch.R
 fun MediaPoster(
     url: String,
     modifier: Modifier = Modifier,
+    height: Dp = 200.dp,
+    aspectRatio: Float = 2f / 3f,
+    shape: Shape = MaterialTheme.shapes.medium,
+    background: Color = MaterialTheme.colorScheme.surfaceContainer,
     onSuccess: (() -> Unit)? = null,
     enableBlur: Boolean = false,
 ) {
-    var isSuccess by rememberSaveable(url) { mutableStateOf(false) }
-    val contentScale = if (isSuccess) ContentScale.Crop else ContentScale.None
-    val colorFilter = if (isSuccess) {
+    var imageLoaded by rememberSaveable(url) { mutableStateOf(false) }
+
+    val contentScale = if (imageLoaded) ContentScale.Crop else ContentScale.None
+    val colorFilter = if (imageLoaded) {
         null
     } else {
         ColorFilter.tint(MaterialTheme.colorScheme.onSurfaceVariant)
@@ -41,26 +48,15 @@ fun MediaPoster(
 
     val imageRequest = ImageRequest.Builder(LocalContext.current)
         .data(url)
-        .crossfade(true)
-        .let {
-            if (isSuccess && enableBlur) {
-                it.transformations(BlurTransformation())
-            } else {
-                it
-            }
-        }
+        .apply { if (imageLoaded && enableBlur) transformations(BlurTransformation()) }
         .build()
-
 
     AsyncImage(
         modifier = Modifier
-            .height(200.dp)
-            .aspectRatio(ratio = 2f / 3f, matchHeightConstraintsFirst = true)
-            .clip(MaterialTheme.shapes.medium)
-            .background(
-                color = MaterialTheme.colorScheme.surfaceContainer,
-                shape = MaterialTheme.shapes.medium,
-            )
+            .height(height)
+            .aspectRatio(ratio = aspectRatio, matchHeightConstraintsFirst = true)
+            .clip(shape)
+            .background(color = background, shape = shape)
             .then(modifier),
         model = imageRequest,
         contentDescription = null,
@@ -68,7 +64,7 @@ fun MediaPoster(
         error = painterResource(R.drawable.ic_error),
         fallback = painterResource(R.drawable.ic_image),
         onSuccess = {
-            isSuccess = true
+            imageLoaded = true
             onSuccess?.let { it() }
         },
         contentScale = contentScale,

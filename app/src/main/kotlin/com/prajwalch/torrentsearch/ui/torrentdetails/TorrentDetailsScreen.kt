@@ -246,7 +246,7 @@ private fun TorrentDetailsScreenContent(
     blurNSFWImages: Boolean = true,
 ) {
     var revealImage by rememberSaveable(blurNSFWImages) {
-        mutableStateOf(!blurNSFWImages && !details.isNSFW)
+        mutableStateOf(!details.isNSFW || !blurNSFWImages)
     }
     var showTapToRevealHint by rememberSaveable { mutableStateOf(true) }
 
@@ -258,7 +258,7 @@ private fun TorrentDetailsScreenContent(
         details.posterUrl?.let {
             HeroBackgroundImage(
                 url = it,
-                enableBlur = !revealImage,
+                revealed = revealImage,
             )
         }
 
@@ -281,14 +281,11 @@ private fun TorrentDetailsScreenContent(
                             showTapToRevealHint = false
                             revealImage = !revealImage
                         },
-                        reveal = revealImage,
+                        revealed = revealImage,
                         showTapToRevealHint = showTapToRevealHint,
                     )
                 } else {
-                    MediaPoster(
-                        modifier = Modifier.then(alignModifier),
-                        url = it,
-                    )
+                    MediaPoster(modifier = Modifier.then(alignModifier), url = it)
                 }
             }
 

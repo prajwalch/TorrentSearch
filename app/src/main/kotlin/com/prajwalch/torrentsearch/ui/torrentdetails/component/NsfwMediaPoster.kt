@@ -17,7 +17,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -35,29 +34,30 @@ fun NsfwMediaPoster(
     url: String,
     onToggleReveal: () -> Unit,
     modifier: Modifier = Modifier,
-    reveal: Boolean = false,
+    revealed: Boolean = false,
     showTapToRevealHint: Boolean = false,
 ) {
-    // Display reveal hint only after image loads.
-    var imageLoaded by rememberSaveable { mutableStateOf(false) }
-    val revealHintScrimColor = MaterialTheme.colorScheme.scrim.copy(alpha = 0.32f)
+    // Apply effects (clickable, blur and scrim) only after image loads successfully.
+    var applyEffects by rememberSaveable { mutableStateOf(false) }
+
+    // A semi-transparent black background which sits between the image
+    // and tap-to-revel hint (if enabled).
+    val scrimOverlay = MaterialTheme.colorScheme.scrim.copy(alpha = 0.32f)
+    val showScrimOverlay = !applyEffects || (!revealed && showTapToRevealHint)
 
     Box(modifier = modifier, contentAlignment = Alignment.Center) {
         MediaPoster(
             modifier = Modifier
-                .clickable(enabled = imageLoaded, onClick = onToggleReveal)
-                .scrimOverlay(
-                    color = revealHintScrimColor,
-                    enabled = !reveal && showTapToRevealHint,
-                ),
+                .clickable(onClick = onToggleReveal, enabled = applyEffects)
+                .scrimOverlay(scrim = scrimOverlay, enabled = showScrimOverlay),
             url = url,
-            onSuccess = remember { { imageLoaded = true } },
-            enableBlur = !reveal,
+            onSuccess = { applyEffects = true },
+            enableBlur = !revealed,
         )
 
         AnimatedVisibility(
             modifier = Modifier.align(Alignment.Center),
-            visible = imageLoaded && showTapToRevealHint,
+            visible = applyEffects && showTapToRevealHint,
             enter = fadeIn(),
             exit = fadeOut(),
         ) {
@@ -66,16 +66,17 @@ fun NsfwMediaPoster(
     }
 }
 
-private fun Modifier.scrimOverlay(color: Color, enabled: Boolean): Modifier {
-    if (!enabled) return this
-
-    val drawWithContent = Modifier.drawWithContent {
-        drawContent()
-        // Overlay background to make reveal hint text readable.
-        drawRect(color = color)
+private fun Modifier.scrimOverlay(scrim: Color, enabled: Boolean): Modifier {
+    val drawModifier = if (!enabled) {
+        Modifier
+    } else {
+        Modifier.drawWithContent {
+            drawContent()
+            drawRect(color = scrim)
+        }
     }
 
-    return this.then(drawWithContent)
+    return this.then(drawModifier)
 }
 
 @Composable
