@@ -221,8 +221,8 @@ fun BookmarksScreen(
         if (uiState.bookmarks.isEmpty()) {
             ContentState(
                 modifier = Modifier
-                    .fillMaxSize()
-                    .padding(innerPadding),
+                    .padding(innerPadding)
+                    .fillMaxSize(),
                 title = { Text(stringResource(R.string.bookmarks_empty_message)) },
             )
         } else {

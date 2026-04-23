@@ -198,8 +198,8 @@ fun SearchScreen(
             uiState.isLoading -> {
                 Box(
                     modifier = Modifier
-                        .fillMaxSize()
-                        .padding(innerPadding),
+                        .padding(innerPadding)
+                        .fillMaxSize(),
                     contentAlignment = Alignment.Center,
                 ) {
                     CircularProgressIndicator()
@@ -209,8 +209,8 @@ fun SearchScreen(
             uiState.isInternetError && uiState.searchResults.successes.isEmpty() -> {
                 NoInternetConnectionState(
                     modifier = Modifier
-                        .fillMaxSize()
-                        .padding(innerPadding),
+                        .padding(innerPadding)
+                        .fillMaxSize(),
                     onTryAgain = viewModel::search,
                 )
             }
@@ -218,8 +218,8 @@ fun SearchScreen(
             uiState.resultsNotFound -> {
                 ResultsNotFoundState(
                     modifier = Modifier
-                        .fillMaxSize()
-                        .padding(innerPadding),
+                        .padding(innerPadding)
+                        .fillMaxSize(),
                     onTryAgain = viewModel::search,
                 )
             }
@@ -229,8 +229,8 @@ fun SearchScreen(
             uiState.resultsFilteredOut -> {
                 ResultsNotFound(
                     modifier = Modifier
-                        .fillMaxSize()
-                        .padding(innerPadding),
+                        .padding(innerPadding)
+                        .fillMaxSize(),
                 )
             }
             */

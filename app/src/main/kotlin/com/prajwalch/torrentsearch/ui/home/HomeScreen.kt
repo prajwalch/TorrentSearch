@@ -153,7 +153,7 @@ fun HomeScreen(
                 onCategoryClick = viewModel::setCategory,
                 contentPadding = PaddingValues(horizontal = MaterialTheme.spaces.large),
             )
-            
+
             Spacer(modifier = Modifier.height(MaterialTheme.spaces.small))
             Button(
                 modifier = Modifier.fillMaxWidth(fraction = 0.5f),

@@ -87,8 +87,8 @@ fun SearchHistoryScreen(
         if (searchHistoryList.isEmpty()) {
             ContentState(
                 modifier = Modifier
-                    .fillMaxSize()
-                    .padding(innerPadding),
+                    .padding(innerPadding)
+                    .fillMaxSize(),
                 title = { Text(stringResource(R.string.search_history_empty_message)) },
             )
         } else {

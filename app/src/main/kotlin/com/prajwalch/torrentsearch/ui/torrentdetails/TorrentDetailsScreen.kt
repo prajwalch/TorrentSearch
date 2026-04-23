@@ -115,8 +115,8 @@ fun TorrentDetailsScreen(
             TorrentDetailsContentState.Loading -> {
                 Box(
                     modifier = Modifier
-                        .fillMaxSize()
-                        .padding(innerPadding),
+                        .padding(innerPadding)
+                        .fillMaxSize(),
                     contentAlignment = Alignment.Center
                 ) {
                     CircularProgressIndicator()
@@ -126,8 +126,8 @@ fun TorrentDetailsScreen(
             TorrentDetailsContentState.NoInternetConnection -> {
                 NoInternetConnectionState(
                     modifier = Modifier
-                        .fillMaxSize()
-                        .padding(innerPadding),
+                        .padding(innerPadding)
+                        .fillMaxSize(),
                     onTryAgain = viewModel::loadDetails,
                 )
             }
@@ -144,8 +144,8 @@ fun TorrentDetailsScreen(
             is TorrentDetailsContentState.ProviderNotSupported -> {
                 ProviderNotSupportedState(
                     modifier = Modifier
-                        .fillMaxSize()
                         .padding(innerPadding)
+                        .fillMaxSize()
                         .padding(horizontal = MaterialTheme.spaces.large),
                     providerName = viewModel.providerName,
                 )
@@ -154,8 +154,8 @@ fun TorrentDetailsScreen(
             is TorrentDetailsContentState.SomethingWentWrong -> {
                 SomethingWentWrongState(
                     modifier = Modifier
-                        .fillMaxSize()
                         .padding(innerPadding)
+                        .fillMaxSize()
                         .padding(horizontal = MaterialTheme.spaces.large),
                     message = contentState.message,
                     onTryAgain = viewModel::loadDetails,
@@ -167,8 +167,8 @@ fun TorrentDetailsScreen(
 
                 TorrentDetailsScreenContent(
                     modifier = Modifier
-                        .fillMaxSize()
                         .padding(innerPadding)
+                        .fillMaxSize()
                         .padding(vertical = MaterialTheme.spaces.large),
                     details = torrentDetails,
                     providerName = viewModel.providerName,
