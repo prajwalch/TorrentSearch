@@ -27,7 +27,7 @@ import com.prajwalch.torrentsearch.R
 import com.prajwalch.torrentsearch.domain.model.Category
 import com.prajwalch.torrentsearch.providers.SearchProviderSafetyStatus
 import com.prajwalch.torrentsearch.providers.SearchProviderType
-import com.prajwalch.torrentsearch.ui.component.BadgesRow
+import com.prajwalch.torrentsearch.ui.component.BadgeRow
 import com.prajwalch.torrentsearch.ui.component.CategoryBadge
 import com.prajwalch.torrentsearch.ui.component.TorznabBadge
 import com.prajwalch.torrentsearch.ui.component.UnsafeBadge
@@ -83,7 +83,7 @@ fun SearchProviderListItem(
                     ),
                 ) {
                     SearchProviderUrl(url = url)
-                    BadgesRow {
+                    BadgeRow {
                         CategoryBadge(category)
                         if (type == SearchProviderType.Torznab) TorznabBadge()
                         if (safetyStatus.isUnsafe()) UnsafeBadge()

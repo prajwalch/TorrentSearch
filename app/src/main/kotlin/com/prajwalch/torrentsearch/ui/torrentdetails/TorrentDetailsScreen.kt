@@ -46,20 +46,19 @@ import com.prajwalch.torrentsearch.domain.model.TorrentDetails
 import com.prajwalch.torrentsearch.extension.copyText
 import com.prajwalch.torrentsearch.ui.TorrentFileDownloadEffect
 import com.prajwalch.torrentsearch.ui.component.ArrowBackIconButton
-import com.prajwalch.torrentsearch.ui.component.BadgesRow
-import com.prajwalch.torrentsearch.ui.component.EmptyPlaceholder
+import com.prajwalch.torrentsearch.ui.component.BadgeRow
 import com.prajwalch.torrentsearch.ui.component.NSFWBadge
-import com.prajwalch.torrentsearch.ui.component.NoInternetConnection
+import com.prajwalch.torrentsearch.ui.component.NoInternetConnectionState
 import com.prajwalch.torrentsearch.ui.component.SearchProviderBadge
-import com.prajwalch.torrentsearch.ui.component.TryAgainButton
 import com.prajwalch.torrentsearch.ui.theme.spaces
 import com.prajwalch.torrentsearch.ui.torrentdetails.component.CallToActionButton
+import com.prajwalch.torrentsearch.ui.torrentdetails.component.DetailsNotFoundState
 import com.prajwalch.torrentsearch.ui.torrentdetails.component.HeroBackgroundImage
 import com.prajwalch.torrentsearch.ui.torrentdetails.component.MediaPoster
 import com.prajwalch.torrentsearch.ui.torrentdetails.component.NsfwMediaPoster
-import com.prajwalch.torrentsearch.ui.torrentdetails.component.ProviderNotSupportedError
+import com.prajwalch.torrentsearch.ui.torrentdetails.component.ProviderNotSupportedState
 import com.prajwalch.torrentsearch.ui.torrentdetails.component.ScreenShots
-import com.prajwalch.torrentsearch.ui.torrentdetails.component.SomethingWentWrong
+import com.prajwalch.torrentsearch.ui.torrentdetails.component.SomethingWentWrongState
 import com.prajwalch.torrentsearch.ui.torrentdetails.component.TorrentDescription
 import com.prajwalch.torrentsearch.ui.torrentdetails.component.TorrentInfo
 
@@ -125,7 +124,7 @@ fun TorrentDetailsScreen(
             }
 
             TorrentDetailsContentState.NoInternetConnection -> {
-                NoInternetConnection(
+                NoInternetConnectionState(
                     modifier = Modifier
                         .fillMaxSize()
                         .padding(innerPadding),
@@ -134,17 +133,16 @@ fun TorrentDetailsScreen(
             }
 
             TorrentDetailsContentState.DetailsNotFound -> {
-                EmptyPlaceholder(
+                DetailsNotFoundState(
                     modifier = Modifier
-                        .fillMaxSize()
-                        .padding(innerPadding),
-                    title = R.string.torrent_details_error_not_found,
-                    actions = { TryAgainButton(onClick = viewModel::loadDetails) }
+                        .padding(innerPadding)
+                        .fillMaxSize(),
+                    onTryAgain = viewModel::loadDetails,
                 )
             }
 
             is TorrentDetailsContentState.ProviderNotSupported -> {
-                ProviderNotSupportedError(
+                ProviderNotSupportedState(
                     modifier = Modifier
                         .fillMaxSize()
                         .padding(innerPadding)
@@ -154,7 +152,7 @@ fun TorrentDetailsScreen(
             }
 
             is TorrentDetailsContentState.SomethingWentWrong -> {
-                SomethingWentWrong(
+                SomethingWentWrongState(
                     modifier = Modifier
                         .fillMaxSize()
                         .padding(innerPadding)
@@ -294,7 +292,7 @@ private fun TorrentDetailsScreenContent(
                     text = details.name,
                     style = MaterialTheme.typography.titleLarge,
                 )
-                BadgesRow {
+                BadgeRow {
                     SearchProviderBadge(providerName)
                     if (details.isNSFW) NSFWBadge()
                 }

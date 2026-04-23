@@ -53,8 +53,8 @@ import com.prajwalch.torrentsearch.ui.bookmarks.component.DeleteAllConfirmationD
 import com.prajwalch.torrentsearch.ui.component.AnimatedScrollToTopFAB
 import com.prajwalch.torrentsearch.ui.component.ArrowBackIconButton
 import com.prajwalch.torrentsearch.ui.component.CollapsibleSearchBar
+import com.prajwalch.torrentsearch.ui.component.ContentState
 import com.prajwalch.torrentsearch.ui.component.DeleteForeverIconButton
-import com.prajwalch.torrentsearch.ui.component.EmptyPlaceholder
 import com.prajwalch.torrentsearch.ui.component.RoundedDropdownMenu
 import com.prajwalch.torrentsearch.ui.component.SearchIconButton
 import com.prajwalch.torrentsearch.ui.component.SortDropdownMenu
@@ -219,11 +219,11 @@ fun BookmarksScreen(
         },
     ) { innerPadding ->
         if (uiState.bookmarks.isEmpty()) {
-            EmptyPlaceholder(
+            ContentState(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(innerPadding),
-                title = R.string.bookmarks_empty_message,
+                title = { Text(stringResource(R.string.bookmarks_empty_message)) },
             )
         } else {
             BookmarkList(

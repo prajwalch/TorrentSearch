@@ -63,7 +63,7 @@ fun TorrentListItem(
                     seeders = seeders,
                     peers = peers,
                 )
-                BadgesRow {
+                BadgeRow {
                     category?.let { CategoryBadge(category = it) }
                     SearchProviderBadge(name = providerName)
                     if (isNSFW) NSFWBadge()
