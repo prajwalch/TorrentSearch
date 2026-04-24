@@ -2,7 +2,7 @@
 activityCompose = "1.13.0"
 agp = "9.1.1"
 coil = "3.4.0"
-composeBom = "2026.03.01"
+composeBom = "2026.04.01"
 composeMarkdown = "0.7.0"
 coreKtx = "1.18.0"
 coreSplashscreen = "1.2.0"
@@ -20,7 +20,7 @@ ksp = "2.3.4"
 ktor = "3.4.2"
 lazycolumnscrollbar = "2.2.0"
 lifecycleRuntimeKtx = "2.10.0"
-navigationCompose = "2.9.7"
+navigationCompose = "2.9.8"
 room = "2.8.4"
 
 [libraries]
