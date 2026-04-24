@@ -122,6 +122,7 @@
     <string name="torrent_details_message_link_copied">Link copied to clipboard!</string>
     <string name="torrent_details_button_download_torrent">Download torrent</string>
     <string name="torrent_details_button_download_torrent_file">Download torrent file</string>
+    <string name="torrent_details_button_open_in_browser">Open in browser</string>
 
     <string name="bookmarks_screen_title">Bookmarks</string>
     <plurals name="bookmarks_count_format">

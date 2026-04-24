@@ -148,6 +148,7 @@ fun TorrentDetailsScreen(
                         .fillMaxSize()
                         .padding(horizontal = MaterialTheme.spaces.large),
                     providerName = viewModel.providerName,
+                    onOpenInBrowser = { uriHandler.openUri(viewModel.detailsPageUrl) },
                 )
             }
 
