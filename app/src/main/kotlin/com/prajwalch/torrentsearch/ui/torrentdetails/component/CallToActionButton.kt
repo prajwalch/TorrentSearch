@@ -28,8 +28,8 @@ import com.prajwalch.torrentsearch.ui.theme.spaces
 
 @Composable
 fun CallToActionButton(
-    onOpenMagnet: () -> Unit,
     onDownloadTorrent: () -> Unit,
+    onDownloadTorrentFile: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Row(
@@ -37,13 +37,13 @@ fun CallToActionButton(
         horizontalArrangement = Arrangement.spacedBy(MaterialTheme.spaces.small),
         verticalAlignment = Alignment.CenterVertically,
     ) {
+        DownloadTorrentFileButton(onClick = onDownloadTorrentFile)
         DownloadTorrentButton(onClick = onDownloadTorrent)
-        OpenMagnetButton(onClick = onOpenMagnet)
     }
 }
 
 @Composable
-private fun OpenMagnetButton(onClick: () -> Unit, modifier: Modifier = Modifier) {
+private fun DownloadTorrentButton(onClick: () -> Unit, modifier: Modifier = Modifier) {
     Button(
         modifier = modifier,
         onClick = onClick,
@@ -61,7 +61,7 @@ private fun OpenMagnetButton(onClick: () -> Unit, modifier: Modifier = Modifier)
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun DownloadTorrentButton(onClick: () -> Unit, modifier: Modifier = Modifier) {
+private fun DownloadTorrentFileButton(onClick: () -> Unit, modifier: Modifier = Modifier) {
     val tooltipPositionProvider = TooltipDefaults
         .rememberTooltipPositionProvider(TooltipAnchorPosition.Above)
     val buttonText = stringResource(R.string.torrent_details_button_download_torrent_file)

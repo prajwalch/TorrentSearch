@@ -172,8 +172,8 @@ fun TorrentDetailsScreen(
                         .padding(vertical = MaterialTheme.spaces.large),
                     details = torrentDetails,
                     providerName = viewModel.providerName,
-                    onOpenMagnet = { onDownloadTorrent(torrentDetails.magnetUri) },
-                    onDownloadTorrent = {
+                    onDownloadTorrent = { onDownloadTorrent(torrentDetails.magnetUri) },
+                    onDownloadTorrentFile = {
                         val torrentFileName = torrentDetails.name.replace(' ', '-')
 
                         if (torrentDetails.fileDownloadLink != null) {
@@ -238,8 +238,8 @@ private fun TorrentDetailsScreenTopBar(
 private fun TorrentDetailsScreenContent(
     details: TorrentDetails,
     providerName: String,
-    onOpenMagnet: () -> Unit,
     onDownloadTorrent: () -> Unit,
+    onDownloadTorrentFile: () -> Unit,
     modifier: Modifier = Modifier,
     blurNSFWImages: Boolean = true,
 ) {
@@ -302,8 +302,8 @@ private fun TorrentDetailsScreenContent(
                 modifier = Modifier
                     .fillMaxWidth()
                     .then(horizontalPaddingModifier),
-                onOpenMagnet = onOpenMagnet,
                 onDownloadTorrent = onDownloadTorrent,
+                onDownloadTorrentFile = onDownloadTorrentFile,
             )
             HorizontalDivider()
             TorrentInfo(
