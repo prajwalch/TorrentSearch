@@ -24,7 +24,7 @@ import javax.inject.Inject
 
 class SettingsRepository @Inject constructor(
     private val dataStore: DataStore<Preferences>,
-    defaultEnabledProviderIds: Set<SearchProviderId>,
+    private val defaultEnabledProviderIds: Set<SearchProviderId>,
 ) {
     val enableDynamicTheme: Flow<Boolean> = dataStore
         .getOrDefault(key = ENABLE_DYNAMIC_THEME, default = true)
@@ -134,14 +134,14 @@ class SettingsRepository @Inject constructor(
 
     suspend fun addEnabledSearchProviderId(id: SearchProviderId) {
         dataStore.edit {
-            val currentIds = it[ENABLED_SEARCH_PROVIDERS_ID].orEmpty()
+            val currentIds = it[ENABLED_SEARCH_PROVIDERS_ID] ?: defaultEnabledProviderIds
             it[ENABLED_SEARCH_PROVIDERS_ID] = currentIds + id
         }
     }
 
     suspend fun removeEnabledSearchProviderId(id: SearchProviderId) {
         dataStore.edit {
-            val currentIds = it[ENABLED_SEARCH_PROVIDERS_ID].orEmpty()
+            val currentIds = it[ENABLED_SEARCH_PROVIDERS_ID] ?: defaultEnabledProviderIds
             it[ENABLED_SEARCH_PROVIDERS_ID] = currentIds - id
         }
     }
