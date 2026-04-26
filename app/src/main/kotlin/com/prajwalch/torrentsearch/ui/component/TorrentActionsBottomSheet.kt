@@ -5,9 +5,8 @@ import androidx.annotation.StringRes
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.CornerBasedShape
 import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
@@ -20,10 +19,13 @@ import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -62,23 +64,20 @@ fun TorrentActionsBottomSheet(
     onDeleteBookmark: (() -> Unit)? = null,
     onDownloadTorrentFile: (() -> Unit)? = null,
 ) {
-    // Always expand the sheet to full.
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val coroutineScope = rememberCoroutineScope()
 
-    fun hideSheet() {
+    val actionWithDismiss = { action: () -> Unit ->
+        action()
+
         coroutineScope.launch {
             sheetState.hide()
         }.invokeOnCompletion {
             onDismiss()
         }
-    }
 
-    fun actionWithDismiss(action: () -> Unit) {
-        action()
-        hideSheet()
+        Unit
     }
-
     val primaryActions = listOf(
         TorrentAction(
             icon = R.drawable.ic_magnet,
@@ -127,60 +126,76 @@ fun TorrentActionsBottomSheet(
         onDismissRequest = onDismiss,
         sheetState = sheetState,
     ) {
-        Column(modifier = Modifier.padding(horizontal = MaterialTheme.spaces.large)) {
-            Column {
-                if (showNSFWBadge) NSFWBadge()
-                Text(
-                    text = title,
-                    overflow = TextOverflow.Ellipsis,
-                    maxLines = 3,
-                    style = MaterialTheme.typography.titleMedium,
-                )
-                Spacer(Modifier.height(MaterialTheme.spaces.small))
-                HorizontalDivider()
-            }
+        BottomSheetHeader(
+            modifier = Modifier.padding(horizontal = MaterialTheme.spaces.large),
+            title = title,
+            showNSFWBadge = showNSFWBadge,
+        )
 
-            Column(
-                modifier = Modifier.padding(vertical = MaterialTheme.spaces.large),
-                verticalArrangement = Arrangement.spacedBy(MaterialTheme.spaces.large),
-            ) {
-                // These two actions are screen specific therefore shouldn't belong here.
-                Column {
-                    onBookmarkTorrent?.let {
-                        ActionListItem(
-                            modifier = Modifier.clip(MaterialTheme.shapes.medium),
-                            onClick = { actionWithDismiss(it) },
-                            icon = R.drawable.ic_star,
-                            label = stringResource(R.string.torrent_list_action_bookmark_torrent),
-                            colors = ListItemDefaults.colors(
-                                leadingIconColor = MaterialTheme.colorScheme.secondary,
-                                headlineColor = MaterialTheme.colorScheme.secondary,
-                            ),
-                        )
-                    }
-                    onDeleteBookmark?.let {
-                        ActionListItem(
-                            modifier = Modifier.clip(MaterialTheme.shapes.medium),
-                            onClick = { actionWithDismiss(it) },
-                            icon = R.drawable.ic_delete,
-                            label = stringResource(R.string.torrent_list_action_delete_bookmark),
-                            colors = ListItemDefaults.colors(
-                                leadingIconColor = MaterialTheme.colorScheme.error,
-                                headlineColor = MaterialTheme.colorScheme.error,
-                            ),
-                        )
-                    }
+        Column(
+            modifier = Modifier.padding(all = MaterialTheme.spaces.large),
+            verticalArrangement = Arrangement.spacedBy(MaterialTheme.spaces.large),
+        ) {
+            // These two actions are screen specific therefore shouldn't belong here.
+            Column {
+                onBookmarkTorrent?.let {
+                    ActionListItem(
+                        modifier = Modifier.clip(MaterialTheme.shapes.medium),
+                        onClick = { actionWithDismiss(it) },
+                        icon = R.drawable.ic_star,
+                        label = stringResource(R.string.torrent_list_action_bookmark_torrent),
+                        colors = ListItemDefaults.colors(
+                            leadingIconColor = MaterialTheme.colorScheme.secondary,
+                            headlineColor = MaterialTheme.colorScheme.secondary,
+                        ),
+                    )
                 }
-                ActionList(
-                    actions = primaryActions,
-                    onInvokeAction = { actionWithDismiss(it) },
-                )
-                ActionList(
-                    actions = secondaryActions,
-                    onInvokeAction = { actionWithDismiss(it) }
-                )
+                onDeleteBookmark?.let {
+                    ActionListItem(
+                        modifier = Modifier.clip(MaterialTheme.shapes.medium),
+                        onClick = { actionWithDismiss(it) },
+                        icon = R.drawable.ic_delete,
+                        label = stringResource(R.string.torrent_list_action_delete_bookmark),
+                        colors = ListItemDefaults.colors(
+                            leadingIconColor = MaterialTheme.colorScheme.error,
+                            headlineColor = MaterialTheme.colorScheme.error,
+                        ),
+                    )
+                }
             }
+            ActionList(
+                actions = primaryActions,
+                onInvokeAction = { actionWithDismiss(it) },
+            )
+            ActionList(
+                actions = secondaryActions,
+                onInvokeAction = { actionWithDismiss(it) }
+            )
         }
+    }
+}
+
+@Composable
+private fun BottomSheetHeader(
+    title: String,
+    showNSFWBadge: Boolean,
+    modifier: Modifier = Modifier,
+) {
+    Column(
+        modifier = modifier,
+        verticalArrangement = Arrangement.spacedBy(
+            space = MaterialTheme.spaces.small,
+            alignment = Alignment.CenterVertically,
+        ),
+    ) {
+        if (showNSFWBadge) NSFWBadge()
+        Text(
+            text = title,
+            overflow = TextOverflow.Ellipsis,
+            maxLines = 3,
+            style = MaterialTheme.typography.titleMedium,
+        )
+        HorizontalDivider()
     }
 }
 
@@ -190,36 +205,48 @@ private fun ActionList(
     onInvokeAction: (() -> Unit) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val roundedShape = MaterialTheme.shapes.medium
-    val normalShape = RectangleShape
-    val firstItemShape = roundedShape.copy(
-        bottomStart = CornerSize(0.dp),
-        bottomEnd = CornerSize(0.dp),
-    )
-    val lastItemShape = roundedShape.copy(
-        topStart = CornerSize(0.dp),
-        topEnd = CornerSize(0.dp),
-    )
-
-    val listItemShape = { currIdx: Int ->
-        when {
-            actions.size == 1 -> roundedShape
-            currIdx == 0 -> firstItemShape
-            currIdx == actions.lastIndex -> lastItemShape
-            else -> normalShape
-        }
-    }
     Column(modifier = modifier) {
         for ((idx, action) in actions.withIndex()) {
             if (action.onClick == null) continue
 
+            val shape = ActionListItemShapes.shape(idx, actions.size)
+
             ActionListItem(
-                modifier = Modifier.clip(shape = listItemShape(idx)),
+                modifier = Modifier.clip(shape = shape),
                 onClick = { onInvokeAction(action.onClick) },
                 icon = action.icon,
                 label = stringResource(action.label),
                 enabled = action.enabled,
             )
+        }
+    }
+}
+
+private object ActionListItemShapes {
+    val DefaultShape: Shape = RectangleShape
+
+    val RoundedShape: CornerBasedShape
+        @Composable get() = MaterialTheme.shapes.medium
+
+    @Composable
+    fun shape(index: Int, count: Int): Shape {
+        val baseRoundedShape = RoundedShape
+
+        return remember(index, count, DefaultShape, baseRoundedShape) {
+            when {
+                count == 1 -> baseRoundedShape
+                index == 0 -> baseRoundedShape.copy(
+                    bottomStart = CornerSize(0.dp),
+                    bottomEnd = CornerSize(0.dp),
+                )
+
+                index == count - 1 -> baseRoundedShape.copy(
+                    topStart = CornerSize(0.dp),
+                    topEnd = CornerSize(0.dp),
+                )
+
+                else -> DefaultShape
+            }
         }
     }
 }
@@ -233,15 +260,15 @@ private fun ActionListItem(
     enabled: Boolean = true,
     colors: ListItemColors = ListItemDefaults.colors(),
 ) {
-    val defaultListItemColors = colors.copy(
+    val baseColors = colors.copy(
         containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
     )
-    val listItemColors = if (enabled) {
-        defaultListItemColors
+    val resolvedColors = if (enabled) {
+        baseColors
     } else {
-        defaultListItemColors.copy(
-            headlineColor = defaultListItemColors.disabledHeadlineColor,
-            leadingIconColor = defaultListItemColors.disabledLeadingIconColor,
+        baseColors.copy(
+            headlineColor = baseColors.disabledHeadlineColor,
+            leadingIconColor = baseColors.disabledLeadingIconColor,
         )
     }
 
@@ -260,7 +287,7 @@ private fun ActionListItem(
                 style = MaterialTheme.typography.bodyMedium,
             )
         },
-        colors = listItemColors,
+        colors = resolvedColors,
     )
 }
 
