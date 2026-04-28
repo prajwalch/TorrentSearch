@@ -48,13 +48,12 @@ fun TorrentListItem(
             )
         },
         overlineContent = {
-            Row(verticalAlignment = Alignment.CenterVertically) {
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(MaterialTheme.spaces.small),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
                 Text(uploadDate)
-
-                if (isNSFW) {
-                    BulletPoint()
-                    NSFWBadge()
-                }
+                if (isNSFW) NSFWBadge()
             }
         },
         headlineContent = {
