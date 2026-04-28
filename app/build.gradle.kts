@@ -86,6 +86,8 @@ dependencies {
     implementation(libs.coil.compose)
     implementation(libs.coil.network.okhttp)
     implementation(libs.compose.markdown)
+    implementation(libs.flexmark.html2md.converter)
+    implementation(libs.flexmark.util)
     implementation(libs.hilt.android)
     implementation(libs.jsoup)
     implementation(libs.kotlinx.collections.immutable)

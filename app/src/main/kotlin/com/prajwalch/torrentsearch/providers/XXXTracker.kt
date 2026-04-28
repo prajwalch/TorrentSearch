@@ -119,6 +119,7 @@ private object XXXTrackerDetailsPageParser {
                 // Remove poster and two new lines after the poster from description.
                 ?.apply { select("> *:lt(3)").remove() }
                 ?.html()
+                ?.let(TorrentUtils.HtmlToMarkdownConverter::convert)
 
             TorrentDetails(
                 infoHash = infoHash,

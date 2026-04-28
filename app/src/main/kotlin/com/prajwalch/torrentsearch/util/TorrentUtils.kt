@@ -1,5 +1,7 @@
 package com.prajwalch.torrentsearch.util
 
+import com.vladsch.flexmark.html2md.converter.FlexmarkHtmlConverter
+
 object TorrentUtils {
     /**
      * A list of public trackers to use when creating a magnet URI.
@@ -34,6 +36,8 @@ object TorrentUtils {
     private val PublicTrackersParams = PublicTrackers.joinToString(separator = "&") { "tr=$it" }
 
     private const val MAGNET_URI_PREFIX = "magnet:?xt=urn:btih:"
+
+    val HtmlToMarkdownConverter = FlexmarkHtmlConverter.builder().build()
 
     fun getInfoHashFromMagnetUri(magnetUri: String): String {
         require(magnetUri.startsWith(MAGNET_URI_PREFIX)) {

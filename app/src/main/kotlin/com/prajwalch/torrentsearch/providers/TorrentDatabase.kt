@@ -162,7 +162,8 @@ private object TdDetailsPageParser {
             val category = html.selectFirst(CATEGORY)?.ownText()?.let(::categoryFromRawString)
             val uploader = html.selectFirst(UPLOADER)?.ownText()
             val lastChecked = html.selectFirst(LAST_CHECKED)?.ownText()
-            val description = html.selectFirst(DESCRIPTION)?.html()
+            val description = html.selectFirst(DESCRIPTION)
+                ?.let(TorrentUtils.HtmlToMarkdownConverter::convert)
 
             TorrentDetails(
                 infoHash = infoHash,

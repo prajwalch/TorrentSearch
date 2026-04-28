@@ -152,7 +152,9 @@ private object UIndexDetailsPageParser {
             val uploadDate = html.selectFirst(UPLOAD_DATE)?.ownText()
             val category = html.selectFirst(CATEGORY)?.ownText()?.let(::categoryFromRawString)
             val lastChecked = html.selectFirst(PEERS_UPDATED)?.text()?.takeIf { it.isNotBlank() }
-            val description = html.selectFirst(DESCRIPTION)?.html()
+            val description = html.selectFirst(DESCRIPTION)?.let {
+                TorrentUtils.HtmlToMarkdownConverter.convert(it)
+            }
             val thumbnailUrl = html.selectFirst(THUMBNAIL)?.attr("abs:src")
             val previewImageUrls = html.select(PREVIEW_IMAGE).map { it.attr("src") }
 

@@ -148,7 +148,9 @@ private object XXXClubDetailsPageParser {
             val uploader = html.selectFirst(UPLOADER)?.ownText()
             val lastChecked = html.selectFirst(LAST_CHECKED)?.ownText()
             val fileDownloadLink = html.selectFirst(FILE_DOWNLOAD_LINK)?.attr("abs:href")
-            val description = html.selectFirst(DESCRIPTION)?.html()
+            val description = html.selectFirst(DESCRIPTION)
+                ?.html()
+                ?.let(TorrentUtils.HtmlToMarkdownConverter::convert)
             val posterUrl = html.selectFirst(POSTER_URL)?.attr("src")
 
             TorrentDetails(
