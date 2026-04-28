@@ -61,8 +61,8 @@ fun SearchResults(
                 TorrentListItem(
                     modifier = Modifier
                         .animateItem()
-                        .graphicsLayer { alpha = listItemAlpha }
-                        .clickable { onResultClick(it) },
+                        .clickable { onResultClick(it) }
+                        .graphicsLayer { alpha = listItemAlpha },
                     name = it.name,
                     size = it.size,
                     seeders = it.seeders,
