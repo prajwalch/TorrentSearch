@@ -49,7 +49,7 @@ fun TorrentListItem(
         },
         overlineContent = {
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Text(providerName)
+                Text(uploadDate)
 
                 if (isNSFW) {
                     BulletPoint()
@@ -66,7 +66,7 @@ fun TorrentListItem(
                 style = MaterialTheme.typography.bodyMedium,
             )
         },
-        trailingContent = { Text(uploadDate) },
+        trailingContent = { Text(providerName) },
         supportingContent = {
             TorrentMetadata(
                 size = size,
