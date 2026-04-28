@@ -153,4 +153,11 @@
     <string name="torrent_details_action_copy_link">Sayfa bağlantısını kopyala</string>
     <string name="torrent_details_action_share_link">Sayfa bağlantısını paylaş</string>
     <string name="torrent_details_tap_to_reveal_hint">Görüntlemek için dokunun</string>
+    <string name="search_errors_bottom_sheet_title">Başarısız arama sağlayıcıları</string>
+    <string name="torrent_details_error_provider_not_supported">\'%1$s\' arama sağlayıcısı desteklenmiyor</string>
+    <string name="torrent_details_error_not_found">Sağlanan bilgilerde detaylar bulunamadı</string>
+    <string name="torrent_details_error_something_wrong">Bir şeyler ters gitti</string>
+    <string name="torrent_details_title_info">Torrent bilgileri</string>
+    <string name="torrent_details_title_description">Açıklama</string>
+    <string name="torrent_details_label_file_size">Dosya boyutu</string>
 </resources>
