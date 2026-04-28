@@ -11,7 +11,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.res.stringResource
 
 import com.prajwalch.torrentsearch.R
@@ -61,7 +61,7 @@ fun SearchResults(
                 TorrentListItem(
                     modifier = Modifier
                         .animateItem()
-                        .alpha(listItemAlpha)
+                        .graphicsLayer { alpha = listItemAlpha }
                         .clickable { onResultClick(it) },
                     name = it.name,
                     size = it.size,
