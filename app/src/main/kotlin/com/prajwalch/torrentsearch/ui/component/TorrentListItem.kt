@@ -3,6 +3,7 @@ package com.prajwalch.torrentsearch.ui.component
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
@@ -49,11 +50,18 @@ fun TorrentListItem(
         },
         overlineContent = {
             Row(
-                horizontalArrangement = Arrangement.spacedBy(MaterialTheme.spaces.small),
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically,
             ) {
-                Text(uploadDate)
-                if (isNSFW) NSFWBadge()
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(MaterialTheme.spaces.small),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Text(uploadDate)
+                    if (isNSFW) NSFWBadge()
+                }
+                Text(providerName)
             }
         },
         headlineContent = {
@@ -65,7 +73,6 @@ fun TorrentListItem(
                 style = MaterialTheme.typography.bodyMedium,
             )
         },
-        trailingContent = { Text(providerName) },
         supportingContent = {
             TorrentMetadata(
                 size = size,
