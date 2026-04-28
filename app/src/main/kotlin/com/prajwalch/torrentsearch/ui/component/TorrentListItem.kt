@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.LocalContentColor
-import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -73,13 +72,11 @@ fun TorrentListItem(
         },
         trailingContent = { Text(uploadDate) },
         supportingContent = {
-            CompositionLocalProvider(
-                LocalTextStyle provides MaterialTheme.typography.bodySmall.copy(
-                    fontFeatureSettings = "tnum",
-                ),
-            ) {
-                TorrentMetadata(size = size, seeders = seeders, peers = peers)
-            }
+            TorrentMetadata(
+                size = size,
+                seeders = seeders,
+                peers = peers,
+            )
         },
     )
 }
@@ -96,46 +93,73 @@ private fun TorrentMetadata(
         horizontalArrangement = Arrangement.spacedBy(MaterialTheme.spaces.extraSmall),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        TorrentMetadataItem(text = size)
+        TorrentMetadataItem(text = { TorrentMetadataText(size) })
         BulletPoint()
         TorrentMetadataItem(
-            icon = R.drawable.ic_upload,
-            text = seeders.toString(),
-            color = MaterialTheme.colorScheme.secondary,
-            textStyle = LocalTextStyle.current.copy(fontWeight = FontWeight.SemiBold),
+            icon = { TorrentMetadataIcon(R.drawable.ic_upload) },
+            text = {
+                TorrentMetadataText(
+                    text = seeders.toString(),
+                    fontWeight = FontWeight.SemiBold,
+                )
+            },
+            contentColor = MaterialTheme.colorScheme.secondary,
         )
         BulletPoint()
         TorrentMetadataItem(
-            icon = R.drawable.ic_download,
-            text = peers.toString(),
-            color = MaterialTheme.colorScheme.tertiary
+            icon = { TorrentMetadataIcon(R.drawable.ic_download) },
+            text = { TorrentMetadataText(peers.toString()) },
+            contentColor = MaterialTheme.colorScheme.tertiary,
         )
     }
 }
 
 @Composable
 private fun TorrentMetadataItem(
-    text: String,
+    text: @Composable () -> Unit,
     modifier: Modifier = Modifier,
-    @DrawableRes icon: Int? = null,
-    color: Color = LocalContentColor.current,
-    textStyle: TextStyle = LocalTextStyle.current,
+    icon: @Composable (() -> Unit)? = null,
+    contentColor: Color = LocalContentColor.current,
 ) {
     Row(
         modifier = modifier,
         horizontalArrangement = Arrangement.spacedBy(MaterialTheme.spaces.extraSmall),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        icon?.let {
-            Icon(
-                modifier = Modifier.size(16.dp),
-                painter = painterResource(it),
-                contentDescription = null,
-                tint = color,
-            )
+        CompositionLocalProvider(LocalContentColor provides contentColor) {
+            icon?.let { it() }
+            text()
         }
-        Text(text = text, color = color, style = textStyle)
     }
+}
+
+@Composable
+private fun TorrentMetadataIcon(
+    @DrawableRes icon: Int,
+    modifier: Modifier = Modifier,
+    tint: Color = LocalContentColor.current,
+) {
+    Icon(
+        modifier = modifier.size(16.dp),
+        painter = painterResource(icon),
+        contentDescription = null,
+        tint = tint,
+    )
+}
+
+@Composable
+private fun TorrentMetadataText(
+    text: String,
+    modifier: Modifier = Modifier,
+    fontWeight: FontWeight? = null,
+    style: TextStyle = MaterialTheme.typography.bodySmall,
+) {
+    Text(
+        modifier = modifier,
+        text = text,
+        fontWeight = fontWeight,
+        style = style,
+    )
 }
 
 @Composable
