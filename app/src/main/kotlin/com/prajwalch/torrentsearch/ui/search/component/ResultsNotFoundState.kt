@@ -1,5 +1,6 @@
 package com.prajwalch.torrentsearch.ui.search.component
 
+import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -9,6 +10,7 @@ import androidx.compose.ui.res.stringResource
 
 import com.prajwalch.torrentsearch.R
 import com.prajwalch.torrentsearch.ui.component.ContentState
+import com.prajwalch.torrentsearch.ui.component.ContentStateDefaults
 import com.prajwalch.torrentsearch.ui.component.TryAgainButton
 
 @Composable
@@ -17,7 +19,8 @@ fun ResultsNotFoundState(modifier: Modifier = Modifier) {
         modifier = modifier,
         icon = {
             Icon(
-                painterResource(R.drawable.ic_results_not_found),
+                modifier = Modifier.size(ContentStateDefaults.IconSize),
+                painter = painterResource(R.drawable.ic_results_not_found),
                 contentDescription = null,
             )
         },
@@ -31,7 +34,8 @@ fun ResultsNotFoundState(onTryAgain: () -> Unit, modifier: Modifier = Modifier) 
         modifier = modifier,
         icon = {
             Icon(
-                painterResource(R.drawable.ic_results_not_found),
+                modifier = Modifier.size(ContentStateDefaults.IconSize),
+                painter = painterResource(R.drawable.ic_results_not_found),
                 contentDescription = null,
             )
         },
