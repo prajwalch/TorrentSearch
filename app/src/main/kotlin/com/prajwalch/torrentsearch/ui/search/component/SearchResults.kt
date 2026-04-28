@@ -11,6 +11,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.res.stringResource
 
 import com.prajwalch.torrentsearch.R
@@ -54,9 +55,13 @@ fun SearchResults(
             }
 
             items(items = searchResults, contentType = { it.category }) {
+                val isViewed = it.infoHash in viewedTorrentHashes
+                val listItemAlpha = if (isViewed) 0.6f else 1f
+
                 TorrentListItem(
                     modifier = Modifier
                         .animateItem()
+                        .alpha(listItemAlpha)
                         .clickable { onResultClick(it) },
                     name = it.name,
                     size = it.size,
@@ -66,7 +71,6 @@ fun SearchResults(
                     category = it.category,
                     providerName = it.providerName,
                     isNSFW = it.isNSFW,
-                    isViewed = it.infoHash in viewedTorrentHashes,
                 )
                 HorizontalDivider()
             }

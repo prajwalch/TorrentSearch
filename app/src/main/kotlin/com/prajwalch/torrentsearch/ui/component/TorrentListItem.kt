@@ -13,7 +13,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
@@ -39,12 +38,9 @@ fun TorrentListItem(
     providerName: String,
     isNSFW: Boolean,
     modifier: Modifier = Modifier,
-    isViewed: Boolean = false,
 ) {
-    val contentAlpha = if (isViewed) 0.6f else 1f
-
     ListItem(
-        modifier = modifier.alpha(contentAlpha),
+        modifier = modifier,
         leadingContent = {
             Icon(
                 painter = painterResource(category.iconResId()),
