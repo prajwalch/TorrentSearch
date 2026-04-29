@@ -129,22 +129,21 @@ private class TdResultsPageParser(
 
 private object TdDetailsPageParser {
     private const val TORRENT_NAME =
-        "body > div.main-container > div.container.mt-5 > div.card.shadow-sm.mb-5.torrent-detail-card > div.card-header.d-flex.justify-content-between.align-items-center.torrent-cat-header > h4"
+        "div.torrent-detail-card > div.card-header.torrent-cat-header > h4"
     private const val SIZE =
-        "body > div.main-container > div.container.mt-5 > div.card.shadow-sm.mb-5.torrent-detail-card > div.card-body > div.row.mb-4 > div:nth-child(1) > ul > li:nth-child(2) > strong.db-value"
+        "div.torrent-detail-card > div.card-body ul.torrent-info-list > li:nth-child(2) > strong.db-value"
     private const val SEEDERS =
-        "body > div.main-container > div.container.mt-5 > div.card.shadow-sm.mb-5.torrent-detail-card > div.card-body > div.row.mb-4 > div.col-lg-6.text-lg-end > ul > li:nth-child(1) > strong.text-success"
+        "div.torrent-detail-card > div.card-body ul.torrent-stats-list > li:nth-child(1) > strong.text-success"
     private const val PEERS =
-        "body > div.main-container > div.container.mt-5 > div.card.shadow-sm.mb-5.torrent-detail-card > div.card-body > div.row.mb-4 > div.col-lg-6.text-lg-end > ul > li:nth-child(2) > strong.text-danger"
+        "div.torrent-detail-card > div.card-body ul.torrent-stats-list > li:nth-child(2) > strong.text-danger"
     private const val UPLOAD_DATE =
-        "body > div.main-container > div.container.mt-5 > div.card.shadow-sm.mb-5.torrent-detail-card > div.card-body > div.row.mb-4 > div:nth-child(1) > ul > li:nth-child(3) > strong.db-value"
+        "div.torrent-detail-card > div.card-body ul.torrent-info-list > li:nth-child(3) > strong.db-value"
     private const val CATEGORY = ".cat-badge"
     private const val UPLOADER =
-        "body > div.main-container > div.container.mt-5 > div.card.shadow-sm.mb-5.torrent-detail-card > div.card-body > div.row.mb-4 > div:nth-child(1) > ul > li:nth-child(4) > a"
+        "div.torrent-detail-card > div.card-body ul.torrent-info-list > li:nth-child(4) > a"
     private const val LAST_CHECKED =
-        "body > div.main-container > div.container.mt-5 > div.card.shadow-sm.mb-5.torrent-detail-card > div.card-body > div.row.mb-4 > div:nth-child(1) > ul > li:nth-child(5) > strong.db-value"
-    private const val DESCRIPTION =
-        "body > div.main-container > div.container.mt-5 > div.card.shadow-sm.mb-5.torrent-info-card > div.card-body.torrent-info-content"
+        "div.torrent-detail-card > div.card-body ul.torrent-info-list li:nth-child(5) > strong.db-value"
+    private const val DESCRIPTION = "div.torrent-info-card > div.torrent-info-content"
     private const val MAGNET_URI = "#downloadMagnetBtn"
 
     suspend fun parse(html: String): TorrentDetails? =
