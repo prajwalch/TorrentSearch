@@ -38,10 +38,7 @@ class TorrentDatabase : SearchProvider {
         Category.Series to "tv",
     )
 
-    private val resultsPageParser = TdResultsPageParser(
-        baseUrl = info.url,
-        providerName = info.name,
-    )
+    private val resultsPageParser = TdResultsPageParser(providerName = info.name)
 
     override suspend fun search(query: String, context: SearchContext): List<Torrent> {
         val requestUrl = buildString {
@@ -52,7 +49,7 @@ class TorrentDatabase : SearchProvider {
         }
 
         val responseHtml = context.httpClient.get(url = requestUrl)
-        return resultsPageParser.parse(responseHtml).orEmpty()
+        return resultsPageParser.parse(html = responseHtml, pageUrl = requestUrl)
     }
 
     override suspend fun getDetails(detailsPageUrl: String): GetTorrentDetailsResponse {
@@ -64,66 +61,60 @@ class TorrentDatabase : SearchProvider {
     }
 }
 
-private class TdResultsPageParser(
-    private val baseUrl: String,
-    private val providerName: String,
-) {
-    suspend fun parse(html: String): List<Torrent>? = withContext(Dispatchers.Default) {
-        Jsoup
-            .parse(html)
-            .selectFirst("table.torrent-table > tbody")
-            ?.select("tr")
-            ?.mapNotNull { parseTableRow(it) }
-    }
+private class TdResultsPageParser(private val providerName: String) {
+    suspend fun parse(html: String, pageUrl: String): List<Torrent> =
+        withContext(Dispatchers.Default) {
+            Jsoup
+                .parse(html, pageUrl)
+                .select(RESULT_LIST_ITEM)
+                .mapNotNull { parseListItem(it) }
+        }
 
-    private fun parseTableRow(tr: Element): Torrent? {
-        val magnetLinkHref = tr.selectFirst("td.title-cell > a.magnet-link") ?: return null
-        val torrentName = magnetLinkHref.ownText()
-        val infoHash = magnetLinkHref.attr("href")
+    private fun parseListItem(listItem: Element): Torrent? {
+        val torrentNameElm = listItem.selectFirst(TORRENT_NAME) ?: return null
+        val torrentName = torrentNameElm.ownText()
+        val infoHash = torrentNameElm.attr("href")
             .removePrefix("/track/magnet/")
             .takeWhile { it != '?' }
         val magnetUri = TorrentUtils.createMagnetUri(infoHash).let {
             "$it&tr=$TORRENT_DATABASE_TRACKER_URL"
         }
-
-        val descriptionPageUrl = tr
-            .selectFirst("td.title-cell > a.info-button")
-            ?.attr("href")
-            ?.let { "$baseUrl$it" }
-            ?: return null
-
-        val rawCategory = tr.selectFirst("span.category-bubble")?.ownText() ?: return null
-        val category = categoryFromRawString(rawCategory)
-
-        val size = tr.selectFirst("td.size-cell")?.ownText() ?: return null
-        val uploadDate = tr
-            .selectFirst("td.date-cell")
+        val descriptionPageUrl = listItem.selectFirst(DESCRIPTION_PAGE_URL)?.attr("abs:href")
+        val category = listItem.selectFirst(CATEGORY)?.ownText()?.let(::categoryFromRawString)
+        val size = listItem.selectFirst(SIZE)?.ownText()
+        val uploadDate = listItem.selectFirst(UPLOAD_DATE)
             ?.ownText()
-            ?.split(' ')
-            ?.firstOrNull()
+            ?.takeWhile { !it.isWhitespace() }
             ?.let(DateUtils::formatYearMonthDay)
-            ?: return null
-
-        val statsCell = tr.selectFirst("td:nth-child(5)") ?: return null
-        val seeders = statsCell.selectFirst("> div > span:nth-child(1)")?.ownText() ?: return null
-        val peers = statsCell.selectFirst("> div > span:nth-child(3)")?.ownText() ?: return null
+        val seeders = listItem.selectFirst(SEEDERS)?.ownText()
+        val peers = listItem.selectFirst(PEERS)?.ownText()
 
         return Torrent(
             infoHash = infoHash,
             name = torrentName,
-            size = size,
-            seeders = seeders.toUIntOrNull() ?: 0U,
-            peers = peers.toUIntOrNull() ?: 0U,
-            uploadDate = uploadDate,
+            size = size ?: "0 KB",
+            seeders = seeders?.toUIntOrNull() ?: 0U,
+            peers = peers?.toUIntOrNull() ?: 0U,
+            uploadDate = uploadDate ?: "0 min ago",
             category = category,
             providerName = providerName,
-            descriptionPageUrl = descriptionPageUrl,
+            descriptionPageUrl = descriptionPageUrl ?: "",
             magnetUri = magnetUri,
         )
     }
 
     private companion object {
         private const val TORRENT_DATABASE_TRACKER_URL = "https%3A%2F%2Fdevelopify.ca%2Fannounce"
+
+        // Selectors
+        private const val RESULT_LIST_ITEM = "table.torrent-table > tbody > tr"
+        private const val TORRENT_NAME = "td:nth-child(1) > a:nth-child(2)"
+        private const val SIZE = "td.size-cell"
+        private const val SEEDERS = "td:nth-child(5) > div > span:nth-child(1)"
+        private const val PEERS = "td:nth-child(5) > div > span:nth-child(2)"
+        private const val UPLOAD_DATE = "td.date-cell"
+        private const val CATEGORY = "td:nth-child(2) > span.category-bubble"
+        private const val DESCRIPTION_PAGE_URL = "td:nth-child(1) > a:nth-child(1)"
     }
 }
 
