@@ -97,7 +97,8 @@ class SearchViewModel @Inject constructor(
     /**
      * Current search query.
      */
-    private val searchQuery: String = savedStateHandle["query"]
+    private val searchQuery: String = savedStateHandle.get<String>("query")
+        ?.trim()
         ?: error("SearchViewModel can't function without a search query")
 
     /**
