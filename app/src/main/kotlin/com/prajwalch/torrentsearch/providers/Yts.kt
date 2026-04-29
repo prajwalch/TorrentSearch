@@ -18,7 +18,7 @@ class Yts : SearchProvider {
     override val info = SearchProviderInfo(
         id = "ytsmx",
         name = "Yts",
-        url = "https://yts.lt",
+        url = "https://yts.bz",
         specializedCategory = Category.Movies,
         safetyStatus = SearchProviderSafetyStatus.Safe,
         enabledByDefault = true,
