@@ -6,8 +6,10 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CornerBasedShape
 import androidx.compose.foundation.shape.CornerSize
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -133,7 +135,9 @@ fun TorrentActionsBottomSheet(
         )
 
         Column(
-            modifier = Modifier.padding(all = MaterialTheme.spaces.large),
+            modifier = Modifier
+                .verticalScroll(state = rememberScrollState())
+                .padding(all = MaterialTheme.spaces.large),
             verticalArrangement = Arrangement.spacedBy(MaterialTheme.spaces.large),
         ) {
             // These two actions are screen specific therefore shouldn't belong here.
