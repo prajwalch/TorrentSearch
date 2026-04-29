@@ -145,14 +145,14 @@ private object TdDetailsPageParser {
         "body > div.main-container > div.container.mt-5 > div.card.shadow-sm.mb-5.torrent-detail-card > div.card-body > div.row.mb-4 > div:nth-child(1) > ul > li:nth-child(5) > strong.db-value"
     private const val DESCRIPTION =
         "body > div.main-container > div.container.mt-5 > div.card.shadow-sm.mb-5.torrent-info-card > div.card-body.torrent-info-content"
-    private const val MAGNET_URI = ".magnet-link"
+    private const val MAGNET_URI = "#downloadMagnetBtn"
 
     suspend fun parse(html: String): TorrentDetails? =
         withContext(Dispatchers.Default) {
             val html = Jsoup.parse(html)
 
             val name = html.selectFirst(TORRENT_NAME)?.ownText() ?: return@withContext null
-            val magnetUri = html.selectFirst(MAGNET_URI)?.ownText() ?: return@withContext null
+            val magnetUri = html.selectFirst(MAGNET_URI)?.attr("href") ?: return@withContext null
             val infoHash = TorrentUtils.getInfoHashFromMagnetUri(magnetUri)
 
             val size = html.selectFirst(SIZE)?.ownText()?.let(FileSizeUtils::normalizeSize)
