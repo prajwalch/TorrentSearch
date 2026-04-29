@@ -51,9 +51,7 @@ class Yts : SearchProvider {
      */
     private suspend fun singleMovieLinks(imdbId: String, context: SearchContext): List<Torrent> {
         val requestUrl = buildString {
-            append(info.url)
-            append("/api")
-            append("/v2")
+            append(API_BASE_URL)
             append("/movie_details.json")
             append("?imdb_id=$imdbId")
         }
@@ -90,9 +88,7 @@ class Yts : SearchProvider {
      */
     private suspend fun multipleMovieLinks(query: String, context: SearchContext): List<Torrent> {
         val requestUrl = buildString {
-            append(info.url)
-            append("/api")
-            append("/v2")
+            append(API_BASE_URL)
             append("/list_movies.json")
             append("?query_term=$query")
             append("&limit=50")
@@ -193,5 +189,9 @@ class Yts : SearchProvider {
             category = info.specializedCategory,
             descriptionPageUrl = descriptionPageUrl,
         )
+    }
+
+    private companion object {
+        private const val API_BASE_URL = "https://movies-api.accel.li/api/v2"
     }
 }
