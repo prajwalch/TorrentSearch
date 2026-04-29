@@ -32,8 +32,8 @@
     <string name="torrent_list_action_open_description_page">Abrir página de descripción</string>
     <string name="torrent_list_action_copy_description_page_url">Copiar URL de la página de descripción</string>
     <string name="torrent_list_action_share_description_page_url">Compartir URL de la página de descripción</string>
-    <string name="torrent_list_magnet_link_copied_message">Se copió el enlace magnet en el portapapeles.</string>
-    <string name="torrent_list_url_copied_message">Se copió el URL en el portapapeles.</string>
+    <string name="torrent_list_magnet_link_copied_message">¡Enlace Magnet copiado al portapapeles!</string>
+    <string name="torrent_list_url_copied_message">¡Url copiada al portapapeles!</string>
     <string name="home_search_query_hint">Buscar…</string>
     <string name="home_button_search">Buscar</string>
     <string name="search_filter_query_hint">Filtrar por nombre</string>
@@ -93,7 +93,7 @@
     <string name="settings_show_search_history_summary">Mostrar historial de búsqueda en la barra de búsqueda</string>
     <string name="settings_section_advanced">Avanzado</string>
     <string name="settings_source_code">Código fuente</string>
-    <string name="category_anime">Anime</string>
+    <string name="category_anime">Animes</string>
     <string name="category_apps">Aplicaciones</string>
     <string name="category_series">Series</string>
     <string name="search_results_count_format">%1$s resultados para «%2$s» (%3$s)</string>
@@ -102,7 +102,7 @@
         <item quantity="many">%1$d de marcadores</item>
         <item quantity="other">%1$d marcadores</item>
     </plurals>
-    <string name="search_history_query_copied_message">Se copió la consulta en el portapapeles.</string>
+    <string name="search_history_query_copied_message">¡Consulta copiada al portapapeles!</string>
     <string name="search_providers_label_url">URL</string>
     <string name="search_providers_label_api_key">Clave de API</string>
     <string name="settings_section_general">General</string>
@@ -117,11 +117,11 @@
     <string name="bookmarked_message">Marcado</string>
     <string name="settings_enable_dynamic_theme_summary">Genera un tema para la aplicación basado en el fondo de pantalla del dispositivo</string>
     <string name="settings_pure_black_summary">Activa el modo de tema AMOLED</string>
-    <string name="main_cannot_search_using_url_message">No se puede buscar por URL</string>
+    <string name="main_cannot_search_using_url_message">No se puede buscar usando una URL</string>
     <string name="main_cannot_search_blank_query_message">No se puede buscar con una consulta vacía</string>
     <string name="torznab_conn_check_result_conn_established">Conexión establecida</string>
-    <string name="torznab_conn_check_result_conn_failed">Falló la conexión. Compruebe el URL y el estado del servidor.</string>
-    <string name="torznab_conn_check_result_invalid_api_key">Clave de API no válida</string>
+    <string name="torznab_conn_check_result_conn_failed">Conexión fallida. Verifica la URL y el estado del servidor.</string>
+    <string name="torznab_conn_check_result_invalid_api_key">Clave API inválida</string>
     <string name="torznab_conn_check_result_app_error">Error de la aplicación (%1$d)</string>
     <string name="torznab_conn_check_result_unexpected_error">Error inesperado</string>
     <string name="torrent_file_downloading_message">Descargando archivo torrent…</string>
@@ -130,7 +130,7 @@
     <string name="torrent_file_saving_message">Guardando archivo torrent…</string>
     <string name="torrent_file_saved_message">Se guardó el archivo torrent</string>
     <string name="torrent_file_save_error">No se pudo guardar el archivo torrent</string>
-    <string name="crash_screen_title">Lo sentimos</string>
+    <string name="crash_screen_title">¡Uups!</string>
     <string name="crash_button_export_crash_logs">Exportar registros de cierre en archivo</string>
     <string name="crash_button_restart_application">Reiniciar la aplicación</string>
     <string name="crash_logs_export_success_message">Se exportaron los registros en un archivo</string>
@@ -178,7 +178,7 @@
     <string name="torrent_details_label_uploader">Cargador</string>
     <string name="torrent_details_label_last_checked">Última comprobación</string>
     <string name="torrent_details_message_not_available">No disponible</string>
-    <string name="torrent_details_message_link_copied">Se copió el enlace en el portapapeles.</string>
+    <string name="torrent_details_message_link_copied">¡Enlace copiado al portapapeles!</string>
     <string name="torrent_details_button_download_torrent">Descargar torrent</string>
     <string name="torrent_details_button_download_torrent_file">Descargar archivo torrent</string>
     <string name="torrent_details_error_provider_not_supported">No se admite el proveedor de búsquedas «%1$s»</string>
@@ -187,4 +187,6 @@
     <string name="settings_open_torrent_details_in_app">Abrir detalles del torrent en la aplicación</string>
     <string name="settings_blur_nsfw_images_summary">Desenfoca automáticamente las imágenes para adultos</string>
     <string name="settings_blur_nsfw_images">Desenfocar imágenes para adultos</string>
+    <string name="torrent_details_label_info_hash">Información hash</string>
+    <string name="torrent_details_button_open_in_browser">Abrir en navegador</string>
 </resources>
