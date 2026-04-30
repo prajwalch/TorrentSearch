@@ -6,7 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 
 import com.prajwalch.torrentsearch.data.repository.SettingsRepository
-import com.prajwalch.torrentsearch.domain.SearchProvidersManager
+import com.prajwalch.torrentsearch.domain.SearchProvidersGateway
 import com.prajwalch.torrentsearch.domain.TorrentFileDownloader
 import com.prajwalch.torrentsearch.domain.model.GetTorrentDetailsResponse
 import com.prajwalch.torrentsearch.domain.model.TorrentDetails
@@ -23,7 +23,6 @@ import kotlinx.coroutines.launch
 
 import java.io.OutputStream
 import javax.inject.Inject
-
 
 data class TorrentDetailsUiState(
     val contentState: TorrentDetailsContentState = TorrentDetailsContentState.Loading,
@@ -47,10 +46,10 @@ sealed interface TorrentDetailsContentState {
 
 @HiltViewModel
 class TorrentDetailsViewModel @Inject constructor(
-    searchProvidersManager: SearchProvidersManager,
+    private val searchProvidersGateway: SearchProvidersGateway,
     private val torrentFileDownloader: TorrentFileDownloader,
     private val connectivityChecker: ConnectivityChecker,
-    private val settingsRepository: SettingsRepository,
+    settingsRepository: SettingsRepository,
     savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
     val detailsPageUrl: String = savedStateHandle["detailsPageUrl"]
@@ -58,8 +57,6 @@ class TorrentDetailsViewModel @Inject constructor(
 
     val providerName: String = savedStateHandle["providerName"]
         ?: error("TorrentDetailsViewModel can't function without provider name")
-
-    private val provider = searchProvidersManager.findProviderByName(providerName)
 
     private val contentState: MutableStateFlow<TorrentDetailsContentState> =
         MutableStateFlow(TorrentDetailsContentState.Loading)
@@ -90,13 +87,13 @@ class TorrentDetailsViewModel @Inject constructor(
                 return@launch
             }
 
-            if (provider == null) {
-                contentState.value = TorrentDetailsContentState.ProviderNotSupported
-                return@launch
-            }
-
             contentState.value = try {
-                when (val response = provider.getDetails(detailsPageUrl)) {
+                val response = searchProvidersGateway.getTorrentDetails(
+                    detailsPageUrl = detailsPageUrl,
+                    providerName = providerName,
+                )
+
+                when (response) {
                     GetTorrentDetailsResponse.DetailsNotFound -> {
                         TorrentDetailsContentState.DetailsNotFound
                     }
