@@ -1,7 +1,6 @@
 package com.prajwalch.torrentsearch.providers
 
 import com.prajwalch.torrentsearch.domain.model.Category
-import com.prajwalch.torrentsearch.domain.model.GetTorrentDetailsResponse
 import com.prajwalch.torrentsearch.domain.model.Torrent
 import com.prajwalch.torrentsearch.domain.model.TorrentDetails
 import com.prajwalch.torrentsearch.network.HttpClient
@@ -13,7 +12,7 @@ import kotlinx.coroutines.withContext
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Element
 
-class TorrentDownload : SearchProvider {
+class TorrentDownload : SearchProvider, TorrentDetailsProvider {
     override val id = "torrentdownloadinfo"
     override val name = "TorrentDownload"
     override val url = "https://torrentdownload.info"
@@ -34,12 +33,9 @@ class TorrentDownload : SearchProvider {
         return resultsPageParser.parse(html = responseHtml, pageUrl = requestUrl).orEmpty()
     }
 
-    override suspend fun getDetails(detailsPageUrl: String): GetTorrentDetailsResponse {
+    override suspend fun getDetails(detailsPageUrl: String): TorrentDetails? {
         val responseHtml = HttpClient.get(detailsPageUrl)
-
         return TorrentDownloadDetailsPageParser.parse(responseHtml)
-            ?.let(GetTorrentDetailsResponse::Success)
-            ?: GetTorrentDetailsResponse.DetailsNotFound
     }
 }
 

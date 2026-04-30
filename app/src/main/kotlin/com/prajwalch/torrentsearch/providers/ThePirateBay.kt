@@ -2,7 +2,6 @@ package com.prajwalch.torrentsearch.providers
 
 import com.prajwalch.torrentsearch.R
 import com.prajwalch.torrentsearch.domain.model.Category
-import com.prajwalch.torrentsearch.domain.model.GetTorrentDetailsResponse
 import com.prajwalch.torrentsearch.domain.model.Torrent
 import com.prajwalch.torrentsearch.domain.model.TorrentDetails
 import com.prajwalch.torrentsearch.extension.asArray
@@ -19,13 +18,14 @@ import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonObject
 
-class ThePirateBay : SearchProvider {
+class ThePirateBay : SearchProvider, TorrentDetailsProvider {
     override val id = "thepiratebay"
     override val name = "ThePirateBay"
     override val url = "https://thepiratebay.org"
     override val specializedCategory = Category.All
-    override val safetyStatus =
-        SearchProviderSafetyStatus.Unsafe(reason = R.string.tpb_unsafe_reason)
+    override val safetyStatus = SearchProviderSafetyStatus.Unsafe(
+        reason = R.string.tpb_unsafe_reason,
+    )
     override val enabledByDefault = false
 
     private val resultsJsonParser = TBPResultsJsonParser(
@@ -46,15 +46,11 @@ class ThePirateBay : SearchProvider {
         return resultsJsonParser.parse(responseJson)
     }
 
-    override suspend fun getDetails(detailsPageUrl: String): GetTorrentDetailsResponse {
+    override suspend fun getDetails(detailsPageUrl: String): TorrentDetails? {
         val id = detailsPageUrl.takeLastWhile { it != '=' }
         val requestUrl = "https://apibay.org/t.php?id=$id"
-        val responseJson = HttpClient.getJson(requestUrl)
-            ?: return GetTorrentDetailsResponse.DetailsNotFound
 
-        return TBPDetailsJsonParser.parse(responseJson)
-            ?.let(GetTorrentDetailsResponse::Success)
-            ?: GetTorrentDetailsResponse.DetailsNotFound
+        return HttpClient.getJson(requestUrl)?.let { TBPDetailsJsonParser.parse(it) }
     }
 
     /**

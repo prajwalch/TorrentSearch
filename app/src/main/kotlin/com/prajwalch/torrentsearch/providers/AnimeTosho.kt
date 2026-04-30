@@ -1,7 +1,6 @@
 package com.prajwalch.torrentsearch.providers
 
 import com.prajwalch.torrentsearch.domain.model.Category
-import com.prajwalch.torrentsearch.domain.model.GetTorrentDetailsResponse
 import com.prajwalch.torrentsearch.domain.model.Torrent
 import com.prajwalch.torrentsearch.domain.model.TorrentDetails
 import com.prajwalch.torrentsearch.network.HttpClient
@@ -15,7 +14,7 @@ import org.jsoup.Jsoup
 import org.jsoup.nodes.Element
 import org.jsoup.nodes.TextNode
 
-class AnimeTosho : SearchProvider {
+class AnimeTosho : SearchProvider, TorrentDetailsProvider {
     override val id = "animetosho"
     override val name = "AnimeTosho"
     override val url = "https://animetosho.org"
@@ -32,12 +31,9 @@ class AnimeTosho : SearchProvider {
         return resultsPageParser.parse(responseHtml)
     }
 
-    override suspend fun getDetails(detailsPageUrl: String): GetTorrentDetailsResponse {
+    override suspend fun getDetails(detailsPageUrl: String): TorrentDetails? {
         val responseHtml = HttpClient.get(detailsPageUrl)
-
         return AnimeToshoDetailsPageParser.parse(html = responseHtml, baseUrl = detailsPageUrl)
-            ?.let(GetTorrentDetailsResponse::Success)
-            ?: GetTorrentDetailsResponse.DetailsNotFound
     }
 }
 

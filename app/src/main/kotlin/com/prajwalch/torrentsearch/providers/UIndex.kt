@@ -1,7 +1,6 @@
 package com.prajwalch.torrentsearch.providers
 
 import com.prajwalch.torrentsearch.domain.model.Category
-import com.prajwalch.torrentsearch.domain.model.GetTorrentDetailsResponse
 import com.prajwalch.torrentsearch.domain.model.Torrent
 import com.prajwalch.torrentsearch.domain.model.TorrentDetails
 import com.prajwalch.torrentsearch.network.HttpClient
@@ -13,7 +12,7 @@ import kotlinx.coroutines.withContext
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Element
 
-class UIndex : SearchProvider {
+class UIndex : SearchProvider, TorrentDetailsProvider {
     override val id = "uindex"
     override val name = "UIndex"
     override val url = "https://uindex.org"
@@ -51,12 +50,9 @@ class UIndex : SearchProvider {
         return resultsPageParser.parse(responseHtml).orEmpty()
     }
 
-    override suspend fun getDetails(detailsPageUrl: String): GetTorrentDetailsResponse {
+    override suspend fun getDetails(detailsPageUrl: String): TorrentDetails? {
         val responseHtml = HttpClient.get(detailsPageUrl)
-
         return UIndexDetailsPageParser.parse(responseHtml, detailsPageUrl)
-            ?.let(GetTorrentDetailsResponse::Success)
-            ?: GetTorrentDetailsResponse.DetailsNotFound
     }
 }
 

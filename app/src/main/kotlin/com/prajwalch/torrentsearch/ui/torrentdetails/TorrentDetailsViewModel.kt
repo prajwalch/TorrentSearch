@@ -21,6 +21,7 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
+import java.io.IOException
 import java.io.OutputStream
 import javax.inject.Inject
 
@@ -81,37 +82,39 @@ class TorrentDetailsViewModel @Inject constructor(
     fun loadDetails() {
         viewModelScope.launch {
             contentState.value = TorrentDetailsContentState.Loading
+            contentState.value = getTorrentDetails()
+        }
+    }
 
-            if (!connectivityChecker.isInternetAvailable()) {
-                contentState.value = TorrentDetailsContentState.NoInternetConnection
-                return@launch
+    private suspend fun getTorrentDetails(): TorrentDetailsContentState = try {
+        val response = searchProvidersGateway.getTorrentDetails(
+            detailsPageUrl = detailsPageUrl,
+            providerName = providerName,
+        )
+
+        when (response) {
+            GetTorrentDetailsResponse.DetailsNotFound -> {
+                TorrentDetailsContentState.DetailsNotFound
             }
 
-            contentState.value = try {
-                val response = searchProvidersGateway.getTorrentDetails(
-                    detailsPageUrl = detailsPageUrl,
-                    providerName = providerName,
-                )
+            GetTorrentDetailsResponse.RequestNotSupported -> {
+                TorrentDetailsContentState.ProviderNotSupported
+            }
 
-                when (response) {
-                    GetTorrentDetailsResponse.DetailsNotFound -> {
-                        TorrentDetailsContentState.DetailsNotFound
-                    }
-
-                    GetTorrentDetailsResponse.RequestNotSupported -> {
-                        TorrentDetailsContentState.ProviderNotSupported
-                    }
-
-                    is GetTorrentDetailsResponse.Success -> {
-                        TorrentDetailsContentState.LoadSucceed(response.details)
-                    }
-                }
-            } catch (e: CancellationException) {
-                throw e
-            } catch (e: Throwable) {
-                TorrentDetailsContentState.SomethingWentWrong(e.message)
+            is GetTorrentDetailsResponse.Success -> {
+                TorrentDetailsContentState.LoadSucceed(response.details)
             }
         }
+    } catch (e: CancellationException) {
+        throw e
+    } catch (e: IOException) {
+        if (!connectivityChecker.isInternetAvailable()) {
+            TorrentDetailsContentState.NoInternetConnection
+        } else {
+            TorrentDetailsContentState.SomethingWentWrong(e.message)
+        }
+    } catch (e: Throwable) {
+        TorrentDetailsContentState.SomethingWentWrong(e.message)
     }
 
     fun downloadTorrentFile(url: String, fileName: String) {

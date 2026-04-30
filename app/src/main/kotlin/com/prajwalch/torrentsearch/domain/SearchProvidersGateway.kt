@@ -96,10 +96,12 @@ class SearchProvidersGateway @Inject constructor(
         detailsPageUrl: String,
         providerName: String,
     ): GetTorrentDetailsResponse {
-        val detailsProvider = searchProvidersManager.findProviderByName(providerName)
-        require(detailsProvider != null) { "Couldn't find '$providerName' details provider" }
+        val detailsProvider = searchProvidersManager.findDetailsProviderByName(providerName)
+            ?: return GetTorrentDetailsResponse.RequestNotSupported
 
         return detailsProvider.getDetails(detailsPageUrl)
+            ?.let(GetTorrentDetailsResponse::Success)
+            ?: GetTorrentDetailsResponse.DetailsNotFound
     }
 }
 

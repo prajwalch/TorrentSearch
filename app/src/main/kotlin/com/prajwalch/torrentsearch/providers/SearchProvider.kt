@@ -3,9 +3,12 @@ package com.prajwalch.torrentsearch.providers
 import androidx.annotation.StringRes
 
 import com.prajwalch.torrentsearch.domain.model.Category
-import com.prajwalch.torrentsearch.domain.model.GetTorrentDetailsResponse
 import com.prajwalch.torrentsearch.domain.model.Torrent
+import com.prajwalch.torrentsearch.domain.model.TorrentDetails
 import com.prajwalch.torrentsearch.network.HttpClient
+
+/** Unique identifier of the provider. */
+typealias SearchProviderId = String
 
 /**
  * A search provider is responsible for initiating the search for the given
@@ -35,13 +38,18 @@ interface SearchProvider {
 
     /** Performs a search and returns the results. */
     suspend fun search(query: String, context: SearchContext): List<Torrent>
-
-    suspend fun getDetails(detailsPageUrl: String): GetTorrentDetailsResponse =
-        GetTorrentDetailsResponse.RequestNotSupported
 }
 
-/** Unique identifier of the provider. */
-typealias SearchProviderId = String
+/**
+ * A [SearchProvider] that also supports torrent details fetching.
+ */
+interface TorrentDetailsProvider : SearchProvider {
+    /**
+     * Extracts and returns [TorrentDetails] from the given URL if successful,
+     * otherwise returns `null`.
+     */
+    suspend fun getDetails(detailsPageUrl: String): TorrentDetails?
+}
 
 /** How safe is the search provider?. */
 sealed class SearchProviderSafetyStatus {

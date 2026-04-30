@@ -9,6 +9,7 @@ import com.prajwalch.torrentsearch.providers.SearchProvider
 import com.prajwalch.torrentsearch.providers.SearchProviderId
 import com.prajwalch.torrentsearch.providers.SearchProviderSafetyStatus
 import com.prajwalch.torrentsearch.providers.SearchProviderType
+import com.prajwalch.torrentsearch.providers.TorrentDetailsProvider
 import com.prajwalch.torrentsearch.providers.TorznabSearchProvider
 
 import kotlinx.coroutines.flow.Flow
@@ -65,10 +66,12 @@ class SearchProvidersManager @Inject constructor(
         .orEmpty()
 
     /**
-     * Attempts to fina a [SearchProvider] associated with the given name.
+     * Finds a torrent details provider associated with the given name.
      */
-    fun findProviderByName(name: String): SearchProvider? {
-        return builtinProviders.find { it.name == name }
+    fun findDetailsProviderByName(name: String): TorrentDetailsProvider? {
+        return builtinProviders
+            .filterIsInstance<TorrentDetailsProvider>()
+            .find { it.name == name }
     }
 
     /**

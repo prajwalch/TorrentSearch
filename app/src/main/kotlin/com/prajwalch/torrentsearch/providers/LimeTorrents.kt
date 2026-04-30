@@ -2,7 +2,6 @@ package com.prajwalch.torrentsearch.providers
 
 import com.prajwalch.torrentsearch.R
 import com.prajwalch.torrentsearch.domain.model.Category
-import com.prajwalch.torrentsearch.domain.model.GetTorrentDetailsResponse
 import com.prajwalch.torrentsearch.domain.model.Torrent
 import com.prajwalch.torrentsearch.domain.model.TorrentDetails
 import com.prajwalch.torrentsearch.network.HttpClient
@@ -19,7 +18,7 @@ import org.jsoup.nodes.Element
  * Extracts torrent results from the HTML search page.
  * This provider uses InfoHash, not Magnet URIs.
  */
-class LimeTorrents : SearchProvider {
+class LimeTorrents : SearchProvider, TorrentDetailsProvider {
     override val id = "limetorrents"
     override val name = "LimeTorrents"
     override val url = "https://limetorrents.lol"
@@ -39,13 +38,9 @@ class LimeTorrents : SearchProvider {
         return resultsPageParser.parse(html = responseHtml, pageUrl = requestUrl)
     }
 
-    override suspend fun getDetails(detailsPageUrl: String): GetTorrentDetailsResponse {
+    override suspend fun getDetails(detailsPageUrl: String): TorrentDetails? {
         val responseHtml = HttpClient.get(detailsPageUrl)
-
-        return LimeTorrentsDetailsPageParser
-            .parse(responseHtml)
-            ?.let(GetTorrentDetailsResponse::Success)
-            ?: GetTorrentDetailsResponse.DetailsNotFound
+        return LimeTorrentsDetailsPageParser.parse(responseHtml)
     }
 
     /** Returns the category string used by it. */

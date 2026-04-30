@@ -1,7 +1,6 @@
 package com.prajwalch.torrentsearch.providers
 
 import com.prajwalch.torrentsearch.domain.model.Category
-import com.prajwalch.torrentsearch.domain.model.GetTorrentDetailsResponse
 import com.prajwalch.torrentsearch.domain.model.Torrent
 import com.prajwalch.torrentsearch.domain.model.TorrentDetails
 import com.prajwalch.torrentsearch.extension.asObject
@@ -18,7 +17,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.JsonObject
 
-class InternetArchive : SearchProvider {
+class InternetArchive : SearchProvider, TorrentDetailsProvider {
     override val id = "internetarchive"
     override val name = "InternetArchive"
     override val url = "https://archive.org"
@@ -47,15 +46,13 @@ class InternetArchive : SearchProvider {
         return resultsJsonParser.parse(responseJson.asObject()).orEmpty()
     }
 
-    override suspend fun getDetails(detailsPageUrl: String): GetTorrentDetailsResponse {
+    override suspend fun getDetails(detailsPageUrl: String): TorrentDetails? {
         val jsonMetadataPageUrl = detailsPageUrl.takeLastWhile { it != '/' }
             .let { "https://archive.org/metadata/$it" }
 
         return HttpClient.getJson(jsonMetadataPageUrl)
             ?.asObject()
             ?.let { IAMetadataJsonParser.parse(it) }
-            ?.let(GetTorrentDetailsResponse::Success)
-            ?: GetTorrentDetailsResponse.DetailsNotFound
     }
 
     private fun StringBuilder.appendCategory(category: Category) {
