@@ -1,5 +1,6 @@
 package com.prajwalch.torrentsearch.ui.torrentdetails
 
+import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -111,86 +112,88 @@ fun TorrentDetailsScreen(
         },
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
     ) { innerPadding ->
-        when (val contentState = uiState.contentState) {
-            TorrentDetailsContentState.Loading -> {
-                Box(
-                    modifier = Modifier
-                        .padding(innerPadding)
-                        .fillMaxSize(),
-                    contentAlignment = Alignment.Center
-                ) {
-                    CircularProgressIndicator()
+        AnimatedContent(targetState = uiState.contentState) { contentState ->
+            when (contentState) {
+                TorrentDetailsContentState.Loading -> {
+                    Box(
+                        modifier = Modifier
+                            .padding(innerPadding)
+                            .fillMaxSize(),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        CircularProgressIndicator()
+                    }
                 }
-            }
 
-            TorrentDetailsContentState.NoInternetConnection -> {
-                NoInternetConnectionState(
-                    modifier = Modifier
-                        .padding(innerPadding)
-                        .fillMaxSize(),
-                    onTryAgain = viewModel::loadDetails,
-                )
-            }
+                TorrentDetailsContentState.NoInternetConnection -> {
+                    NoInternetConnectionState(
+                        modifier = Modifier
+                            .padding(innerPadding)
+                            .fillMaxSize(),
+                        onTryAgain = viewModel::loadDetails,
+                    )
+                }
 
-            TorrentDetailsContentState.DetailsNotFound -> {
-                DetailsNotFoundState(
-                    modifier = Modifier
-                        .padding(innerPadding)
-                        .fillMaxSize(),
-                    onTryAgain = viewModel::loadDetails,
-                )
-            }
+                TorrentDetailsContentState.DetailsNotFound -> {
+                    DetailsNotFoundState(
+                        modifier = Modifier
+                            .padding(innerPadding)
+                            .fillMaxSize(),
+                        onTryAgain = viewModel::loadDetails,
+                    )
+                }
 
-            is TorrentDetailsContentState.ProviderNotSupported -> {
-                ProviderNotSupportedState(
-                    modifier = Modifier
-                        .padding(innerPadding)
-                        .fillMaxSize()
-                        .padding(horizontal = MaterialTheme.spaces.large),
-                    providerName = viewModel.providerName,
-                    onOpenInBrowser = { uriHandler.openUri(viewModel.detailsPageUrl) },
-                )
-            }
+                is TorrentDetailsContentState.ProviderNotSupported -> {
+                    ProviderNotSupportedState(
+                        modifier = Modifier
+                            .padding(innerPadding)
+                            .fillMaxSize()
+                            .padding(horizontal = MaterialTheme.spaces.large),
+                        providerName = viewModel.providerName,
+                        onOpenInBrowser = { uriHandler.openUri(viewModel.detailsPageUrl) },
+                    )
+                }
 
-            is TorrentDetailsContentState.SomethingWentWrong -> {
-                SomethingWentWrongState(
-                    modifier = Modifier
-                        .padding(innerPadding)
-                        .fillMaxSize()
-                        .padding(horizontal = MaterialTheme.spaces.large),
-                    message = contentState.message,
-                    onTryAgain = viewModel::loadDetails,
-                )
-            }
+                is TorrentDetailsContentState.SomethingWentWrong -> {
+                    SomethingWentWrongState(
+                        modifier = Modifier
+                            .padding(innerPadding)
+                            .fillMaxSize()
+                            .padding(horizontal = MaterialTheme.spaces.large),
+                        message = contentState.message,
+                        onTryAgain = viewModel::loadDetails,
+                    )
+                }
 
-            is TorrentDetailsContentState.LoadSucceed -> {
-                val torrentDetails = contentState.details
+                is TorrentDetailsContentState.LoadSucceed -> {
+                    val torrentDetails = contentState.details
 
-                TorrentDetailsScreenContent(
-                    modifier = Modifier
-                        .padding(innerPadding)
-                        .fillMaxSize()
-                        .padding(vertical = MaterialTheme.spaces.large),
-                    details = torrentDetails,
-                    providerName = viewModel.providerName,
-                    onDownloadTorrent = { onDownloadTorrent(torrentDetails.magnetUri) },
-                    onDownloadTorrentFile = {
-                        val torrentFileName = torrentDetails.name.replace(' ', '-')
+                    TorrentDetailsScreenContent(
+                        modifier = Modifier
+                            .padding(innerPadding)
+                            .fillMaxSize()
+                            .padding(vertical = MaterialTheme.spaces.large),
+                        details = torrentDetails,
+                        providerName = viewModel.providerName,
+                        onDownloadTorrent = { onDownloadTorrent(torrentDetails.magnetUri) },
+                        onDownloadTorrentFile = {
+                            val torrentFileName = torrentDetails.name.replace(' ', '-')
 
-                        if (torrentDetails.fileDownloadLink != null) {
-                            viewModel.downloadTorrentFile(
-                                url = torrentDetails.fileDownloadLink,
-                                fileName = torrentFileName,
-                            )
-                        } else {
-                            viewModel.downloadTorrentFileFromInfoHash(
-                                infoHash = torrentDetails.infoHash,
-                                fileName = torrentFileName,
-                            )
-                        }
-                    },
-                    blurNSFWImages = uiState.blurNSFWImages,
-                )
+                            if (torrentDetails.fileDownloadLink != null) {
+                                viewModel.downloadTorrentFile(
+                                    url = torrentDetails.fileDownloadLink,
+                                    fileName = torrentFileName,
+                                )
+                            } else {
+                                viewModel.downloadTorrentFileFromInfoHash(
+                                    infoHash = torrentDetails.infoHash,
+                                    fileName = torrentFileName,
+                                )
+                            }
+                        },
+                        blurNSFWImages = uiState.blurNSFWImages,
+                    )
+                }
             }
         }
     }
