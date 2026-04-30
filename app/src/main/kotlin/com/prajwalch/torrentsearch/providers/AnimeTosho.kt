@@ -16,22 +16,17 @@ import org.jsoup.nodes.Element
 import org.jsoup.nodes.TextNode
 
 class AnimeTosho : SearchProvider {
-    override val info = SearchProviderInfo(
-        id = "animetosho",
-        name = "AnimeTosho",
-        url = "https://animetosho.org",
-        specializedCategory = Category.Anime,
-        safetyStatus = SearchProviderSafetyStatus.Safe,
-        enabledByDefault = true,
-    )
+    override val id = "animetosho"
+    override val name = "AnimeTosho"
+    override val url = "https://animetosho.org"
+    override val specializedCategory = Category.Anime
+    override val safetyStatus = SearchProviderSafetyStatus.Safe
+    override val enabledByDefault = true
 
-    private val resultsPageParser = AnimeToshoResultsPageParser(
-//        baseUrl = info.url,
-        providerName = info.name,
-    )
+    private val resultsPageParser = AnimeToshoResultsPageParser(name)
 
     override suspend fun search(query: String, context: SearchContext): List<Torrent> {
-        val requestUrl = "${info.url}/search?q=$query"
+        val requestUrl = "$url/search?q=$query"
         val responseHtml = context.httpClient.get(url = requestUrl)
 
         return resultsPageParser.parse(responseHtml)

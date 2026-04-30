@@ -11,18 +11,16 @@ import org.jsoup.Jsoup
 import org.jsoup.nodes.Element
 
 class AniRena : SearchProvider {
-    override val info = SearchProviderInfo(
-        id = "anirena",
-        name = "AniRena",
-        url = "https://anirena.com",
-        specializedCategory = Category.Anime,
-        safetyStatus = SearchProviderSafetyStatus.Safe,
-        enabledByDefault = false,
-    )
+    override val id = "anirena"
+    override val name = "AniRena"
+    override val url = "https://anirena.com"
+    override val specializedCategory = Category.Anime
+    override val safetyStatus = SearchProviderSafetyStatus.Safe
+    override val enabledByDefault = false
 
     override suspend fun search(query: String, context: SearchContext): List<Torrent> {
         val requestUrl = buildString {
-            append(info.url)
+            append(url)
             append("/index.php")
             append("?t=2")
             append("&s=$query")
@@ -94,8 +92,8 @@ class AniRena : SearchProvider {
             // 'anirena.com/torrent_details.php?id={id}'. The ID can be found in
             // the 'id' attribute of the element next to given div as 'details{id}'.
             uploadDate = "0m ago",
-            category = info.specializedCategory,
-            providerName = info.name,
+            category = specializedCategory,
+            providerName = name,
             descriptionPageUrl = "",
             magnetUri = magnetUri,
             fileDownloadLink = fileDownloadLink,

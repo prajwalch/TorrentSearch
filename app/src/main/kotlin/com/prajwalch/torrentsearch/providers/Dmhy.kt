@@ -13,18 +13,16 @@ import org.jsoup.Jsoup
 import org.jsoup.nodes.Element
 
 class Dmhy : SearchProvider {
-    override val info = SearchProviderInfo(
-        id = "dmhy",
-        name = "Dmhy",
-        url = "https://share.dmhy.org",
-        specializedCategory = Category.All,
-        safetyStatus = SearchProviderSafetyStatus.Safe,
-        enabledByDefault = false,
-    )
+    override val id = "dmhy"
+    override val name = "Dmhy"
+    override val url = "https://share.dmhy.org"
+    override val specializedCategory = Category.All
+    override val safetyStatus = SearchProviderSafetyStatus.Safe
+    override val enabledByDefault = false
 
     override suspend fun search(query: String, context: SearchContext): List<Torrent> {
         val requestUrl = buildString {
-            append(info.url)
+            append(url)
             append("/topics")
             append("/list")
             append("?keyword=$query")
@@ -63,7 +61,7 @@ class Dmhy : SearchProvider {
             .selectFirst("td.title a")
             ?: return null
         val torrentName = titleHref.ownText()
-        val descriptionPageUrl = titleHref.attr("href").let { "${info.url}$it" }
+        val descriptionPageUrl = titleHref.attr("href").let { "$url$it" }
 
         val magnetUri = tr
             .selectFirst("""a[href^="magnet:"]""")
@@ -94,7 +92,7 @@ class Dmhy : SearchProvider {
             peers = peers,
             uploadDate = uploadDate,
             category = category,
-            providerName = info.name,
+            providerName = name,
             descriptionPageUrl = descriptionPageUrl,
             magnetUri = magnetUri,
         )

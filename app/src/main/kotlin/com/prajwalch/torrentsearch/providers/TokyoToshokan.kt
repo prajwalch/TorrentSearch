@@ -16,23 +16,21 @@ import org.jsoup.Jsoup
 import org.jsoup.nodes.Element
 
 class TokyoToshokan : SearchProvider {
-    override val info = SearchProviderInfo(
-        id = "tokyotoshokan",
-        name = "TokyoToshokan",
-        url = "https://tokyotosho.info",
-        specializedCategory = Category.Anime,
-        safetyStatus = SearchProviderSafetyStatus.Safe,
-        enabledByDefault = true,
-    )
+    override val id = "tokyotoshokan"
+    override val name = "TokyoToshokan"
+    override val url = "https://tokyotosho.info"
+    override val specializedCategory = Category.Anime
+    override val safetyStatus = SearchProviderSafetyStatus.Safe
+    override val enabledByDefault = true
 
     private val resultsPageParser = TokyoToshokanResultsPageParser(
-        providerName = info.name,
-        providerSpecializedCategory = info.specializedCategory,
+        providerName = name,
+        providerSpecializedCategory = specializedCategory,
     )
 
     override suspend fun search(query: String, context: SearchContext): List<Torrent> {
         val requestUrl = buildString {
-            append(info.url)
+            append(url)
             append("/search.php")
             append("?terms=$query")
             // Type = Anime (1)

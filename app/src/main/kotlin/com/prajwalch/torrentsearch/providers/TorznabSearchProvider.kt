@@ -53,21 +53,16 @@ private object TorznabFunctions {
 
 /** A search provider which is based on Torznab specification. */
 class TorznabSearchProvider(private val config: TorznabConfig) : SearchProvider {
-    override val info = SearchProviderInfo(
-        id = config.id,
-        name = config.searchProviderName,
-        url = config.url,
-        // TODO: We need to change the way we handle the specialized category.
-        //       Instead of only storing on, let each search provider store all
-        //       the supported categories.
-        specializedCategory = config.category,
-        safetyStatus = SearchProviderSafetyStatus.Safe,
-        enabledByDefault = false,
-        type = SearchProviderType.Torznab,
-    )
+    override val id = config.id
+    override val name = config.searchProviderName
+    override val url = config.url
+    override val specializedCategory = config.category
+    override val safetyStatus = SearchProviderSafetyStatus.Safe
+    override val enabledByDefault = false
+    override val type = SearchProviderType.Torznab
 
     /** Log tag for the current config. */
-    private val tag = "$BASE_TAG(${info.name})"
+    private val tag = "$BASE_TAG($name)"
 
     /**
      * Category map.
@@ -159,7 +154,7 @@ class TorznabSearchProvider(private val config: TorznabConfig) : SearchProvider 
     private val capabilitiesXmlParser = TorznabCapabilitiesXmlParser()
 
     /** The XML parser for the response. */
-    private val responseXmlParser = TorznabResponseXmlParser(providerName = info.name)
+    private val responseXmlParser = TorznabResponseXmlParser(providerName = name)
 
     override suspend fun search(query: String, context: SearchContext): List<Torrent> {
         Log.d(tag, "search")

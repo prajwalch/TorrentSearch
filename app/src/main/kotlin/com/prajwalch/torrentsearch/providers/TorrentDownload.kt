@@ -14,20 +14,18 @@ import org.jsoup.Jsoup
 import org.jsoup.nodes.Element
 
 class TorrentDownload : SearchProvider {
-    override val info = SearchProviderInfo(
-        id = "torrentdownloadinfo",
-        name = "TorrentDownload",
-        url = "https://torrentdownload.info",
-        specializedCategory = Category.All,
-        safetyStatus = SearchProviderSafetyStatus.Safe,
-        enabledByDefault = false,
-    )
+    override val id = "torrentdownloadinfo"
+    override val name = "TorrentDownload"
+    override val url = "https://torrentdownload.info"
+    override val specializedCategory = Category.All
+    override val safetyStatus = SearchProviderSafetyStatus.Safe
+    override val enabledByDefault = false
 
-    private val resultsPageParser = TorrentDownloadResultsParser(info.name)
+    private val resultsPageParser = TorrentDownloadResultsParser(name)
 
     override suspend fun search(query: String, context: SearchContext): List<Torrent> {
         val requestUrl = buildString {
-            append(info.url)
+            append(url)
             append("/search")
             append("?q=$query")
         }

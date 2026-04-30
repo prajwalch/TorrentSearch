@@ -20,22 +20,20 @@ import org.jsoup.nodes.Element
  * This provider uses InfoHash, not Magnet URIs.
  */
 class LimeTorrents : SearchProvider {
-    override val info = SearchProviderInfo(
-        id = "limetorrents",
-        name = "LimeTorrents",
-        url = "https://limetorrents.lol",
-        specializedCategory = Category.All,
-        safetyStatus = SearchProviderSafetyStatus.Unsafe(
-            reason = R.string.limetorrents_unsafe_reason,
-        ),
-        enabledByDefault = false,
+    override val id = "limetorrents"
+    override val name = "LimeTorrents"
+    override val url = "https://limetorrents.lol"
+    override val specializedCategory = Category.All
+    override val safetyStatus = SearchProviderSafetyStatus.Unsafe(
+        reason = R.string.limetorrents_unsafe_reason,
     )
+    override val enabledByDefault = false
 
-    private val resultsPageParser = LimeTorrentsResultsPageParser(info.name)
+    private val resultsPageParser = LimeTorrentsResultsPageParser(name)
 
     override suspend fun search(query: String, context: SearchContext): List<Torrent> {
         val categoryString = getCategoryString(context.category)
-        val requestUrl = "${info.url}/search/$categoryString/$query/date/1/"
+        val requestUrl = "$url/search/$categoryString/$query/date/1/"
 
         val responseHtml = context.httpClient.get(url = requestUrl)
         return resultsPageParser.parse(html = responseHtml, pageUrl = requestUrl)

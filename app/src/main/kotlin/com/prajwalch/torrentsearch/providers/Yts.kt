@@ -15,14 +15,12 @@ import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.JsonObject
 
 class Yts : SearchProvider {
-    override val info = SearchProviderInfo(
-        id = "ytsmx",
-        name = "Yts",
-        url = "https://yts.bz",
-        specializedCategory = Category.Movies,
-        safetyStatus = SearchProviderSafetyStatus.Safe,
-        enabledByDefault = true,
-    )
+    override val id = "ytsmx"
+    override val name = "Yts"
+    override val url = "https://yts.bz"
+    override val specializedCategory = Category.Movies
+    override val safetyStatus = SearchProviderSafetyStatus.Safe
+    override val enabledByDefault = true
 
     override suspend fun search(query: String, context: SearchContext): List<Torrent> {
         return if (isQueryIMDBId(query)) {
@@ -184,9 +182,9 @@ class Yts : SearchProvider {
             size = size,
             seeders = seeders,
             peers = peers,
-            providerName = info.name,
+            providerName = this.name,
             uploadDate = uploadDate,
-            category = info.specializedCategory,
+            category = specializedCategory,
             descriptionPageUrl = descriptionPageUrl,
         )
     }

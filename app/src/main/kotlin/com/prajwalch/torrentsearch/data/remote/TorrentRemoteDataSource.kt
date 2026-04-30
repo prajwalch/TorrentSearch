@@ -37,7 +37,7 @@ class TorrentRemoteDataSource @Inject constructor(
         Log.d(TAG, "Query encoded as $encodedQuery")
 
         for (searchProvider in searchProviders) {
-            Log.i(TAG, "Launching ${searchProvider.info.name}")
+            Log.i(TAG, "Launching ${searchProvider.name}")
 
             launch {
                 val result = runCatchingSearchProvider(
@@ -60,20 +60,20 @@ class TorrentRemoteDataSource @Inject constructor(
         context: SearchContext,
     ): Result<List<Torrent>> = try {
         val torrents = provider.search(query = query, context = context)
-        Log.i(TAG, "${provider.info.name} succeed with ${torrents.size} results")
+        Log.i(TAG, "${provider.name} succeed with ${torrents.size} results")
 
         Result.success(torrents)
     } catch (e: CancellationException) {
-        Log.i(TAG, "${provider.info.name} got canceled")
+        Log.i(TAG, "${provider.name} got canceled")
 
         // Never catch this as this is used to cancel coroutines.
         throw e
     } catch (cause: Throwable) {
-        Log.e(TAG, "${provider.info.name} crashed", cause)
+        Log.e(TAG, "${provider.name} crashed", cause)
 
         val exception = SearchException(
-            searchProviderName = provider.info.name,
-            searchProviderUrl = provider.info.url,
+            searchProviderName = provider.name,
+            searchProviderUrl = provider.url,
             message = cause.message ?: cause.toString(),
             cause = cause,
         )

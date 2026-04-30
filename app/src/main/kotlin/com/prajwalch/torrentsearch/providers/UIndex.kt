@@ -14,14 +14,12 @@ import org.jsoup.Jsoup
 import org.jsoup.nodes.Element
 
 class UIndex : SearchProvider {
-    override val info = SearchProviderInfo(
-        id = "uindex",
-        name = "UIndex",
-        url = "https://uindex.org",
-        specializedCategory = Category.All,
-        safetyStatus = SearchProviderSafetyStatus.Safe,
-        enabledByDefault = true,
-    )
+    override val id = "uindex"
+    override val name = "UIndex"
+    override val url = "https://uindex.org"
+    override val specializedCategory = Category.All
+    override val safetyStatus = SearchProviderSafetyStatus.Safe
+    override val enabledByDefault = true
 
     private val categoryMap = mapOf(
         Category.All to 0,
@@ -37,13 +35,13 @@ class UIndex : SearchProvider {
     )
 
     private val resultsPageParser = UIndexResultsPageParser(
-        providerName = info.name,
-        baseUrl = info.url,
+        providerName = name,
+        baseUrl = url,
     )
 
     override suspend fun search(query: String, context: SearchContext): List<Torrent> {
         val requestUrl = buildString {
-            append(info.url)
+            append(url)
             append("/search.php")
             append("?search=$query")
             append("&c=${categoryMap[context.category]}")

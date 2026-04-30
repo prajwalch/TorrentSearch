@@ -19,17 +19,15 @@ import org.jsoup.Jsoup
 import org.jsoup.nodes.Element
 
 class BitSearch : SearchProvider {
-    override val info = SearchProviderInfo(
-        id = "bitsearch",
-        name = "BitSearch",
-        url = "https://bitsearch.to",
-        specializedCategory = Category.All,
-        safetyStatus = SearchProviderSafetyStatus.Safe,
-        enabledByDefault = false,
-        type = SearchProviderType.Builtin,
-    )
+    override val id = "bitsearch"
+    override val name = "BitSearch"
+    override val url = "https://bitsearch.to"
+    override val specializedCategory = Category.All
+    override val safetyStatus = SearchProviderSafetyStatus.Safe
+    override val enabledByDefault = false
+    override val type = SearchProviderType.Builtin
 
-    private val resultsPageParser = BitSearchResultsPageParser(info.name)
+    private val resultsPageParser = BitSearchResultsPageParser(name)
 
     override suspend fun search(query: String, context: SearchContext): List<Torrent> =
         coroutineScope {
@@ -55,7 +53,7 @@ class BitSearch : SearchProvider {
         page: Int,
     ): List<Torrent> {
         val requestUrl = buildString {
-            append(info.url)
+            append(url)
             append("/search")
             append("?q=$query")
             append("&page=$page")

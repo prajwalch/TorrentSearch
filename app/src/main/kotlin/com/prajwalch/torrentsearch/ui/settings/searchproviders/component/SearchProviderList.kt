@@ -7,12 +7,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 
+import com.prajwalch.torrentsearch.domain.model.SearchProviderInfo
 import com.prajwalch.torrentsearch.providers.SearchProviderId
-import com.prajwalch.torrentsearch.ui.settings.searchproviders.SearchProviderListItem
 
 @Composable
 fun SearchProviderList(
-    searchProviders: List<SearchProviderListItem>,
+    searchProviders: List<SearchProviderInfo>,
     onEnableSearchProvider: (SearchProviderId, Boolean) -> Unit,
     onEditConfig: (SearchProviderId) -> Unit,
     onDeleteConfig: (SearchProviderId) -> Unit,
@@ -31,7 +31,7 @@ fun SearchProviderList(
                 category = it.specializedCategory,
                 type = it.type,
                 safetyStatus = it.safetyStatus,
-                enabled = it.enabled,
+                enabled = it.isEnabled,
                 onEnable = { enable -> onEnableSearchProvider(it.id, enable) },
                 onEditConfig = { onEditConfig(it.id) },
                 onDeleteConfig = { onDeleteConfig(it.id) },

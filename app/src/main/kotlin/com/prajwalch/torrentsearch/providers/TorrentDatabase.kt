@@ -16,14 +16,12 @@ import org.jsoup.Jsoup
 import org.jsoup.nodes.Element
 
 class TorrentDatabase : SearchProvider {
-    override val info = SearchProviderInfo(
-        id = "torrentdatabase",
-        name = "TorrentDatabase",
-        url = "https://developify.ca",
-        specializedCategory = Category.All,
-        safetyStatus = SearchProviderSafetyStatus.Safe,
-        enabledByDefault = false,
-    )
+    override val id = "torrentdatabase"
+    override val name = "TorrentDatabase"
+    override val url = "https://developify.ca"
+    override val specializedCategory = Category.All
+    override val safetyStatus = SearchProviderSafetyStatus.Safe
+    override val enabledByDefault = false
 
     private val categoryMap = mapOf(
         Category.All to "",
@@ -38,11 +36,11 @@ class TorrentDatabase : SearchProvider {
         Category.Series to "tv",
     )
 
-    private val resultsPageParser = TdResultsPageParser(providerName = info.name)
+    private val resultsPageParser = TdResultsPageParser(providerName = name)
 
     override suspend fun search(query: String, context: SearchContext): List<Torrent> {
         val requestUrl = buildString {
-            append(info.url)
+            append(url)
             append("/newest")
             append("?q=$query")
             append("&category=${categoryMap[context.category]}")

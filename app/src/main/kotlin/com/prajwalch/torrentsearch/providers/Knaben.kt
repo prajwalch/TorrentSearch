@@ -23,14 +23,12 @@ import kotlinx.serialization.json.putJsonArray
  * Returns magnet-based torrents.
  */
 class Knaben : SearchProvider {
-    override val info = SearchProviderInfo(
-        id = "knaben",
-        name = "Knaben",
-        url = "https://knaben.org",
-        specializedCategory = Category.All,
-        safetyStatus = SearchProviderSafetyStatus.Safe,
-        enabledByDefault = true,
-    )
+    override val id = "knaben"
+    override val name = "Knaben"
+    override val url = "https://knaben.org"
+    override val specializedCategory = Category.All
+    override val safetyStatus = SearchProviderSafetyStatus.Safe
+    override val enabledByDefault = true
 
     override suspend fun search(query: String, context: SearchContext): List<Torrent> {
         val requestBody = buildRequestJson(query, context.category)
@@ -101,7 +99,7 @@ class Knaben : SearchProvider {
             size = size,
             seeders = seeders,
             peers = peers,
-            providerName = info.name,
+            providerName = this.name,
             uploadDate = uploadDate,
             descriptionPageUrl = descriptionPageUrl,
             magnetUri = magnetUri,

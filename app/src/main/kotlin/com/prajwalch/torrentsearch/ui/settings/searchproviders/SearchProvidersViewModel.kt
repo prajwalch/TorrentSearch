@@ -2,14 +2,12 @@ package com.prajwalch.torrentsearch.ui.settings.searchproviders
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.prajwalch.torrentsearch.data.repository.SettingsRepository
 
-import com.prajwalch.torrentsearch.domain.SearchProviderInfoItem
+import com.prajwalch.torrentsearch.data.repository.SettingsRepository
 import com.prajwalch.torrentsearch.domain.SearchProvidersManager
 import com.prajwalch.torrentsearch.domain.model.Category
+import com.prajwalch.torrentsearch.domain.model.SearchProviderInfo
 import com.prajwalch.torrentsearch.providers.SearchProviderId
-import com.prajwalch.torrentsearch.providers.SearchProviderSafetyStatus
-import com.prajwalch.torrentsearch.providers.SearchProviderType
 
 import dagger.hilt.android.lifecycle.HiltViewModel
 
@@ -26,19 +24,9 @@ import kotlin.time.Duration.Companion.seconds
 
 data class SearchProvidersUiState(
     val selectedCategory: Category? = null,
-    val searchProviders: List<SearchProviderListItem> = emptyList(),
+    val searchProviders: List<SearchProviderInfo> = emptyList(),
     val totalNumProviders: Int = 0,
     val enabledProvidersCount: Int = 0,
-)
-
-data class SearchProviderListItem(
-    val id: SearchProviderId,
-    val name: String,
-    val url: String,
-    val specializedCategory: Category,
-    val safetyStatus: SearchProviderSafetyStatus,
-    val type: SearchProviderType,
-    val enabled: Boolean,
 )
 
 /** ViewModel which handles the business logic of Search providers screen. */
@@ -49,45 +37,31 @@ class SearchProvidersViewModel @Inject constructor(
 ) : ViewModel() {
     private val selectedCategory = MutableStateFlow<Category?>(null)
 
+    private val searchProviderInfos =
+        combine(
+            selectedCategory,
+            searchProvidersManager.getProviderInfos()
+        ) { filterCategory, infos ->
+            infos.filter { filterCategory == null || it.specializedCategory == filterCategory }
+        }
+
     val uiState = combine(
         selectedCategory,
-        searchProvidersManager.getProviderInfos(),
+        searchProviderInfos,
         searchProvidersManager.getProvidersCount(),
         settingsRepository.enabledSearchProvidersId.map { it.size },
-        ::createUiState,
-    ).stateIn(
+    ) { selectedCategory, searchProviderInfos, totalNumProviders, enabledProvidersCount ->
+        SearchProvidersUiState(
+            selectedCategory = selectedCategory,
+            searchProviders = searchProviderInfos,
+            totalNumProviders = totalNumProviders,
+            enabledProvidersCount = enabledProvidersCount,
+        )
+    }.stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5.seconds),
         initialValue = SearchProvidersUiState(),
     )
-
-    private fun createUiState(
-        selectedCategory: Category?,
-        searchProvidersInfo: List<SearchProviderInfoItem>,
-        totalNumProviders: Int,
-        enabledProvidersCount: Int,
-    ): SearchProvidersUiState {
-        val searchProviders = searchProvidersInfo
-            .filter { selectedCategory == null || it.specializedCategory == selectedCategory }
-            .map {
-                SearchProviderListItem(
-                    id = it.id,
-                    name = it.name,
-                    url = it.url,
-                    specializedCategory = it.specializedCategory,
-                    safetyStatus = it.safetyStatus,
-                    type = it.type,
-                    enabled = it.isEnabled,
-                )
-            }
-
-        return SearchProvidersUiState(
-            selectedCategory = selectedCategory,
-            searchProviders = searchProviders,
-            totalNumProviders = totalNumProviders,
-            enabledProvidersCount = enabledProvidersCount,
-        )
-    }
 
     /** Enables/disables search provider matching the specified ID. */
     fun enableSearchProvider(providerId: SearchProviderId, enable: Boolean) {

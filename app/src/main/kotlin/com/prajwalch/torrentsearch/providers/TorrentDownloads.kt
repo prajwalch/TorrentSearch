@@ -13,18 +13,16 @@ import org.jsoup.Jsoup
 import org.jsoup.nodes.Element
 
 class TorrentDownloads : SearchProvider {
-    override val info = SearchProviderInfo(
-        id = "torrentdownloads",
-        name = "TorrentDownloads",
-        url = "https://torrentdownloads.pro",
-        specializedCategory = Category.All,
-        safetyStatus = SearchProviderSafetyStatus.Safe,
-        enabledByDefault = true,
-    )
+    override val id = "torrentdownloads"
+    override val name = "TorrentDownloads"
+    override val url = "https://torrentdownloads.pro"
+    override val specializedCategory = Category.All
+    override val safetyStatus = SearchProviderSafetyStatus.Safe
+    override val enabledByDefault = true
 
     override suspend fun search(query: String, context: SearchContext): List<Torrent> {
         val requestUrl = buildString {
-            append(info.url)
+            append(url)
             append("/search")
 
             val categoryId = getCategoryId(category = context.category)
@@ -65,7 +63,7 @@ class TorrentDownloads : SearchProvider {
     private suspend fun parseRowDiv(div: Element, httpClient: HttpClient): Torrent? {
         val torrentNameAnchor = div.selectFirst("p > a") ?: return null
         val torrentName = torrentNameAnchor.ownText()
-        val descriptionPageUrl = info.url + torrentNameAnchor.attr("href")
+        val descriptionPageUrl = url + torrentNameAnchor.attr("href")
 
         val categoryIconUrl = div.selectFirst("p > img")?.attr("src") ?: return null
         val category = parseCategory(categoryIconUrl = categoryIconUrl)
@@ -88,7 +86,7 @@ class TorrentDownloads : SearchProvider {
             size = size,
             seeders = seeders.toUIntOrNull() ?: 0u,
             peers = peers.toUIntOrNull() ?: 0u,
-            providerName = info.name,
+            providerName = name,
             uploadDate = uploadDate,
             category = category,
             descriptionPageUrl = descriptionPageUrl,

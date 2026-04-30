@@ -17,18 +17,16 @@ import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.JsonObject
 
 class SubsPlease : SearchProvider {
-    override val info = SearchProviderInfo(
-        id = "subsplease",
-        name = "SubsPlease",
-        url = "https://subsplease.org",
-        specializedCategory = Category.Anime,
-        safetyStatus = SearchProviderSafetyStatus.Safe,
-        enabledByDefault = false,
-    )
+    override val id = "subsplease"
+    override val name = "SubsPlease"
+    override val url = "https://subsplease.org"
+    override val specializedCategory = Category.Anime
+    override val safetyStatus = SearchProviderSafetyStatus.Safe
+    override val enabledByDefault = false
 
     override suspend fun search(query: String, context: SearchContext): List<Torrent> {
         val requestUrl = buildString {
-            append(info.url)
+            append(url)
             append("/api")
             append("?f=search")
             append("&tz=$")
@@ -60,7 +58,7 @@ class SubsPlease : SearchProvider {
             ?: return null
         val descriptionPageUrl = animeObject
             .getString("page")
-            ?.let { "${info.url}/$it" }
+            ?.let { "$url/$it" }
             ?: return null
 
         return animeObject.getArray("downloads")
@@ -74,10 +72,10 @@ class SubsPlease : SearchProvider {
                     seeders = 1U,
                     peers = 1U,
                     uploadDate = uploadDate,
-                    category = info.specializedCategory,
+                    category = specializedCategory,
                     descriptionPageUrl = descriptionPageUrl,
                     magnetUri = downloadLink.magnetUri,
-                    providerName = info.name,
+                    providerName = name,
                 )
             }
     }

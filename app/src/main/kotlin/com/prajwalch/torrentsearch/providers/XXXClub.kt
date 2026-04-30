@@ -14,17 +14,15 @@ import org.jsoup.Jsoup
 import org.jsoup.nodes.Element
 
 class XXXClub : SearchProvider {
-    override val info = SearchProviderInfo(
-        id = "xxxclub",
-        name = "XXXClub",
-        url = "https://xxxclub.to",
-        specializedCategory = Category.Porn,
-        safetyStatus = SearchProviderSafetyStatus.Safe,
-        enabledByDefault = false,
-    )
+    override val id = "xxxclub"
+    override val name = "XXXClub"
+    override val url = "https://xxxclub.to"
+    override val specializedCategory = Category.Porn
+    override val safetyStatus = SearchProviderSafetyStatus.Safe
+    override val enabledByDefault = false
 
     override suspend fun search(query: String, context: SearchContext): List<Torrent> {
-        val requestUrl = "${info.url}/torrents/search/all/$query"
+        val requestUrl = "${url}/torrents/search/all/$query"
 
         val responseHtml = context.httpClient.get(url = requestUrl)
         val torrents = withContext(Dispatchers.Default) {
@@ -56,7 +54,7 @@ class XXXClub : SearchProvider {
             .selectFirst("span:nth-child(2) > a:nth-child(2)") ?: return null
 
         val torrentName = torrentNameAnchor.text()
-        val descriptionPageUrl = info.url + torrentNameAnchor.attr("href")
+        val descriptionPageUrl = url + torrentNameAnchor.attr("href")
 
         // 05 Aug 2025 07:23:05
         val uploadDateRaw = li.selectFirst("span.adde")?.ownText() ?: return null
@@ -80,9 +78,9 @@ class XXXClub : SearchProvider {
             size = size,
             seeders = seeders.toUIntOrNull() ?: 0u,
             peers = peers.toUIntOrNull() ?: 0u,
-            providerName = info.name,
+            providerName = name,
             uploadDate = uploadDate,
-            category = info.specializedCategory,
+            category = specializedCategory,
             descriptionPageUrl = descriptionPageUrl,
             magnetUri = magnetUri,
             fileDownloadLink = fileDownloadLink,

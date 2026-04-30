@@ -28,6 +28,6 @@ val BuiltinSearchProviders = listOf(
 )
 
 val DefaultEnabledProviderIds = BuiltinSearchProviders
-    .filter { it.info.enabledByDefault }
-    .map { it.info.id }
+    .filter { it.enabledByDefault }
+    .map { it.id }
     .toSet()

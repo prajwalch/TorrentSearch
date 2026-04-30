@@ -14,18 +14,16 @@ import org.jsoup.Jsoup
 import org.jsoup.nodes.Element
 
 class XXXTracker : SearchProvider {
-    override val info = SearchProviderInfo(
-        id = "xxxtracker",
-        name = "XXXTracker",
-        url = "https://xxxtor.com",
-        specializedCategory = Category.Porn,
-        safetyStatus = SearchProviderSafetyStatus.Safe,
-        enabledByDefault = false,
-    )
+    override val id = "xxxtracker"
+    override val name = "XXXTracker"
+    override val url = "https://xxxtor.com"
+    override val specializedCategory = Category.Porn
+    override val safetyStatus = SearchProviderSafetyStatus.Safe
+    override val enabledByDefault = false
 
     override suspend fun search(query: String, context: SearchContext): List<Torrent> {
         val requestUrl = buildString {
-            append(info.url)
+            append(url)
             append("/b.php")
             append("?search=$query")
         }
@@ -63,11 +61,11 @@ class XXXTracker : SearchProvider {
         val magnetUri = secondTd.selectFirst("a:nth-child(1)")?.attr("href") ?: return null
         val infoHash = TorrentUtils.getInfoHashFromMagnetUri(magnetUri)
         val fileDownloadLink =
-            secondTd.selectFirst("a:nth-child(2)")?.attr("href")?.let { "${info.url}$it" }
+            secondTd.selectFirst("a:nth-child(2)")?.attr("href")?.let { "$url$it" }
 
         val nameHref = secondTd.selectFirst("a:nth-child(3)") ?: return null
         val name = nameHref.ownText()
-        val descriptionPageUrl = nameHref.attr("href").let { "${info.url}$it" }
+        val descriptionPageUrl = nameHref.attr("href").let { "$url$it" }
 
         val size = tr.selectFirst("td:nth-child(3)")?.ownText() ?: return null
 
@@ -82,9 +80,9 @@ class XXXTracker : SearchProvider {
             seeders = seeders.toUIntOrNull() ?: 0U,
             peers = peers.toUIntOrNull() ?: 0U,
             uploadDate = uploadDate,
-            category = info.specializedCategory,
+            category = specializedCategory,
             descriptionPageUrl = descriptionPageUrl,
-            providerName = info.name,
+            providerName = this.name,
             magnetUri = magnetUri,
             fileDownloadLink = fileDownloadLink,
         )

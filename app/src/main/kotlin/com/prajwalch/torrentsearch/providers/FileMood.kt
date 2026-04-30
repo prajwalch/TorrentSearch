@@ -14,20 +14,18 @@ import org.jsoup.Jsoup
 import org.jsoup.nodes.Element
 
 class FileMood : SearchProvider {
-    override val info = SearchProviderInfo(
-        id = "filemood",
-        name = "FileMood",
-        url = "https://filemood.com",
-        specializedCategory = Category.Other,
-        safetyStatus = SearchProviderSafetyStatus.Safe,
-        enabledByDefault = false,
-    )
+    override val id = "filemood"
+    override val name = "FileMood"
+    override val url = "https://filemood.com"
+    override val specializedCategory = Category.Other
+    override val safetyStatus = SearchProviderSafetyStatus.Safe
+    override val enabledByDefault = false
 
-    private val resultsPageParser = FileMoodResultsPageParser(info.name)
+    private val resultsPageParser = FileMoodResultsPageParser(name)
 
     override suspend fun search(query: String, context: SearchContext): List<Torrent> {
         val requestUrl = buildString {
-            append(info.url)
+            append(url)
             append("/result")
             append("?q=$query")
             append("+in%3Atitle")

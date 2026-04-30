@@ -15,24 +15,22 @@ import org.jsoup.Jsoup
 import org.jsoup.nodes.Element
 
 class Nyaa : SearchProvider {
-    override val info = SearchProviderInfo(
-        id = "nyaasi",
-        name = "Nyaa",
-        url = "https://nyaa.si",
-        specializedCategory = Category.Anime,
-        safetyStatus = SearchProviderSafetyStatus.Safe,
-        enabledByDefault = true,
-    )
+    override val id = "nyaasi"
+    override val name = "Nyaa"
+    override val url = "https://nyaa.si"
+    override val specializedCategory = Category.Anime
+    override val safetyStatus = SearchProviderSafetyStatus.Safe
+    override val enabledByDefault = true
 
     private val resultsPageParser = NyaaResultsPageParser(
-        baseUrl = info.url,
-        providerName = info.name,
-        specializedCategory = info.specializedCategory,
+        baseUrl = url,
+        providerName = name,
+        specializedCategory = specializedCategory,
     )
 
     override suspend fun search(query: String, context: SearchContext): List<Torrent> {
         val requestUrl = buildString {
-            append("${info.url}/")
+            append("$url/")
             // Filter = No filter (0)
             append("?f=0")
             // Category = Anime (1_0)

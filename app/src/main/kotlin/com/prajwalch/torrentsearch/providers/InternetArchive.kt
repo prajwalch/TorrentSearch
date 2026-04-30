@@ -19,23 +19,21 @@ import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.JsonObject
 
 class InternetArchive : SearchProvider {
-    override val info = SearchProviderInfo(
-        id = "internetarchive",
-        name = "InternetArchive",
-        url = "https://archive.org",
-        specializedCategory = Category.All,
-        safetyStatus = SearchProviderSafetyStatus.Safe,
-        enabledByDefault = false,
-    )
+    override val id = "internetarchive"
+    override val name = "InternetArchive"
+    override val url = "https://archive.org"
+    override val specializedCategory = Category.All
+    override val safetyStatus = SearchProviderSafetyStatus.Safe
+    override val enabledByDefault = false
 
     private val resultsJsonParser = IAResultsJsonParser(
-        providerName = info.name,
-        providerUrl = info.url,
+        providerName = name,
+        providerUrl = url,
     )
 
     override suspend fun search(query: String, context: SearchContext): List<Torrent> {
         val requestUrl = buildString {
-            append(info.url)
+            append(url)
             append("/advancedsearch.php")
             append("?q=title:$query")
             appendCategory(category = context.category)

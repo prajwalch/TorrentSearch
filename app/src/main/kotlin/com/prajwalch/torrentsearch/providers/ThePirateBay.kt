@@ -20,18 +20,17 @@ import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonObject
 
 class ThePirateBay : SearchProvider {
-    override val info = SearchProviderInfo(
-        id = "thepiratebay",
-        name = "ThePirateBay",
-        url = "https://thepiratebay.org",
-        specializedCategory = Category.All,
-        safetyStatus = SearchProviderSafetyStatus.Unsafe(reason = R.string.tpb_unsafe_reason),
-        enabledByDefault = false,
-    )
+    override val id = "thepiratebay"
+    override val name = "ThePirateBay"
+    override val url = "https://thepiratebay.org"
+    override val specializedCategory = Category.All
+    override val safetyStatus =
+        SearchProviderSafetyStatus.Unsafe(reason = R.string.tpb_unsafe_reason)
+    override val enabledByDefault = false
 
     private val resultsJsonParser = TBPResultsJsonParser(
-        providerName = info.name,
-        providerUrl = info.url,
+        providerName = name,
+        providerUrl = url,
     )
 
     override suspend fun search(query: String, context: SearchContext): List<Torrent> {

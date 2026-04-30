@@ -15,18 +15,16 @@ import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.JsonObject
 
 class TorrentsCSV : SearchProvider {
-    override val info = SearchProviderInfo(
-        id = "torrentscsv",
-        name = "TorrentsCSV",
-        url = "https://torrents-csv.com",
-        specializedCategory = Category.All,
-        safetyStatus = SearchProviderSafetyStatus.Safe,
-        enabledByDefault = true,
-    )
+    override val id = "torrentscsv"
+    override val name = "TorrentsCSV"
+    override val url = "https://torrents-csv.com"
+    override val specializedCategory = Category.All
+    override val safetyStatus = SearchProviderSafetyStatus.Safe
+    override val enabledByDefault = true
 
     override suspend fun search(query: String, context: SearchContext): List<Torrent> {
         val requestUrl = buildString {
-            append(info.url)
+            append(url)
             append("/service")
             append("/search")
             append("?q=$query")
@@ -81,7 +79,7 @@ class TorrentsCSV : SearchProvider {
             size = size,
             seeders = seeders,
             peers = peers,
-            providerName = info.name,
+            providerName = name,
             uploadDate = uploadDate,
             descriptionPageUrl = "",
         )

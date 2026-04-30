@@ -14,24 +14,22 @@ import org.jsoup.Jsoup
 import org.jsoup.nodes.Element
 
 class MyPornClub : SearchProvider {
-    override val info = SearchProviderInfo(
-        id = "mypornclub",
-        name = "MyPornClub",
-        url = "https://myporn.club",
-        specializedCategory = Category.Porn,
-        safetyStatus = SearchProviderSafetyStatus.Safe,
-        enabledByDefault = false,
-    )
+    override val id = "mypornclub"
+    override val name = "MyPornClub"
+    override val url = "https://myporn.club"
+    override val specializedCategory = Category.Porn
+    override val safetyStatus = SearchProviderSafetyStatus.Safe
+    override val enabledByDefault = false
 
     private val resultsPageParser = MyPornClubResultsPageParser(
-        providerName = info.name,
-        providerSpecializedCategory = info.specializedCategory,
+        providerName = name,
+        providerSpecializedCategory = specializedCategory,
     )
 
     override suspend fun search(query: String, context: SearchContext): List<Torrent> {
         val formattedQuery = query.trim().replace("%20", "-")
         // TODO: Suffix can be used for sorting: /seeders, /latest, /hits, /views
-        val url = "${info.url}/s/$formattedQuery/seeders"
+        val url = "$url/s/$formattedQuery/seeders"
         val responseHtml = context.httpClient.get(url)
 
         return resultsPageParser.parse(html = responseHtml, pageUrl = url)

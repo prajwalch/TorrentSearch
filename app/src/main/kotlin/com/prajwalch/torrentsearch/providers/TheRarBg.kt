@@ -41,20 +41,18 @@ private data class TableRowParsedResult(
 )
 
 class TheRarBg : SearchProvider {
-    override val info = SearchProviderInfo(
-        id = "therarbag",
-        name = "TheRarBg",
-        url = "https://therarbg.com",
-        specializedCategory = Category.All,
-        safetyStatus = SearchProviderSafetyStatus.Unsafe(
-            reason = R.string.therarbg_unsafe_reason,
-        ),
-        enabledByDefault = false,
+    override val id = "therarbag"
+    override val name = "TheRarBg"
+    override val url = "https://therarbg.com"
+    override val specializedCategory = Category.All
+    override val safetyStatus = SearchProviderSafetyStatus.Unsafe(
+        reason = R.string.therarbg_unsafe_reason
     )
+    override val enabledByDefault = false
 
     override suspend fun search(query: String, context: SearchContext): List<Torrent> {
         val requestUrl = buildString {
-            append(info.url)
+            append(url)
             append("/get-posts")
             append("/keywords:$query")
 
@@ -141,7 +139,7 @@ class TheRarBg : SearchProvider {
 
         return TableRowParsedResult(
             name = torrentName,
-            detailsPageUrl = "${info.url}$detailsPath",
+            detailsPageUrl = "$url$detailsPath",
             size = size,
             seeders = seeders,
             peers = peers,
@@ -188,7 +186,7 @@ class TheRarBg : SearchProvider {
             size = parsedResult.size,
             seeders = parsedResult.seeders.toUInt(),
             peers = parsedResult.peers.toUInt(),
-            providerName = info.name,
+            providerName = name,
             uploadDate = parsedResult.uploadDate,
             category = category,
             descriptionPageUrl = parsedResult.detailsPageUrl,
