@@ -1,7 +1,6 @@
 package com.prajwalch.torrentsearch.providers
 
 import com.prajwalch.torrentsearch.domain.model.Category
-import com.prajwalch.torrentsearch.domain.model.MagnetUri
 import com.prajwalch.torrentsearch.domain.model.Torrent
 import com.prajwalch.torrentsearch.domain.model.TorrentDetails
 import com.prajwalch.torrentsearch.network.HttpClient
@@ -87,16 +86,6 @@ class BitSearch : SearchProvider, TorrentDetailsProvider {
     }
 }
 
-private data class TorrentInfo(
-    val torrentName: String,
-    val size: String,
-    val seeders: UInt,
-    val peers: UInt,
-    val category: Category,
-    val uploadDate: String,
-    val descriptionPageUrl: String,
-)
-
 private class BitSearchResultsPageParser(
     private val providerName: String,
 ) {
@@ -104,98 +93,52 @@ private class BitSearchResultsPageParser(
         withContext(Dispatchers.Default) {
             Jsoup
                 .parse(html, pageUrl)
-                .selectFirst("div.space-y-4")
-                ?.children()
-                ?.mapNotNull { parseInfoDiv(it) }
+                .select(LIST_ITEM)
+                .mapNotNull { parseListItem(it) }
         }
 
-    private fun parseInfoDiv(div: Element): Torrent? {
-        val innerDivChildren = div
-            .find { it.hasClass("flex items-start justify-between") }
-            ?.children()
-            ?: return null
-
-        val torrentInfoDiv = innerDivChildren.getOrNull(0) ?: return null
-        val torrentInfo = parseTorrentInfoDiv(div = torrentInfoDiv) ?: return null
-
-        val downloadLinksDiv = innerDivChildren.getOrNull(1) ?: return null
-        val magnetUri = parseMagnetUri(downloadLinksDiv = downloadLinksDiv) ?: return null
+    private fun parseListItem(listItem: Element): Torrent? {
+        val name = listItem.selectFirst(TORRENT_NAME)?.text() ?: return null
+        val magnetUri = listItem.selectFirst(MAGNET_LINK)?.attr("href") ?: return null
+        val size = listItem.selectFirst(SIZE)?.ownText()
+        val seeders = listItem.selectFirst(SEEDERS)?.ownText()
+        val peers = listItem.selectFirst(PEERS)?.ownText()
+        val uploadDate = listItem.selectFirst(UPLOAD_DATE)?.ownText()
+            ?.let(DateUtils::formatMonthDayYear)
+        val category = listItem.selectFirst(CATEGORY)?.ownText()?.let(::categoryFromRawString)
+        val fileDownloadLink = listItem.selectFirst(FILE_DOWNLOAD_LINK)?.attr("abs:href")
+        val detailsPageUrl = listItem.selectFirst(DETAILS_PAGE_URL)?.attr("abs:href")
 
         return Torrent(
             infoHash = TorrentUtils.getInfoHashFromMagnetUri(magnetUri),
-            name = torrentInfo.torrentName,
-            size = torrentInfo.size,
-            seeders = torrentInfo.seeders,
-            peers = torrentInfo.peers,
+            name = name,
+            size = size ?: "0 KB",
+            seeders = seeders?.toUIntOrNull() ?: 0U,
+            peers = peers?.toUIntOrNull() ?: 0U,
             providerName = providerName,
-            uploadDate = torrentInfo.uploadDate,
-            category = torrentInfo.category,
-            descriptionPageUrl = torrentInfo.descriptionPageUrl,
-            magnetUri = magnetUri,
-        )
-    }
-
-
-    private fun parseTorrentInfoDiv(div: Element): TorrentInfo? {
-        // First child contains torrent name and description page URL which
-        // are found inside the same <a> tag.
-        val torrentNameAnchor = div
-            .selectFirst("div:nth-child(1) > h3 > a")
-            ?: return null
-        val torrentName = torrentNameAnchor.ownText()
-        val descriptionPageUrl = torrentNameAnchor.attr("abs:href")
-
-        // Second child contains category, size and upload date respectively
-        // wrapped inside a <span> tag which in-turn contains two tags i.e.
-        // <i> for icon and another <span> for actual text.
-        val categoryAndStatsDiv = div.selectFirst("div:nth-child(2)") ?: return null
-        val category = categoryAndStatsDiv
-            .selectFirst("> span:nth-child(1) > span")
-            ?.ownText()
-            ?.let(::categoryFromRawString)
-            ?: return null
-        val size = categoryAndStatsDiv
-            .selectFirst("> span:nth-child(2) > span")
-            ?.ownText()
-            ?: return null
-        val uploadDate = categoryAndStatsDiv
-            .selectFirst("> span:nth-child(3) > span")
-            ?.ownText()
-            ?.let { DateUtils.formatMonthDayYear(it) }
-            ?: return null
-
-        // Third child contains seeders, leechers and download count (no use for us)
-        // respectively wrapped inside a <span> tag which in-turn contains three tags
-        // i.e. <i> for icon, <span> for actual data text (this is what we need) and
-        // lastly another <span> for labeling like 'seeders'.
-        val seedersAndPeersDiv = div.selectFirst("div:nth-child(3)") ?: return null
-        val seeders = seedersAndPeersDiv
-            .selectFirst("span:nth-child(1) > span")
-            ?.ownText()
-            ?.toUIntOrNull()
-            ?: return null
-        val peers = seedersAndPeersDiv
-            .selectFirst("span:nth-child(2) > span")
-            ?.ownText()
-            ?.toUIntOrNull()
-            ?: return null
-
-        return TorrentInfo(
-            torrentName = torrentName,
-            size = size,
-            seeders = seeders,
-            peers = peers,
+            uploadDate = uploadDate ?: "0 min. ago",
             category = category,
-            uploadDate = uploadDate,
-            descriptionPageUrl = descriptionPageUrl,
+            magnetUri = magnetUri,
+            fileDownloadLink = fileDownloadLink,
+            descriptionPageUrl = detailsPageUrl ?: "",
         )
     }
 
-    private fun parseMagnetUri(downloadLinksDiv: Element): MagnetUri? {
-        return downloadLinksDiv
-            .select("a[href]")
-            .last()
-            ?.attr("href")
+    private companion object {
+        private const val LIST_ITEM = "div.space-y-4 > div > div:nth-child(1)"
+        private const val TORRENT_INFO = "> div:nth-child(1)"
+        private const val DOWNLOAD_LINKS = "> div:nth-child(2)"
+        private const val CATEGORY_AND_METADATA = "$TORRENT_INFO > div:nth-last-child(2)"
+        private const val SWARM_STATS = "$TORRENT_INFO > div:nth-last-child(1)"
+        private const val TORRENT_NAME = "$TORRENT_INFO h3"
+        private const val SIZE = "$CATEGORY_AND_METADATA > span:nth-child(2) > span"
+        private const val SEEDERS = "$SWARM_STATS > span:nth-child(1) > span:nth-child(2)"
+        private const val PEERS = "$SWARM_STATS > span:nth-child(2) > span:nth-child(2)"
+        private const val UPLOAD_DATE = "$CATEGORY_AND_METADATA >span:nth-child(3) > span"
+        private const val CATEGORY = "$CATEGORY_AND_METADATA > span:nth-child(1) > span"
+        private const val MAGNET_LINK = "$DOWNLOAD_LINKS > a:nth-child(2)"
+        private const val FILE_DOWNLOAD_LINK = "$DOWNLOAD_LINKS > a:nth-child(1)"
+        private const val DETAILS_PAGE_URL = "$TORRENT_NAME > a"
     }
 }
 
