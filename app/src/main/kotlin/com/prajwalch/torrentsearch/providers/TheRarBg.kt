@@ -5,39 +5,17 @@ import com.prajwalch.torrentsearch.domain.model.Category
 import com.prajwalch.torrentsearch.domain.model.Torrent
 import com.prajwalch.torrentsearch.domain.model.TorrentDetails
 import com.prajwalch.torrentsearch.network.HttpClient
-import com.prajwalch.torrentsearch.network.HttpClientResponse
 import com.prajwalch.torrentsearch.util.DateUtils
+import com.prajwalch.torrentsearch.util.FileSizeUtils
 import com.prajwalch.torrentsearch.util.TorrentUtils
 
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
-import kotlinx.coroutines.supervisorScope
+import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.withContext
 
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Element
-
-/** Represents an information extracted from the table row. */
-private data class TableRowParsedResult(
-    /** Name of the torrent. */
-    val name: String,
-    /** URL of the page where the info hash is located. */
-    val detailsPageUrl: String,
-    /**
-     * Torrent size.
-     *
-     * The value and the unit should be extracted later.
-     */
-    val size: String,
-    /** Number of seeders. */
-    val seeders: String,
-    /** Number of peers. */
-    val peers: String,
-    /** Torrent upload date. */
-    val uploadDate: String,
-    /** Torrent category. */
-    val category: String,
-)
 
 class TheRarBg : SearchProvider, TorrentDetailsProvider {
     override val id = "therarbag"
@@ -48,6 +26,8 @@ class TheRarBg : SearchProvider, TorrentDetailsProvider {
         reason = R.string.therarbg_unsafe_reason
     )
     override val enabledByDefault = false
+
+    private val resultsPageParser = TheRarBgResultsPageParser(providerName = name)
 
     override suspend fun search(query: String, context: SearchContext): List<Torrent> {
         val requestUrl = buildString {
@@ -60,18 +40,9 @@ class TheRarBg : SearchProvider, TorrentDetailsProvider {
                 append(":category:$category")
             }
         }
-
         val resultPageHtml = context.httpClient.get(requestUrl)
-        val parsedRows = withContext(Dispatchers.Default) {
-            parseResultPage(html = resultPageHtml)
-        }
 
-        return parsedRows?.let {
-            processParsedRows(
-                parsedRows = it,
-                httpClient = context.httpClient
-            )
-        }.orEmpty()
+        return resultsPageParser.parse(html = resultPageHtml, pageUrl = requestUrl)
     }
 
     override suspend fun getDetails(detailsPageUrl: String): TorrentDetails? {
@@ -92,123 +63,61 @@ class TheRarBg : SearchProvider, TorrentDetailsProvider {
         Category.Series -> "Tv"
         Category.Other -> "Other"
     }
+}
 
-    /** Parses the HTML and returns all the parsed rows where the data is present. */
-    private fun parseResultPage(html: String): List<TableRowParsedResult>? {
-        return Jsoup
-            // Results are presented in a <table>, which is the only one present
-            // in a entire document.
-            .parse(html)
-            // For some time saving, we can directly grab the table body, where the
-            // results are listed.
-            .selectFirst("table > tbody")
-            // Grab all the children i.e. <tr>.
-            ?.children()
-            // Parse it and extract all the available but required data from it.
-            ?.mapNotNull { tr -> parseTableRow(tr = tr) }
-    }
+private class TheRarBgResultsPageParser(private val providerName: String) {
+    suspend fun parse(html: String, pageUrl: String): List<Torrent> =
+        withContext(Dispatchers.Default) {
+            Jsoup
+                .parse(html, pageUrl)
+                .select(LIST_ITEM)
+                .map { async { parseListItem(it) } }
+                .awaitAll()
+                .filterNotNull()
+        }
 
-    /** Parses and extracts the necessary information from the table row. */
-    private fun parseTableRow(tr: Element): TableRowParsedResult? {
-        assert(tr.hasClass("list-entry"))
-
-        val nameAnchorElement = tr
-            .selectFirst("td:nth-child(2)")
-            ?.selectFirst("a")
+    suspend fun parseListItem(listItem: Element): Torrent? {
+        val detailsPageUrl = listItem.selectFirst(DETAILS_PAGE_URL)?.attr("abs:href")
             ?: return null
-        val detailsPath = nameAnchorElement.attr("href")
-        val torrentName = nameAnchorElement.ownText()
+        println(detailsPageUrl)
+        val detailsPageHtml = HttpClient.get(detailsPageUrl)
+        val torrentDetails = TheRarBgDetailsPageParser.parse(detailsPageHtml) ?: return null
+        val infoHash = TorrentUtils.getInfoHashFromMagnetUri(torrentDetails.magnetUri)
 
-        val category = tr
-            .selectFirst("td:nth-child(3)")
-            ?.selectFirst("a")
-            ?.ownText()
-            ?: return null
-        val uploadDate = tr.selectFirst("td:nth-child(4)")
-            ?.selectFirst("div")
-            ?.ownText()
-            ?.let { DateUtils.formatYearMonthDay(it) }
-            ?: return null
-        val size = tr.selectFirst("td:nth-child(6)")?.ownText() ?: return null
-        val seeders = tr.selectFirst("td:nth-child(7)")?.ownText() ?: return null
-        val peers = tr.selectFirst("td:nth-child(8)")?.ownText() ?: return null
-
-        return TableRowParsedResult(
-            name = torrentName,
-            detailsPageUrl = "$url$detailsPath",
-            size = size,
-            seeders = seeders,
-            peers = peers,
-            uploadDate = uploadDate,
-            category = category,
-        )
-    }
-
-    /**
-     * Further processes the parsed table rows and returns the list of final
-     * [Torrent] if process completes successfully.
-     */
-    private suspend fun processParsedRows(
-        parsedRows: List<TableRowParsedResult>,
-        httpClient: HttpClient,
-    ): List<Torrent> = supervisorScope {
-        parsedRows
-            .map { async { processParsedRow(parsedResult = it, httpClient = httpClient) } }
-            .map { httpClient.withExceptionHandler { it.await() } }
-            .mapNotNull { it as? HttpClientResponse.Ok }
-            .mapNotNull { it.result }
-    }
-
-    /**
-     * Further processes the parsed table row and returns the fully constructed
-     * [Torrent] if process completes successfully.
-     */
-    private suspend fun processParsedRow(
-        parsedResult: TableRowParsedResult,
-        httpClient: HttpClient,
-    ): Torrent? {
-        // 1. Get the info hash from the details page.
-        val (magnetUri, fileDownloadLink) = extractMagnetUriAndFileDownloadLink(
-            httpClient = httpClient,
-            detailsPageUrl = parsedResult.detailsPageUrl,
-        ) ?: return null
-        val infoHash = TorrentUtils.getInfoHashFromMagnetUri(magnetUri)
-
-        val category = categoryFromRawString(parsedResult.category)
+        val name = listItem.selectFirst(NAME)?.ownText() ?: return null
+        val size = listItem.selectFirst(SIZE)?.attr("data-order")?.let(FileSizeUtils::formatBytes)
+        val seeders = listItem.selectFirst(SEEDERS)?.ownText()?.toUIntOrNull()
+        val peers = listItem.selectFirst(PEERS)?.ownText()?.toUIntOrNull()
+        val uploadDate = listItem.selectFirst(UPLOAD_DATE)?.attr("data-order")
+            ?.toLongOrNull()
+            ?.let(DateUtils::formatEpochSecond)
+        val category = listItem.selectFirst(CATEGORY)?.ownText()?.let(::categoryFromRawString)
 
         return Torrent(
             infoHash = infoHash,
-            name = parsedResult.name,
-            size = parsedResult.size,
-            seeders = parsedResult.seeders.toUInt(),
-            peers = parsedResult.peers.toUInt(),
-            providerName = name,
-            uploadDate = parsedResult.uploadDate,
+            name = name,
+            size = size ?: "0 KB",
+            seeders = seeders ?: 0U,
+            peers = peers ?: 0U,
+            providerName = providerName,
+            uploadDate = uploadDate ?: "0 min ago",
             category = category,
-            descriptionPageUrl = parsedResult.detailsPageUrl,
-            magnetUri = magnetUri,
-            fileDownloadLink = fileDownloadLink,
+            magnetUri = torrentDetails.magnetUri,
+            fileDownloadLink = torrentDetails.fileDownloadLink,
+            descriptionPageUrl = detailsPageUrl,
         )
     }
 
-    /** Extracts and returns the info hash from the details page, if exists. */
-    private suspend fun extractMagnetUriAndFileDownloadLink(
-        httpClient: HttpClient,
-        detailsPageUrl: String,
-    ): Pair<String, String?>? {
-        val detailsPageHtml = httpClient.get(url = detailsPageUrl)
-
-        return withContext(Dispatchers.Default) {
-            val html = Jsoup.parse(detailsPageHtml)
-
-            val magnetUri = html.selectFirst("a.magnet-btn")?.attr("href")
-                ?: return@withContext null
-            val fileDownloadLink = html.selectFirst("a.torrent-btn")?.attr("href")
-
-            Pair(magnetUri, fileDownloadLink)
-        }
+    private companion object {
+        private const val LIST_ITEM = "table > tbody > tr.list-entry"
+        private const val NAME = "td.cellName > div > a"
+        private const val SIZE = "td.sizeCell"
+        private const val SEEDERS = "td:nth-child(7)"
+        private const val PEERS = "td:nth-child(8)"
+        private const val UPLOAD_DATE = "td:nth-child(4)"
+        private const val CATEGORY = "td:nth-child(3) > a"
+        private const val DETAILS_PAGE_URL = NAME
     }
-
 }
 
 private object TheRarBgDetailsPageParser {
