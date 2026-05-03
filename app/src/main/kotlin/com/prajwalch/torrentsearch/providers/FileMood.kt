@@ -44,39 +44,42 @@ private class FileMoodResultsPageParser(private val providerName: String) {
         withContext(Dispatchers.Default) {
             Jsoup
                 .parse(html, pageUrl)
-                .select("table > tbody > tr:has(a.btn-success)")
-                .mapNotNull { parseTableRow(it) }
+                .select(LIST_ITEM)
+                .mapNotNull(::parseListItem)
         }
 
-    private fun parseTableRow(tr: Element): Torrent? {
-        val torrentName = tr.selectFirst("td.dn-title")?.text() ?: return null
-        val size = tr.selectFirst("td.dn-size")?.text() ?: return null
-        val (seeders, peers) = tr.selectFirst("td.dn-status")
-            ?.text()
+    private fun parseListItem(listItem: Element): Torrent? {
+        val torrentName = listItem.selectFirst(NAME)?.text() ?: return null
+        val size = listItem.selectFirst(SIZE)?.text()
+        val (seeders, peers) = listItem.selectFirst(SEEDERS_PEERS)?.text()
             ?.split('/')
-            ?: return null
-        val uploadDate = "0m ago"
-        // #result-main-center > div > div > table:nth-child(2) > tbody > tr:nth-child(1) > td.dn-btn > div > a
-        val descriptionPageUrl = tr.selectFirst("td.dn-btn > div > a")
-            ?.attr("abs:href")
-            ?: return null
+            ?: listOf(null, null)
+        val descriptionPageUrl = listItem.selectFirst(DETAILS_PAGE_URL)?.attr("abs:href")
         val infoHash = descriptionPageUrl
-            .removeSuffix(".html")
-            .takeLastWhile { it != '-' }
-            .lowercase()
-            .trim()
+            ?.removeSuffix(".html")
+            ?.takeLastWhile { it != '-' }
+            ?.lowercase()
+            ?.trim()
 
         return Torrent(
-            infoHash = infoHash,
+            infoHash = infoHash ?: return null,
             name = torrentName,
-            size = size,
-            seeders = seeders.toUIntOrNull() ?: 0U,
-            peers = peers.toUIntOrNull() ?: 0U,
-            uploadDate = uploadDate,
-            category = null,
+            size = size ?: "0 KB",
+            seeders = seeders?.toUIntOrNull() ?: 0U,
+            peers = peers?.toUIntOrNull() ?: 0U,
+            uploadDate = "0 min ago",
+            category = Category.Other,
             providerName = providerName,
             descriptionPageUrl = descriptionPageUrl,
         )
+    }
+
+    private companion object {
+        private const val LIST_ITEM = "table > tbody > tr:has(a.btn-success)"
+        private const val NAME = "> td.dn-title"
+        private const val SIZE = "td.dn-size"
+        private const val SEEDERS_PEERS = "td.dn-status"
+        private const val DETAILS_PAGE_URL = "td.dn-btn > div > a"
     }
 }
 
