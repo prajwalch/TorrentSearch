@@ -7,6 +7,8 @@ import com.prajwalch.torrentsearch.network.HttpClient
 import com.prajwalch.torrentsearch.util.TorrentUtils
 
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.withContext
 
 import org.jsoup.Jsoup
@@ -48,65 +50,53 @@ private class MyPornClubResultsPageParser(
         withContext(Dispatchers.Default) {
             Jsoup
                 .parse(html, pageUrl)
-                .select("div.torrents_list > div.torrent_element")
-                .mapNotNull { parseRow(it) }
+                .select(LIST_ITEM)
+                .map { async { parseListItem(it) } }
+                .awaitAll()
+                .filterNotNull()
         }
 
 
     /** Parses a single search result row into a [Torrent] object. */
-    private suspend fun parseRow(row: Element): Torrent? {
-        val anchor = row.selectFirst("div.torrent_element_text_div > a:nth-child(2)") ?: return null
-        val name = anchor.text().trim()
-        val descriptionPageUrl = anchor.attr("abs:href")
-
-        val (magnetUri, fileDownloadLink) = extractMagnetUriAndFileDownloadLink(descriptionPageUrl)
+    private suspend fun parseListItem(listItem: Element): Torrent? {
+        val detailsPageUrl = listItem.selectFirst(DETAILS_PAGE_URL)?.attr("abs:href")
             ?: return null
-        val infoHash = TorrentUtils.getInfoHashFromMagnetUri(magnetUri)
+        val detailsPageHtml = HttpClient.get(detailsPageUrl)
+        val torrentDetails = MyPornClubDetailsPageParser.parse(
+            html = detailsPageHtml,
+            pageUrl = detailsPageUrl,
+        ) ?: return null
 
-        val size = row.select("div.torrent_element_info span").getOrNull(3)?.text().orEmpty()
-        val seeders = row
-            .select("div.torrent_element_info span")
-            .getOrNull(9)
-            ?.text()
-            ?.toUIntOrNull()
-            ?: 0u
-        val peers = row
-            .select("div.torrent_element_info span")
-            .getOrNull(11)
-            ?.text()
-            ?.toUIntOrNull()
-            ?: 0u
-
-        val uploadDate = row.select("div.torrent_element_info span").getOrNull(1)?.text().orEmpty()
+        val name = listItem.selectFirst(NAME)?.ownText() ?: return null
+        val size = listItem.selectFirst(SIZE)?.ownText()
+        val seeders = listItem.selectFirst(SEEDERS)?.ownText()?.toUIntOrNull()
+        val peers = listItem.selectFirst(PEERS)?.ownText()?.toUIntOrNull()
+        val uploadDate = listItem.selectFirst(UPLOAD_DATE)?.text()
 
         return Torrent(
-            infoHash = infoHash,
+            infoHash = torrentDetails.infoHash,
             name = name,
-            size = size,
-            seeders = seeders,
-            peers = peers,
+            size = size ?: "0 KB",
+            seeders = seeders ?: 0U,
+            peers = peers ?: 0U,
             providerName = providerName,
-            uploadDate = uploadDate,
+            uploadDate = uploadDate ?: "0 min ago",
             category = providerSpecializedCategory,
-            descriptionPageUrl = descriptionPageUrl,
-            magnetUri = magnetUri,
-            fileDownloadLink = fileDownloadLink,
+            descriptionPageUrl = detailsPageUrl,
+            magnetUri = torrentDetails.magnetUri,
+            fileDownloadLink = torrentDetails.fileDownloadLink,
         )
     }
 
-
-    /** Extracts magnet URI and file download link from the description page. */
-    private suspend fun extractMagnetUriAndFileDownloadLink(
-        descriptionPageUrl: String,
-    ): Pair<String, String?>? {
-        val html = HttpClient.get(descriptionPageUrl)
-        val linksDiv = Jsoup.parse(html, descriptionPageUrl)
-            .selectFirst("div.torrent_download_div")
-            ?: return null
-        val fileDownloadLink = linksDiv.selectFirst("a.td_btn")?.attr("abs:href")
-        val magnetLink = linksDiv.selectFirst("a.md_btn")?.attr("href") ?: return null
-
-        return Pair(magnetLink, fileDownloadLink)
+    private companion object {
+        private const val LIST_ITEM = "div.torrents_list > div.torrent_element"
+        private const val NAME =
+            "div.torrent_element_text_div > a:nth-child(2) > span.torrent_element_text_span"
+        private const val SIZE = "div.torrent_element_info > span.teiv:nth-child(4)"
+        private const val SEEDERS = "div.torrent_element_info > span.teiv.teiv_seeders"
+        private const val PEERS = "div.torrent_element_info > span.teiv.teiv_leechers"
+        private const val UPLOAD_DATE = "div.torrent_element_info > span.teiv:nth-child(2)"
+        private const val DETAILS_PAGE_URL = "div.torrent_element_text_div > a:nth-child(2)"
     }
 }
 
