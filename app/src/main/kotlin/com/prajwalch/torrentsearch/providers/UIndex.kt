@@ -45,9 +45,9 @@ class UIndex : SearchProvider, TorrentDetailsProvider {
             append("?search=$query")
             append("&c=${categoryMap[context.category]}")
         }
-
         val responseHtml = context.httpClient.get(url = requestUrl)
-        return resultsPageParser.parse(responseHtml).orEmpty()
+
+        return resultsPageParser.parse(html = responseHtml, pageUrl = requestUrl).orEmpty()
     }
 
     override suspend fun getDetails(detailsPageUrl: String): TorrentDetails? {
@@ -60,58 +60,48 @@ private class UIndexResultsPageParser(
     private val providerName: String,
     private val baseUrl: String,
 ) {
-    suspend fun parse(responseHtml: String): List<Torrent>? = withContext(Dispatchers.Default) {
-        Jsoup
-            .parse(responseHtml)
-            .selectFirst("table.sr-table > tbody")
-            ?.children()
-            ?.mapNotNull { parseTableRow(tr = it) }
-    }
+    suspend fun parse(html: String, pageUrl: String): List<Torrent>? =
+        withContext(Dispatchers.Default) {
+            Jsoup
+                .parse(html, pageUrl)
+                .select(LIST_ITEM)
+                .mapNotNull { parseListItem(listItem = it) }
+        }
 
-    private fun parseTableRow(tr: Element): Torrent? {
-        val categoryString = tr
-            .selectFirst("td.sr-col-cat")
-            ?.selectFirst("a")
-            ?.ownText()
-            ?: return null
-        val category = categoryFromRawString(raw = categoryString)
-
-        // It contains magnet link and torrent name.
-        val secondTd = tr.selectFirst("td.sr-col-name") ?: return null
-        val magnetUri = secondTd.selectFirst("a.sr-magnet")?.attr("href") ?: return null
-        val infoHash = TorrentUtils.getInfoHashFromMagnetUri(magnetUri)
-        // Anchor which contains a name and description page URL.
-        val nameHref = secondTd.selectFirst("a.sr-torrent-link") ?: return null
-        val torrentName = nameHref.text()
-        val descriptionPageUrl = baseUrl + nameHref.attr("href")
-
-        val size = tr.selectFirst("td.sr-col-size")?.ownText() ?: return null
-        val uploadDate = tr.selectFirst("td.sr-col-uploaded")?.ownText() ?: return null
-        val seeders = tr
-            .selectFirst("td.sr-col-seeders")
-            ?.selectFirst("span")
-            ?.ownText()
-            ?.filter { it != ',' }
-            ?: return null
-        val peers = tr
-            .selectFirst("td.sr-col-leechers")
-            ?.selectFirst("span")
-            ?.ownText()
-            ?.filter { it != ',' }
-            ?: return null
+    private fun parseListItem(listItem: Element): Torrent? {
+        val name = listItem.selectFirst(NAME)?.text() ?: return null
+        val magnetUri = listItem.selectFirst(MAGNET_URI)?.attr("href") ?: return null
+        val size = listItem.selectFirst(SIZE)?.ownText()
+        val seeders = listItem.selectFirst(SEEDERS)?.ownText()?.filter { it != ',' }?.toUIntOrNull()
+        val peers = listItem.selectFirst(PEERS)?.ownText()?.filter { it != ',' }?.toUIntOrNull()
+        val uploadDate = listItem.selectFirst(UPLOAD_DATE)?.ownText()
+        val category = listItem.selectFirst(CATEGORY)?.ownText()?.let(::categoryFromRawString)
+        val detailsPageUrl = listItem.selectFirst(DETAILS_PAGE_URL)?.attr("abs:href")
 
         return Torrent(
-            infoHash = infoHash,
-            name = torrentName,
-            size = size,
-            seeders = seeders.toUIntOrNull() ?: 0u,
-            peers = peers.toUIntOrNull() ?: 0u,
+            infoHash = TorrentUtils.getInfoHashFromMagnetUri(magnetUri),
+            name = name,
+            size = size ?: "0 KB",
+            seeders = seeders ?: 0u,
+            peers = peers ?: 0u,
             providerName = providerName,
-            uploadDate = uploadDate,
+            uploadDate = uploadDate ?: "0 min ago",
             category = category,
-            descriptionPageUrl = descriptionPageUrl,
+            descriptionPageUrl = detailsPageUrl ?: "",
             magnetUri = magnetUri,
         )
+    }
+
+    private companion object {
+        private const val LIST_ITEM = "table.sr-table > tbody > tr"
+        private const val NAME = "td.sr-col-name > a.sr-torrent-link"
+        private const val SIZE = "td.sr-col-size"
+        private const val SEEDERS = "td.sr-col-seeders > span.sr-seed"
+        private const val PEERS = "td.sr-col-leechers > span.sr-leech"
+        private const val UPLOAD_DATE = "td.sr-col-uploaded"
+        private const val CATEGORY = "td.sr-col-cat > a.sr-cat-badge"
+        private const val MAGNET_URI = "td.sr-col-name > a.sr-magnet"
+        private const val DETAILS_PAGE_URL = NAME
     }
 }
 
