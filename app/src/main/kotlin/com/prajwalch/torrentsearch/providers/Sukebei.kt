@@ -37,7 +37,7 @@ class Sukebei : SearchProvider, TorrentDetailsProvider {
         }
 
         val responseHtml = context.httpClient.get(url = requestUrl)
-        return resultsPageParser.parse(html = responseHtml, pageUrl = requestUrl).orEmpty()
+        return resultsPageParser.parse(html = responseHtml, pageUrl = requestUrl)
     }
 
     override suspend fun getDetails(detailsPageUrl: String): TorrentDetails? {
@@ -50,50 +50,52 @@ private class SukebeiResultsPageParser(
     private val providerName: String,
     private val providerSpecializedCategory: Category,
 ) {
-    suspend fun parse(html: String, pageUrl: String): List<Torrent>? =
+    suspend fun parse(html: String, pageUrl: String): List<Torrent> =
         withContext(Dispatchers.Default) {
             Jsoup
                 .parse(html, pageUrl)
-                .selectFirst("table.torrent-list > tbody")
-                ?.children()
-                ?.mapNotNull { tr -> parseTableRow(tr = tr) }
+                .select(LIST_ITEM)
+                .mapNotNull(::parseListItem)
         }
 
-    private fun parseTableRow(tr: Element): Torrent? {
-        val nameAnchorElem = tr.selectFirst("td:nth-child(2)")?.selectFirst("a") ?: return null
-
-        val torrentName = nameAnchorElem.ownText()
-        val descriptionPageUrl = nameAnchorElem.attr("abs:href")
-
-        val downloadLinks = tr.selectFirst("td:nth-child(3)") ?: return null
-        val fileDownloadLink = downloadLinks.selectFirst("a:nth-child(1)")?.attr("abs:href")
-        val magnetUri = downloadLinks
-            .selectFirst("a:nth-child(2)")
-            ?.attr("href")
-            ?: return null
+    private fun parseListItem(listItem: Element): Torrent? {
+        val torrentName = listItem.selectFirst(NAME)?.ownText() ?: return null
+        val magnetUri = listItem.selectFirst(MAGNET_URI)?.attr("href") ?: return null
+        val fileDownloadLink = listItem.selectFirst(FILE_DOWNLOAD_LINK)?.attr("abs:href")
         val infoHash = TorrentUtils.getInfoHashFromMagnetUri(magnetUri)
-        val size = tr.selectFirst("td:nth-child(4)")?.ownText() ?: return null
-        val uploadDate = tr
-            .selectFirst("td:nth-child(5)")
-            ?.attr("data-timestamp")
-            ?.let { DateUtils.formatEpochSecond(it.toLong()) }
-            ?: return null
-        val seeders = tr.selectFirst("td:nth-child(6)")?.ownText() ?: return null
-        val peers = tr.selectFirst("td:nth-child(7)")?.ownText() ?: return null
+        val size = listItem.selectFirst(SIZE)?.ownText()
+        val uploadDate = listItem.selectFirst(UPLOAD_DATE)?.attr("data-timestamp")
+            ?.toLongOrNull()
+            ?.let(DateUtils::formatEpochSecond)
+        val seeders = listItem.selectFirst(SEEDERS)?.ownText()?.toUIntOrNull()
+        val peers = listItem.selectFirst(PEERS)?.ownText()?.toUIntOrNull()
+        val detailsPageUrl = listItem.selectFirst(DETAILS_PAGE_URL)?.attr("abs:href")
 
         return Torrent(
             infoHash = infoHash,
             name = torrentName,
-            size = size,
-            seeders = seeders.toUIntOrNull() ?: 0u,
-            peers = peers.toUIntOrNull() ?: 0u,
+            size = size ?: "0 KB",
+            seeders = seeders ?: 0u,
+            peers = peers ?: 0u,
             providerName = providerName,
-            uploadDate = uploadDate,
+            uploadDate = uploadDate ?: "0 min ago",
             category = providerSpecializedCategory,
-            descriptionPageUrl = descriptionPageUrl,
+            descriptionPageUrl = detailsPageUrl ?: "",
             magnetUri = magnetUri,
             fileDownloadLink = fileDownloadLink,
         )
+    }
+
+    private companion object {
+        private const val LIST_ITEM = "table.torrent-list > tbody > tr"
+        private const val NAME = "td:nth-child(2) > a:not(.comments)"
+        private const val SIZE = "td:nth-child(4)"
+        private const val SEEDERS = "td:nth-child(6)"
+        private const val PEERS = "td:nth-child(7)"
+        private const val UPLOAD_DATE = "td:nth-child(5)"
+        private const val MAGNET_URI = "td:nth-child(3) > a:nth-child(2)"
+        private const val FILE_DOWNLOAD_LINK = "td:nth-child(3) > a:nth-child(1)"
+        private const val DETAILS_PAGE_URL = NAME
     }
 }
 
