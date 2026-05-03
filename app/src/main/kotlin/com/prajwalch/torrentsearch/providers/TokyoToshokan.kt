@@ -56,74 +56,56 @@ private class TokyoToshokanResultsPageParser(
         withContext(Dispatchers.Default) {
             Jsoup
                 .parse(html, pageUrl)
-                .selectFirst("table.listing > tbody")
-                ?.children()
-                ?.drop(1)
-                ?.zipWithNext()
-                ?.mapNotNull { (tr1, tr2) -> parseTableRow(tr1, tr2) }
+                .select(LIST_ITEM)
+                .zipWithNext()
+                .mapNotNull { (tr1, tr2) -> parseListItem(tr1, tr2) }
         }
 
-    private fun parseTableRow(tr1: Element, tr2: Element): Torrent? {
-        // First tr's td contains magnet URI, torrent name and description page URL.
-        //
-        // Magnet URI and torrent name.
-        val tr1SecondTd = tr1.selectFirst("td:nth-child(2)") ?: return null
-        val magnetUri = tr1SecondTd
-            .selectFirst("a:nth-child(1)")
-            ?.attr("href")
-            ?: return null
-        val infoHash = TorrentUtils.getInfoHashFromMagnetUri(magnetUri)
+    private fun parseListItem(tr1: Element, tr2: Element): Torrent? {
+        val torrentName = tr1.selectFirst(NAME)?.ownText() ?: return null
+        val magnetUri = tr1.selectFirst(MAGNET_URI)?.attr("href") ?: return null
+        val fileDownloadLink = tr1.selectFirst(FILE_DOWNLOAD_LINK)?.attr("abs:href")
+        val detailsPageUrl = tr1.selectFirst(DETAILS_PAGE_URL)?.attr("abs:href")
 
-        val nameAnchor = tr1SecondTd.selectFirst("a:nth-child(2)") ?: return null
-        val torrentName = nameAnchor.text().replace(oldValue = " ", newValue = "")
-        val fileDownloadLink = if (nameAnchor.attr("type") == "application/x-bittorrent") {
-            nameAnchor.attr("href")
-        } else {
-            null
-        }
-
-        val descriptionPageUrl = tr1
-            .selectFirst("td:nth-child(3)")
-            ?.select("a")
-            ?.last()
-            ?.attr("abs:href")
-            ?: return null
-
-        // Second tr contains size, upload date, seeders and peers.
-        //
-        // Size and upload date.
-        val tr2FirstTd = tr2.selectFirst("td:nth-child(1)") ?: return null
-        val (sizeWithPrefix, uploadDateWithPrefix) = tr2FirstTd
-            .ownText()
-            .split('|')
-            .drop(1)
-            .map { it.trim() }
-
-        val size = sizeWithPrefix.removePrefix("Size: ").let(FileSizeUtils::normalizeSize)
-        val uploadDate = uploadDateWithPrefix
-            .removePrefix("Date: ")
-            .split(' ')
-            .first()
-            .let { DateUtils.formatYearMonthDay(it) }
+        val (rawSize, rawUploadDate) = tr2.selectFirst(SIZE_AND_UPLOAD_DATE)
+            ?.ownText()
+            ?.split('|')
+            ?.drop(1)
+            ?.map { it.trim().dropWhile { ch -> !ch.isWhitespace() }.trim() }
+            ?: listOf(null, null)
+        val size = rawSize?.let(FileSizeUtils::normalizeSize)
+        val uploadDate = rawUploadDate
+            ?.takeWhile { !it.isWhitespace() }
+            ?.let(DateUtils::formatYearMonthDay)
 
         // Seeders and peers.
-        val tr2SecondTd = tr2.selectFirst("td:nth-child(2)") ?: return null
-        val seeders = tr2SecondTd.selectFirst("span:nth-child(1)")?.ownText() ?: return null
-        val peers = tr2SecondTd.selectFirst("span:nth-child(2)")?.ownText() ?: return null
+        val seeders = tr2.selectFirst(SEEDERS)?.ownText()?.toUIntOrNull()
+        val peers = tr2.selectFirst(PEERS)?.ownText()?.toUIntOrNull()
 
         return Torrent(
-            infoHash = infoHash,
+            infoHash = TorrentUtils.getInfoHashFromMagnetUri(magnetUri),
             name = torrentName,
-            size = size,
-            seeders = seeders.toUIntOrNull() ?: 0u,
-            peers = peers.toUIntOrNull() ?: 0u,
+            size = size ?: "0 KB",
+            seeders = seeders ?: 0u,
+            peers = peers ?: 0u,
             providerName = providerName,
-            uploadDate = uploadDate,
+            uploadDate = uploadDate ?: "0 min ago",
             category = providerSpecializedCategory,
-            descriptionPageUrl = descriptionPageUrl,
+            descriptionPageUrl = detailsPageUrl ?: "",
             magnetUri = magnetUri,
             fileDownloadLink = fileDownloadLink,
         )
+    }
+
+    private companion object {
+        private const val LIST_ITEM = "table.listing > tbody > tr:nth-child(n+2)"
+        private const val NAME = "td.desc-top > a:nth-child(2)"
+        private const val SIZE_AND_UPLOAD_DATE = "td.desc-bot"
+        private const val SEEDERS = "td.stats > span:nth-child(1)"
+        private const val PEERS = "td.stats > span:nth-child(2)"
+        private const val MAGNET_URI = "td.desc-top > a:nth-child(1)"
+        private const val FILE_DOWNLOAD_LINK = NAME
+        private const val DETAILS_PAGE_URL = "td.web > a:last-child"
     }
 }
 
