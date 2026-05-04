@@ -7,6 +7,8 @@ import com.prajwalch.torrentsearch.network.HttpClient
 import com.prajwalch.torrentsearch.util.TorrentUtils
 
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.withContext
 
 import org.jsoup.Jsoup
@@ -20,66 +22,59 @@ class XXXClub : SearchProvider, TorrentDetailsProvider {
     override val safetyStatus = SearchProviderSafetyStatus.Safe
     override val enabledByDefault = false
 
+    private val resultsPageParser = XXXClubResultsPageParser(providerName = name)
+
     override suspend fun search(query: String, context: SearchContext): List<Torrent> {
         val requestUrl = "${url}/torrents/search/all/$query"
-
         val responseHtml = context.httpClient.get(url = requestUrl)
-        val torrents = withContext(Dispatchers.Default) {
-            parseHtml(html = responseHtml, httpClient = context.httpClient)
-        }
 
-        return torrents.orEmpty()
+        return resultsPageParser.parse(html = responseHtml, pageUrl = requestUrl)
     }
 
     override suspend fun getDetails(detailsPageUrl: String): TorrentDetails? {
         val responseHtml = HttpClient.get(detailsPageUrl)
         return XXXClubDetailsPageParser.parse(responseHtml, detailsPageUrl)
     }
+}
 
-    private suspend fun parseHtml(html: String, httpClient: HttpClient): List<Torrent>? {
-        return Jsoup
-            .parse(html)
-            .selectFirst("ul.tsearch")
-            ?.children()
-            ?.drop(1)
-            ?.mapNotNull { li -> parseLi(li = li, httpClient = httpClient) }
-    }
+private class XXXClubResultsPageParser(private val providerName: String) {
+    suspend fun parse(html: String, pageUrl: String): List<Torrent> =
+        withContext(Dispatchers.Default) {
+            Jsoup
+                .parse(html, pageUrl)
+                .select(LIST_ITEM)
+                .map { async { parseListItem(it) } }
+                .awaitAll()
+                .filterNotNull()
+        }
 
-    private suspend fun parseLi(li: Element, httpClient: HttpClient): Torrent? {
-        val torrentNameAnchor = li
-            .selectFirst("span:nth-child(2) > a:nth-child(2)") ?: return null
+    private suspend fun parseListItem(listItem: Element): Torrent? {
+        val detailsPageUrl = listItem.selectFirst(DETAILS_PAGE_URL)?.attr("abs:href")
+            ?: return null
+        val detailsPageHtml = HttpClient.get(detailsPageUrl)
+        val torrentDetails = XXXClubDetailsPageParser.parse(
+            html = detailsPageHtml,
+            pageUrl = detailsPageUrl,
+        ) ?: return null
 
-        val torrentName = torrentNameAnchor.text()
-        val descriptionPageUrl = url + torrentNameAnchor.attr("href")
-
-        // 05 Aug 2025 07:23:05
-        val uploadDateRaw = li.selectFirst("span.adde")?.ownText() ?: return null
-        val uploadDate = parseUploadDate(raw = uploadDateRaw)
-
-        val size = li.selectFirst("span.siz")?.ownText() ?: return null
-        val seeders = li.selectFirst("span.see")?.ownText() ?: return null
-        val peers = li.selectFirst("span.lee")?.ownText() ?: return null
-
-        val (magnetUri, fileDownloadLink) = withContext(Dispatchers.IO) {
-            extractMagnetUriAndFileDownloadLink(
-                httpClient = httpClient,
-                descriptionPageUrl = descriptionPageUrl,
-            )
-        } ?: return null
-        val infoHash = TorrentUtils.getInfoHashFromMagnetUri(magnetUri)
+        val name = listItem.selectFirst(NAME)?.text() ?: return null
+        val size = listItem.selectFirst(SIZE)?.ownText()
+        val seeders = listItem.selectFirst(SEEDERS)?.ownText()?.toUIntOrNull()
+        val peers = listItem.selectFirst(PEERS)?.ownText()?.toUIntOrNull()
+        val uploadDate = listItem.selectFirst(UPLOAD_DATE)?.ownText()?.let(::parseUploadDate)
 
         return Torrent(
-            infoHash = infoHash,
-            name = torrentName,
-            size = size,
-            seeders = seeders.toUIntOrNull() ?: 0u,
-            peers = peers.toUIntOrNull() ?: 0u,
-            providerName = name,
-            uploadDate = uploadDate,
-            category = specializedCategory,
-            descriptionPageUrl = descriptionPageUrl,
-            magnetUri = magnetUri,
-            fileDownloadLink = fileDownloadLink,
+            infoHash = torrentDetails.infoHash,
+            name = name,
+            size = size ?: "0 KB",
+            seeders = seeders ?: 0u,
+            peers = peers ?: 0u,
+            providerName = providerName,
+            uploadDate = uploadDate ?: "0 min ago",
+            category = Category.Porn,
+            descriptionPageUrl = detailsPageUrl,
+            magnetUri = torrentDetails.magnetUri,
+            fileDownloadLink = torrentDetails.fileDownloadLink,
         )
     }
 
@@ -92,22 +87,14 @@ class XXXClub : SearchProvider, TorrentDetailsProvider {
         return raw.substring(0..lastSpaceIndex).trim()
     }
 
-    private suspend fun extractMagnetUriAndFileDownloadLink(
-        httpClient: HttpClient,
-        descriptionPageUrl: String,
-    ): Pair<String, String?>? {
-        val responseHtml = httpClient.get(url = descriptionPageUrl)
-
-        return withContext(Dispatchers.Default) {
-            val html = Jsoup.parse(responseHtml)
-
-            val magnetUri = html.selectFirst("""a[href^="magnet:"]""")?.attr("href")
-                ?: return@withContext null
-            val fileDownloadLink =
-                html.selectFirst("""a[href^="/torrents/download"]""")?.attr("href")
-
-            Pair(magnetUri, fileDownloadLink)
-        }
+    private companion object {
+        private const val LIST_ITEM = "ul.tsearch > li"
+        private const val NAME = "span:nth-child(2) > a:nth-child(2)"
+        private const val SIZE = "span.siz"
+        private const val SEEDERS = "span.see"
+        private const val PEERS = "span.lee"
+        private const val UPLOAD_DATE = "span.adde"
+        private const val DETAILS_PAGE_URL = NAME
     }
 }
 
