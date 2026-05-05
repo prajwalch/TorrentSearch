@@ -1,5 +1,7 @@
 package com.prajwalch.torrentsearch.ui.component
 
+import android.text.format.DateUtils
+
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
@@ -28,13 +30,15 @@ import com.prajwalch.torrentsearch.ui.iconResId
 import com.prajwalch.torrentsearch.ui.theme.TorrentSearchTheme
 import com.prajwalch.torrentsearch.ui.theme.spaces
 
+import java.time.Instant
+
 @Composable
 fun TorrentListItem(
     name: String,
     size: String,
     seeders: UInt,
     peers: UInt,
-    uploadDate: String?,
+    uploadDate: Instant?,
     category: Category?,
     providerName: String,
     isNSFW: Boolean,
@@ -58,7 +62,7 @@ fun TorrentListItem(
                     horizontalArrangement = Arrangement.spacedBy(MaterialTheme.spaces.small),
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
-                    uploadDate?.let { Text(it) }
+                    uploadDate?.let { Text(it.toDisplayDate()) }
                     if (isNSFW) NSFWBadge()
                 }
                 Text(providerName)
@@ -81,6 +85,19 @@ fun TorrentListItem(
             )
         },
     )
+}
+
+private fun Instant.toDisplayDate(): String {
+    return DateUtils.getRelativeTimeSpanString(
+        /* time = */
+        this.toEpochMilli(),
+        /* now = */
+        System.currentTimeMillis(),
+        /* minResolution = */
+        DateUtils.MINUTE_IN_MILLIS,
+        /* flags = */
+        DateUtils.FORMAT_ABBREV_RELATIVE,
+    ).toString()
 }
 
 @Composable
@@ -178,7 +195,7 @@ private fun TorrentListItemDarkPreview() {
             size = "2.1 GB",
             seeders = 200u,
             peers = 5000u,
-            uploadDate = "13 Apr 2025",
+            uploadDate = Instant.now(),
             category = Category.Movies,
             providerName = "UIndex",
             isNSFW = false,
@@ -195,7 +212,7 @@ private fun TorrentListItemLightPreview() {
             size = "2.1 GB",
             seeders = 200u,
             peers = 5000u,
-            uploadDate = "13 Apr 2025",
+            uploadDate = Instant.now(),
             category = Category.Movies,
             providerName = "UIndex",
             isNSFW = false,

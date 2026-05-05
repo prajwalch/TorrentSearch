@@ -67,7 +67,7 @@ fun SearchResults(
                     size = it.size,
                     seeders = it.seeders,
                     peers = it.peers,
-                    uploadDate = it.uploadDate?.toString(),
+                    uploadDate = it.uploadDate,
                     category = it.category,
                     providerName = it.providerName,
                     isNSFW = it.isNSFW,
