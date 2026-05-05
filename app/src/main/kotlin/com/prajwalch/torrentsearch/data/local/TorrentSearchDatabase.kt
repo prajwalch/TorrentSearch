@@ -98,9 +98,9 @@ abstract class TorrentSearchDatabase : RoomDatabase() {
 
 /**
  * Migration from version 4 to 5:
- * - Changes `bookmarks.id` from `Long` to `String` (info hash).
+ * - Adds new `bookmarks.infoHash` field.
  * - Changes `bookmarks.uploadDate` from `String` to `Long` representing [java.time.Instant].
- * - Creates a new viewed_torrents table.
+ * - Creates a new `viewed_torrents` table.
  */
 private val MIGRATION_4_5 = object : Migration(4, 5) {
     override fun migrate(db: SupportSQLiteDatabase) {
@@ -112,7 +112,8 @@ private val MIGRATION_4_5 = object : Migration(4, 5) {
         db.execSQL(
             """
             CREATE TABLE IF NOT EXISTS `bookmarks` (
-                `id` TEXT PRIMARY KEY NOT NULL,
+                `id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+                `infoHash` TEXT NOT NULL,
                 `name` TEXT NOT NULL,
                 `size` TEXT NOT NULL,
                 `seeders` INTEGER NOT NULL,
@@ -160,7 +161,7 @@ private val MIGRATION_4_5 = object : Migration(4, 5) {
                 }
 
                 val columnValues = ContentValues().apply {
-                    put("id", infoHash)
+                    put("infoHash", infoHash)
                     put("name", name)
                     put("size", size)
                     put("seeders", seeders)

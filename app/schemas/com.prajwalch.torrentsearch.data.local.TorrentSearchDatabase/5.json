@@ -2,15 +2,21 @@
   "formatVersion": 1,
   "database": {
     "version": 5,
-    "identityHash": "0128221c3b632dc50d6f1acb304aca4b",
+    "identityHash": "caabad7281b958593479d297bc3eecbd",
     "entities": [
       {
         "tableName": "bookmarks",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `name` TEXT NOT NULL, `size` TEXT NOT NULL, `seeders` INTEGER NOT NULL, `peers` INTEGER NOT NULL, `providerName` TEXT NOT NULL, `uploadDate` INTEGER DEFAULT NULL, `category` TEXT NOT NULL, `descriptionPageUrl` TEXT NOT NULL, `magnetUri` TEXT DEFAULT NULL, `fileDownloadLink` TEXT DEFAULT NULL, PRIMARY KEY(`id`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `infoHash` TEXT NOT NULL, `name` TEXT NOT NULL, `size` TEXT NOT NULL, `seeders` INTEGER NOT NULL, `peers` INTEGER NOT NULL, `providerName` TEXT NOT NULL, `uploadDate` INTEGER DEFAULT NULL, `category` TEXT NOT NULL, `descriptionPageUrl` TEXT NOT NULL, `magnetUri` TEXT DEFAULT NULL, `fileDownloadLink` TEXT DEFAULT NULL)",
         "fields": [
           {
-            "fieldPath": "infoHash",
+            "fieldPath": "id",
             "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "infoHash",
+            "columnName": "infoHash",
             "affinity": "TEXT",
             "notNull": true
           },
@@ -76,7 +82,7 @@
           }
         ],
         "primaryKey": {
-          "autoGenerate": false,
+          "autoGenerate": true,
           "columnNames": [
             "id"
           ]
@@ -208,7 +214,7 @@
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '0128221c3b632dc50d6f1acb304aca4b')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'caabad7281b958593479d297bc3eecbd')"
     ]
   }
 }

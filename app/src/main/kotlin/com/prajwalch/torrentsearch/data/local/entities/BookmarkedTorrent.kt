@@ -17,8 +17,8 @@ import java.time.Instant
 )
 @Serializable
 data class BookmarkedTorrent(
-    @PrimaryKey
-    @ColumnInfo(name = "id")
+    @PrimaryKey(autoGenerate = true)
+    val id: Long = 0,
     val infoHash: String,
     val name: String,
     val size: String,
