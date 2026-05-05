@@ -107,7 +107,7 @@ private val MIGRATION_4_5 = object : Migration(4, 5) {
         // 1. Rename old bookmarks table.
         db.execSQL("ALTER TABLE bookmarks RENAME TO bookmarks_old")
 
-        // 2. Create new bookmarks table with an id of type string.
+        // 2. Create new bookmarks table with updated fields.
         // language="RoomSql"
         db.execSQL(
             """
