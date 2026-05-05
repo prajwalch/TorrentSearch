@@ -7,8 +7,8 @@ import com.prajwalch.torrentsearch.extension.getArray
 import com.prajwalch.torrentsearch.extension.getLong
 import com.prajwalch.torrentsearch.extension.getString
 import com.prajwalch.torrentsearch.extension.getUInt
-import com.prajwalch.torrentsearch.util.DateUtils
 import com.prajwalch.torrentsearch.util.FileSizeUtils
+import com.prajwalch.torrentsearch.util.TorrentDateParser
 
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -68,9 +68,8 @@ class TorrentsCSV : SearchProvider {
 
         val seeders = torrentObject.getUInt("seeders") ?: return null
         val peers = torrentObject.getUInt("leechers") ?: return null
-        val uploadDate = torrentObject
-            .getLong("created_unix")
-            ?.let { DateUtils.formatEpochSecond(it) }
+        val uploadDate = torrentObject.getLong("created_unix")
+            ?.let(TorrentDateParser::epochSecondToInstant)
             ?: return null
 
         return Torrent(
@@ -79,7 +78,7 @@ class TorrentsCSV : SearchProvider {
             size = size,
             seeders = seeders,
             peers = peers,
-            providerName = name,
+            providerName = this.name,
             uploadDate = uploadDate,
             descriptionPageUrl = "",
         )

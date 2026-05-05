@@ -1,6 +1,7 @@
 package com.prajwalch.torrentsearch.domain.model
 
 import com.prajwalch.torrentsearch.util.TorrentUtils
+import java.time.Instant
 
 /** Represents a magnet URI. */
 typealias MagnetUri = String
@@ -19,8 +20,8 @@ data class Torrent(
     val peers: UInt,
     /** Name of the search provider from where torrent is searched. */
     val providerName: String,
-    /** Torrent upload date (in pretty format). */
-    val uploadDate: String,
+    /** Torrent upload date. */
+    val uploadDate: Instant? = null,
     /** Category of the torrent. */
     val category: Category? = null,
     /** URL of the page where the torrent details is available. */

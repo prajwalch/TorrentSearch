@@ -22,7 +22,11 @@ import com.prajwalch.torrentsearch.data.local.entities.BookmarkedTorrent
 import com.prajwalch.torrentsearch.data.local.entities.SearchHistoryEntity
 import com.prajwalch.torrentsearch.data.local.entities.TorznabConfigEntity
 import com.prajwalch.torrentsearch.data.local.entities.ViewedTorrentEntity
+import com.prajwalch.torrentsearch.util.TorrentDateParser
 import com.prajwalch.torrentsearch.util.TorrentUtils
+
+import java.time.Instant
+import java.util.Locale
 
 /** Application database. */
 @Database(
@@ -95,6 +99,7 @@ abstract class TorrentSearchDatabase : RoomDatabase() {
 /**
  * Migration from version 4 to 5:
  * - Changes `bookmarks.id` from `Long` to `String` (info hash).
+ * - Changes `bookmarks.uploadDate` from `String` to `Long` representing [java.time.Instant].
  * - Creates a new viewed_torrents table.
  */
 private val MIGRATION_4_5 = object : Migration(4, 5) {
@@ -113,7 +118,7 @@ private val MIGRATION_4_5 = object : Migration(4, 5) {
                 `seeders` INTEGER NOT NULL,
                 `peers` INTEGER NOT NULL,
                 `providerName` TEXT NOT NULL,
-                `uploadDate` TEXT NOT NULL,
+                `uploadDate` INTEGER DEFAULT NULL,
                 `category` TEXT NOT NULL,
                 `descriptionPageUrl` TEXT NOT NULL,
                 `magnetUri` TEXT DEFAULT NULL,
@@ -139,6 +144,10 @@ private val MIGRATION_4_5 = object : Migration(4, 5) {
                 val peers = cursor.getInt(cursor.getColumnIndexOrThrow("peers"))
                 val providerName = cursor.getString(cursor.getColumnIndexOrThrow("providerName"))
                 val uploadDate = cursor.getString(cursor.getColumnIndexOrThrow("uploadDate"))
+                val newUploadDate = parseOldTorrentUploadDate(
+                    date = uploadDate,
+                    providerName = providerName,
+                )?.toEpochMilli()
                 val category = cursor.getString(cursor.getColumnIndexOrThrow("category"))
                 val descriptionPageUrl = cursor
                     .getString(cursor.getColumnIndexOrThrow("descriptionPageUrl"))
@@ -157,7 +166,7 @@ private val MIGRATION_4_5 = object : Migration(4, 5) {
                     put("seeders", seeders)
                     put("peers", peers)
                     put("providerName", providerName)
-                    put("uploadDate", uploadDate)
+                    put("uploadDate", newUploadDate)
                     put("category", category)
                     put("descriptionPageUrl", descriptionPageUrl)
                     put("magnetUri", magnetUri)
@@ -182,5 +191,46 @@ private val MIGRATION_4_5 = object : Migration(4, 5) {
             )
             """.trimIndent()
         )
+    }
+
+    private fun parseOldTorrentUploadDate(
+        date: String,
+        providerName: String,
+    ): Instant? = when (providerName) {
+        // Eztv uses weird formatting on top of that it's now Cloudflare protected.
+        // AniRena and FileMood date parsing was involved.
+        "AniRena", "Eztv", "FileMood" -> null
+
+        "AnimeTosho",
+        "BitSearch",
+        "Dmhy",
+        "InternetArchive",
+        "Knaben",
+        "Nyaa",
+        "SubsPlease",
+        "Sukebei",
+        "ThePirateBay",
+        "TheRarBg",
+        "TokyoToshokan",
+        "TorrentDatabase",
+        "TorrentDownloads",
+        "TorrentsCSV",
+        "XXXClub",
+        "Yts",
+            -> TorrentDateParser.parse(date = date, format = "dd MMM yyyy")
+
+        "LimeTorrents",
+        "MyPornClub",
+        "TorrentDownload",
+        "UIndex",
+            -> TorrentDateParser.tryParseRelative(date)
+
+        "XXXTracker" -> TorrentDateParser.parse(
+            date = date,
+            format = "dd MMM yy",
+            locale = Locale.forLanguageTag("ru_RU"),
+        )
+
+        else -> null
     }
 }

@@ -4,7 +4,7 @@ import com.prajwalch.torrentsearch.domain.model.Category
 import com.prajwalch.torrentsearch.domain.model.Torrent
 import com.prajwalch.torrentsearch.domain.model.TorrentDetails
 import com.prajwalch.torrentsearch.network.HttpClient
-import com.prajwalch.torrentsearch.util.DateUtils
+import com.prajwalch.torrentsearch.util.TorrentDateParser
 import com.prajwalch.torrentsearch.util.TorrentUtils
 
 import kotlinx.coroutines.Dispatchers
@@ -104,7 +104,7 @@ private class BitSearchResultsPageParser(
         val seeders = listItem.selectFirst(SEEDERS)?.ownText()
         val peers = listItem.selectFirst(PEERS)?.ownText()
         val uploadDate = listItem.selectFirst(UPLOAD_DATE)?.ownText()
-            ?.let(DateUtils::formatMonthDayYear)
+            ?.let(TorrentDateParser::parseMonthDayYear)
         val category = listItem.selectFirst(CATEGORY)?.ownText()?.let(::categoryFromRawString)
         val fileDownloadLink = listItem.selectFirst(FILE_DOWNLOAD_LINK)?.attr("abs:href")
         val detailsPageUrl = listItem.selectFirst(DETAILS_PAGE_URL)?.attr("abs:href")
@@ -116,7 +116,7 @@ private class BitSearchResultsPageParser(
             seeders = seeders?.toUIntOrNull() ?: 0U,
             peers = peers?.toUIntOrNull() ?: 0U,
             providerName = providerName,
-            uploadDate = uploadDate ?: "0 min. ago",
+            uploadDate = uploadDate,
             category = category,
             magnetUri = magnetUri,
             fileDownloadLink = fileDownloadLink,
@@ -134,7 +134,7 @@ private class BitSearchResultsPageParser(
         private const val SIZE = "$CATEGORY_AND_METADATA > span:nth-child(2) > span"
         private const val SEEDERS = "$SWARM_STATS > span:nth-child(1) > span:nth-child(2)"
         private const val PEERS = "$SWARM_STATS > span:nth-child(2) > span:nth-child(2)"
-        private const val UPLOAD_DATE = "$CATEGORY_AND_METADATA >span:nth-child(3) > span"
+        private const val UPLOAD_DATE = "$CATEGORY_AND_METADATA > span:nth-child(3) > span"
         private const val CATEGORY = "$CATEGORY_AND_METADATA > span:nth-child(1) > span"
         private const val MAGNET_LINK = "$DOWNLOAD_LINKS > a:nth-child(2)"
         private const val FILE_DOWNLOAD_LINK = "$DOWNLOAD_LINKS > a:nth-child(1)"

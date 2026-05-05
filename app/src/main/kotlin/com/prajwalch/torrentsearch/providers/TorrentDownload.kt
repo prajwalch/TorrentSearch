@@ -4,6 +4,7 @@ import com.prajwalch.torrentsearch.domain.model.Category
 import com.prajwalch.torrentsearch.domain.model.Torrent
 import com.prajwalch.torrentsearch.domain.model.TorrentDetails
 import com.prajwalch.torrentsearch.network.HttpClient
+import com.prajwalch.torrentsearch.util.TorrentDateParser
 import com.prajwalch.torrentsearch.util.TorrentUtils
 
 import kotlinx.coroutines.Dispatchers
@@ -69,7 +70,8 @@ private class TorrentDownloadResultsParser(private val providerName: String) {
             .trim()
             .lowercase()
 
-        val uploadDate = tr.selectFirst("td:nth-child(2)")?.ownText() ?: return null
+        val uploadDate = tr.selectFirst("td:nth-child(2)")?.ownText()
+            ?.let(TorrentDateParser::tryParseRelative)
         val size = tr.selectFirst("td:nth-child(3)")?.ownText() ?: return null
         val seeders = tr.selectFirst("td:nth-child(4)")?.ownText()?.replace(",", "") ?: return null
         val peers = tr.selectFirst("td:nth-child(5)")?.ownText()?.replace(",", "") ?: return null

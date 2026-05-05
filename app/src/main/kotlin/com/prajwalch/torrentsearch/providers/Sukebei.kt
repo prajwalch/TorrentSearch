@@ -4,7 +4,7 @@ import com.prajwalch.torrentsearch.domain.model.Category
 import com.prajwalch.torrentsearch.domain.model.Torrent
 import com.prajwalch.torrentsearch.domain.model.TorrentDetails
 import com.prajwalch.torrentsearch.network.HttpClient
-import com.prajwalch.torrentsearch.util.DateUtils
+import com.prajwalch.torrentsearch.util.TorrentDateParser
 import com.prajwalch.torrentsearch.util.TorrentUtils
 
 import kotlinx.coroutines.Dispatchers
@@ -66,7 +66,7 @@ private class SukebeiResultsPageParser(
         val size = listItem.selectFirst(SIZE)?.ownText()
         val uploadDate = listItem.selectFirst(UPLOAD_DATE)?.attr("data-timestamp")
             ?.toLongOrNull()
-            ?.let(DateUtils::formatEpochSecond)
+            ?.let(TorrentDateParser::epochSecondToInstant)
         val seeders = listItem.selectFirst(SEEDERS)?.ownText()?.toUIntOrNull()
         val peers = listItem.selectFirst(PEERS)?.ownText()?.toUIntOrNull()
         val detailsPageUrl = listItem.selectFirst(DETAILS_PAGE_URL)?.attr("abs:href")
@@ -78,7 +78,7 @@ private class SukebeiResultsPageParser(
             seeders = seeders ?: 0u,
             peers = peers ?: 0u,
             providerName = providerName,
-            uploadDate = uploadDate ?: "0 min ago",
+            uploadDate = uploadDate,
             category = providerSpecializedCategory,
             descriptionPageUrl = detailsPageUrl ?: "",
             magnetUri = magnetUri,

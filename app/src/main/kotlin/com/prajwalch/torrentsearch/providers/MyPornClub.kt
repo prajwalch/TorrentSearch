@@ -4,6 +4,7 @@ import com.prajwalch.torrentsearch.domain.model.Category
 import com.prajwalch.torrentsearch.domain.model.Torrent
 import com.prajwalch.torrentsearch.domain.model.TorrentDetails
 import com.prajwalch.torrentsearch.network.HttpClient
+import com.prajwalch.torrentsearch.util.TorrentDateParser
 import com.prajwalch.torrentsearch.util.TorrentUtils
 
 import kotlinx.coroutines.Dispatchers
@@ -72,6 +73,7 @@ private class MyPornClubResultsPageParser(
         val seeders = listItem.selectFirst(SEEDERS)?.ownText()?.toUIntOrNull()
         val peers = listItem.selectFirst(PEERS)?.ownText()?.toUIntOrNull()
         val uploadDate = listItem.selectFirst(UPLOAD_DATE)?.text()
+            ?.let(TorrentDateParser::tryParseRelative)
 
         return Torrent(
             infoHash = torrentDetails.infoHash,
@@ -80,7 +82,7 @@ private class MyPornClubResultsPageParser(
             seeders = seeders ?: 0U,
             peers = peers ?: 0U,
             providerName = providerName,
-            uploadDate = uploadDate ?: "0 min ago",
+            uploadDate = uploadDate,
             category = providerSpecializedCategory,
             descriptionPageUrl = detailsPageUrl,
             magnetUri = torrentDetails.magnetUri,

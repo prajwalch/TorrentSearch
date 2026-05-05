@@ -4,8 +4,8 @@ import com.prajwalch.torrentsearch.domain.model.Category
 import com.prajwalch.torrentsearch.domain.model.Torrent
 import com.prajwalch.torrentsearch.domain.model.TorrentDetails
 import com.prajwalch.torrentsearch.network.HttpClient
-import com.prajwalch.torrentsearch.util.DateUtils
 import com.prajwalch.torrentsearch.util.FileSizeUtils
+import com.prajwalch.torrentsearch.util.TorrentDateParser
 import com.prajwalch.torrentsearch.util.TorrentUtils
 
 import kotlinx.coroutines.Dispatchers
@@ -75,8 +75,7 @@ private class TokyoToshokanResultsPageParser(
             ?: listOf(null, null)
         val size = rawSize?.let(FileSizeUtils::normalizeSize)
         val uploadDate = rawUploadDate
-            ?.takeWhile { !it.isWhitespace() }
-            ?.let(DateUtils::formatYearMonthDay)
+            ?.let { TorrentDateParser.parse(date = it, format = "yyyy-MM-dd HH:mm Z") }
 
         // Seeders and peers.
         val seeders = tr2.selectFirst(SEEDERS)?.ownText()?.toUIntOrNull()
@@ -89,7 +88,7 @@ private class TokyoToshokanResultsPageParser(
             seeders = seeders ?: 0u,
             peers = peers ?: 0u,
             providerName = providerName,
-            uploadDate = uploadDate ?: "0 min ago",
+            uploadDate = uploadDate,
             category = providerSpecializedCategory,
             descriptionPageUrl = detailsPageUrl ?: "",
             magnetUri = magnetUri,

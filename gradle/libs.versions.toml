@@ -7,6 +7,7 @@ composeMarkdown = "0.7.0"
 coreKtx = "1.18.0"
 coreSplashscreen = "1.2.0"
 datastorePreferences = "1.2.1"
+desugarJdkLibs = "2.1.5"
 espressoCore = "3.7.0"
 flexmark = "0.64.8"
 hilt = "2.59.2"
@@ -48,6 +49,7 @@ androidx-ui-tooling-preview = { group = "androidx.compose.ui", name = "ui-toolin
 coil-compose = { group = "io.coil-kt.coil3", name = "coil-compose", version.ref = "coil" }
 coil-network-okhttp = { group = "io.coil-kt.coil3", name = "coil-network-okhttp", version.ref = "coil" }
 compose-markdown = { group = "com.github.jeziellago", name = "compose-markdown", version.ref = "composeMarkdown" }
+desugar-jdk-libs = { module = "com.android.tools:desugar_jdk_libs", version.ref = "desugarJdkLibs" }
 flexmark-html2md-converter = { group = "com.vladsch.flexmark", name = "flexmark-html2md-converter", version.ref = "flexmark" }
 flexmark-util = { group = "com.vladsch.flexmark", name = "flexmark-util", version.ref = "flexmark" }
 hilt-android = { group = "com.google.dagger", name = "hilt-android", version.ref = "hilt" }

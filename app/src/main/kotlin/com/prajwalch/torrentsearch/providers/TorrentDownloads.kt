@@ -3,7 +3,7 @@ package com.prajwalch.torrentsearch.providers
 import com.prajwalch.torrentsearch.domain.model.Category
 import com.prajwalch.torrentsearch.domain.model.Torrent
 import com.prajwalch.torrentsearch.network.HttpClient
-import com.prajwalch.torrentsearch.util.DateUtils
+import com.prajwalch.torrentsearch.util.TorrentDateParser
 import com.prajwalch.torrentsearch.util.TorrentUtils
 
 import kotlinx.coroutines.Dispatchers
@@ -11,6 +11,8 @@ import kotlinx.coroutines.withContext
 
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Element
+
+import java.time.Instant
 
 class TorrentDownloads : SearchProvider {
     override val id = "torrentdownloads"
@@ -110,7 +112,7 @@ class TorrentDownloads : SearchProvider {
     private suspend fun getUploadDateAndMagnetUri(
         httpClient: HttpClient,
         descriptionPageUrl: String,
-    ): Pair<String, String>? {
+    ): Pair<Instant?, String>? {
         val responseHtml = httpClient.get(url = descriptionPageUrl)
         val innerContainer = Jsoup
             .parse(responseHtml)
@@ -127,10 +129,7 @@ class TorrentDownloads : SearchProvider {
         val uploadDate = greyBars.getOrNull(6)
             ?.selectFirst("p")
             ?.ownText()
-            ?.split(' ')
-            ?.first()
-            ?.let { DateUtils.formatYearMonthDay(it) }
-            ?: return null
+            ?.let { TorrentDateParser.parse(date = it, format = "yyyy-MM-dd HH:mm:ss") }
 
         return Pair(uploadDate, magnetUri)
     }

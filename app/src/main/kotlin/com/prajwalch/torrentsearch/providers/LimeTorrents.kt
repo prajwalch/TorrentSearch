@@ -5,6 +5,7 @@ import com.prajwalch.torrentsearch.domain.model.Category
 import com.prajwalch.torrentsearch.domain.model.Torrent
 import com.prajwalch.torrentsearch.domain.model.TorrentDetails
 import com.prajwalch.torrentsearch.network.HttpClient
+import com.prajwalch.torrentsearch.util.TorrentDateParser
 
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -81,7 +82,7 @@ private class LimeTorrentsResultsPageParser(
         val descriptionPageUrl = nameAnchor.attr("abs:href")
 
         val infoHash = extractInfoHash(row) ?: return null
-        val uploadDate = extractUploadDate(row)
+        val uploadDate = extractUploadDate(row).let(TorrentDateParser::tryParseRelative)
         val size = row.selectFirst("td:nth-child(3)")?.text() ?: return null
         val seeders = row.selectFirst(".tdseed")?.text()?.toUIntOrNull() ?: 0u
         val peers = row.selectFirst(".tdleech")?.text()?.toUIntOrNull() ?: 0u

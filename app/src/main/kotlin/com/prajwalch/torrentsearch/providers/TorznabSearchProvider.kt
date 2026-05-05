@@ -10,6 +10,7 @@ import com.prajwalch.torrentsearch.domain.model.TorznabConfig
 import com.prajwalch.torrentsearch.domain.model.TorznabConnectionCheckResult
 import com.prajwalch.torrentsearch.network.HttpClient
 import com.prajwalch.torrentsearch.util.FileSizeUtils
+import com.prajwalch.torrentsearch.util.TorrentDateParser
 import com.prajwalch.torrentsearch.util.TorrentUtils
 
 import io.ktor.client.statement.bodyAsText
@@ -22,6 +23,7 @@ import org.xmlpull.v1.XmlPullParserException
 
 import java.net.ConnectException
 import java.net.UnknownHostException
+import java.time.Instant
 
 /**
  * Search provider (or indexer) custom category range start.
@@ -345,7 +347,7 @@ private class TorznabResponseXmlParser(
         var size: String? = null
         var seeders: String? = null
         var peers: String? = null
-        var uploadDate: String? = null
+        var uploadDate: Instant? = null
         var descriptionPageUrl: String? = null
         var magnetUri: String? = null
         var infoHash: String? = null
@@ -404,7 +406,7 @@ private class TorznabResponseXmlParser(
             seeders = seeders?.toUIntOrNull() ?: return,
             peers = peers?.toUIntOrNull() ?: return,
             providerName = providerName,
-            uploadDate = uploadDate ?: return,
+            uploadDate = uploadDate,
             category = category,
             descriptionPageUrl = descriptionPageUrl ?: return,
             magnetUri = magnetUri,
@@ -421,11 +423,9 @@ private class TorznabResponseXmlParser(
         return readTextContainedTag(tagName = "comments")
     }
 
-    private fun readPubDate(): String {
+    private fun readPubDate(): Instant {
         return readTextContainedTag(tagName = "pubDate")
-            .split(' ')
-            .subList(fromIndex = 1, toIndex = 4)
-            .joinToString(separator = " ")
+            .let(TorrentDateParser::parseRFC1123)
     }
 
     private fun readSize(): String {

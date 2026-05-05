@@ -8,8 +8,8 @@ import com.prajwalch.torrentsearch.domain.model.Torrent
 import com.prajwalch.torrentsearch.extension.asObject
 import com.prajwalch.torrentsearch.extension.getArray
 import com.prajwalch.torrentsearch.extension.getString
-import com.prajwalch.torrentsearch.util.DateUtils
 import com.prajwalch.torrentsearch.util.FileSizeUtils
+import com.prajwalch.torrentsearch.util.TorrentDateParser
 import com.prajwalch.torrentsearch.util.TorrentUtils
 
 import kotlinx.coroutines.Dispatchers
@@ -52,12 +52,9 @@ class SubsPlease : SearchProvider {
 
     private fun parseAnimeObject(animeObject: JsonObject): List<Torrent>? {
         val name = animeObject.getString("show") ?: return null
-        val uploadDate = animeObject
-            .getString("release_date")
-            ?.let(DateUtils::formatRFC1123Date)
-            ?: return null
-        val descriptionPageUrl = animeObject
-            .getString("page")
+        val uploadDate = animeObject.getString("release_date")
+            ?.let(TorrentDateParser::parseRFC1123)
+        val descriptionPageUrl = animeObject.getString("page")
             ?.let { "$url/$it" }
             ?: return null
 

@@ -9,6 +9,7 @@ import com.prajwalch.torrentsearch.domain.model.Category
 import com.prajwalch.torrentsearch.domain.model.Torrent
 
 import kotlinx.serialization.Serializable
+import java.time.Instant
 
 @Entity(
     tableName = "bookmarks",
@@ -24,7 +25,8 @@ data class BookmarkedTorrent(
     val seeders: Int,
     val peers: Int,
     val providerName: String,
-    val uploadDate: String,
+    @ColumnInfo(defaultValue = "NULL")
+    val uploadDate: Long? = null,
     val category: String,
     val descriptionPageUrl: String,
     @ColumnInfo(defaultValue = "NULL")
@@ -41,7 +43,7 @@ fun BookmarkedTorrent.toDomain() =
         seeders = this.seeders.toUInt(),
         peers = this.peers.toUInt(),
         providerName = this.providerName,
-        uploadDate = this.uploadDate,
+        uploadDate = this.uploadDate?.let(Instant::ofEpochMilli),
         category = if (this.category.isNotEmpty()) {
             Category.valueOf(this.category)
         } else {
@@ -60,7 +62,7 @@ fun Torrent.toEntity() =
         seeders = this.seeders.toInt(),
         peers = this.peers.toInt(),
         providerName = this.providerName,
-        uploadDate = this.uploadDate,
+        uploadDate = this.uploadDate?.toEpochMilli(),
         category = this.category?.name ?: "",
         descriptionPageUrl = this.descriptionPageUrl,
         magnetUri = this.magnetUri,

@@ -5,8 +5,8 @@ import com.prajwalch.torrentsearch.domain.model.Category
 import com.prajwalch.torrentsearch.domain.model.Torrent
 import com.prajwalch.torrentsearch.domain.model.TorrentDetails
 import com.prajwalch.torrentsearch.network.HttpClient
-import com.prajwalch.torrentsearch.util.DateUtils
 import com.prajwalch.torrentsearch.util.FileSizeUtils
+import com.prajwalch.torrentsearch.util.TorrentDateParser
 import com.prajwalch.torrentsearch.util.TorrentUtils
 
 import kotlinx.coroutines.Dispatchers
@@ -90,7 +90,7 @@ private class TheRarBgResultsPageParser(private val providerName: String) {
         val peers = listItem.selectFirst(PEERS)?.ownText()?.toUIntOrNull()
         val uploadDate = listItem.selectFirst(UPLOAD_DATE)?.attr("data-order")
             ?.toLongOrNull()
-            ?.let(DateUtils::formatEpochSecond)
+            ?.let(TorrentDateParser::epochSecondToInstant)
         val category = listItem.selectFirst(CATEGORY)?.ownText()?.let(::categoryFromRawString)
 
         return Torrent(
@@ -100,7 +100,7 @@ private class TheRarBgResultsPageParser(private val providerName: String) {
             seeders = seeders ?: 0U,
             peers = peers ?: 0U,
             providerName = providerName,
-            uploadDate = uploadDate ?: "0 min ago",
+            uploadDate = uploadDate,
             category = category,
             magnetUri = torrentDetails.magnetUri,
             fileDownloadLink = torrentDetails.fileDownloadLink,

@@ -1,21 +1,21 @@
 package com.prajwalch.torrentsearch.util
 
+import java.time.Instant
+import java.time.ZoneId
+import java.time.format.DateTimeFormatter
+
 object DateUtils {
-    private val dateFormatter = TorrentSearchDateFormatter.init()
+    /** The date output format. */
+    const val OUTPUT_FORMAT = "dd MMM yyyy"
+    
+    private val outputFormatter = DateTimeFormatter.ofPattern(OUTPUT_FORMAT)
 
-    fun formatEpochSecond(epochSecond: Long) = dateFormatter.formatEpochSecond(epochSecond)
+    fun formatEpochSecond(epochSecond: Long): String {
+        val instant = Instant.ofEpochSecond(epochSecond)
 
-    fun formatYearMonthDay(date: String) = dateFormatter.formatYearMonthDay(date)
+        val zoneId = ZoneId.systemDefault()
+        val zonedDateTime = instant.atZone(zoneId)
 
-    fun formatDayMonthYear(date: String) = dateFormatter.formatDayMonthYear(date)
-
-    fun formatMonthDayYear(date: String) = dateFormatter.formatMonthDayYear(date)
-
-    fun formatIsoDate(date: String) = dateFormatter.formatIsoDate(date)
-
-    fun formatRFC1123Date(date: String) = dateFormatter.formatRFC1123Date(date)
-
-    fun formatTodayDate() = dateFormatter.formatTodayDate()
-
-    fun formatYesterdayDate() = dateFormatter.formatYesterdayDate()
+        return zonedDateTime.format(outputFormatter)
+    }
 }

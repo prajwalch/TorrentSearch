@@ -2,8 +2,8 @@ package com.prajwalch.torrentsearch.providers
 
 import com.prajwalch.torrentsearch.domain.model.Category
 import com.prajwalch.torrentsearch.domain.model.Torrent
-import com.prajwalch.torrentsearch.util.DateUtils
 import com.prajwalch.torrentsearch.util.FileSizeUtils
+import com.prajwalch.torrentsearch.util.TorrentDateParser
 import com.prajwalch.torrentsearch.util.TorrentUtils
 
 import kotlinx.coroutines.Dispatchers
@@ -53,10 +53,7 @@ private class DmhyResultsPageParser(
         val seeders = listItem.selectFirst(SEEDERS)?.text()?.toUIntOrNull()
         val peers = listItem.selectFirst(PEERS)?.text()?.toUIntOrNull()
         val uploadDate = listItem.selectFirst(UPLOAD_DATE)?.ownText()
-            ?.split(' ')
-            ?.firstOrNull()
-            ?.replace("/", "-")
-            ?.let(DateUtils::formatYearMonthDay)
+            ?.let { TorrentDateParser.parse(date = it, format = "yyyy/MM/dd HH:mm") }
         val category = listItem.selectFirst(CATEGORY)?.className()
             ?.removePrefix("sort-")
             ?.let(::getCategoryFromId)
@@ -68,7 +65,7 @@ private class DmhyResultsPageParser(
             size = size ?: "0 KB",
             seeders = seeders ?: 0U,
             peers = peers ?: 0U,
-            uploadDate = uploadDate ?: "0 min ago",
+            uploadDate = uploadDate,
             category = category,
             providerName = providerName,
             magnetUri = magnetUri,
@@ -82,7 +79,7 @@ private class DmhyResultsPageParser(
         private const val SIZE = "td:nth-child(5)"
         private const val SEEDERS = "td:nth-child(6)"
         private const val PEERS = "td:nth-child(7)"
-        private const val UPLOAD_DATE = "td:nth-child(1)"
+        private const val UPLOAD_DATE = "td:nth-child(1) > span"
         private const val CATEGORY = "td:nth-child(2) > a"
         private const val MAGNET_URI = "td:nth-child(4) > a:nth-child(1)"
         private const val DETAILS_PAGE_URL = TORRENT_NAME

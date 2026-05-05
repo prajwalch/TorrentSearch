@@ -91,7 +91,6 @@ class AniRena : SearchProvider {
             // Getting upload date requires an additional request to
             // 'anirena.com/torrent_details.php?id={id}'. The ID can be found in
             // the 'id' attribute of the element next to given div as 'details{id}'.
-            uploadDate = "0m ago",
             category = specializedCategory,
             providerName = name,
             descriptionPageUrl = "",

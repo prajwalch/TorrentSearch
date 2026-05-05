@@ -96,7 +96,7 @@ private fun BookmarkListItem(
             size = bookmark.size,
             seeders = bookmark.seeders,
             peers = bookmark.peers,
-            uploadDate = bookmark.uploadDate,
+            uploadDate = bookmark.uploadDate?.toString(),
             category = bookmark.category,
             providerName = bookmark.providerName,
             isNSFW = bookmark.isNSFW,

@@ -11,6 +11,7 @@ import com.prajwalch.torrentsearch.extension.getString
 import com.prajwalch.torrentsearch.network.HttpClient
 import com.prajwalch.torrentsearch.util.DateUtils
 import com.prajwalch.torrentsearch.util.FileSizeUtils
+import com.prajwalch.torrentsearch.util.TorrentDateParser
 import com.prajwalch.torrentsearch.util.TorrentUtils
 
 import kotlinx.coroutines.Dispatchers
@@ -96,7 +97,7 @@ private class IAResultsJsonParser(
         val size = obj.getLong("item_size")
             ?.let { FileSizeUtils.formatBytes(it.toFloat()) }
             ?: return null
-        val uploadDate = obj.getString("publicdate")?.let(DateUtils::formatIsoDate) ?: return null
+        val uploadDate = obj.getString("publicdate")?.let(TorrentDateParser::parseIso)
         val category = obj.getString("mediatype")?.let(::categoryFromMediaType) ?: return null
         val descriptionPageUrl = obj.getString("identifier")
             ?.let { "$providerUrl/details/$it" }

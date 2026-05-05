@@ -96,7 +96,7 @@ class Eztv : SearchProvider {
         // TODO: The date format used the results page is 'time ago'
         //       (e.g. '7h 8m', '1 week', '1 mo'). The format we want
         //       is present in the details page. Let's extract it in future.
-        val uploadDate = tr.selectFirst("td:nth-child(5)")?.ownText() ?: return null
+//        val uploadDate = tr.selectFirst("td:nth-child(5)")?.ownText() ?: return null
 
         // Some torrents will not have any seeds (no idea why), in that case
         // it will contain '-' text node, and in other case it will contain a
@@ -116,7 +116,7 @@ class Eztv : SearchProvider {
             seeders = seeders.toUIntOrNull() ?: 0u,
             peers = peers,
             providerName = name,
-            uploadDate = uploadDate,
+//            uploadDate = uploadDate,
             category = specializedCategory,
             descriptionPageUrl = descriptionPageUrl,
             magnetUri = magnetUri,

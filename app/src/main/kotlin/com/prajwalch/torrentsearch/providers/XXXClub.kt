@@ -4,6 +4,7 @@ import com.prajwalch.torrentsearch.domain.model.Category
 import com.prajwalch.torrentsearch.domain.model.Torrent
 import com.prajwalch.torrentsearch.domain.model.TorrentDetails
 import com.prajwalch.torrentsearch.network.HttpClient
+import com.prajwalch.torrentsearch.util.TorrentDateParser
 import com.prajwalch.torrentsearch.util.TorrentUtils
 
 import kotlinx.coroutines.Dispatchers
@@ -61,7 +62,8 @@ private class XXXClubResultsPageParser(private val providerName: String) {
         val size = listItem.selectFirst(SIZE)?.ownText()
         val seeders = listItem.selectFirst(SEEDERS)?.ownText()?.toUIntOrNull()
         val peers = listItem.selectFirst(PEERS)?.ownText()?.toUIntOrNull()
-        val uploadDate = listItem.selectFirst(UPLOAD_DATE)?.ownText()?.let(::parseUploadDate)
+        val uploadDate = listItem.selectFirst(UPLOAD_DATE)?.ownText()
+            ?.let { TorrentDateParser.parse(date = it, format = "dd MMM yyyy HH:mm:ss") }
 
         return Torrent(
             infoHash = torrentDetails.infoHash,
@@ -70,21 +72,12 @@ private class XXXClubResultsPageParser(private val providerName: String) {
             seeders = seeders ?: 0u,
             peers = peers ?: 0u,
             providerName = providerName,
-            uploadDate = uploadDate ?: "0 min ago",
+            uploadDate = uploadDate,
             category = Category.Porn,
             descriptionPageUrl = detailsPageUrl,
             magnetUri = torrentDetails.magnetUri,
             fileDownloadLink = torrentDetails.fileDownloadLink,
         )
-    }
-
-    private fun parseUploadDate(raw: String): String {
-        val lastSpaceIndex = raw
-            .indexOfLast { ch -> ch == ' ' }
-            .takeIf { it != -1 }
-            ?: return raw
-
-        return raw.substring(0..lastSpaceIndex).trim()
     }
 
     private companion object {

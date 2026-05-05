@@ -11,6 +11,7 @@ import com.prajwalch.torrentsearch.extension.getString
 import com.prajwalch.torrentsearch.network.HttpClient
 import com.prajwalch.torrentsearch.util.DateUtils
 import com.prajwalch.torrentsearch.util.FileSizeUtils
+import com.prajwalch.torrentsearch.util.TorrentDateParser
 import com.prajwalch.torrentsearch.util.TorrentUtils
 
 import kotlinx.coroutines.Dispatchers
@@ -121,7 +122,7 @@ private class TBPResultsJsonParser(
         val uploadDate = torrentObject
             .getString("added")
             ?.toLongOrNull()
-            ?.let { DateUtils.formatEpochSecond(it) }
+            ?.let(TorrentDateParser::epochSecondToInstant)
             ?: return null
 
         val categoryId = torrentObject.getString("category") ?: return null

@@ -67,7 +67,6 @@ private class FileMoodResultsPageParser(private val providerName: String) {
             size = size ?: "0 KB",
             seeders = seeders?.toUIntOrNull() ?: 0U,
             peers = peers?.toUIntOrNull() ?: 0U,
-            uploadDate = "0 min ago",
             category = Category.Other,
             providerName = providerName,
             descriptionPageUrl = descriptionPageUrl,

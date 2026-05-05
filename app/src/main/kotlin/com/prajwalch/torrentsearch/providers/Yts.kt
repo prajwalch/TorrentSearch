@@ -8,7 +8,7 @@ import com.prajwalch.torrentsearch.extension.getLong
 import com.prajwalch.torrentsearch.extension.getObject
 import com.prajwalch.torrentsearch.extension.getString
 import com.prajwalch.torrentsearch.extension.getUInt
-import com.prajwalch.torrentsearch.util.DateUtils
+import com.prajwalch.torrentsearch.util.TorrentDateParser
 
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -173,8 +173,7 @@ class Yts : SearchProvider {
         val peers = torrentObject.getUInt("peers") ?: return null
         val uploadDate = torrentObject
             .getLong("date_uploaded_unix")
-            ?.let { DateUtils.formatEpochSecond(it) }
-            ?: return null
+            ?.let(TorrentDateParser::epochSecondToInstant)
 
         return Torrent(
             infoHash = infoHash,

@@ -4,7 +4,7 @@ import com.prajwalch.torrentsearch.domain.model.Category
 import com.prajwalch.torrentsearch.domain.model.Torrent
 import com.prajwalch.torrentsearch.domain.model.TorrentDetails
 import com.prajwalch.torrentsearch.network.HttpClient
-import com.prajwalch.torrentsearch.util.DateUtils
+import com.prajwalch.torrentsearch.util.TorrentDateParser
 import com.prajwalch.torrentsearch.util.TorrentUtils
 
 import kotlinx.coroutines.Dispatchers
@@ -13,6 +13,8 @@ import kotlinx.coroutines.withContext
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Element
 import org.jsoup.nodes.TextNode
+
+import java.time.Instant
 
 class AnimeTosho : SearchProvider, TorrentDetailsProvider {
     override val id = "animetosho"
@@ -80,7 +82,7 @@ private class AnimeToshoResultsPageParser(
     }
 
     /** Parses the upload date and converts "Today"/"Yesterday" into real dates. */
-    private fun parseUploadDate(entryDiv: Element): String? {
+    private fun parseUploadDate(entryDiv: Element): Instant? {
         val raw = entryDiv
             .selectFirst("div.date")
             ?.attr("title")
@@ -89,14 +91,13 @@ private class AnimeToshoResultsPageParser(
             ?: return null
 
         return when {
-            raw.startsWith("Today") -> DateUtils.formatTodayDate()
-            raw.startsWith("Yesterday") -> DateUtils.formatYesterdayDate()
+            raw.startsWith("Today") -> TorrentDateParser.getTodayDate()
+            raw.startsWith("Yesterday") -> TorrentDateParser.getYesterdayDate()
             else -> {
                 raw
                     .split(' ', limit = 2)
                     .firstOrNull()
-                    ?.let { DateUtils.formatDayMonthYear(it) }
-                    ?: raw
+                    ?.let(TorrentDateParser::parseDayMonthYear)
             }
         }
     }

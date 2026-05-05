@@ -4,7 +4,7 @@ import com.prajwalch.torrentsearch.domain.model.Category
 import com.prajwalch.torrentsearch.domain.model.Torrent
 import com.prajwalch.torrentsearch.domain.model.TorrentDetails
 import com.prajwalch.torrentsearch.network.HttpClient
-import com.prajwalch.torrentsearch.util.DateUtils
+import com.prajwalch.torrentsearch.util.TorrentDateParser
 import com.prajwalch.torrentsearch.util.TorrentUtils
 
 import kotlinx.coroutines.Dispatchers
@@ -92,8 +92,8 @@ private class NyaaResultsPageParser(
         val uploadDate = tr
             .selectFirst("td:nth-child(5)")
             ?.attr("data-timestamp")
-            ?.let { DateUtils.formatEpochSecond(it.toLong()) }
-            ?: return null
+            ?.toLongOrNull()
+            ?.let(TorrentDateParser::epochSecondToInstant)
         val seeders = tr.selectFirst("td:nth-child(6)")?.ownText() ?: return null
         val peers = tr.selectFirst("td:nth-child(7)")?.ownText() ?: return null
 

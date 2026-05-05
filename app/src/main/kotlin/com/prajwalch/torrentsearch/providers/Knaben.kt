@@ -7,8 +7,8 @@ import com.prajwalch.torrentsearch.extension.getArray
 import com.prajwalch.torrentsearch.extension.getLong
 import com.prajwalch.torrentsearch.extension.getString
 import com.prajwalch.torrentsearch.extension.getUInt
-import com.prajwalch.torrentsearch.util.DateUtils
 import com.prajwalch.torrentsearch.util.FileSizeUtils
+import com.prajwalch.torrentsearch.util.TorrentDateParser
 import com.prajwalch.torrentsearch.util.TorrentUtils
 
 import kotlinx.coroutines.Dispatchers
@@ -89,7 +89,7 @@ class Knaben : SearchProvider {
 
         val seeders = obj.getUInt("seeders") ?: 0u
         val peers = obj.getUInt("peers") ?: 0u
-        val uploadDate = obj.getString("date")?.let { DateUtils.formatIsoDate(it) } ?: ""
+        val uploadDate = obj.getString("date")?.let(TorrentDateParser::parseIso)
         val descriptionPageUrl = obj.getString("details").orEmpty()
         val category = extractCategory(obj)
 

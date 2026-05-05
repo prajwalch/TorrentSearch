@@ -34,7 +34,7 @@ fun TorrentListItem(
     size: String,
     seeders: UInt,
     peers: UInt,
-    uploadDate: String,
+    uploadDate: String?,
     category: Category?,
     providerName: String,
     isNSFW: Boolean,
@@ -58,7 +58,7 @@ fun TorrentListItem(
                     horizontalArrangement = Arrangement.spacedBy(MaterialTheme.spaces.small),
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
-                    Text(uploadDate)
+                    uploadDate?.let { Text(it) }
                     if (isNSFW) NSFWBadge()
                 }
                 Text(providerName)

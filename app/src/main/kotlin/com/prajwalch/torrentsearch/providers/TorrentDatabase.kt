@@ -4,8 +4,8 @@ import com.prajwalch.torrentsearch.domain.model.Category
 import com.prajwalch.torrentsearch.domain.model.Torrent
 import com.prajwalch.torrentsearch.domain.model.TorrentDetails
 import com.prajwalch.torrentsearch.network.HttpClient
-import com.prajwalch.torrentsearch.util.DateUtils
 import com.prajwalch.torrentsearch.util.FileSizeUtils
+import com.prajwalch.torrentsearch.util.TorrentDateParser
 import com.prajwalch.torrentsearch.util.TorrentUtils
 
 import kotlinx.coroutines.Dispatchers
@@ -78,8 +78,7 @@ private class TdResultsPageParser(private val providerName: String) {
         val size = listItem.selectFirst(SIZE)?.ownText()
         val uploadDate = listItem.selectFirst(UPLOAD_DATE)
             ?.ownText()
-            ?.takeWhile { !it.isWhitespace() }
-            ?.let(DateUtils::formatYearMonthDay)
+            ?.let { TorrentDateParser.parse(date = it, format = "yyyy-MM-dd HH:mm:ss") }
         val seeders = listItem.selectFirst(SEEDERS)?.ownText()
         val peers = listItem.selectFirst(PEERS)?.ownText()
 
@@ -89,7 +88,7 @@ private class TdResultsPageParser(private val providerName: String) {
             size = size ?: "0 KB",
             seeders = seeders?.toUIntOrNull() ?: 0U,
             peers = peers?.toUIntOrNull() ?: 0U,
-            uploadDate = uploadDate ?: "0 min ago",
+            uploadDate = uploadDate,
             category = category,
             providerName = providerName,
             descriptionPageUrl = descriptionPageUrl ?: "",

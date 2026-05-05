@@ -4,6 +4,7 @@ import com.prajwalch.torrentsearch.domain.model.Category
 import com.prajwalch.torrentsearch.domain.model.Torrent
 import com.prajwalch.torrentsearch.domain.model.TorrentDetails
 import com.prajwalch.torrentsearch.network.HttpClient
+import com.prajwalch.torrentsearch.util.TorrentDateParser
 import com.prajwalch.torrentsearch.util.TorrentUtils
 
 import kotlinx.coroutines.Dispatchers
@@ -11,6 +12,8 @@ import kotlinx.coroutines.withContext
 
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Element
+
+import java.util.Locale
 
 class XXXTracker : SearchProvider, TorrentDetailsProvider {
     override val id = "xxxtracker"
@@ -51,7 +54,13 @@ class XXXTracker : SearchProvider, TorrentDetailsProvider {
     }
 
     private fun parseTr(tr: Element): Torrent? {
-        val uploadDate = tr.selectFirst("td:nth-child(1)")?.ownText() ?: return null
+        val uploadDate = tr.selectFirst("td:nth-child(1)")?.ownText()?.let {
+            TorrentDateParser.parse(
+                date = it,
+                format = "dd MMM yy",
+                locale = Locale.forLanguageTag("ru_RU"),
+            )
+        }
 
         val secondTd = tr.selectFirst("td:nth-child(2)") ?: return null
         val magnetUri = secondTd.selectFirst("a:nth-child(1)")?.attr("href") ?: return null

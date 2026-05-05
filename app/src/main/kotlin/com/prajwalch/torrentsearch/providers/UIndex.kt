@@ -4,6 +4,7 @@ import com.prajwalch.torrentsearch.domain.model.Category
 import com.prajwalch.torrentsearch.domain.model.Torrent
 import com.prajwalch.torrentsearch.domain.model.TorrentDetails
 import com.prajwalch.torrentsearch.network.HttpClient
+import com.prajwalch.torrentsearch.util.TorrentDateParser
 import com.prajwalch.torrentsearch.util.TorrentUtils
 
 import kotlinx.coroutines.Dispatchers
@@ -75,6 +76,7 @@ private class UIndexResultsPageParser(
         val seeders = listItem.selectFirst(SEEDERS)?.ownText()?.filter { it != ',' }?.toUIntOrNull()
         val peers = listItem.selectFirst(PEERS)?.ownText()?.filter { it != ',' }?.toUIntOrNull()
         val uploadDate = listItem.selectFirst(UPLOAD_DATE)?.ownText()
+            ?.let(TorrentDateParser::tryParseRelative)
         val category = listItem.selectFirst(CATEGORY)?.ownText()?.let(::categoryFromRawString)
         val detailsPageUrl = listItem.selectFirst(DETAILS_PAGE_URL)?.attr("abs:href")
 
@@ -85,7 +87,7 @@ private class UIndexResultsPageParser(
             seeders = seeders ?: 0u,
             peers = peers ?: 0u,
             providerName = providerName,
-            uploadDate = uploadDate ?: "0 min ago",
+            uploadDate = uploadDate,
             category = category,
             descriptionPageUrl = detailsPageUrl ?: "",
             magnetUri = magnetUri,
