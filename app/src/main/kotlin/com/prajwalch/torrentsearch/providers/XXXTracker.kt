@@ -13,8 +13,6 @@ import kotlinx.coroutines.withContext
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Element
 
-import java.util.Locale
-
 class XXXTracker : SearchProvider, TorrentDetailsProvider {
     override val id = "xxxtracker"
     override val name = "XXXTracker"
@@ -22,6 +20,23 @@ class XXXTracker : SearchProvider, TorrentDetailsProvider {
     override val specializedCategory = Category.Porn
     override val safetyStatus = SearchProviderSafetyStatus.Safe
     override val enabledByDefault = false
+
+    // Russian month abbreviations from the provider are incompatible with
+    // Java's locale data, so we normalize them to English before parsing.
+    private val monthMap = mapOf(
+        "Янв" to "Jan",
+        "Фев" to "Feb",
+        "Мар" to "Mar",
+        "Апр" to "Apr",
+        "Май" to "May",
+        "Июн" to "Jun",
+        "Июл" to "Jul",
+        "Авг" to "Aug",
+        "Сен" to "Sep",
+        "Окт" to "Oct",
+        "Ноя" to "Nov",
+        "Дек" to "Dec",
+    )
 
     override suspend fun search(query: String, context: SearchContext): List<Torrent> {
         val requestUrl = buildString {
@@ -54,13 +69,9 @@ class XXXTracker : SearchProvider, TorrentDetailsProvider {
     }
 
     private fun parseTr(tr: Element): Torrent? {
-        val uploadDate = tr.selectFirst("td:nth-child(1)")?.ownText()?.let {
-            TorrentDateParser.parse(
-                date = it,
-                format = "dd MMM yy",
-                locale = Locale.forLanguageTag("ru_RU"),
-            )
-        }
+        val uploadDate = tr.selectFirst("td:nth-child(1)")?.ownText()
+            ?.let(::normalizeUploadDate)
+            ?.let { TorrentDateParser.parse(date = it, format = "dd MMM yy") }
 
         val secondTd = tr.selectFirst("td:nth-child(2)") ?: return null
         val magnetUri = secondTd.selectFirst("a:nth-child(1)")?.attr("href") ?: return null
@@ -91,6 +102,13 @@ class XXXTracker : SearchProvider, TorrentDetailsProvider {
             magnetUri = magnetUri,
             fileDownloadLink = fileDownloadLink,
         )
+    }
+
+    private fun normalizeUploadDate(uploadDate: String): String {
+        val (day, russianMonth, year) = uploadDate.split(' ', limit = 3)
+        val englishMonth = monthMap[russianMonth]!!
+
+        return "$day $englishMonth $year"
     }
 }
 
