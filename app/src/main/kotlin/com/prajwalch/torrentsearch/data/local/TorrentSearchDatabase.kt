@@ -18,7 +18,7 @@ import com.prajwalch.torrentsearch.data.local.dao.BookmarkedTorrentDao
 import com.prajwalch.torrentsearch.data.local.dao.SearchHistoryDao
 import com.prajwalch.torrentsearch.data.local.dao.TorznabConfigDao
 import com.prajwalch.torrentsearch.data.local.dao.ViewedTorrentDao
-import com.prajwalch.torrentsearch.data.local.entities.BookmarkedTorrent
+import com.prajwalch.torrentsearch.data.local.entities.BookmarkedTorrentEntity
 import com.prajwalch.torrentsearch.data.local.entities.SearchHistoryEntity
 import com.prajwalch.torrentsearch.data.local.entities.TorznabConfigEntity
 import com.prajwalch.torrentsearch.data.local.entities.ViewedTorrentEntity
@@ -31,7 +31,7 @@ import java.util.Locale
 /** Application database. */
 @Database(
     entities = [
-        BookmarkedTorrent::class,
+        BookmarkedTorrentEntity::class,
         SearchHistoryEntity::class,
         TorznabConfigEntity::class,
         ViewedTorrentEntity::class,

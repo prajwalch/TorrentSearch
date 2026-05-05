@@ -3,9 +3,9 @@ package com.prajwalch.torrentsearch.data.repository
 import android.util.Log
 
 import com.prajwalch.torrentsearch.data.local.dao.BookmarkedTorrentDao
-import com.prajwalch.torrentsearch.data.local.entities.BookmarkedTorrent
-import com.prajwalch.torrentsearch.data.local.entities.toDomain
-import com.prajwalch.torrentsearch.data.local.entities.toEntity
+import com.prajwalch.torrentsearch.data.local.entities.BookmarkedTorrentEntity
+import com.prajwalch.torrentsearch.domain.model.BookmarkedTorrent
+import com.prajwalch.torrentsearch.domain.model.Category
 import com.prajwalch.torrentsearch.domain.model.Torrent
 
 import kotlinx.coroutines.Dispatchers
@@ -21,11 +21,11 @@ import kotlinx.serialization.json.encodeToStream
 import java.io.IOException
 import java.io.InputStream
 import java.io.OutputStream
-
+import java.time.Instant
 import javax.inject.Inject
 
 class BookmarkRepository @Inject constructor(private val dao: BookmarkedTorrentDao) {
-    fun getAllBookmarks(): Flow<List<Torrent>> {
+    fun getAllBookmarks(): Flow<List<BookmarkedTorrent>> {
         return dao.getAllBookmarks().map { it.toDomain() }
     }
 
@@ -33,8 +33,8 @@ class BookmarkRepository @Inject constructor(private val dao: BookmarkedTorrentD
         dao.insertBookmark(bookmarkedTorrent = torrent.toEntity())
     }
 
-    suspend fun deleteBookmarkedTorrent(torrent: Torrent) {
-        dao.deleteBookmark(bookmarkedTorrent = torrent.toEntity())
+    suspend fun deleteBookmarkById(id: Long) {
+        dao.deleteBookmarkById(id)
     }
 
     suspend fun deleteAllBookmarks() {
@@ -46,7 +46,7 @@ class BookmarkRepository @Inject constructor(private val dao: BookmarkedTorrentD
         Log.i(TAG, "Importing bookmarks")
 
         try {
-            val bookmarksEntity = Json.decodeFromStream<List<BookmarkedTorrent>>(inputStream)
+            val bookmarksEntity = Json.decodeFromStream<List<BookmarkedTorrentEntity>>(inputStream)
             dao.insertBookmarks(bookmarksEntity)
             Log.i(TAG, "Import succeed")
         } catch (e: IllegalArgumentException) {
@@ -75,3 +75,42 @@ class BookmarkRepository @Inject constructor(private val dao: BookmarkedTorrentD
         private const val TAG = "BookmarksRepository"
     }
 }
+
+private fun BookmarkedTorrentEntity.toDomain() =
+    BookmarkedTorrent(
+        id = this.id,
+        torrent = Torrent(
+            infoHash = this.infoHash,
+            name = this.name,
+            size = this.size,
+            seeders = this.seeders.toUInt(),
+            peers = this.peers.toUInt(),
+            providerName = this.providerName,
+            uploadDate = this.uploadDate?.let(Instant::ofEpochMilli),
+            category = if (this.category.isNotEmpty()) {
+                Category.valueOf(this.category)
+            } else {
+                null
+            },
+            descriptionPageUrl = this.descriptionPageUrl,
+            magnetUri = this.magnetUri,
+            fileDownloadLink = this.fileDownloadLink,
+        ),
+    )
+
+private fun Torrent.toEntity() =
+    BookmarkedTorrentEntity(
+        infoHash = this.infoHash,
+        name = this.name,
+        size = this.size,
+        seeders = this.seeders.toInt(),
+        peers = this.peers.toInt(),
+        providerName = this.providerName,
+        uploadDate = this.uploadDate?.toEpochMilli(),
+        category = this.category?.name ?: "",
+        descriptionPageUrl = this.descriptionPageUrl,
+        magnetUri = this.magnetUri,
+        fileDownloadLink = this.fileDownloadLink,
+    )
+
+fun List<BookmarkedTorrentEntity>.toDomain() = this.map { it.toDomain() }

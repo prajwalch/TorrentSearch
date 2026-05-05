@@ -1,28 +1,26 @@
 package com.prajwalch.torrentsearch.data.local.dao
 
 import androidx.room.Dao
-import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 
-import com.prajwalch.torrentsearch.data.local.entities.BookmarkedTorrent
-
+import com.prajwalch.torrentsearch.data.local.entities.BookmarkedTorrentEntity
 import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface BookmarkedTorrentDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertBookmark(bookmarkedTorrent: BookmarkedTorrent)
+    suspend fun insertBookmark(bookmarkedTorrent: BookmarkedTorrentEntity)
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
-    suspend fun insertBookmarks(bookmarkedTorrents: List<BookmarkedTorrent>)
+    suspend fun insertBookmarks(bookmarkedTorrents: List<BookmarkedTorrentEntity>)
 
     @Query("SELECT * FROM bookmarks ORDER by id DESC")
-    fun getAllBookmarks(): Flow<List<BookmarkedTorrent>>
+    fun getAllBookmarks(): Flow<List<BookmarkedTorrentEntity>>
 
-    @Delete
-    suspend fun deleteBookmark(bookmarkedTorrent: BookmarkedTorrent)
+    @Query("DELETE FROM bookmarks WHERE id = :id")
+    suspend fun deleteBookmarkById(id: Long)
 
     @Query("DELETE from bookmarks")
     suspend fun deleteAllBookmarks()

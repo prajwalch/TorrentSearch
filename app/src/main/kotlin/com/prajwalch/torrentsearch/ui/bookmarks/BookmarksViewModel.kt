@@ -6,11 +6,11 @@ import androidx.lifecycle.viewModelScope
 import com.prajwalch.torrentsearch.data.repository.BookmarkRepository
 import com.prajwalch.torrentsearch.data.repository.SettingsRepository
 import com.prajwalch.torrentsearch.domain.TorrentFileDownloader
+import com.prajwalch.torrentsearch.domain.model.BookmarkedTorrent
 import com.prajwalch.torrentsearch.domain.model.SortCriteria
 import com.prajwalch.torrentsearch.domain.model.SortOptions
 import com.prajwalch.torrentsearch.domain.model.SortOrder
-import com.prajwalch.torrentsearch.domain.model.Torrent
-import com.prajwalch.torrentsearch.util.createSortComparator
+import com.prajwalch.torrentsearch.util.FileSizeUtils
 
 import dagger.hilt.android.lifecycle.HiltViewModel
 
@@ -29,7 +29,7 @@ import kotlin.time.Duration.Companion.seconds
 
 /** UI state for the Bookmarks screen. */
 data class BookmarksUiState(
-    val bookmarks: List<Torrent> = emptyList(),
+    val bookmarks: List<BookmarkedTorrent> = emptyList(),
     val sortOptions: SortOptions = SortOptions(),
 )
 
@@ -51,10 +51,18 @@ class BookmarksViewModel @Inject constructor(
         settingsRepository.bookmarksSortOptions,
     ) { filterQuery, bookmarks, nsfwModeEnabled, sortOptions ->
         val bookmarks = bookmarks
-            .filter { nsfwModeEnabled || !it.isNSFW }
-            .filter { filterQuery.isBlank() || it.name.contains(filterQuery, ignoreCase = true) }
+            .filter { nsfwModeEnabled || !it.torrent.isNSFW }
+            .filter {
+                filterQuery.isBlank() || it.torrent.name.contains(
+                    filterQuery,
+                    ignoreCase = true
+                )
+            }
             .sortedWith(
-                createSortComparator(criteria = sortOptions.criteria, order = sortOptions.order)
+                createSortComparator(
+                    criteria = sortOptions.criteria,
+                    order = sortOptions.order,
+                )
             )
 
         BookmarksUiState(
@@ -67,10 +75,10 @@ class BookmarksViewModel @Inject constructor(
         initialValue = BookmarksUiState(),
     )
 
-    /** Deletes the given bookmarked torrent. */
-    fun deleteBookmarkedTorrent(torrent: Torrent) {
+    /** Deletes bookmark associated with the given id. */
+    fun deleteBookmarkById(id: Long) {
         viewModelScope.launch {
-            bookmarkRepository.deleteBookmarkedTorrent(torrent)
+            bookmarkRepository.deleteBookmarkById(id)
         }
     }
 
@@ -133,5 +141,23 @@ class BookmarksViewModel @Inject constructor(
         viewModelScope.launch {
             torrentFileDownloader.writeFileContent(outputStream)
         }
+    }
+}
+
+private fun createSortComparator(
+    criteria: SortCriteria,
+    order: SortOrder,
+): Comparator<BookmarkedTorrent> {
+    val comparator: Comparator<BookmarkedTorrent> = when (criteria) {
+        SortCriteria.Name -> compareBy { it.torrent.name }
+        SortCriteria.Seeders -> compareBy { it.torrent.seeders }
+        SortCriteria.Peers -> compareBy { it.torrent.peers }
+        SortCriteria.FileSize -> compareBy { FileSizeUtils.getBytes(it.torrent.size) }
+        SortCriteria.Date -> compareBy { it.torrent.uploadDate }
+    }
+
+    return when (order) {
+        SortOrder.Ascending -> comparator
+        SortOrder.Descending -> comparator.reversed()
     }
 }
