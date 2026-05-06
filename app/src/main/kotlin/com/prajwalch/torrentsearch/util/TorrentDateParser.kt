@@ -9,10 +9,6 @@ import java.time.format.DateTimeFormatter
 import java.util.Locale
 
 object TorrentDateParser {
-    const val YEAR_MONTH_DAY = "yyyy-M-d"
-    const val DAY_MONTH_YEAR = "d/M/yyyy"
-    const val MONTH_DAY_YEAR = "M/d/yyyy"
-
     private val RelativeTimePattern = Regex(
         """\b(\d+(?:\.\d+)?)\s*(s|sec|secs|second|seconds|m|min|mins|minute|minutes|h|hr|hrs|hour|hours|d|day|days|w|wk|wks|week|weeks|mo|mos|month|months|y|yr|yrs|year|years)\b\s*(ago)?\b""",
         RegexOption.IGNORE_CASE
@@ -74,15 +70,6 @@ object TorrentDateParser {
 
     fun epochSecondToInstant(second: Long): Instant =
         Instant.ofEpochSecond(second)
-
-    fun parseYearMonthDay(date: String): Instant? =
-        parse(date = date, format = YEAR_MONTH_DAY)
-
-    fun parseDayMonthYear(date: String): Instant? =
-        parse(date = date, format = DAY_MONTH_YEAR)
-
-    fun parseMonthDayYear(date: String): Instant? =
-        parse(date = date, format = MONTH_DAY_YEAR)
 
     fun parseIso(date: String): Instant =
         OffsetDateTime.parse(date).toInstant()

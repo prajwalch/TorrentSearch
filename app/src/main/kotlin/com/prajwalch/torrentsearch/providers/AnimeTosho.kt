@@ -97,7 +97,7 @@ private class AnimeToshoResultsPageParser(
                 raw
                     .split(' ', limit = 2)
                     .firstOrNull()
-                    ?.let(TorrentDateParser::parseDayMonthYear)
+                    ?.let { TorrentDateParser.parse(date = it, format = "d/M/yyyy") }
             }
         }
     }

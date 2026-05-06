@@ -104,7 +104,7 @@ private class BitSearchResultsPageParser(
         val seeders = listItem.selectFirst(SEEDERS)?.ownText()
         val peers = listItem.selectFirst(PEERS)?.ownText()
         val uploadDate = listItem.selectFirst(UPLOAD_DATE)?.ownText()
-            ?.let(TorrentDateParser::parseMonthDayYear)
+            ?.let { TorrentDateParser.parse(date = it, format = "M/d/yyyy") }
         val category = listItem.selectFirst(CATEGORY)?.ownText()?.let(::categoryFromRawString)
         val fileDownloadLink = listItem.selectFirst(FILE_DOWNLOAD_LINK)?.attr("abs:href")
         val detailsPageUrl = listItem.selectFirst(DETAILS_PAGE_URL)?.attr("abs:href")
