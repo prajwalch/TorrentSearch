@@ -72,7 +72,7 @@ class SubsPlease : SearchProvider {
                     category = specializedCategory,
                     descriptionPageUrl = descriptionPageUrl,
                     magnetUri = downloadLink.magnetUri,
-                    providerName = name,
+                    providerName = this.name,
                 )
             }
     }
