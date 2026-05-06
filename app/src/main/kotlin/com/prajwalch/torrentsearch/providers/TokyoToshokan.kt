@@ -75,7 +75,7 @@ private class TokyoToshokanResultsPageParser(
             ?: listOf(null, null)
         val size = rawSize?.let(FileSizeUtils::normalizeSize)
         val uploadDate = rawUploadDate
-            ?.let { TorrentDateParser.parse(date = it, format = "yyyy-MM-dd HH:mm Z") }
+            ?.let { TorrentDateParser.parse(date = it, format = "yyyy-MM-dd HH:mm z") }
 
         // Seeders and peers.
         val seeders = tr2.selectFirst(SEEDERS)?.ownText()?.toUIntOrNull()
