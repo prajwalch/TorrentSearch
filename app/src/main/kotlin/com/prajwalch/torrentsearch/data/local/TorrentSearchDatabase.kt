@@ -22,11 +22,11 @@ import com.prajwalch.torrentsearch.data.local.entities.BookmarkedTorrentEntity
 import com.prajwalch.torrentsearch.data.local.entities.SearchHistoryEntity
 import com.prajwalch.torrentsearch.data.local.entities.TorznabConfigEntity
 import com.prajwalch.torrentsearch.data.local.entities.ViewedTorrentEntity
+import com.prajwalch.torrentsearch.providers.XXXTracker
 import com.prajwalch.torrentsearch.util.TorrentDateParser
 import com.prajwalch.torrentsearch.util.TorrentUtils
 
 import java.time.Instant
-import java.util.Locale
 
 /** Application database. */
 @Database(
@@ -199,7 +199,7 @@ private val MIGRATION_4_5 = object : Migration(4, 5) {
         providerName: String,
     ): Instant? = when (providerName) {
         // Eztv uses weird formatting on top of that it's now Cloudflare protected.
-        // AniRena and FileMood date parsing was involved.
+        // AniRena and FileMood date parsing was not involved.
         "AniRena", "Eztv", "FileMood" -> null
 
         "AnimeTosho",
@@ -227,9 +227,8 @@ private val MIGRATION_4_5 = object : Migration(4, 5) {
             -> TorrentDateParser.tryParseRelative(date)
 
         "XXXTracker" -> TorrentDateParser.parse(
-            date = date,
+            date = XXXTracker.normalizeUploadDate(date),
             format = "dd MMM yy",
-            locale = Locale.forLanguageTag("ru_RU"),
         )
 
         else -> null

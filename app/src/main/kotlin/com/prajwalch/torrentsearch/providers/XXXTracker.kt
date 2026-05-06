@@ -21,23 +21,6 @@ class XXXTracker : SearchProvider, TorrentDetailsProvider {
     override val safetyStatus = SearchProviderSafetyStatus.Safe
     override val enabledByDefault = false
 
-    // Russian month abbreviations from the provider are incompatible with
-    // Java's locale data, so we normalize them to English before parsing.
-    private val monthMap = mapOf(
-        "Янв" to "Jan",
-        "Фев" to "Feb",
-        "Мар" to "Mar",
-        "Апр" to "Apr",
-        "Май" to "May",
-        "Июн" to "Jun",
-        "Июл" to "Jul",
-        "Авг" to "Aug",
-        "Сен" to "Sep",
-        "Окт" to "Oct",
-        "Ноя" to "Nov",
-        "Дек" to "Dec",
-    )
-
     override suspend fun search(query: String, context: SearchContext): List<Torrent> {
         val requestUrl = buildString {
             append(url)
@@ -104,11 +87,31 @@ class XXXTracker : SearchProvider, TorrentDetailsProvider {
         )
     }
 
-    private fun normalizeUploadDate(uploadDate: String): String {
-        val (day, russianMonth, year) = uploadDate.split(' ', limit = 3)
-        val englishMonth = monthMap[russianMonth]!!
+    // We need to access this during bookmarks migration.
+    companion object {
+        // Russian month abbreviations from the provider are incompatible with
+        // Java's locale data, so we normalize them to English before parsing.
+        private val monthMap = mapOf(
+            "Янв" to "Jan",
+            "Фев" to "Feb",
+            "Мар" to "Mar",
+            "Апр" to "Apr",
+            "Май" to "May",
+            "Июн" to "Jun",
+            "Июл" to "Jul",
+            "Авг" to "Aug",
+            "Сен" to "Sep",
+            "Окт" to "Oct",
+            "Ноя" to "Nov",
+            "Дек" to "Dec",
+        )
 
-        return "$day $englishMonth $year"
+        fun normalizeUploadDate(uploadDate: String): String {
+            val (day, russianMonth, year) = uploadDate.split(' ', limit = 3)
+            val englishMonth = monthMap[russianMonth]!!
+
+            return "$day $englishMonth $year"
+        }
     }
 }
 
