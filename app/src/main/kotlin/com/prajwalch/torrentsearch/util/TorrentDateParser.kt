@@ -6,7 +6,6 @@ import java.time.LocalDate
 import java.time.OffsetDateTime
 import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
-import java.util.Locale
 
 object TorrentDateParser {
     private val RelativeTimePattern = Regex(
@@ -18,13 +17,6 @@ object TorrentDateParser {
 
     fun parse(date: String, format: String): Instant? {
         val inputFormatter = DateTimeFormatter.ofPattern(format)
-        return LocalDate.parse(date, inputFormatter)
-            .atStartOfDay(DefaultTimeZone)
-            .toInstant()
-    }
-
-    fun parse(date: String, format: String, locale: Locale): Instant? {
-        val inputFormatter = DateTimeFormatter.ofPattern(format, locale)
         return LocalDate.parse(date, inputFormatter)
             .atStartOfDay(DefaultTimeZone)
             .toInstant()
