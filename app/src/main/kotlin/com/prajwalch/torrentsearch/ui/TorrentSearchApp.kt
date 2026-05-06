@@ -15,10 +15,10 @@ import androidx.navigation.compose.rememberNavController
 
 import com.prajwalch.torrentsearch.domain.model.Category
 import com.prajwalch.torrentsearch.domain.model.MagnetUri
-import com.prajwalch.torrentsearch.extension.childComposable
-import com.prajwalch.torrentsearch.extension.parentComposable
 import com.prajwalch.torrentsearch.ui.bookmarks.BookmarksScreen
 import com.prajwalch.torrentsearch.ui.component.TorrentClientNotFoundDialog
+import com.prajwalch.torrentsearch.ui.extension.childComposable
+import com.prajwalch.torrentsearch.ui.extension.parentComposable
 import com.prajwalch.torrentsearch.ui.home.HomeScreen
 import com.prajwalch.torrentsearch.ui.search.SearchScreen
 import com.prajwalch.torrentsearch.ui.searchhistory.SearchHistoryScreen

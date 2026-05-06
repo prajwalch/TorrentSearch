@@ -45,7 +45,6 @@ import com.prajwalch.torrentsearch.domain.model.BookmarkedTorrent
 import com.prajwalch.torrentsearch.domain.model.MagnetUri
 import com.prajwalch.torrentsearch.domain.model.SortCriteria
 import com.prajwalch.torrentsearch.domain.model.SortOrder
-import com.prajwalch.torrentsearch.extension.copyText
 import com.prajwalch.torrentsearch.ui.TorrentFileDownloadEffect
 import com.prajwalch.torrentsearch.ui.bookmarks.component.BookmarkList
 import com.prajwalch.torrentsearch.ui.bookmarks.component.BookmarksCount
@@ -61,6 +60,7 @@ import com.prajwalch.torrentsearch.ui.component.SortDropdownMenu
 import com.prajwalch.torrentsearch.ui.component.SortIconButton
 import com.prajwalch.torrentsearch.ui.component.TorrentActionsBottomSheet
 import com.prajwalch.torrentsearch.ui.component.rememberCollapsibleSearchBarState
+import com.prajwalch.torrentsearch.ui.extension.copyText
 import com.prajwalch.torrentsearch.ui.rememberTorrentListState
 
 import kotlinx.coroutines.launch
