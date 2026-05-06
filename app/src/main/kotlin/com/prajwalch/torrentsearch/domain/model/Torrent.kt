@@ -41,17 +41,3 @@ data class Torrent(
 
     fun magnetUri(): String = magnetUri ?: TorrentUtils.createMagnetUri(infoHash)
 }
-
-/** Search category. */
-enum class Category(val isNSFW: Boolean = false) {
-    All,
-    Anime,
-    Apps,
-    Books,
-    Games,
-    Movies,
-    Music,
-    Porn(isNSFW = true),
-    Series,
-    Other,
-}
