@@ -9,7 +9,6 @@ import com.prajwalch.torrentsearch.extension.asObject
 import com.prajwalch.torrentsearch.extension.getLong
 import com.prajwalch.torrentsearch.extension.getString
 import com.prajwalch.torrentsearch.network.HttpClient
-import com.prajwalch.torrentsearch.util.DateUtils
 import com.prajwalch.torrentsearch.util.FileSizeUtils
 import com.prajwalch.torrentsearch.util.TorrentDateParser
 import com.prajwalch.torrentsearch.util.TorrentUtils
@@ -153,7 +152,7 @@ private object TBPDetailsJsonParser {
             val size = json.getLong("size")?.toFloat()?.let(FileSizeUtils::formatBytes)
             val seeders = json.getLong("seeders")?.toUInt()
             val peers = json.getLong("leechers")?.toUInt()
-            val uploadDate = json.getLong("added")?.let(DateUtils::formatEpochSecond)
+            val uploadDate = json.getLong("added")?.let(TorrentDateParser::epochSecondToInstant)
             val category = json.getLong("category")?.toInt()?.let(::categoryFromId)
             val uploader = json.getString("username")
             val description = json.getString("descr")

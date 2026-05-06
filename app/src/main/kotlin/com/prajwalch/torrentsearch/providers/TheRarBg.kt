@@ -141,9 +141,13 @@ private object TheRarBgDetailsPageParser {
         val size = detailRows["Size:"]?.ownText()
         val seedersPeers = detailRows["Peers:"]?.ownText()?.trim()?.split(',')
         val seeders = seedersPeers?.firstOrNull()?.removePrefix("Seeders: ")?.toUIntOrNull()
-        val peers =
-            seedersPeers?.lastOrNull()?.trim()?.removePrefix("Leechers: ")?.toUIntOrNull()
+        val peers = seedersPeers?.lastOrNull()
+            ?.trim()
+            ?.removePrefix("Leechers: ")
+            ?.toUIntOrNull()
         val uploadDate = detailRows["Added:"]?.ownText()
+            ?.let(::normalizeUploadDate)
+            ?.let { TorrentDateParser.parse(date = it, format = "MMM d, yyyy, h:mm a") }
         val category = detailRows["Category:"]?.text()?.let(::categoryFromRawString)
         val uploader = detailRows["Uploader:"]?.text()
         val description = detailRows["Description:"]?.wholeText()
@@ -161,6 +165,16 @@ private object TheRarBgDetailsPageParser {
             description = description,
         )
     }
+
+    private fun normalizeUploadDate(date: String): String =
+        date
+            .replace("a.m.", "AM")
+            .replace("p.m.", "PM")
+            .split(' ', limit = 5)
+            .let { (month, day, year, time, amPm) ->
+                val fixedTime = if (time.contains(':')) time else "$time:00"
+                "$month $day $year $fixedTime $amPm"
+            }
 }
 
 /** Returns the [Category] that matches the string extracted from page. */

@@ -153,7 +153,13 @@ private object AnimeToshoDetailsPageParser {
 
             val seeders = html.selectFirst(SEEDERS)?.ownText()?.toUIntOrNull()
             val peers = html.selectFirst(PEERS)?.ownText()?.toUIntOrNull()
-            val uploadDate = html.selectFirst(UPLOAD_DATE)?.ownText()
+            val uploadDate = html.selectFirst(UPLOAD_DATE)?.ownText()?.let {
+                when {
+                    it.startsWith("Today") -> TorrentDateParser.getTodayDate()
+                    it.startsWith("Yesterday") -> TorrentDateParser.getYesterdayDate()
+                    else -> TorrentDateParser.parse(date = it, format = "dd/MM/yyyy HH:mm")
+                }
+            }
             val screenshotUrls = html.select(SCREENSHOT).map { it.attr("href") }
             val fileDownloadLink = html.selectFirst(FILE_DOWNLOAD_LINK)?.attr("href")
 

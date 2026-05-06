@@ -1,7 +1,5 @@
 package com.prajwalch.torrentsearch.ui.component
 
-import android.text.format.DateUtils
-
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
@@ -26,6 +24,7 @@ import androidx.compose.ui.unit.dp
 
 import com.prajwalch.torrentsearch.R
 import com.prajwalch.torrentsearch.domain.model.Category
+import com.prajwalch.torrentsearch.ui.extension.toDisplayDate
 import com.prajwalch.torrentsearch.ui.iconResId
 import com.prajwalch.torrentsearch.ui.theme.TorrentSearchTheme
 import com.prajwalch.torrentsearch.ui.theme.spaces
@@ -85,19 +84,6 @@ fun TorrentListItem(
             )
         },
     )
-}
-
-private fun Instant.toDisplayDate(): String {
-    return DateUtils.getRelativeTimeSpanString(
-        /* time = */
-        this.toEpochMilli(),
-        /* now = */
-        System.currentTimeMillis(),
-        /* minResolution = */
-        DateUtils.MINUTE_IN_MILLIS,
-        /* flags = */
-        DateUtils.FORMAT_ABBREV_RELATIVE,
-    ).toString()
 }
 
 @Composable

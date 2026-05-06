@@ -173,10 +173,11 @@ private object LimeTorrentsDetailsPageParser {
             ?.removePrefix("Leechers : ")
             ?.trim()
             ?.toUIntOrNull()
-        val (uploadDate, rawCategory) = html.selectFirst(UPLOAD_DATE_AND_CATEGORY)
+        val (rawUploadDate, rawCategory) = html.selectFirst(UPLOAD_DATE_AND_CATEGORY)
             ?.text()
             ?.split("in", limit = 2)
             ?: listOf(null, null)
+        val uploadDate = rawUploadDate?.trim()?.let(TorrentDateParser::tryParseRelative)
         val category = rawCategory?.removeSuffix(".")?.let(::categoryFromRawString)
         val fileDownloadLink = html.selectFirst(FILE_DOWNLOAD_LINK)?.attr("href")
 
@@ -186,7 +187,7 @@ private object LimeTorrentsDetailsPageParser {
             size = size,
             seeders = seeders,
             peers = peers,
-            uploadDate = uploadDate?.trim(),
+            uploadDate = uploadDate,
             category = category,
             magnetUri = magnetUri,
             fileDownloadLink = fileDownloadLink,

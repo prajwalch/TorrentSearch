@@ -13,6 +13,8 @@ import kotlinx.coroutines.withContext
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Element
 
+import java.time.Instant
+
 class UIndex : SearchProvider, TorrentDetailsProvider {
     override val id = "uindex"
     override val name = "UIndex"
@@ -114,10 +116,10 @@ private object UIndexDetailsPageParser {
     private const val SEEDERS = ".dt-seed"
     private const val PEERS = ".dt-leech"
     private const val UPLOAD_DATE =
-        "#content > div.dt-info-card > div > div:nth-child(1) > div:nth-child(3) > span.dt-info-value"
+        "#content > div.dt-info-card > div > div:nth-child(1) > div:nth-child(3) > span.dt-info-value > span.dt-info-dim"
     private const val CATEGORY = ".sr-cat-badge"
     private const val PEERS_UPDATED =
-        "#content > div.dt-info-card > div > div:nth-child(2) > div:nth-child(3) > span.dt-info-value"
+        "#content > div.dt-info-card > div > div:nth-child(2) > div:nth-child(3) > span.dt-info-value > span.dt-info-dim"
     private const val DESCRIPTION = ".dt-descr-body"
     private const val THUMBNAIL = ".tmdb-poster > img"
     private const val PREVIEW_IMAGE = "img.torrent-img"
@@ -135,9 +137,14 @@ private object UIndexDetailsPageParser {
             val size = html.selectFirst(SIZE)?.ownText()
             val seeders = html.selectFirst(SEEDERS)?.ownText()?.toUIntOrNull()
             val peers = html.selectFirst(PEERS)?.ownText()?.toUIntOrNull()
-            val uploadDate = html.selectFirst(UPLOAD_DATE)?.ownText()
+            val uploadDate = html.selectFirst(UPLOAD_DATE)
+                ?.ownText()
+                ?.let(::parseDate)
             val category = html.selectFirst(CATEGORY)?.ownText()?.let(::categoryFromRawString)
-            val lastChecked = html.selectFirst(PEERS_UPDATED)?.text()?.takeIf { it.isNotBlank() }
+            val lastChecked = html.selectFirst(PEERS_UPDATED)
+                ?.text()
+                ?.takeIf { it.isNotBlank() }
+                ?.let(::parseDate)
             val description = html.selectFirst(DESCRIPTION)?.let {
                 TorrentUtils.HtmlToMarkdownConverter.convert(it)
             }
@@ -159,6 +166,12 @@ private object UIndexDetailsPageParser {
                 screenshotUrls = previewImageUrls,
             )
         }
+
+    private fun parseDate(date: String): Instant? =
+        TorrentDateParser.parse(
+            date = date.removeSurrounding("(", ")"),
+            format = "yyyy-MM-dd HH:mm:ss",
+        )
 }
 
 private fun categoryFromRawString(raw: String): Category = when (raw) {

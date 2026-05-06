@@ -28,7 +28,10 @@ import androidx.compose.ui.unit.dp
 import com.prajwalch.torrentsearch.R
 import com.prajwalch.torrentsearch.domain.model.Category
 import com.prajwalch.torrentsearch.ui.component.CategoryBadge
+import com.prajwalch.torrentsearch.ui.extension.toDisplayDate
 import com.prajwalch.torrentsearch.ui.theme.spaces
+
+import java.time.Instant
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
@@ -36,10 +39,10 @@ fun TorrentInfo(
     size: String?,
     seeders: UInt?,
     peers: UInt?,
-    uploadDate: String?,
+    uploadDate: Instant?,
     category: Category?,
     uploader: String?,
-    lastChecked: String?,
+    lastChecked: Instant?,
     infoHash: String,
     modifier: Modifier = Modifier,
 ) {
@@ -73,7 +76,7 @@ fun TorrentInfo(
                 InfoListItem(
                     icon = R.drawable.ic_calendar_month,
                     label = stringResource(R.string.torrent_details_label_upload_date),
-                    value = { InfoText(uploadDate) },
+                    value = { InfoText(uploadDate?.toDisplayDate()) },
                 )
                 InfoListItem(
                     icon = R.drawable.ic_category,
@@ -88,7 +91,7 @@ fun TorrentInfo(
                 InfoListItem(
                     icon = R.drawable.ic_update,
                     label = stringResource(R.string.torrent_details_label_last_checked),
-                    value = { InfoText(lastChecked) },
+                    value = { InfoText(lastChecked?.toDisplayDate()) },
                 )
                 InfoListItem(
                     icon = R.drawable.ic_info,
@@ -153,10 +156,10 @@ private fun TorrentInfoPreview() {
         size = "1.2 GB",
         seeders = 20U,
         peers = 5U,
-        uploadDate = "2025-0506 13:00 GMT+ dkfdfdkfdkfj",
+        uploadDate = Instant.now(),
         category = Category.Movies,
         uploader = "prajwalch",
-        lastChecked = "2025-05-06",
+        lastChecked = Instant.now(),
         infoHash = "dkfdskfjek3rdfkdjfkdjfkdjfkdjfkdjfdkfj4434fk3k43AAdg",
     )
 }

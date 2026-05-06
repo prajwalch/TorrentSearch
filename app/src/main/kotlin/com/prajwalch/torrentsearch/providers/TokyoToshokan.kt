@@ -137,7 +137,9 @@ private object TokyoToshokanDetailsPageParser {
             val size = html.selectFirst(SIZE)?.ownText()?.let(FileSizeUtils::normalizeSize)
             val seeders = html.selectFirst(SEEDERS)?.ownText()?.toUIntOrNull()
             val peers = html.selectFirst(PEERS)?.ownText()?.toUIntOrNull()
-            val uploadDate = html.selectFirst(UPLOAD_DATE)?.ownText()
+            val uploadDate = html.selectFirst(UPLOAD_DATE)
+                ?.ownText()
+                ?.let { TorrentDateParser.parse(date = it, format = "yyyy-MM-dd hh:mm z") }
 //            val category = html.selectFirst(CATEGORY)?.text()
             val uploader = html.selectFirst(UPLOADER)?.ownText()
 

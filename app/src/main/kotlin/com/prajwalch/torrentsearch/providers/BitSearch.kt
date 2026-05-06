@@ -159,6 +159,7 @@ private object BitSearchDetailsPageParser {
         "body > div > main > div > main > div > div.lg\\:col-span-2.space-y-4.sm\\:space-y-6.lg\\:space-y-8 > div.bg-white.rounded-xl.shadow-lg.border.border-gray-200.overflow-hidden > div.bg-gradient-to-r.from-blue-600.to-purple-600.p-3.sm\\:p-4.text-white > div > div.flex.flex-col.sm\\:flex-row.gap-3.sm\\:gap-4 > div.flex-1.min-w-0.text-center.sm\\:text-left > div.flex.flex-wrap.justify-center.sm\\:justify-start.gap-1\\.5.sm\\:gap-2.mb-2.sm\\:mb-3 > span.inline-flex.items-center.px-2.sm\\:px-3.py-1.rounded-full.text-xs.font-semibold.bg-white.bg-opacity-20.text-white.backdrop-blur-sm"
     private const val MAGNET_URI = """a[href^="magnet:?"]"""
     private const val FILE_DOWNLOAD_LINK = """a[href^="/download/torrent/"]"""
+    private const val DATE_FORMAT = "M/d/yyyy"
 
     suspend fun parse(html: String, pageUrl: String): TorrentDetails? =
         withContext(Dispatchers.Default) {
@@ -171,7 +172,9 @@ private object BitSearchDetailsPageParser {
             val seeders = html.selectFirst(SEEDERS)?.ownText()?.toUIntOrNull()
             val peers = html.selectFirst(PEERS)?.ownText()?.toUIntOrNull()
             val uploadDate = html.selectFirst(UPLOAD_DATE)?.ownText()
+                ?.let { TorrentDateParser.parse(date = it, format = DATE_FORMAT) }
             val lastChecked = html.selectFirst(LAST_CHECKED)?.ownText()
+                ?.let { TorrentDateParser.parse(date = it, format = DATE_FORMAT) }
             val category = html.selectFirst(CATEGORY)?.ownText()?.let(::categoryFromRawString)
             val fileDownloadLink = html.selectFirst(FILE_DOWNLOAD_LINK)?.attr("abs:href")
 

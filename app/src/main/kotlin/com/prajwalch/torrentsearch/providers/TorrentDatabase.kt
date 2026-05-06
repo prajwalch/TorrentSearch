@@ -142,9 +142,12 @@ private object TdDetailsPageParser {
             val seeders = html.selectFirst(SEEDERS)?.ownText()?.toUIntOrNull()
             val peers = html.selectFirst(PEERS)?.ownText()?.toUIntOrNull()
             val uploadDate = html.selectFirst(UPLOAD_DATE)?.ownText()
+                ?.let { TorrentDateParser.parse(date = it, format = "yyyy-MM-dd HH:mm:ssxxx") }
             val category = html.selectFirst(CATEGORY)?.ownText()?.let(::categoryFromRawString)
             val uploader = html.selectFirst(UPLOADER)?.ownText()
-            val lastChecked = html.selectFirst(LAST_CHECKED)?.ownText()
+            val lastChecked = html.selectFirst(LAST_CHECKED)
+                ?.ownText()
+                ?.let { TorrentDateParser.parse(date = it, format = "yyyy-MM-dd HH:mm:ss") }
             val description = html.selectFirst(DESCRIPTION)
                 ?.let(TorrentUtils.HtmlToMarkdownConverter::convert)
 

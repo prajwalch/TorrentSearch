@@ -106,6 +106,7 @@ private object XXXClubDetailsPageParser {
         "div.detailsdescr > ul > li.downloadboxlist > span:nth-child(1) > a"
     private const val DESCRIPTION = "div.description"
     private const val POSTER_URL = "img.detailsposter"
+    private const val DATE_FORMAT = "dd MMM yyyy HH:mm:ss"
 
     suspend fun parse(html: String, pageUrl: String): TorrentDetails? =
         withContext(Dispatchers.Default) {
@@ -117,10 +118,14 @@ private object XXXClubDetailsPageParser {
             val size = html.selectFirst(SIZE)?.ownText()
             val seeders = html.selectFirst(SEEDERS)?.ownText()?.toUIntOrNull()
             val peers = html.selectFirst(PEERS)?.ownText()?.toUIntOrNull()
-            val uploadDate = html.selectFirst(UPLOAD_DATE)?.ownText()
+            val uploadDate = html.selectFirst(UPLOAD_DATE)
+                ?.ownText()
+                ?.let { TorrentDateParser.parse(date = it, format = DATE_FORMAT) }
 //            val category = html.selectFirst(CATEGORY)?.text()
             val uploader = html.selectFirst(UPLOADER)?.ownText()
-            val lastChecked = html.selectFirst(LAST_CHECKED)?.ownText()
+            val lastChecked = html.selectFirst(LAST_CHECKED)
+                ?.ownText()
+                ?.let { TorrentDateParser.parse(date = it, format = DATE_FORMAT) }
             val fileDownloadLink = html.selectFirst(FILE_DOWNLOAD_LINK)?.attr("abs:href")
             val description = html.selectFirst(DESCRIPTION)
                 ?.html()

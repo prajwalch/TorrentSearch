@@ -136,7 +136,11 @@ private object XXXTrackerDetailsPageParser {
             val size = html.selectFirst(SIZE)?.text()?.takeWhile { it != '(' }?.trim()
             val seeders = html.selectFirst(SEEDERS)?.text()?.toUIntOrNull()
             val peers = html.selectFirst(PEERS)?.text()?.toUIntOrNull()
-            val uploadDate = html.selectFirst(UPLOAD_DATE)?.text()
+            val uploadDate = html.selectFirst(UPLOAD_DATE)
+                ?.ownText()
+                ?.takeWhile { !it.isWhitespace() }
+                ?.trim()
+                ?.let { TorrentDateParser.parse(date = it, format = "dd-MM-yyyy") }
             val fileDownloadLink = html.selectFirst(FILE_DOWNLOAD_LINK)?.attr("abs:href")
             val posterUrl = html.selectFirst(POSTER_URL)?.attr("src")
             val description = html.selectFirst(DESCRIPTION)

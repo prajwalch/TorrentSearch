@@ -124,7 +124,9 @@ private object TorrentDownloadDetailsPageParser {
             ?.removePrefix("Leechers: ")
             ?.trim()
             ?.toUIntOrNull()
-        val uploadDate = html.selectFirst(UPLOAD_DATE)?.ownText()
+        val uploadDate = html.selectFirst(UPLOAD_DATE)
+            ?.ownText()
+            ?.let { TorrentDateParser.parse(date = it, format = "d MMMM yyyy") }
         val category = html.selectFirst(CATEGORY)?.ownText()?.let(::categoryFromRawString)
         val fileDownloadLink = html.selectFirst(FILE_DOWNLOAD_LINK)?.attr("href")
 

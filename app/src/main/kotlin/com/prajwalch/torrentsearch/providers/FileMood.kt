@@ -4,6 +4,7 @@ import com.prajwalch.torrentsearch.domain.model.Category
 import com.prajwalch.torrentsearch.domain.model.Torrent
 import com.prajwalch.torrentsearch.domain.model.TorrentDetails
 import com.prajwalch.torrentsearch.network.HttpClient
+import com.prajwalch.torrentsearch.util.TorrentDateParser
 import com.prajwalch.torrentsearch.util.TorrentUtils
 
 import kotlinx.coroutines.Dispatchers
@@ -103,7 +104,10 @@ private object FileMoodDetailsPageParser {
             ?: return@withContext null
         val magnetUri = TorrentUtils.createMagnetUri(infoHash)
         val size = html.selectFirst(SIZE)?.ownText()
-        val lastChecked = html.selectFirst(LAST_CHECKED)?.ownText()?.takeIf { it.isNotBlank() }
+        val lastChecked = html.selectFirst(LAST_CHECKED)?.ownText()
+            ?.takeIf { it.isNotBlank() }
+            ?.takeWhile { !it.isWhitespace() }
+            ?.let { TorrentDateParser.parse(date = it, format = "yyyy-MM-dd") }
 
         TorrentDetails(
             infoHash = infoHash,

@@ -9,7 +9,6 @@ import com.prajwalch.torrentsearch.extension.getLong
 import com.prajwalch.torrentsearch.extension.getObject
 import com.prajwalch.torrentsearch.extension.getString
 import com.prajwalch.torrentsearch.network.HttpClient
-import com.prajwalch.torrentsearch.util.DateUtils
 import com.prajwalch.torrentsearch.util.FileSizeUtils
 import com.prajwalch.torrentsearch.util.TorrentDateParser
 import com.prajwalch.torrentsearch.util.TorrentUtils
@@ -120,12 +119,14 @@ private class IAResultsJsonParser(
 
 private object IAMetadataJsonParser {
     suspend fun parse(json: JsonObject): TorrentDetails? = withContext(Dispatchers.Default) {
-        val lastChecked = json.getLong("item_last_updated")?.let(DateUtils::formatEpochSecond)
+        val lastChecked = json.getLong("item_last_updated")
+            ?.let(TorrentDateParser::epochSecondToInstant)
         val size = json.getLong("item_size")?.toFloat()?.let(FileSizeUtils::formatBytes)
 
         val metadataObj = json.getObject("metadata") ?: return@withContext null
         val name = metadataObj.getString("title") ?: return@withContext null
         val uploadDate = metadataObj.getString("publicdate")
+            ?.let { TorrentDateParser.parse(date = it, format = "yyyy-MM-dd HH:mm:ss") }
         val uploader = metadataObj.getString("uploader")
         val description = metadataObj.getString("description")
         val category = metadataObj.getString("metadata")?.let(::categoryFromMediaType)
