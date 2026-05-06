@@ -3,9 +3,11 @@ package com.prajwalch.torrentsearch.util
 import java.time.Duration
 import java.time.Instant
 import java.time.LocalDate
+import java.time.LocalDateTime
 import java.time.OffsetDateTime
 import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
+import java.time.format.DateTimeParseException
 
 object TorrentDateParser {
     private val RelativeTimePattern = Regex(
@@ -17,9 +19,16 @@ object TorrentDateParser {
 
     fun parse(date: String, format: String): Instant? {
         val inputFormatter = DateTimeFormatter.ofPattern(format)
-        return LocalDate.parse(date, inputFormatter)
-            .atStartOfDay(DefaultTimeZone)
-            .toInstant()
+        
+        return try {
+            LocalDateTime.parse(date, inputFormatter)
+                .toInstant(DefaultTimeZone)
+        } catch (_: DateTimeParseException) {
+            // No time component in format, fallback to date only.
+            LocalDate.parse(date, inputFormatter)
+                .atStartOfDay(DefaultTimeZone)
+                .toInstant()
+        }
     }
 
     fun tryParseRelative(date: String): Instant? {
