@@ -19,7 +19,7 @@ object TorrentDateParser {
 
     fun parse(date: String, format: String): Instant? {
         val inputFormatter = DateTimeFormatter.ofPattern(format)
-        
+
         return try {
             LocalDateTime.parse(date, inputFormatter)
                 .toInstant(DefaultTimeZone)
@@ -75,10 +75,10 @@ object TorrentDateParser {
     fun parseIso(date: String): Instant =
         OffsetDateTime.parse(date).toInstant()
 
-    fun parseRFC1123(date: String): Instant {
-        val inputFormatter = DateTimeFormatter.RFC_1123_DATE_TIME
-        return LocalDate.parse(date, inputFormatter).atStartOfDay(DefaultTimeZone).toInstant()
-    }
+    fun parseRFC1123(date: String): Instant =
+        LocalDate.parse(date, DateTimeFormatter.RFC_1123_DATE_TIME)
+            .atStartOfDay(DefaultTimeZone)
+            .toInstant()
 
     fun getTodayDate(): Instant =
         LocalDate.now(DefaultTimeZone)
