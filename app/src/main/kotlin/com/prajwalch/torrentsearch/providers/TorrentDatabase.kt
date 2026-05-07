@@ -18,7 +18,16 @@ class TorrentDatabase : SearchProvider, TorrentDetailsProvider {
     override val id = "torrentdatabase"
     override val name = "TorrentDatabase"
     override val url = "https://developify.ca"
-    override val specializedCategory = Category.All
+    override val supportedCategories = setOf(
+        Category.Anime,
+        Category.Apps,
+        Category.Books,
+        Category.Games,
+        Category.Movies,
+        Category.Music,
+        Category.Porn,
+        Category.Series,
+    )
     override val safetyStatus = SearchProviderSafetyStatus.Safe
     override val enabledByDefault = false
 

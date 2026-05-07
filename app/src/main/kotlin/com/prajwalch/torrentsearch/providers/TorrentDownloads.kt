@@ -18,8 +18,17 @@ class TorrentDownloads : SearchProvider {
     override val id = "torrentdownloads"
     override val name = "TorrentDownloads"
     override val url = "https://torrentdownloads.pro"
-    override val specializedCategory = Category.All
     override val safetyStatus = SearchProviderSafetyStatus.Safe
+    override val supportedCategories = setOf(
+        Category.Anime,
+        Category.Apps,
+        Category.Books,
+        Category.Games,
+        Category.Movies,
+        Category.Music,
+        Category.Series,
+        Category.Other,
+    )
     override val enabledByDefault = true
 
     override suspend fun search(query: String, context: SearchContext): List<Torrent> {

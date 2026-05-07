@@ -19,7 +19,16 @@ class UIndex : SearchProvider, TorrentDetailsProvider {
     override val id = "uindex"
     override val name = "UIndex"
     override val url = "https://uindex.org"
-    override val specializedCategory = Category.All
+    override val supportedCategories = setOf(
+        Category.Anime,
+        Category.Apps,
+        Category.Games,
+        Category.Movies,
+        Category.Music,
+        Category.Porn,
+        Category.Series,
+        Category.Other,
+    )
     override val safetyStatus = SearchProviderSafetyStatus.Safe
     override val enabledByDefault = true
 

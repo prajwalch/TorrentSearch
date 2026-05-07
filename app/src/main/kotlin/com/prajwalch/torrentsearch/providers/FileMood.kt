@@ -17,7 +17,7 @@ class FileMood : SearchProvider, TorrentDetailsProvider {
     override val id = "filemood"
     override val name = "FileMood"
     override val url = "https://filemood.com"
-    override val specializedCategory = Category.Other
+    override val supportedCategories = setOf(Category.Other)
     override val safetyStatus = SearchProviderSafetyStatus.Safe
     override val enabledByDefault = false
 

@@ -17,7 +17,17 @@ class TorrentDownload : SearchProvider, TorrentDetailsProvider {
     override val id = "torrentdownloadinfo"
     override val name = "TorrentDownload"
     override val url = "https://torrentdownload.info"
-    override val specializedCategory = Category.All
+    override val supportedCategories = setOf(
+        Category.Anime,
+        Category.Apps,
+        Category.Books,
+        Category.Games,
+        Category.Movies,
+        Category.Music,
+        Category.Porn,
+        Category.Series,
+        Category.Other,
+    )
     override val safetyStatus = SearchProviderSafetyStatus.Safe
     override val enabledByDefault = false
 

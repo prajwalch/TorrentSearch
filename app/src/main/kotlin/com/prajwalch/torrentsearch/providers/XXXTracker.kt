@@ -17,7 +17,7 @@ class XXXTracker : SearchProvider, TorrentDetailsProvider {
     override val id = "xxxtracker"
     override val name = "XXXTracker"
     override val url = "https://xxxtor.com"
-    override val specializedCategory = Category.Porn
+    override val supportedCategories = setOf(Category.Porn)
     override val safetyStatus = SearchProviderSafetyStatus.Safe
     override val enabledByDefault = false
 
@@ -79,7 +79,7 @@ class XXXTracker : SearchProvider, TorrentDetailsProvider {
             seeders = seeders.toUIntOrNull() ?: 0U,
             peers = peers.toUIntOrNull() ?: 0U,
             uploadDate = uploadDate,
-            category = specializedCategory,
+            category = Category.Porn,
             descriptionPageUrl = descriptionPageUrl,
             providerName = this.name,
             magnetUri = magnetUri,

@@ -23,7 +23,15 @@ class LimeTorrents : SearchProvider, TorrentDetailsProvider {
     override val id = "limetorrents"
     override val name = "LimeTorrents"
     override val url = "https://limetorrents.lol"
-    override val specializedCategory = Category.All
+    override val supportedCategories = setOf(
+        Category.Anime,
+        Category.Apps,
+        Category.Games,
+        Category.Movies,
+        Category.Music,
+        Category.Series,
+        Category.Other,
+    )
     override val safetyStatus = SearchProviderSafetyStatus.Unsafe(
         reason = R.string.limetorrents_unsafe_reason,
     )
@@ -57,9 +65,7 @@ class LimeTorrents : SearchProvider, TorrentDetailsProvider {
     }
 }
 
-private class LimeTorrentsResultsPageParser(
-    private val providerName: String,
-) {
+private class LimeTorrentsResultsPageParser(private val providerName: String) {
     suspend fun parse(html: String, pageUrl: String): List<Torrent> =
         withContext(Dispatchers.Default) {
             val rows = Jsoup.parse(html, pageUrl).select(".table2 > tbody > tr[bgcolor]")

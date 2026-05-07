@@ -21,7 +21,17 @@ class TheRarBg : SearchProvider, TorrentDetailsProvider {
     override val id = "therarbag"
     override val name = "TheRarBg"
     override val url = "https://therarbg.com"
-    override val specializedCategory = Category.All
+    override val supportedCategories = setOf(
+        Category.Anime,
+        Category.Apps,
+        Category.Books,
+        Category.Games,
+        Category.Movies,
+        Category.Music,
+        Category.Porn,
+        Category.Series,
+        Category.Other,
+    )
     override val safetyStatus = SearchProviderSafetyStatus.Unsafe(
         reason = R.string.therarbg_unsafe_reason
     )

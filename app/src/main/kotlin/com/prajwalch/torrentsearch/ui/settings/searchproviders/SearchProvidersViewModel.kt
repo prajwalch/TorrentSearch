@@ -36,13 +36,18 @@ class SearchProvidersViewModel @Inject constructor(
     settingsRepository: SettingsRepository,
 ) : ViewModel() {
     private val selectedCategory = MutableStateFlow<Category?>(null)
+    private val allCategories = Category.entries.filterNot { it == Category.All }.toSet()
 
     private val searchProviderInfos =
         combine(
             selectedCategory,
             searchProvidersManager.getProviderInfos()
         ) { filterCategory, infos ->
-            infos.filter { filterCategory == null || it.specializedCategory == filterCategory }
+            when (filterCategory) {
+                null -> infos
+                Category.All -> infos.filter { it.supportedCategories.containsAll(allCategories) }
+                else -> infos.filter { filterCategory in it.supportedCategories }
+            }
         }
 
     val uiState = combine(

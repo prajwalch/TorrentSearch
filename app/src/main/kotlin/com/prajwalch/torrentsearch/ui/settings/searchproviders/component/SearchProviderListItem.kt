@@ -5,6 +5,7 @@ import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.FilledTonalIconButton
@@ -22,13 +23,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
 
 import com.prajwalch.torrentsearch.R
 import com.prajwalch.torrentsearch.domain.model.Category
 import com.prajwalch.torrentsearch.providers.SearchProviderSafetyStatus
 import com.prajwalch.torrentsearch.providers.SearchProviderType
-import com.prajwalch.torrentsearch.ui.component.BadgeRow
-import com.prajwalch.torrentsearch.ui.component.CategoryBadge
+import com.prajwalch.torrentsearch.ui.categoryStringResource
 import com.prajwalch.torrentsearch.ui.component.TorznabBadge
 import com.prajwalch.torrentsearch.ui.component.UnsafeBadge
 import com.prajwalch.torrentsearch.ui.theme.spaces
@@ -37,7 +38,7 @@ import com.prajwalch.torrentsearch.ui.theme.spaces
 fun SearchProviderListItem(
     name: String,
     url: String,
-    category: Category,
+    supportedCategories: Set<Category>,
     type: SearchProviderType,
     safetyStatus: SearchProviderSafetyStatus,
     enabled: Boolean,
@@ -83,11 +84,32 @@ fun SearchProviderListItem(
                     ),
                 ) {
                     SearchProviderUrl(url = url)
-                    BadgeRow {
-                        CategoryBadge(category)
+                    // TODO: Use new UI.
+                    FlowRow(
+                        horizontalArrangement = Arrangement.spacedBy(MaterialTheme.spaces.extraSmall),
+                        verticalArrangement = Arrangement.spacedBy(MaterialTheme.spaces.extraSmall),
+                    ) {
+                        val cats = buildString {
+                            supportedCategories.forEachIndexed { index, category ->
+                                append(categoryStringResource(category))
+                                if (index != supportedCategories.size - 1) {
+                                    append(", ")
+                                }
+                            }
+                        }
+                        Text(text = cats, color = MaterialTheme.colorScheme.secondary)
+//                        categories.forEach {
+//                            Text(text = categoryStringResource(it))
+//                        }
+//                        categories.forEach { CategoryBadge(it) }
                         if (type == SearchProviderType.Torznab) TorznabBadge()
                         if (safetyStatus.isUnsafe()) UnsafeBadge()
                     }
+//                    BadgeRow {
+////                        CategoryBadge(category)
+//                        if (type == SearchProviderType.Torznab) TorznabBadge()
+//                        if (safetyStatus.isUnsafe()) UnsafeBadge()
+//                    }
                 }
             },
             trailingContent = {
@@ -132,4 +154,20 @@ private fun QuestionMarkButton(
             contentDescription = null,
         )
     }
+}
+
+@Preview
+@Composable
+private fun SearchProviderListItemPreview() {
+    SearchProviderListItem(
+        name = "ThePirateBay",
+        url = "https://thepiratebay.org",
+        supportedCategories = Category.entries.toSet(),
+        type = SearchProviderType.Builtin,
+        safetyStatus = SearchProviderSafetyStatus.Safe,
+        enabled = true,
+        onEnable = {},
+        onEditConfig = {},
+        onDeleteConfig = {},
+    )
 }

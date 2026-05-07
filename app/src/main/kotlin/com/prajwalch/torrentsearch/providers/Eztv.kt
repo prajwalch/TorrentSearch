@@ -14,7 +14,7 @@ class Eztv : SearchProvider {
     override val id = "eztvx"
     override val name = "Eztv"
     override val url = "https://eztvx.to"
-    override val specializedCategory = Category.Series
+    override val supportedCategories = setOf(Category.Series)
     override val safetyStatus = SearchProviderSafetyStatus.Safe
     override val enabledByDefault = true
 
@@ -117,7 +117,7 @@ class Eztv : SearchProvider {
             peers = peers,
             providerName = name,
 //            uploadDate = uploadDate,
-            category = specializedCategory,
+            category = Category.Series,
             descriptionPageUrl = descriptionPageUrl,
             magnetUri = magnetUri,
         )

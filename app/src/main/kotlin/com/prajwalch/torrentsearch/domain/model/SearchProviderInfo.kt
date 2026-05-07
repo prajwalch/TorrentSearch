@@ -12,8 +12,8 @@ data class SearchProviderInfo(
     val name: String,
     /** URL of the search provider. */
     val url: String,
-    /** Category in which the provider specializes. */
-    val specializedCategory: Category,
+    /** Categories supported by the search provider. */
+    val supportedCategories: Set<Category> = emptySet(),
     /** Safety status of the search provider */
     val safetyStatus: SearchProviderSafetyStatus,
     /** Type of search provider. */

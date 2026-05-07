@@ -14,7 +14,7 @@ class AniRena : SearchProvider {
     override val id = "anirena"
     override val name = "AniRena"
     override val url = "https://anirena.com"
-    override val specializedCategory = Category.Anime
+    override val supportedCategories = setOf(Category.Anime)
     override val safetyStatus = SearchProviderSafetyStatus.Safe
     override val enabledByDefault = false
 
@@ -88,10 +88,7 @@ class AniRena : SearchProvider {
             size = size,
             seeders = seeders,
             peers = peers,
-            // Getting upload date requires an additional request to
-            // 'anirena.com/torrent_details.php?id={id}'. The ID can be found in
-            // the 'id' attribute of the element next to given div as 'details{id}'.
-            category = specializedCategory,
+            category = Category.Anime,
             providerName = name,
             descriptionPageUrl = "",
             magnetUri = magnetUri,

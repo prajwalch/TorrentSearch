@@ -19,14 +19,11 @@ class MyPornClub : SearchProvider, TorrentDetailsProvider {
     override val id = "mypornclub"
     override val name = "MyPornClub"
     override val url = "https://myporn.club"
-    override val specializedCategory = Category.Porn
+    override val supportedCategories = setOf(Category.Porn)
     override val safetyStatus = SearchProviderSafetyStatus.Safe
     override val enabledByDefault = false
 
-    private val resultsPageParser = MyPornClubResultsPageParser(
-        providerName = name,
-        providerSpecializedCategory = specializedCategory,
-    )
+    private val resultsPageParser = MyPornClubResultsPageParser(providerName = name)
 
     override suspend fun search(query: String, context: SearchContext): List<Torrent> {
         val formattedQuery = query.trim().replace("%20", "-")
@@ -43,10 +40,7 @@ class MyPornClub : SearchProvider, TorrentDetailsProvider {
     }
 }
 
-private class MyPornClubResultsPageParser(
-    private val providerName: String,
-    private val providerSpecializedCategory: Category,
-) {
+private class MyPornClubResultsPageParser(private val providerName: String) {
     suspend fun parse(html: String, pageUrl: String): List<Torrent> =
         withContext(Dispatchers.Default) {
             Jsoup
@@ -83,7 +77,7 @@ private class MyPornClubResultsPageParser(
             peers = peers ?: 0U,
             providerName = providerName,
             uploadDate = uploadDate,
-            category = providerSpecializedCategory,
+            category = Category.Porn,
             descriptionPageUrl = detailsPageUrl,
             magnetUri = torrentDetails.magnetUri,
             fileDownloadLink = torrentDetails.fileDownloadLink,

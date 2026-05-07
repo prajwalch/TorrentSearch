@@ -28,7 +28,7 @@ fun SearchProviderList(
                 modifier = Modifier.animateItem(),
                 name = it.name,
                 url = it.url,
-                category = it.specializedCategory,
+                supportedCategories = it.supportedCategories,
                 type = it.type,
                 safetyStatus = it.safetyStatus,
                 enabled = it.isEnabled,

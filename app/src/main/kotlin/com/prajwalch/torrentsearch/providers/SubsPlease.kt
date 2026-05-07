@@ -20,7 +20,7 @@ class SubsPlease : SearchProvider {
     override val id = "subsplease"
     override val name = "SubsPlease"
     override val url = "https://subsplease.org"
-    override val specializedCategory = Category.Anime
+    override val supportedCategories = setOf(Category.Anime)
     override val safetyStatus = SearchProviderSafetyStatus.Safe
     override val enabledByDefault = false
 
@@ -69,7 +69,7 @@ class SubsPlease : SearchProvider {
                     seeders = 1U,
                     peers = 1U,
                     uploadDate = uploadDate,
-                    category = specializedCategory,
+                    category = Category.Anime,
                     descriptionPageUrl = descriptionPageUrl,
                     magnetUri = downloadLink.magnetUri,
                     providerName = this.name,

@@ -17,13 +17,19 @@ class Nyaa : SearchProvider, TorrentDetailsProvider {
     override val id = "nyaasi"
     override val name = "Nyaa"
     override val url = "https://nyaa.si"
-    override val specializedCategory = Category.Anime
+    override val supportedCategories = setOf(
+        Category.Anime,
+        Category.Apps,
+        Category.Books,
+        Category.Games,
+        Category.Music,
+        Category.Series,
+    )
     override val safetyStatus = SearchProviderSafetyStatus.Safe
     override val enabledByDefault = true
 
     private val resultsPageParser = NyaaResultsPageParser(
         providerName = name,
-        specializedCategory = specializedCategory,
     )
 
     override suspend fun search(query: String, context: SearchContext): List<Torrent> {
@@ -46,10 +52,7 @@ class Nyaa : SearchProvider, TorrentDetailsProvider {
     }
 }
 
-private class NyaaResultsPageParser(
-    private val providerName: String,
-    private val specializedCategory: Category,
-) {
+private class NyaaResultsPageParser(private val providerName: String) {
     /**
      * Parses the result page and returns all the extracted torrents, otherwise
      * returns `null` if the page has unexpected layout.
@@ -76,6 +79,10 @@ private class NyaaResultsPageParser(
             ?.attr("data-timestamp")
             ?.toLongOrNull()
             ?.let(TorrentDateParser::epochSecondToInstant)
+        val category = listItem.selectFirst(CATEGORY)
+            ?.attr("href")
+            ?.removePrefix("/?c=")
+            ?.let(::categoryFromId)
         val seeders = listItem.selectFirst(SEEDERS)?.ownText()?.toUIntOrNull()
         val peers = listItem.selectFirst(PEERS)?.ownText()?.toUIntOrNull()
 
@@ -87,7 +94,7 @@ private class NyaaResultsPageParser(
             peers = peers ?: 0u,
             providerName = providerName,
             uploadDate = uploadDate,
-            category = specializedCategory,
+            category = category,
             magnetUri = magnetUri,
             fileDownloadLink = fileDownloadLink,
             descriptionPageUrl = detailsPageUrl ?: "",
@@ -101,6 +108,7 @@ private class NyaaResultsPageParser(
         private const val SEEDERS = "td:nth-child(6)"
         private const val PEERS = "td:nth-child(7)"
         private const val UPLOAD_DATE = "td:nth-child(5)"
+        private const val CATEGORY = "td:nth-child(1) > a"
         private const val MAGNET_URI = "td:nth-child(3) > a:nth-child(2)"
         private const val FILE_DOWNLOAD_LINK = "td:nth-child(3) > a:nth-child(1)"
         private const val DETAILS_PAGE_URL = TORRENT_NAME
@@ -156,4 +164,15 @@ private object NyaaDetailsPageParser {
                 description = description,
             )
         }
+}
+
+private fun categoryFromId(id: String): Category = when (id) {
+    "1_0", "1_1", "1_2", "1_3", "1_4" -> Category.Anime
+    "2_0", "2_1", "2_2" -> Category.Music
+    "3_0", "3_1", "3_2", "3_3" -> Category.Books
+    "4_0", "4_1", "4_2", "4_3", "4_4" -> Category.Series
+    "5_0", "5_1", "5_2" -> Category.Other
+    "6_0", "6_1" -> Category.Apps
+    "6_2" -> Category.Games
+    else -> Category.Other
 }

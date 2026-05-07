@@ -20,7 +20,17 @@ class BitSearch : SearchProvider, TorrentDetailsProvider {
     override val id = "bitsearch"
     override val name = "BitSearch"
     override val url = "https://bitsearch.to"
-    override val specializedCategory = Category.All
+    override val supportedCategories: Set<Category> = setOf(
+        Category.Anime,
+        Category.Apps,
+        Category.Books,
+        Category.Games,
+        Category.Movies,
+        Category.Music,
+        Category.Porn,
+        Category.Series,
+        Category.Other,
+    )
     override val safetyStatus = SearchProviderSafetyStatus.Safe
     override val enabledByDefault = false
     override val type = SearchProviderType.Builtin
@@ -64,7 +74,7 @@ class BitSearch : SearchProvider, TorrentDetailsProvider {
         }
 
         val responseHtml = httpClient.get(url = requestUrl)
-        return resultsPageParser.parse(html = responseHtml, pageUrl = requestUrl).orEmpty()
+        return resultsPageParser.parse(html = responseHtml, pageUrl = requestUrl)
     }
 
     private fun getCategoryId(category: Category): Int? = when (category) {
@@ -86,10 +96,8 @@ class BitSearch : SearchProvider, TorrentDetailsProvider {
     }
 }
 
-private class BitSearchResultsPageParser(
-    private val providerName: String,
-) {
-    suspend fun parse(html: String, pageUrl: String): List<Torrent>? =
+private class BitSearchResultsPageParser(private val providerName: String) {
+    suspend fun parse(html: String, pageUrl: String): List<Torrent> =
         withContext(Dispatchers.Default) {
             Jsoup
                 .parse(html, pageUrl)

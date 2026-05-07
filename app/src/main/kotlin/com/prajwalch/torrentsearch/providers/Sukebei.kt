@@ -17,14 +17,11 @@ class Sukebei : SearchProvider, TorrentDetailsProvider {
     override val id = "sukebeinyaa"
     override val name = "Sukebei"
     override val url = "https://sukebei.nyaa.si"
-    override val specializedCategory = Category.Porn
+    override val supportedCategories = setOf(Category.Porn)
     override val safetyStatus = SearchProviderSafetyStatus.Safe
     override val enabledByDefault = false
 
-    private val resultsPageParser = SukebeiResultsPageParser(
-        providerName = name,
-        providerSpecializedCategory = specializedCategory,
-    )
+    private val resultsPageParser = SukebeiResultsPageParser(providerName = name)
 
     override suspend fun search(query: String, context: SearchContext): List<Torrent> {
         val requestUrl = buildString {
@@ -46,10 +43,7 @@ class Sukebei : SearchProvider, TorrentDetailsProvider {
     }
 }
 
-private class SukebeiResultsPageParser(
-    private val providerName: String,
-    private val providerSpecializedCategory: Category,
-) {
+private class SukebeiResultsPageParser(private val providerName: String) {
     suspend fun parse(html: String, pageUrl: String): List<Torrent> =
         withContext(Dispatchers.Default) {
             Jsoup
@@ -79,7 +73,7 @@ private class SukebeiResultsPageParser(
             peers = peers ?: 0u,
             providerName = providerName,
             uploadDate = uploadDate,
-            category = providerSpecializedCategory,
+            category = Category.Porn,
             descriptionPageUrl = detailsPageUrl ?: "",
             magnetUri = magnetUri,
             fileDownloadLink = fileDownloadLink,
@@ -109,9 +103,6 @@ private object SukebeiDetailsPageParser {
         "body > div > div:nth-child(7) > div.panel-body > div:nth-child(3) > div:nth-child(4)"
     private const val UPLOAD_DATE =
         "body > div > div:nth-child(7) > div.panel-body > div:nth-child(1) > div:nth-child(4)"
-
-    //    private const val CATEGORY =
-//        "body > div > div:nth-child(7) > div.panel-body > div:nth-child(1) > div:nth-child(2)"
     private const val UPLOADER =
         "body > div > div:nth-child(7) > div.panel-body > div:nth-child(2) > div:nth-child(2)"
     private const val DESCRIPTION = "#torrent-description"

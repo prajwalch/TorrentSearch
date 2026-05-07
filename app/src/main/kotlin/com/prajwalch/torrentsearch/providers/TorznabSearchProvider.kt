@@ -58,7 +58,6 @@ class TorznabSearchProvider(private val config: TorznabConfig) : SearchProvider 
     override val id = config.id
     override val name = config.searchProviderName
     override val url = config.url
-    override val specializedCategory = config.category
     override val safetyStatus = SearchProviderSafetyStatus.Safe
     override val enabledByDefault = false
     override val type = SearchProviderType.Torznab

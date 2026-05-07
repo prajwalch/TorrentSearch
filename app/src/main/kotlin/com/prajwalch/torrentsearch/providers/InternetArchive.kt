@@ -21,7 +21,12 @@ class InternetArchive : SearchProvider, TorrentDetailsProvider {
     override val id = "internetarchive"
     override val name = "InternetArchive"
     override val url = "https://archive.org"
-    override val specializedCategory = Category.All
+    override val supportedCategories = setOf(
+        Category.Apps,
+        Category.Books,
+        Category.Movies,
+        Category.Other,
+    )
     override val safetyStatus = SearchProviderSafetyStatus.Safe
     override val enabledByDefault = false
 

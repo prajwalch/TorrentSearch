@@ -26,7 +26,17 @@ class Knaben : SearchProvider {
     override val id = "knaben"
     override val name = "Knaben"
     override val url = "https://knaben.org"
-    override val specializedCategory = Category.All
+    override val supportedCategories = setOf(
+        Category.Anime,
+        Category.Apps,
+        Category.Books,
+        Category.Games,
+        Category.Movies,
+        Category.Music,
+        Category.Other,
+        Category.Porn,
+        Category.Series,
+    )
     override val safetyStatus = SearchProviderSafetyStatus.Safe
     override val enabledByDefault = true
 

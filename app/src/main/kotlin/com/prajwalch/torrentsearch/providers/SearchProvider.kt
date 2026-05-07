@@ -24,8 +24,14 @@ interface SearchProvider {
     /** URL of the search provider. */
     val url: String
 
-    /** Category in which the provider specializes. */
-    val specializedCategory: Category
+    /**
+     * Categories supported by the search provider.
+     *
+     * Include a category if the upstream server either accepts it as a search
+     * parameter, or classifies returned results with it even without supporting
+     * category-based search.
+     */
+    val supportedCategories: Set<Category> get() = emptySet()
 
     /** Safety status of the search provider */
     val safetyStatus: SearchProviderSafetyStatus

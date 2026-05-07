@@ -1,6 +1,5 @@
 package com.prajwalch.torrentsearch.providers
 
-import com.prajwalch.torrentsearch.domain.model.Category
 import com.prajwalch.torrentsearch.domain.model.Torrent
 import com.prajwalch.torrentsearch.extension.asObject
 import com.prajwalch.torrentsearch.extension.getArray
@@ -18,7 +17,6 @@ class TorrentsCSV : SearchProvider {
     override val id = "torrentscsv"
     override val name = "TorrentsCSV"
     override val url = "https://torrents-csv.com"
-    override val specializedCategory = Category.All
     override val safetyStatus = SearchProviderSafetyStatus.Safe
     override val enabledByDefault = true
 

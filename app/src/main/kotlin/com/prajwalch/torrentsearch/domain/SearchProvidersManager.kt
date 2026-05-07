@@ -47,10 +47,11 @@ class SearchProvidersManager @Inject constructor(
      */
     suspend fun getEnabledProvidersByCategory(category: Category): List<SearchProvider> {
         val enabledProviders = getEnabledProviders()
-        if (category == Category.All) return enabledProviders
 
-        return enabledProviders.filter {
-            it.specializedCategory == Category.All || it.specializedCategory == category
+        return if (category == Category.All) {
+            enabledProviders
+        } else {
+            enabledProviders.filter { category in it.supportedCategories }
         }
     }
 
@@ -137,9 +138,12 @@ class SearchProvidersManager @Inject constructor(
         val enabledProviderIds = settingsRepository.enabledSearchProvidersId.firstOrNull()
         if (enabledProviderIds.isNullOrEmpty()) return
 
+        val nsfwCategories = Category.entries.filter { it.isNSFW }
         val enabledUnsafeProviderIds = builtinProviders
             .filter { it.id in enabledProviderIds }
-            .filter { it.specializedCategory.isNSFW || it.safetyStatus.isUnsafe() }
+            .filter {
+                it.supportedCategories.containsAll(nsfwCategories) || it.safetyStatus.isUnsafe()
+            }
             .map { it.id }
             .toSet()
 
@@ -215,7 +219,7 @@ fun SearchProvider.getInfo(isEnabled: Boolean) =
         id = this.id,
         name = this.name,
         url = this.url,
-        specializedCategory = this.specializedCategory,
+        supportedCategories = this.supportedCategories,
         safetyStatus = this.safetyStatus,
         type = this.type,
         isEnabled = isEnabled,
@@ -226,7 +230,7 @@ fun TorznabConfig.getInfo(isEnabled: Boolean) =
         id = this.id,
         name = this.searchProviderName,
         url = this.url,
-        specializedCategory = this.category,
+        supportedCategories = setOf(this.category),
         safetyStatus = SearchProviderSafetyStatus.Safe,
         type = SearchProviderType.Torznab,
         isEnabled = isEnabled,

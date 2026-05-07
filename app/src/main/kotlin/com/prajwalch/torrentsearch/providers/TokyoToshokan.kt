@@ -18,14 +18,17 @@ class TokyoToshokan : SearchProvider, TorrentDetailsProvider {
     override val id = "tokyotoshokan"
     override val name = "TokyoToshokan"
     override val url = "https://tokyotosho.info"
-    override val specializedCategory = Category.Anime
+    override val supportedCategories = setOf(
+        Category.Anime,
+        Category.Books,
+        Category.Music,
+        Category.Porn,
+        Category.Other,
+    )
     override val safetyStatus = SearchProviderSafetyStatus.Safe
     override val enabledByDefault = true
 
-    private val resultsPageParser = TokyoToshokanResultsPageParser(
-        providerName = name,
-        providerSpecializedCategory = specializedCategory,
-    )
+    private val resultsPageParser = TokyoToshokanResultsPageParser(providerName = name)
 
     override suspend fun search(query: String, context: SearchContext): List<Torrent> {
         val requestUrl = buildString {
@@ -39,7 +42,7 @@ class TokyoToshokan : SearchProvider, TorrentDetailsProvider {
         }
 
         val responseHtml = context.httpClient.get(url = requestUrl)
-        return resultsPageParser.parse(html = responseHtml, pageUrl = requestUrl).orEmpty()
+        return resultsPageParser.parse(html = responseHtml, pageUrl = requestUrl)
     }
 
     override suspend fun getDetails(detailsPageUrl: String): TorrentDetails? {
@@ -48,11 +51,8 @@ class TokyoToshokan : SearchProvider, TorrentDetailsProvider {
     }
 }
 
-private class TokyoToshokanResultsPageParser(
-    private val providerName: String,
-    private val providerSpecializedCategory: Category,
-) {
-    suspend fun parse(html: String, pageUrl: String): List<Torrent>? =
+private class TokyoToshokanResultsPageParser(private val providerName: String) {
+    suspend fun parse(html: String, pageUrl: String): List<Torrent> =
         withContext(Dispatchers.Default) {
             Jsoup
                 .parse(html, pageUrl)
@@ -66,6 +66,10 @@ private class TokyoToshokanResultsPageParser(
         val magnetUri = tr1.selectFirst(MAGNET_URI)?.attr("href") ?: return null
         val fileDownloadLink = tr1.selectFirst(FILE_DOWNLOAD_LINK)?.attr("abs:href")
         val detailsPageUrl = tr1.selectFirst(DETAILS_PAGE_URL)?.attr("abs:href")
+        val category = tr1.selectFirst(CATEGORY)
+            ?.attr("href")
+            ?.removePrefix("/?cat=")
+            ?.let(::categoryFromId)
 
         val (rawSize, rawUploadDate) = tr2.selectFirst(SIZE_AND_UPLOAD_DATE)
             ?.ownText()
@@ -74,10 +78,9 @@ private class TokyoToshokanResultsPageParser(
             ?.map { it.trim().dropWhile { ch -> !ch.isWhitespace() }.trim() }
             ?: listOf(null, null)
         val size = rawSize?.let(FileSizeUtils::normalizeSize)
-        val uploadDate = rawUploadDate
-            ?.let { TorrentDateParser.parse(date = it, format = "yyyy-MM-dd HH:mm z") }
-
-        // Seeders and peers.
+        val uploadDate = rawUploadDate?.let {
+            TorrentDateParser.parse(date = it, format = "yyyy-MM-dd HH:mm z")
+        }
         val seeders = tr2.selectFirst(SEEDERS)?.ownText()?.toUIntOrNull()
         val peers = tr2.selectFirst(PEERS)?.ownText()?.toUIntOrNull()
 
@@ -89,7 +92,7 @@ private class TokyoToshokanResultsPageParser(
             peers = peers ?: 0u,
             providerName = providerName,
             uploadDate = uploadDate,
-            category = providerSpecializedCategory,
+            category = category,
             descriptionPageUrl = detailsPageUrl ?: "",
             magnetUri = magnetUri,
             fileDownloadLink = fileDownloadLink,
@@ -102,6 +105,7 @@ private class TokyoToshokanResultsPageParser(
         private const val SIZE_AND_UPLOAD_DATE = "td.desc-bot"
         private const val SEEDERS = "td.stats > span:nth-child(1)"
         private const val PEERS = "td.stats > span:nth-child(2)"
+        private const val CATEGORY = "td:nth-child(1) > a"
         private const val MAGNET_URI = "td.desc-top > a:nth-child(1)"
         private const val FILE_DOWNLOAD_LINK = NAME
         private const val DETAILS_PAGE_URL = "td.web > a:last-child"
@@ -115,8 +119,7 @@ private object TokyoToshokanDetailsPageParser {
     private const val SEEDERS = "#main > div.details > ul > li:nth-child(20)"
     private const val PEERS = "#main > div.details > ul > li:nth-child(22)"
     private const val UPLOAD_DATE = "#main > div.details > ul > li:nth-child(8)"
-
-    //    private const val CATEGORY = "#main > div.details > ul > li:nth-child(2)"
+    private const val CATEGORY = "#main > div.details > ul > li:nth-child(2) > a"
     private const val UPLOADER = "#main > div.details > ul > li:nth-child(28)"
     private const val MAGNET_URI = """a[href^="magnet:?"]"""
 
@@ -132,7 +135,8 @@ private object TokyoToshokanDetailsPageParser {
                 null
             }
             val infoHash = html.selectFirst(INFO_HASH)?.ownText() ?: return@withContext null
-            val magnetUri = html.selectFirst(MAGNET_URI)?.attr("href")
+            val magnetUri = html.selectFirst(MAGNET_URI)
+                ?.attr("href")
                 ?: TorrentUtils.createMagnetUri(infoHash)
             val size = html.selectFirst(SIZE)?.ownText()?.let(FileSizeUtils::normalizeSize)
             val seeders = html.selectFirst(SEEDERS)?.ownText()?.toUIntOrNull()
@@ -140,7 +144,10 @@ private object TokyoToshokanDetailsPageParser {
             val uploadDate = html.selectFirst(UPLOAD_DATE)
                 ?.ownText()
                 ?.let { TorrentDateParser.parse(date = it, format = "yyyy-MM-dd hh:mm z") }
-//            val category = html.selectFirst(CATEGORY)?.text()
+            val category = html.selectFirst(CATEGORY)
+                ?.attr("href")
+                ?.removePrefix("index.php?cat=")
+                ?.let(::categoryFromId)
             val uploader = html.selectFirst(UPLOADER)?.ownText()
 
             TorrentDetails(
@@ -150,10 +157,19 @@ private object TokyoToshokanDetailsPageParser {
                 seeders = seeders,
                 peers = peers,
                 uploadDate = uploadDate,
-                category = Category.Anime,
+                category = category,
                 uploader = uploader,
                 magnetUri = magnetUri,
                 fileDownloadLink = fileDownloadLink,
             )
         }
+}
+
+private fun categoryFromId(id: String): Category = when (id) {
+    "1", "7", "8", "10", "11" -> Category.Anime
+    "3" -> Category.Books
+    "2", "9" -> Category.Music
+    "4", "12", "13", "14", "15" -> Category.Porn
+    "5" -> Category.Other
+    else -> Category.Other
 }

@@ -19,7 +19,7 @@ class XXXClub : SearchProvider, TorrentDetailsProvider {
     override val id = "xxxclub"
     override val name = "XXXClub"
     override val url = "https://xxxclub.to"
-    override val specializedCategory = Category.Porn
+    override val supportedCategories = setOf(Category.Porn)
     override val safetyStatus = SearchProviderSafetyStatus.Safe
     override val enabledByDefault = false
 

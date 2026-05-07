@@ -20,7 +20,7 @@ class AnimeTosho : SearchProvider, TorrentDetailsProvider {
     override val id = "animetosho"
     override val name = "AnimeTosho"
     override val url = "https://animetosho.org"
-    override val specializedCategory = Category.Anime
+    override val supportedCategories = setOf(Category.Anime)
     override val safetyStatus = SearchProviderSafetyStatus.Safe
     override val enabledByDefault = true
 
@@ -39,10 +39,7 @@ class AnimeTosho : SearchProvider, TorrentDetailsProvider {
     }
 }
 
-private class AnimeToshoResultsPageParser(
-//    private val baseUrl: String,
-    private val providerName: String,
-) {
+private class AnimeToshoResultsPageParser(private val providerName: String) {
     suspend fun parse(html: String): List<Torrent> = withContext(Dispatchers.Default) {
         Jsoup
             .parse(html)

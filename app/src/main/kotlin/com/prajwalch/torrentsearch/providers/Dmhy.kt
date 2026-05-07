@@ -16,7 +16,14 @@ class Dmhy : SearchProvider {
     override val id = "dmhy"
     override val name = "Dmhy"
     override val url = "https://share.dmhy.org"
-    override val specializedCategory = Category.All
+    override val supportedCategories = setOf(
+        Category.Anime,
+        Category.Books,
+        Category.Games,
+        Category.Music,
+        Category.Series,
+        Category.Other,
+    )
     override val safetyStatus = SearchProviderSafetyStatus.Safe
     override val enabledByDefault = false
 
@@ -35,9 +42,7 @@ class Dmhy : SearchProvider {
     }
 }
 
-private class DmhyResultsPageParser(
-    private val providerName: String,
-) {
+private class DmhyResultsPageParser(private val providerName: String) {
     suspend fun parse(html: String, pageUrl: String): List<Torrent> =
         withContext(Dispatchers.Default) {
             Jsoup

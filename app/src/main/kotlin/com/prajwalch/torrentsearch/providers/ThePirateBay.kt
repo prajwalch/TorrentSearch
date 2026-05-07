@@ -22,7 +22,16 @@ class ThePirateBay : SearchProvider, TorrentDetailsProvider {
     override val id = "thepiratebay"
     override val name = "ThePirateBay"
     override val url = "https://thepiratebay.org"
-    override val specializedCategory = Category.All
+    override val supportedCategories = setOf(
+        Category.Apps,
+        Category.Books,
+        Category.Games,
+        Category.Movies,
+        Category.Music,
+        Category.Porn,
+        Category.Series,
+        Category.Other,
+    )
     override val safetyStatus = SearchProviderSafetyStatus.Unsafe(
         reason = R.string.tpb_unsafe_reason,
     )

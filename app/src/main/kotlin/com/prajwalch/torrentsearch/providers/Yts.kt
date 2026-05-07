@@ -18,7 +18,7 @@ class Yts : SearchProvider {
     override val id = "ytsmx"
     override val name = "Yts"
     override val url = "https://yts.bz"
-    override val specializedCategory = Category.Movies
+    override val supportedCategories = setOf(Category.Movies)
     override val safetyStatus = SearchProviderSafetyStatus.Safe
     override val enabledByDefault = true
 
@@ -183,7 +183,7 @@ class Yts : SearchProvider {
             peers = peers,
             providerName = this.name,
             uploadDate = uploadDate,
-            category = specializedCategory,
+            category = Category.Movies,
             descriptionPageUrl = descriptionPageUrl,
         )
     }
