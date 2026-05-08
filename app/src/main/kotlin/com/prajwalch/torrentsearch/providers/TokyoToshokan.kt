@@ -28,6 +28,14 @@ class TokyoToshokan : SearchProvider, TorrentDetailsProvider {
     override val safetyStatus = SearchProviderSafetyStatus.Safe
     override val enabledByDefault = true
 
+    private val categoryMap = mapOf(
+        Category.All to 0,
+        Category.Anime to 1,
+        Category.Books to 3,
+        Category.Music to 2,
+        Category.Porn to 15,
+        Category.Other to 5,
+    )
     private val resultsPageParser = TokyoToshokanResultsPageParser(providerName = name)
 
     override suspend fun search(query: String, context: SearchContext): List<Torrent> {
@@ -36,7 +44,8 @@ class TokyoToshokan : SearchProvider, TorrentDetailsProvider {
             append("/search.php")
             append("?terms=$query")
             // Type = Anime (1)
-            append("&type=1")
+            val categoryId = categoryMap[context.category] ?: categoryMap[Category.All]!!
+            append("&type=$categoryId")
             // Match query with torrent name.
             append("&searchName=true")
         }
