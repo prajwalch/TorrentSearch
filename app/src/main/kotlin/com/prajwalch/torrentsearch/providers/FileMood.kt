@@ -84,19 +84,19 @@ private class FileMoodResultsPageParser(private val providerName: String) {
 }
 
 private object FileMoodDetailsPageParser {
-    private const val NAME =
-        "#content-main-center > div > div > div.well > table:nth-child(1) > tbody > tr:nth-child(1) > td > h1 > b"
+    private const val TORRENT_NAME =
+        "div.well > table:nth-child(1) > tbody > tr:nth-child(1) > td > h1 > b"
     private const val SIZE =
-        "#content-main-center > div > div > div.well > table:nth-child(3) > tbody > tr:nth-child(2) > td:nth-child(2) > p > b"
+        "div.well > table:nth-child(3) > tbody > tr:nth-child(2) > td:nth-child(2) > p > b"
     private const val LAST_CHECKED =
-        "#content-main-center > div > div > div.well > table:nth-child(3) > tbody > tr:nth-child(4) > td:nth-child(2) > p > b"
+        "div.well > table:nth-child(3) > tbody > tr:nth-child(4) > td:nth-child(2) > p > b"
     private const val INFO_HASH =
-        "#content-main-center > div > div > div.well > table:nth-child(3) > tbody > tr:nth-child(5) > td:nth-child(2) > p"
+        "div.well > table:nth-child(3) > tbody > tr:nth-child(5) > td:nth-child(2) > p"
 
     suspend fun parse(html: String): TorrentDetails? = withContext(Dispatchers.Default) {
         val html = Jsoup.parse(html)
 
-        val name = html.selectFirst(NAME)?.ownText() ?: return@withContext null
+        val torrentName = html.selectFirst(TORRENT_NAME)?.ownText() ?: return@withContext null
         val infoHash = html.selectFirst(INFO_HASH)
             ?.ownText()
             ?.lowercase()
@@ -111,7 +111,7 @@ private object FileMoodDetailsPageParser {
 
         TorrentDetails(
             infoHash = infoHash,
-            name = name,
+            name = torrentName,
             size = size,
             category = Category.Other,
             lastChecked = lastChecked,
