@@ -68,82 +68,55 @@ class LimeTorrents : SearchProvider, TorrentDetailsProvider {
 private class LimeTorrentsResultsPageParser(private val providerName: String) {
     suspend fun parse(html: String, pageUrl: String): List<Torrent> =
         withContext(Dispatchers.Default) {
-            val rows = Jsoup.parse(html, pageUrl).select(".table2 > tbody > tr[bgcolor]")
-            rows.mapNotNull(::parseRowCatching)
+            Jsoup.parse(html, pageUrl)
+                .select(LIST_ITEM)
+                .mapNotNull(::parseListItem)
         }
 
-    /** Attempts to parse a single row; returns null if it fails. */
-    private fun parseRowCatching(row: Element): Torrent? {
-        return try {
-            parseRow(row)
-        } catch (_: Exception) {
-            null
-        }
-    }
-
-    /** Parses a valid torrent row into a [Torrent] object. */
-    private fun parseRow(row: Element): Torrent? {
-        val nameAnchor = row.selectFirst("div.tt-name > a[href^=/]") ?: return null
-        val name = nameAnchor.text()
-        val descriptionPageUrl = nameAnchor.attr("abs:href")
-
-        val infoHash = extractInfoHash(row) ?: return null
-        val uploadDate = extractUploadDate(row).let(TorrentDateParser::tryParseRelative)
-        val size = row.selectFirst("td:nth-child(3)")?.text() ?: return null
-        val seeders = row.selectFirst(".tdseed")?.text()?.toUIntOrNull() ?: 0u
-        val peers = row.selectFirst(".tdleech")?.text()?.toUIntOrNull() ?: 0u
-        val category = extractCategory(row)
+    private fun parseListItem(listItem: Element): Torrent? {
+        val torrentName = listItem.selectFirst(TORRENT_NAME)?.ownText() ?: return null
+        val fileDownloadLink = listItem.selectFirst(FILE_DOWNLOAD_LINK)
+            ?.attr("href")
+            ?: return null
+        // http://itorrents.net/torrent/7B6CAE55DB21441F06EA00A25C2A21E11752EEE2.torrent?title=...
+        val infoHash = fileDownloadLink.removePrefix("http://itorrents.net/torrent/")
+            .takeWhile { it != '.' }
+            .lowercase()
+        val size = listItem.selectFirst(SIZE)?.ownText()
+        val seeders = listItem.selectFirst(SEEDERS)?.ownText()?.toUIntOrNull()
+        val peers = listItem.selectFirst(PEERS)?.ownText()?.toUIntOrNull()
+        val (rawUploadDate, rawCategory) = listItem.selectFirst(UPLOAD_DATE_AND_CATEGORY)
+            ?.ownText()
+            ?.split("in", limit = 2)
+            ?.map { it.trim() }
+            ?: listOf(null, null)
+        val uploadDate = rawUploadDate?.let(TorrentDateParser::tryParseRelative)
+        val category = rawCategory?.removePrefix("in ")?.let(::categoryFromRawString)
+        val detailsPageUrl = listItem.selectFirst(DETAILS_PAGE_URL)?.attr("abs:href")
 
         return Torrent(
             infoHash = infoHash,
-            name = name,
-            size = size,
-            seeders = seeders,
-            peers = peers,
+            name = torrentName,
+            size = size ?: "0 KB",
+            seeders = seeders ?: 0U,
+            peers = peers ?: 0U,
             providerName = providerName,
             uploadDate = uploadDate,
             category = category,
-            descriptionPageUrl = descriptionPageUrl,
+            descriptionPageUrl = detailsPageUrl ?: "",
+            fileDownloadLink = fileDownloadLink,
         )
     }
 
-    /** Extracts the InfoHash from a magnet link element. */
-    private fun extractInfoHash(row: Element): String? {
-        val link = row.select("a[class^=csprite][href^=http]")
-            .mapNotNull { it.attr("href") }
-            .firstOrNull { it.contains("/torrent/") } ?: return null
-
-        return INFO_HASH_REGEX.find(link)?.groupValues?.get(1)
-    }
-
-    /**
-     * Extracts the upload date from the second column, trimming off " - in Movies".
-     * e.g. "27 days ago - in Movies" → "27 days ago"
-     */
-    private fun extractUploadDate(row: Element): String {
-        // TODO: The upload date here is not in [dd MMM yyyy] format.
-        //  We are currently using the raw relative format from the site (e.g., "27 days ago").
-        //  Consider parsing and converting it to a consistent date format if needed later.
-        return row.selectFirst("td:nth-child(2)")
-            ?.text()
-            ?.substringBefore(" -")
-            ?.trim()
-            .orEmpty()
-    }
-
-    /** Detects category heuristically from the second column's text. */
-    private fun extractCategory(row: Element): Category {
-        return row.selectFirst("td:nth-child(2)")
-            ?.ownText()
-            ?.takeLastWhile { !it.isWhitespace() }
-            ?.removeSuffix(".")
-            ?.trim()
-            ?.let(::categoryFromRawString)
-            ?: Category.Other
-    }
-
     private companion object {
-        private val INFO_HASH_REGEX = Regex("""/torrent/([A-Fa-f0-9]{40})\.torrent""")
+        private const val LIST_ITEM = ".table2 > tbody > tr"
+        private const val TORRENT_NAME = "td:nth-child(1) > div.tt-name > a:nth-child(2)"
+        private const val SIZE = "td:nth-child(3)"
+        private const val SEEDERS = "td.tdseed"
+        private const val PEERS = "td.tdleech"
+        private const val UPLOAD_DATE_AND_CATEGORY = "td:nth-child(2)"
+        private const val FILE_DOWNLOAD_LINK = "td:nth-child(1) > div.tt-name > a:nth-child(1)"
+        private const val DETAILS_PAGE_URL = TORRENT_NAME
     }
 }
 
