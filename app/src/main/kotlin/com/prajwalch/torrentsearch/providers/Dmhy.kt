@@ -28,13 +28,27 @@ class Dmhy : SearchProvider {
     override val enabledByDefault = false
 
     private val resultsPageParser = DmhyResultsPageParser(providerName = name)
+    private val categoryMap = mapOf(
+        Category.All to 0,
+        Category.Anime to 2,
+        Category.Books to 3,
+        Category.Games to 9,
+        Category.Music to 4,
+        Category.Series to 6,
+        Category.Other to 1,
+    )
 
     override suspend fun search(query: String, context: SearchContext): List<Torrent> {
         val requestUrl = buildString {
             append(url)
             append("/topics")
             append("/list")
+
+            val categoryId = categoryMap[context.category] ?: categoryMap[Category.All]!!
             append("?keyword=$query")
+            append("&sort_id=$categoryId")
+            append("&team_id=0")
+            append("&order=date-desc")
         }
         val responseHtml = context.httpClient.get(url = requestUrl)
 
