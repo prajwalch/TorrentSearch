@@ -110,7 +110,7 @@ private class NyaaResultsPageParser(private val providerName: String) {
 
     private companion object {
         private const val LIST_ITEM = "table.torrent-list > tbody > tr"
-        private const val TORRENT_NAME = "td:nth-child(2) > a:nth-child(2)"
+        private const val TORRENT_NAME = "td:nth-child(2) > a:not(.comments)"
         private const val SIZE = "td:nth-child(4)"
         private const val SEEDERS = "td:nth-child(6)"
         private const val PEERS = "td:nth-child(7)"
