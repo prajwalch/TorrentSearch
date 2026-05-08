@@ -41,7 +41,7 @@ class TorrentDownload : SearchProvider, TorrentDetailsProvider {
         }
 
         val responseHtml = context.httpClient.get(url = requestUrl)
-        return resultsPageParser.parse(html = responseHtml, pageUrl = requestUrl).orEmpty()
+        return resultsPageParser.parse(html = responseHtml, pageUrl = requestUrl)
     }
 
     override suspend fun getDetails(detailsPageUrl: String): TorrentDetails? {
@@ -51,52 +51,53 @@ class TorrentDownload : SearchProvider, TorrentDetailsProvider {
 }
 
 private class TorrentDownloadResultsParser(private val providerName: String) {
-    suspend fun parse(html: String, pageUrl: String): List<Torrent>? =
+    suspend fun parse(html: String, pageUrl: String): List<Torrent> =
         withContext(Dispatchers.Default) {
-            Jsoup
-                .parse(html, pageUrl)
-                .select("table.table2")
-                .last()
-                ?.select("tbody > tr")
-                ?.mapNotNull(::parseTableRow)
+            Jsoup.parse(html, pageUrl)
+                .select(LIST_ITEM)
+                .mapNotNull(::parseListItem)
         }
 
-    private fun parseTableRow(tr: Element): Torrent? {
-        val torrentNameDiv = tr.selectFirst("td:nth-child(1) > div.tt-name") ?: return null
-
-        val nameHref = torrentNameDiv.selectFirst("> a") ?: return null
-        val torrentName = nameHref.text()
-
-        val category = torrentNameDiv.selectFirst("> span")
-            ?.ownText()
-            ?.let(::categoryFromRawString)
-            ?: Category.Other
-
-        val descriptionPageUrl = nameHref.attr("abs:href")
-        val infoHash = nameHref
-            .attr("href")
-            .removePrefix("/")
-            .takeWhile { it != '/' }
+    private fun parseListItem(listItem: Element): Torrent? {
+        val torrentName = listItem.selectFirst(TORRENT_NAME)?.ownText() ?: return null
+        val detailsPageUrl = listItem.selectFirst(DETAILS_PAGE_URL)?.attr("abs:href") ?: return null
+        val infoHash = detailsPageUrl
+            .dropLastWhile { it != '/' }
+            .takeLastWhile { it != '/' }
             .trim()
             .lowercase()
-
-        val uploadDate = tr.selectFirst("td:nth-child(2)")?.ownText()
+        val size = listItem.selectFirst(SIZE)?.ownText()
+        val seeders = listItem.selectFirst(SEEDERS)?.ownText()?.replace(",", "")?.toUIntOrNull()
+        val peers = listItem.selectFirst(PEERS)?.ownText()?.replace(",", "")?.toUIntOrNull()
+        val uploadDate = listItem.selectFirst(UPLOAD_DATE)
+            ?.ownText()
             ?.let(TorrentDateParser::tryParseRelative)
-        val size = tr.selectFirst("td:nth-child(3)")?.ownText() ?: return null
-        val seeders = tr.selectFirst("td:nth-child(4)")?.ownText()?.replace(",", "") ?: return null
-        val peers = tr.selectFirst("td:nth-child(5)")?.ownText()?.replace(",", "") ?: return null
+        val category = listItem.selectFirst(CATEGORY)
+            ?.ownText()
+            ?.let(::categoryFromRawString)
 
         return Torrent(
             infoHash = infoHash,
             name = torrentName,
-            size = size,
-            seeders = seeders.toUIntOrNull() ?: 0U,
-            peers = peers.toUIntOrNull() ?: 0U,
+            size = size ?: "0 KB",
+            seeders = seeders ?: 0U,
+            peers = peers ?: 0U,
             uploadDate = uploadDate,
             category = category,
             providerName = providerName,
-            descriptionPageUrl = descriptionPageUrl,
+            descriptionPageUrl = detailsPageUrl,
         )
+    }
+
+    private companion object {
+        private const val LIST_ITEM = "div.wrapper > table.table2:nth-of-type(2) > tbody > tr"
+        private const val TORRENT_NAME = "td:nth-child(1) > div.tt-name > a"
+        private const val SIZE = "td:nth-child(3)"
+        private const val SEEDERS = "td:nth-child(4)"
+        private const val PEERS = "td:nth-child(5)"
+        private const val UPLOAD_DATE = "td:nth-child(2)"
+        private const val CATEGORY = "td:nth-child(1) > div.tt-name > span"
+        private const val DETAILS_PAGE_URL = TORRENT_NAME
     }
 }
 
