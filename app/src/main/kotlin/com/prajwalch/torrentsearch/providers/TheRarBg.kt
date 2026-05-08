@@ -78,8 +78,7 @@ class TheRarBg : SearchProvider, TorrentDetailsProvider {
 private class TheRarBgResultsPageParser(private val providerName: String) {
     suspend fun parse(html: String, pageUrl: String): List<Torrent> =
         withContext(Dispatchers.Default) {
-            Jsoup
-                .parse(html, pageUrl)
+            Jsoup.parse(html, pageUrl)
                 .select(LIST_ITEM)
                 .map { async { parseListItem(it) } }
                 .awaitAll()
@@ -87,9 +86,9 @@ private class TheRarBgResultsPageParser(private val providerName: String) {
         }
 
     suspend fun parseListItem(listItem: Element): Torrent? {
-        val detailsPageUrl = listItem.selectFirst(DETAILS_PAGE_URL)?.attr("abs:href")
+        val detailsPageUrl = listItem.selectFirst(DETAILS_PAGE_URL)
+            ?.attr("abs:href")
             ?: return null
-        println(detailsPageUrl)
         val detailsPageHtml = HttpClient.get(detailsPageUrl)
         val torrentDetails = TheRarBgDetailsPageParser.parse(detailsPageHtml) ?: return null
         val infoHash = TorrentUtils.getInfoHashFromMagnetUri(torrentDetails.magnetUri)
@@ -98,7 +97,8 @@ private class TheRarBgResultsPageParser(private val providerName: String) {
         val size = listItem.selectFirst(SIZE)?.attr("data-order")?.let(FileSizeUtils::formatBytes)
         val seeders = listItem.selectFirst(SEEDERS)?.ownText()?.toUIntOrNull()
         val peers = listItem.selectFirst(PEERS)?.ownText()?.toUIntOrNull()
-        val uploadDate = listItem.selectFirst(UPLOAD_DATE)?.attr("data-order")
+        val uploadDate = listItem.selectFirst(UPLOAD_DATE)
+            ?.attr("data-order")
             ?.toLongOrNull()
             ?.let(TorrentDateParser::epochSecondToInstant)
         val category = listItem.selectFirst(CATEGORY)?.ownText()?.let(::categoryFromRawString)
