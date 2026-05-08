@@ -21,70 +21,22 @@ class XXXTracker : SearchProvider, TorrentDetailsProvider {
     override val safetyStatus = SearchProviderSafetyStatus.Safe
     override val enabledByDefault = false
 
+    private val resultsPageParser = XXXTrackerResultsPageParser(providerName = name)
+
     override suspend fun search(query: String, context: SearchContext): List<Torrent> {
         val requestUrl = buildString {
             append(url)
             append("/b.php")
             append("?search=$query")
         }
-
         val responseHtml = context.httpClient.get(url = requestUrl)
-        val torrents = withContext(Dispatchers.Default) {
-            parseResponseHtml(html = responseHtml)
-        }
 
-        return torrents.orEmpty()
+        return resultsPageParser.parse(html = responseHtml, pageUrl = requestUrl)
     }
 
     override suspend fun getDetails(detailsPageUrl: String): TorrentDetails? {
         val responseHtml = HttpClient.get(detailsPageUrl)
         return XXXTrackerDetailsPageParser.parse(html = responseHtml, pageUrl = detailsPageUrl)
-    }
-
-    private fun parseResponseHtml(html: String): List<Torrent>? {
-        return Jsoup
-            .parse(html)
-            .selectFirst("table > tbody")
-            ?.select("tr")
-            // First tr is used for heading.
-            ?.drop(1)
-            ?.mapNotNull { parseTr(it) }
-    }
-
-    private fun parseTr(tr: Element): Torrent? {
-        val uploadDate = tr.selectFirst("td:nth-child(1)")?.ownText()
-            ?.let(::normalizeUploadDate)
-            ?.let { TorrentDateParser.parse(date = it, format = "dd MMM yy") }
-
-        val secondTd = tr.selectFirst("td:nth-child(2)") ?: return null
-        val magnetUri = secondTd.selectFirst("a:nth-child(1)")?.attr("href") ?: return null
-        val infoHash = TorrentUtils.getInfoHashFromMagnetUri(magnetUri)
-        val fileDownloadLink =
-            secondTd.selectFirst("a:nth-child(2)")?.attr("href")?.let { "$url$it" }
-
-        val nameHref = secondTd.selectFirst("a:nth-child(3)") ?: return null
-        val name = nameHref.ownText()
-        val descriptionPageUrl = nameHref.attr("href").let { "$url$it" }
-
-        val size = tr.selectFirst("td:nth-child(3)")?.ownText() ?: return null
-
-        val fourthTd = tr.selectFirst("td:nth-child(4)") ?: return null
-        val seeders = fourthTd.selectFirst("span:nth-child(1)")?.ownText() ?: return null
-        val peers = fourthTd.selectFirst("span:nth-child(3)")?.ownText() ?: return null
-
-        return Torrent(
-            infoHash = infoHash,
-            name = name,
-            size = size,
-            seeders = seeders.toUIntOrNull() ?: 0U,
-            peers = peers.toUIntOrNull() ?: 0U,
-            uploadDate = uploadDate,
-            category = Category.Porn,
-            descriptionPageUrl = descriptionPageUrl,
-            providerName = this.name,
-            magnetUri = magnetUri,
-            fileDownloadLink = fileDownloadLink,
-        )
     }
 
     // We need to access this during bookmarks migration.
@@ -112,6 +64,57 @@ class XXXTracker : SearchProvider, TorrentDetailsProvider {
 
             return "$day $englishMonth $year"
         }
+    }
+}
+
+private class XXXTrackerResultsPageParser(private val providerName: String) {
+    suspend fun parse(html: String, pageUrl: String): List<Torrent> =
+        withContext(Dispatchers.Default) {
+            Jsoup.parse(html, pageUrl)
+                .select(LIST_ITEM)
+                // First item is used as a header.
+                .drop(1)
+                .mapNotNull(::parseListItem)
+        }
+
+    private fun parseListItem(listItem: Element): Torrent? {
+        val torrentName = listItem.selectFirst(TORRENT_NAME)?.ownText() ?: return null
+        val magnetUri = listItem.selectFirst(MAGNET_URI)?.attr("href") ?: return null
+        val size = listItem.selectFirst(SIZE)?.ownText()
+        val seeders = listItem.selectFirst(SEEDERS)?.ownText()?.toUIntOrNull()
+        val peers = listItem.selectFirst(PEERS)?.ownText()?.toUIntOrNull()
+        val uploadDate = listItem.selectFirst(UPLOAD_DATE)
+            ?.ownText()
+            ?.let(XXXTracker::normalizeUploadDate)
+            ?.let { TorrentDateParser.parse(date = it, format = "dd MMM yy") }
+        val fileDownloadLink = listItem.selectFirst(FILE_DOWNLOAD_LINK)?.attr("abs:href")
+        val detailsPageUrl = listItem.selectFirst(DETAILS_PAGE_URL)?.attr("abs:href")
+
+        return Torrent(
+            infoHash = TorrentUtils.getInfoHashFromMagnetUri(magnetUri),
+            name = torrentName,
+            size = size ?: "0 KB",
+            seeders = seeders ?: 0U,
+            peers = peers ?: 0U,
+            uploadDate = uploadDate,
+            category = Category.Porn,
+            descriptionPageUrl = detailsPageUrl ?: "",
+            providerName = providerName,
+            magnetUri = magnetUri,
+            fileDownloadLink = fileDownloadLink,
+        )
+    }
+
+    private companion object {
+        private const val LIST_ITEM = "table > tbody > tr"
+        private const val TORRENT_NAME = "td:nth-child(2) > a:nth-child(3)"
+        private const val SIZE = "td:nth-child(3)"
+        private const val SEEDERS = "td:nth-child(4) > span:nth-child(1)"
+        private const val PEERS = "td:nth-child(4) > span:nth-child(2)"
+        private const val UPLOAD_DATE = "td:nth-child(1)"
+        private const val MAGNET_URI = "td:nth-child(2) > a:nth-child(1)"
+        private const val FILE_DOWNLOAD_LINK = "td:nth-child(2) > a:nth-child(2)"
+        private const val DETAILS_PAGE_URL = TORRENT_NAME
     }
 }
 
