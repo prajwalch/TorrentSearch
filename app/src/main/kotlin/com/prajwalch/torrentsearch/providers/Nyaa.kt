@@ -28,8 +28,15 @@ class Nyaa : SearchProvider, TorrentDetailsProvider {
     override val safetyStatus = SearchProviderSafetyStatus.Safe
     override val enabledByDefault = true
 
-    private val resultsPageParser = NyaaResultsPageParser(
-        providerName = name,
+    private val resultsPageParser = NyaaResultsPageParser(providerName = name)
+    private val categoryMap = mapOf(
+        Category.All to "0_0",
+        Category.Anime to "1_0",
+        Category.Apps to "6_1",
+        Category.Books to "3_0",
+        Category.Games to "6_2",
+        Category.Music to "2_0",
+        Category.Series to "4_0",
     )
 
     override suspend fun search(query: String, context: SearchContext): List<Torrent> {
@@ -37,8 +44,8 @@ class Nyaa : SearchProvider, TorrentDetailsProvider {
             append("$url/")
             // Filter = No filter (0)
             append("?f=0")
-            // Category = Anime (1_0)
-            append("&c=1_0")
+            val categoryId = categoryMap[context.category] ?: categoryMap[Category.All]!!
+            append("&c=$categoryId")
             append("&q=$query")
         }
 
