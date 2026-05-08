@@ -47,7 +47,6 @@ class UIndex : SearchProvider, TorrentDetailsProvider {
 
     private val resultsPageParser = UIndexResultsPageParser(
         providerName = name,
-        baseUrl = url,
     )
 
     override suspend fun search(query: String, context: SearchContext): List<Torrent> {
@@ -59,7 +58,7 @@ class UIndex : SearchProvider, TorrentDetailsProvider {
         }
         val responseHtml = context.httpClient.get(url = requestUrl)
 
-        return resultsPageParser.parse(html = responseHtml, pageUrl = requestUrl).orEmpty()
+        return resultsPageParser.parse(html = responseHtml, pageUrl = requestUrl)
     }
 
     override suspend fun getDetails(detailsPageUrl: String): TorrentDetails? {
@@ -68,16 +67,12 @@ class UIndex : SearchProvider, TorrentDetailsProvider {
     }
 }
 
-private class UIndexResultsPageParser(
-    private val providerName: String,
-    private val baseUrl: String,
-) {
-    suspend fun parse(html: String, pageUrl: String): List<Torrent>? =
+private class UIndexResultsPageParser(private val providerName: String) {
+    suspend fun parse(html: String, pageUrl: String): List<Torrent> =
         withContext(Dispatchers.Default) {
-            Jsoup
-                .parse(html, pageUrl)
+            Jsoup.parse(html, pageUrl)
                 .select(LIST_ITEM)
-                .mapNotNull { parseListItem(listItem = it) }
+                .mapNotNull(::parseListItem)
         }
 
     private fun parseListItem(listItem: Element): Torrent? {
