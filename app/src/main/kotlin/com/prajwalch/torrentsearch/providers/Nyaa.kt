@@ -123,17 +123,14 @@ private class NyaaResultsPageParser(private val providerName: String) {
 }
 
 private object NyaaDetailsPageParser {
-    private const val TORRENT_NAME = "body > div > div:nth-child(1) > div.panel-heading > h3"
-    private const val SIZE =
-        "body > div > div:nth-child(1) > div.panel-body > div:nth-child(4) > div:nth-child(2)"
-    private const val SEEDERS =
-        "body > div > div:nth-child(1) > div.panel-body > div:nth-child(2) > div:nth-child(4)"
-    private const val PEERS =
-        "body > div > div:nth-child(1) > div.panel-body > div:nth-child(2) > div:nth-child(4)"
-    private const val UPLOAD_DATE =
-        "body > div > div:nth-child(1) > div.panel-body > div:nth-child(1) > div:nth-child(4)"
-    private const val UPLOADER =
-        "body > div > div:nth-child(1) > div.panel-body > div:nth-child(2) > div:nth-child(2)"
+    private const val TORRENT_INFO_CARD = ".container > div:nth-child(1)"
+    private const val TORRENT_INFO_CARD_BODY = "$TORRENT_INFO_CARD > div.panel-body"
+    private const val TORRENT_NAME = "$TORRENT_INFO_CARD > div.panel-heading > h3"
+    private const val SIZE = "$TORRENT_INFO_CARD_BODY > div:nth-child(4) > div:nth-child(2)"
+    private const val SEEDERS = "$TORRENT_INFO_CARD_BODY > div:nth-child(2) > div:nth-child(4)"
+    private const val PEERS = "$TORRENT_INFO_CARD_BODY > div:nth-child(3) > div:nth-child(4)"
+    private const val UPLOAD_DATE = "$TORRENT_INFO_CARD_BODY > div:nth-child(1) > div:nth-child(4)"
+    private const val UPLOADER = "$TORRENT_INFO_CARD_BODY > div:nth-child(2) > div:nth-child(2)"
     private const val DESCRIPTION = "#torrent-description"
     private const val MAGNET_URI = """a[href^="magnet:"]"""
     private const val FILE_DOWNLOAD_LINK = """a[href^="/download"]"""
