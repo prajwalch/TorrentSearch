@@ -1,8 +1,8 @@
 [versions]
 activityCompose = "1.13.0"
-agp = "9.2.0"
+agp = "9.2.1"
 coil = "3.4.0"
-composeBom = "2026.04.01"
+composeBom = "2026.05.00"
 composeMarkdown = "0.7.0"
 coreKtx = "1.18.0"
 coreSplashscreen = "1.2.0"
