@@ -67,7 +67,6 @@ private class TorrentDownloadResultsParser(private val providerName: String) {
             .takeLastWhile { it != '/' }
             .trim()
             .lowercase()
-        println(infoHash)
         val size = listItem.selectFirst(SIZE)?.ownText()
         val seeders = listItem.selectFirst(SEEDERS)?.ownText()?.replace(",", "")?.toUIntOrNull()
         val peers = listItem.selectFirst(PEERS)?.ownText()?.replace(",", "")?.toUIntOrNull()
