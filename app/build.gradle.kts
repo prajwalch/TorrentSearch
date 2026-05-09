@@ -94,6 +94,8 @@ dependencies {
     implementation(libs.hilt.android)
     implementation(libs.jsoup)
     implementation(libs.kotlinx.collections.immutable)
+    implementation(libs.kotlinx.coroutines.android)
+    implementation(libs.kotlinx.coroutines.core)
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.ktor.client.core)
     implementation(libs.ktor.client.okhttp)
