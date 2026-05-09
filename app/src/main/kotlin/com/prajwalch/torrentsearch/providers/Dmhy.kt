@@ -135,7 +135,6 @@ private object DmhyDetailsPageParser {
             ?.removePrefix("/topics/list/sort_id/")
             ?.let(::getCategoryFromId)
         val description = html.selectFirst(DESCRIPTION)
-            // Remove poster and two new lines after the poster from description.
             ?.apply { select("> *:lt(2)").remove() }
             ?.html()
             ?.let(TorrentUtils.HtmlToMarkdownConverter::convert)
