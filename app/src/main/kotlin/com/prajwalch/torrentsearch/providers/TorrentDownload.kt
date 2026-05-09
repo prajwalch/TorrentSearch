@@ -63,9 +63,11 @@ private class TorrentDownloadResultsParser(private val providerName: String) {
         val detailsPageUrl = listItem.selectFirst(DETAILS_PAGE_URL)?.attr("abs:href") ?: return null
         val infoHash = detailsPageUrl
             .dropLastWhile { it != '/' }
+            .dropLast(1)
             .takeLastWhile { it != '/' }
             .trim()
             .lowercase()
+        println(infoHash)
         val size = listItem.selectFirst(SIZE)?.ownText()
         val seeders = listItem.selectFirst(SEEDERS)?.ownText()?.replace(",", "")?.toUIntOrNull()
         val peers = listItem.selectFirst(PEERS)?.ownText()?.replace(",", "")?.toUIntOrNull()
