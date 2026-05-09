@@ -2,6 +2,8 @@ package com.prajwalch.torrentsearch.providers
 
 import com.prajwalch.torrentsearch.domain.model.Category
 import com.prajwalch.torrentsearch.domain.model.Torrent
+import com.prajwalch.torrentsearch.domain.model.TorrentDetails
+import com.prajwalch.torrentsearch.network.HttpClient
 import com.prajwalch.torrentsearch.util.FileSizeUtils
 import com.prajwalch.torrentsearch.util.TorrentDateParser
 import com.prajwalch.torrentsearch.util.TorrentUtils
@@ -12,7 +14,7 @@ import kotlinx.coroutines.withContext
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Element
 
-class Dmhy : SearchProvider {
+class Dmhy : SearchProvider, TorrentDetailsProvider {
     override val id = "dmhy"
     override val name = "Dmhy"
     override val url = "https://share.dmhy.org"
@@ -53,6 +55,11 @@ class Dmhy : SearchProvider {
         val responseHtml = context.httpClient.get(url = requestUrl)
 
         return resultsPageParser.parse(html = responseHtml, pageUrl = requestUrl)
+    }
+
+    override suspend fun getDetails(detailsPageUrl: String): TorrentDetails? {
+        val responseHtml = HttpClient.get(detailsPageUrl)
+        return DmhyDetailsPageParser.parse(responseHtml)
     }
 }
 
@@ -102,6 +109,46 @@ private class DmhyResultsPageParser(private val providerName: String) {
         private const val CATEGORY = "td:nth-child(2) > a"
         private const val MAGNET_URI = "td:nth-child(4) > a:nth-child(1)"
         private const val DETAILS_PAGE_URL = TORRENT_NAME
+    }
+}
+
+private object DmhyDetailsPageParser {
+    private const val TORRENT_NAME = "div.topic-title > h3"
+    private const val SIZE = "div.topic-title > div.info > ul > li:nth-child(6) > span"
+    private const val UPLOAD_DATE = "div.topic-title > div.info > ul > li:nth-child(2) > span"
+    private const val CATEGORY = "div.topic-title > div.info > ul > li:nth-child(1) > span > a"
+    private const val DESCRIPTION = "div.topic-nfo"
+    private const val MAGNET_URI = "div#resource-tabs > div#tabs-1 > p:nth-child(2) > a#a_magnet"
+
+    suspend fun parse(html: String): TorrentDetails? = withContext(Dispatchers.Default) {
+        val html = Jsoup.parse(html)
+
+        val torrentName = html.selectFirst(TORRENT_NAME)?.text() ?: return@withContext null
+        val magnetUri = html.selectFirst(MAGNET_URI)?.attr("href") ?: return@withContext null
+        val size = html.selectFirst(SIZE)?.text()?.let(FileSizeUtils::normalizeSize)
+        val uploadDate = html.selectFirst(UPLOAD_DATE)
+            ?.text()
+            ?.takeWhile { !it.isWhitespace() }
+            ?.let { TorrentDateParser.parse(date = it, format = "yyyy/MM/dd") }
+        val category = html.selectFirst(CATEGORY)
+            ?.attr("href")
+            ?.removePrefix("/topics/list/sort_id/")
+            ?.let(::getCategoryFromId)
+        val description = html.selectFirst(DESCRIPTION)
+            // Remove poster and two new lines after the poster from description.
+            ?.apply { select("> *:lt(2)").remove() }
+            ?.html()
+            ?.let(TorrentUtils.HtmlToMarkdownConverter::convert)
+
+        TorrentDetails(
+            infoHash = TorrentUtils.getInfoHashFromMagnetUri(magnetUri),
+            name = torrentName,
+            size = size,
+            uploadDate = uploadDate,
+            category = category,
+            magnetUri = magnetUri,
+            description = description,
+        )
     }
 }
 
