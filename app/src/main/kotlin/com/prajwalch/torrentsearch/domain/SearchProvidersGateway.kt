@@ -10,7 +10,6 @@ import com.prajwalch.torrentsearch.domain.model.SearchResults
 import com.prajwalch.torrentsearch.domain.model.Torrent
 import com.prajwalch.torrentsearch.network.HttpClient
 import com.prajwalch.torrentsearch.providers.SearchContext
-import com.prajwalch.torrentsearch.providers.SearchProvider
 
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.CancellationException
@@ -18,9 +17,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.channelFlow
 import kotlinx.coroutines.flow.drop
-import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
-import kotlinx.coroutines.flow.scan
+import kotlinx.coroutines.flow.runningFold
 import kotlinx.coroutines.launch
 
 import javax.inject.Inject
@@ -36,56 +34,48 @@ class SearchProvidersGateway @Inject constructor(
         private const val TAG = "SearchProvidersGateway"
     }
 
-    fun searchTorrents(query: String, category: Category): Flow<SearchResults> = flow {
+    fun searchTorrents(query: String, category: Category): Flow<SearchResults> = channelFlow {
         val enabledProviders = searchProvidersManager.getEnabledProvidersByCategory(category)
-        if (enabledProviders.isEmpty()) return@flow
+        if (enabledProviders.isEmpty()) return@channelFlow
 
         val encodedQuery = Uri.encode(query)!!
         val searchContext = SearchContext(category = category, httpClient = httpClient)
 
-        launchSearchProviders(
-            providers = enabledProviders,
-            query = encodedQuery,
-            context = searchContext
-        )
-            .scan(initial = SearchResults()) { results, batchResult ->
-                results.appendBatchResult(batchResult)
+        enabledProviders.forEach {
+            launch {
+                val result = runCatchingSearchProvider(it.name, it.url) {
+                    it.search(encodedQuery, searchContext)
+                }
+                send(result)
             }
-            // Drop the initial empty results.
-            .drop(1)
-            .collect { emit(it) }
-    }.flowOn(Dispatchers.IO)
-
-    private fun launchSearchProviders(
-        providers: List<SearchProvider>,
-        query: String,
-        context: SearchContext,
-    ): Flow<Result<List<Torrent>>> = channelFlow {
-        providers.forEach {
-            launch { send(runCatchingSearchProvider(it, query, context)) }
         }
     }
+        .runningFold(SearchResults()) { results, batchResult ->
+            results.appendBatchResult(batchResult)
+        }
+        .drop(1)
+        .flowOn(Dispatchers.IO)
 
     private suspend fun runCatchingSearchProvider(
-        provider: SearchProvider,
-        query: String,
-        context: SearchContext,
+        providerName: String,
+        providerUrl: String,
+        action: suspend () -> List<Torrent>,
     ): Result<List<Torrent>> = try {
-        val torrents = provider.search(query = query, context = context)
-        Log.i(TAG, "${provider.name} succeed with ${torrents.size} results")
+        val torrents = action()
+        Log.i(TAG, "$providerName succeed with ${torrents.size} results")
 
         Result.success(torrents)
     } catch (e: CancellationException) {
-        Log.i(TAG, "${provider.name} got canceled")
+        Log.i(TAG, "$providerName got canceled")
 
         // Never catch this as this is used to cancel coroutines.
         throw e
     } catch (cause: Throwable) {
-        Log.e(TAG, "${provider.name} crashed", cause)
+        Log.e(TAG, "$providerName crashed", cause)
 
         val exception = SearchException(
-            searchProviderName = provider.name,
-            searchProviderUrl = provider.url,
+            searchProviderName = providerName,
+            searchProviderUrl = providerUrl,
             message = cause.message ?: cause.toString(),
             cause = cause,
         )
