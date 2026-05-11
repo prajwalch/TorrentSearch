@@ -1,19 +1,28 @@
 package com.prajwalch.torrentsearch.domain
 
-import com.prajwalch.torrentsearch.data.repository.TorrentFileId
-import com.prajwalch.torrentsearch.data.repository.TorrentFileRepository
-
+import com.prajwalch.torrentsearch.network.HttpClient
 import dagger.hilt.android.scopes.ViewModelScoped
 
+import io.ktor.client.statement.bodyAsChannel
+import io.ktor.http.isSuccess
+import io.ktor.utils.io.readRemaining
+
 import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.receiveAsFlow
+import kotlinx.coroutines.withContext
+import kotlinx.io.readByteArray
 
 import java.io.IOException
 import java.io.OutputStream
+import java.util.UUID
+
 import javax.inject.Inject
+
+private typealias TorrentFileId = UUID
 
 /**
  * Represents current state of file downloader.
@@ -77,9 +86,12 @@ sealed interface TorrentFileDownloadEvent {
  * Manages and handles torrent file downloading related task.
  */
 @ViewModelScoped
-class TorrentFileDownloader @Inject constructor(
-    private val torrentFileRepository: TorrentFileRepository,
-) {
+class TorrentFileDownloader @Inject constructor(private val httpClient: HttpClient) {
+    /**
+     * An in-memory cache for saving downloaded torrent files.
+     */
+    private val contentCache = mutableMapOf<TorrentFileId, ByteArray>()
+
     /**
      * The internal, mutable source of truth for the downloader state.
      */
@@ -106,33 +118,7 @@ class TorrentFileDownloader @Inject constructor(
     private var pendingFileId: TorrentFileId? = null
 
     /**
-     * Downloads a torrent file from the given URL.
-     */
-    suspend fun download(url: String, fileName: String) {
-        resetState()
-
-        try {
-            _state.value = TorrentFileDownloadState.Downloading
-            pendingFileId = torrentFileRepository.downloadTorrentFile(url)
-
-            val event = if (pendingFileId != null) {
-                TorrentFileDownloadEvent.ReadyToWrite(fileName)
-            } else {
-                TorrentFileDownloadEvent.FileNotFound
-            }
-            _events.send(event)
-        } catch (e: CancellationException) {
-            // Never catch this.
-            throw e
-        } catch (e: Throwable) {
-            _events.send(TorrentFileDownloadEvent.DownloadFailed(e.message))
-        } finally {
-            _state.value = TorrentFileDownloadState.Idle
-        }
-    }
-
-    /**
-     * Attempts to download a file using the given info hash.
+     * Attempts to download a torrent file using the given info hash.
      */
     suspend fun tryDownloadUsingInfoHash(infoHash: String, fileName: String) {
         val url = "https://itorrents.net/torrent/${infoHash.uppercase()}.torrent"
@@ -140,17 +126,52 @@ class TorrentFileDownloader @Inject constructor(
     }
 
     /**
+     * Downloads a torrent file from the given URL.
+     */
+    suspend fun download(url: String, fileName: String): Unit = try {
+        resetState()
+
+        _state.value = TorrentFileDownloadState.Downloading
+        pendingFileId = downloadFile(url)
+
+        val event = if (pendingFileId != null) {
+            TorrentFileDownloadEvent.ReadyToWrite(fileName)
+        } else {
+            TorrentFileDownloadEvent.FileNotFound
+        }
+        _events.send(event)
+    } catch (e: CancellationException) {
+        throw e
+    } catch (e: Throwable) {
+        _events.send(TorrentFileDownloadEvent.DownloadFailed(e.message))
+    } finally {
+        _state.value = TorrentFileDownloadState.Idle
+    }
+
+    private suspend fun downloadFile(url: String): TorrentFileId? = withContext(Dispatchers.IO) {
+        val id = UUID.nameUUIDFromBytes(url.toByteArray())
+        if (contentCache.containsKey(id)) return@withContext id
+
+        val response = httpClient.getResponse(url = url)
+        if (!response.status.isSuccess()) return@withContext null
+
+        val fileContent = response.bodyAsChannel().readRemaining().readByteArray()
+        contentCache[id] = fileContent
+
+        id
+    }
+
+    /**
      * Writes the content of the pending file to the given stream.
      */
-    suspend fun writeFileContent(outputStream: OutputStream) {
-        val pendingFileId = pendingFileId ?: return
+    suspend fun writeFileContent(outputStream: OutputStream): Unit = withContext(Dispatchers.IO) {
+        val pendingFileId = pendingFileId ?: return@withContext
 
         try {
             _state.value = TorrentFileDownloadState.Writing
-            torrentFileRepository.writeTorrentFile(
-                fileId = pendingFileId,
-                outputStream = outputStream,
-            )
+
+            val fileContent = contentCache[pendingFileId]
+            fileContent?.let(outputStream::write)
 
             _events.send(TorrentFileDownloadEvent.WriteSucceed)
         } catch (e: IOException) {
