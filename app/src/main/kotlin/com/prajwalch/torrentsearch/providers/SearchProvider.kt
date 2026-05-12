@@ -57,6 +57,20 @@ interface TorrentDetailsProvider : SearchProvider {
     suspend fun getDetails(detailsPageUrl: String): TorrentDetails?
 }
 
+/**
+ * A [SearchProvider] that also provides newly added torrents.
+ */
+interface LatestTorrentsProvider : SearchProvider {
+    suspend fun getLastestTorrents(category: Category = Category.All): List<Torrent>
+}
+
+/**
+ * A [SearchProvider] that also provides top (or trending) torrents.
+ */
+interface TopTorrentsProvider : SearchProvider {
+    suspend fun getTopTorrents(category: Category = Category.All): List<Torrent>
+}
+
 /** How safe is the search provider?. */
 sealed class SearchProviderSafetyStatus {
     /** Search provider is safe to use. */

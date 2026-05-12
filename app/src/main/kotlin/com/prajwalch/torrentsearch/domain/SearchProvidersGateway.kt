@@ -43,7 +43,7 @@ class SearchProvidersGateway @Inject constructor(
 
         enabledProviders.forEach {
             launch {
-                val result = runCatchingSearchProvider(it.name, it.url) {
+                val result = runCatchingProvider(it.name, it.url) {
                     it.search(encodedQuery, searchContext)
                 }
                 send(result)
@@ -56,7 +56,7 @@ class SearchProvidersGateway @Inject constructor(
         .drop(1)
         .flowOn(Dispatchers.IO)
 
-    private suspend fun runCatchingSearchProvider(
+    private suspend fun runCatchingProvider(
         providerName: String,
         providerUrl: String,
         action: suspend () -> List<Torrent>,
@@ -93,6 +93,42 @@ class SearchProvidersGateway @Inject constructor(
             ?.let(GetTorrentDetailsResponse::Success)
             ?: GetTorrentDetailsResponse.DetailsNotFound
     }
+
+    fun getLatestTorrents(category: Category = Category.All): Flow<List<Torrent>> = channelFlow {
+        val latestTorrentsProvider = searchProvidersManager.getLatestTorrentsProviders(category)
+
+        latestTorrentsProvider.forEach {
+            launch {
+                val result = runCatchingProvider(it.name, it.url) {
+                    it.getLastestTorrents(category)
+                }
+                if (result.isSuccess) {
+                    val torrents = result.getOrNull()!!
+                    send(torrents)
+                }
+            }
+        }
+    }
+        .runningFold(emptyList<Torrent>()) { results, batchResult -> results + batchResult }
+        .drop(1)
+        .flowOn(Dispatchers.IO)
+
+    fun getTopTorrents(category: Category = Category.All): Flow<List<Torrent>> = channelFlow {
+        val topTorrentsProviders = searchProvidersManager.getTopTorrentsProviders(category)
+
+        topTorrentsProviders.forEach {
+            launch {
+                val result = runCatchingProvider(it.name, it.url) { it.getTopTorrents(category) }
+                if (result.isSuccess) {
+                    val torrents = result.getOrNull()!!
+                    send(torrents)
+                }
+            }
+        }
+    }
+        .runningFold(emptyList<Torrent>()) { results, batchResult -> results + batchResult }
+        .drop(1)
+        .flowOn(Dispatchers.IO)
 }
 
 private fun SearchResults.appendBatchResult(batchResult: Result<List<Torrent>>): SearchResults =

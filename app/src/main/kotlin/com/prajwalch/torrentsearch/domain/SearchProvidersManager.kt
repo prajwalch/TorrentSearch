@@ -5,10 +5,12 @@ import com.prajwalch.torrentsearch.data.repository.TorznabConfigRepository
 import com.prajwalch.torrentsearch.domain.model.Category
 import com.prajwalch.torrentsearch.domain.model.SearchProviderInfo
 import com.prajwalch.torrentsearch.domain.model.TorznabConfig
+import com.prajwalch.torrentsearch.providers.LatestTorrentsProvider
 import com.prajwalch.torrentsearch.providers.SearchProvider
 import com.prajwalch.torrentsearch.providers.SearchProviderId
 import com.prajwalch.torrentsearch.providers.SearchProviderSafetyStatus
 import com.prajwalch.torrentsearch.providers.SearchProviderType
+import com.prajwalch.torrentsearch.providers.TopTorrentsProvider
 import com.prajwalch.torrentsearch.providers.TorrentDetailsProvider
 import com.prajwalch.torrentsearch.providers.TorznabSearchProvider
 
@@ -73,6 +75,22 @@ class SearchProvidersManager @Inject constructor(
         return builtinProviders
             .filterIsInstance<TorrentDetailsProvider>()
             .find { it.name == name }
+    }
+
+    /**
+     * Returns latest torrents providers instances.
+     */
+    fun getLatestTorrentsProviders(category: Category): List<LatestTorrentsProvider> {
+        return builtinProviders.filterIsInstance<LatestTorrentsProvider>()
+            .filter { category == Category.All || category in it.supportedCategories }
+    }
+
+    /**
+     * Returns top torrents providers instances.
+     */
+    fun getTopTorrentsProviders(category: Category): List<TopTorrentsProvider> {
+        return builtinProviders.filterIsInstance<TopTorrentsProvider>()
+            .filter { category == Category.All || category in it.supportedCategories }
     }
 
     /**

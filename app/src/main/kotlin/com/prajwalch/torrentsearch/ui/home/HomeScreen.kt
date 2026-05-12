@@ -6,9 +6,9 @@ import androidx.compose.foundation.focusable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -24,6 +24,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LargeTopAppBar
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
@@ -61,6 +62,7 @@ import kotlinx.coroutines.launch
 fun HomeScreen(
     onNavigateToBookmarks: () -> Unit,
     onNavigateToSearchHistory: () -> Unit,
+    onBrowse: () -> Unit,
     onNavigateToSettings: () -> Unit,
     onSearch: (String, Category) -> Unit,
     modifier: Modifier = Modifier,
@@ -155,21 +157,40 @@ fun HomeScreen(
             )
 
             Spacer(modifier = Modifier.height(MaterialTheme.spaces.small))
-            Button(
-                modifier = Modifier.fillMaxWidth(fraction = 0.5f),
-                onClick = {
-                    onSearch(textFieldState.text.toString(), uiState.selectedCategory)
-                },
-                enabled = enableSearchButton,
-                contentPadding = ButtonDefaults.ButtonWithIconContentPadding,
+            Row(
+                modifier = Modifier.padding(horizontal = MaterialTheme.spaces.large),
+                horizontalArrangement = Arrangement.spacedBy(MaterialTheme.spaces.small),
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                Icon(
-                    modifier = Modifier.size(ButtonDefaults.IconSize),
-                    painter = painterResource(R.drawable.ic_search),
-                    contentDescription = null,
-                )
-                Spacer(modifier = Modifier.width(ButtonDefaults.IconSpacing))
-                Text(text = stringResource(R.string.home_button_search))
+                Button(
+                    modifier = Modifier.weight(1f),
+                    onClick = {
+                        onSearch(textFieldState.text.toString(), uiState.selectedCategory)
+                    },
+                    enabled = enableSearchButton,
+                    contentPadding = ButtonDefaults.ButtonWithIconContentPadding,
+                ) {
+                    Icon(
+                        modifier = Modifier.size(ButtonDefaults.IconSize),
+                        painter = painterResource(R.drawable.ic_search),
+                        contentDescription = null,
+                    )
+                    Spacer(modifier = Modifier.width(ButtonDefaults.IconSpacing))
+                    Text(text = stringResource(R.string.home_button_search))
+                }
+                OutlinedButton(
+                    modifier = Modifier.weight(1f),
+                    onClick = onBrowse,
+                    contentPadding = ButtonDefaults.ButtonWithIconContentPadding,
+                ) {
+                    Icon(
+                        modifier = Modifier.size(ButtonDefaults.IconSize),
+                        painter = painterResource(R.drawable.ic_explore),
+                        contentDescription = null,
+                    )
+                    Spacer(modifier = Modifier.width(ButtonDefaults.IconSpacing))
+                    Text(stringResource(R.string.home_button_search))
+                }
             }
         }
     }

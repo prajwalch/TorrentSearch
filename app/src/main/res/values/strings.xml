@@ -82,6 +82,7 @@
 
     <string name="home_search_query_hint">Search…</string>
     <string name="home_button_search">Search</string>
+    <string name="home_button_explore">Explore</string>
 
     <string name="search_action_view_errors">View errors</string>
     <string name="search_action_settings">Settings</string>
@@ -138,6 +139,10 @@
     <string name="bookmarks_dialog_message_delete_all">Bookmarks will be permanently removed</string>
     <string name="bookmarks_button_delete">Delete</string>
     <string name="bookmarks_empty_message">No bookmarks</string>
+
+    <string name="browse_screen_title">Browse</string>
+    <string name="browse_sort_latest">Latest</string>
+    <string name="browse_sort_top">Top</string>
 
     <string name="search_history_screen_title">Search history</string>
     <string name="search_history_action_delete_all">Delete all</string>

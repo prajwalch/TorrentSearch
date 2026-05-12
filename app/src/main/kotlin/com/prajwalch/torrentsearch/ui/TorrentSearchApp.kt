@@ -16,6 +16,7 @@ import androidx.navigation.compose.rememberNavController
 import com.prajwalch.torrentsearch.domain.model.Category
 import com.prajwalch.torrentsearch.domain.model.MagnetUri
 import com.prajwalch.torrentsearch.ui.bookmarks.BookmarksScreen
+import com.prajwalch.torrentsearch.ui.browse.BrowseScreen
 import com.prajwalch.torrentsearch.ui.component.TorrentClientNotFoundDialog
 import com.prajwalch.torrentsearch.ui.extension.childComposable
 import com.prajwalch.torrentsearch.ui.extension.parentComposable
@@ -42,6 +43,9 @@ private data class TorrentDetails(
     val detailsPageUrl: String,
     val providerName: String,
 )
+
+@Serializable
+private object Browse
 
 @Serializable
 private object Bookmarks
@@ -102,7 +106,8 @@ fun TorrentSearchApp(
                 onNavigateToBookmarks = { navController.navigate(Bookmarks) },
                 onNavigateToSearchHistory = { navController.navigate(SearchHistory) },
                 onNavigateToSettings = { navController.navigateToSettings() },
-                onSearch = { query, category -> navController.navigate(Search(query, category)) }
+                onSearch = { query, category -> navController.navigate(Search(query, category)) },
+                onBrowse = { navController.navigate(Browse) },
             )
         }
 
@@ -144,6 +149,16 @@ fun TorrentSearchApp(
                         popUpTo(route = Home)
                     }
                 }
+            )
+        }
+
+        childComposable<Browse> {
+            BrowseScreen(
+                onNavigateBack = { navController.navigateUp() },
+                onDownloadTorrent = { showTorrentClientNotFoundDialog = !onDownloadTorrent(it) },
+                onShareMagnetLink = onShareMagnetLink,
+                onOpenDescriptionPage = openDescriptionPage,
+                onShareDescriptionPageUrl = onShareDescriptionPageUrl,
             )
         }
 
