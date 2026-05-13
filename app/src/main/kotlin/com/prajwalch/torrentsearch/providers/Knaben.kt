@@ -13,6 +13,7 @@ import com.prajwalch.torrentsearch.util.TorrentUtils
 
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.buildJsonObject
@@ -40,23 +41,16 @@ class Knaben : SearchProvider {
     override val safetyStatus = SearchProviderSafetyStatus.Safe
     override val enabledByDefault = true
 
+    private val resultsJsonParser = KnabenResultsJsonParser(providerName = name)
+
     override suspend fun search(query: String, context: SearchContext): List<Torrent> {
         val requestBody = buildRequestJson(query, context.category)
-
         val responseJson = context.httpClient.postJson(
             url = "$API_URL/v1",
             payload = requestBody,
         ) ?: return emptyList()
 
-        val torrents = withContext(Dispatchers.Default) {
-            responseJson
-                .asObject()
-                .getArray("hits")
-                ?.map { it.asObject() }
-                ?.mapNotNull(::parseTorrentObject)
-        }
-
-        return torrents.orEmpty()
+        return resultsJsonParser.parse(responseJson)
     }
 
     /** Builds the API request payload. */
@@ -79,6 +73,36 @@ class Knaben : SearchProvider {
     }
 
     /**
+     * Maps the internal [Category] enum to a list of Knaben category IDs.
+     */
+    private fun getKnabenCategoryIds(category: Category): List<Int> = when (category) {
+        Category.All -> listOf()
+        Category.Music -> listOf(1000000)
+        Category.Series -> listOf(2000000)
+        Category.Movies -> listOf(3000000)
+        Category.Apps -> listOf(4000000)
+        Category.Porn -> listOf(5000000)
+        Category.Anime -> listOf(6000000)
+        Category.Games -> listOf(7000000)
+        Category.Books -> listOf(9000000)
+        Category.Other -> listOf(10000000)
+    }
+
+    private companion object {
+        private const val API_URL = "https://api.knaben.org"
+    }
+}
+
+private class KnabenResultsJsonParser(private val providerName: String) {
+    suspend fun parse(json: JsonElement): List<Torrent> = withContext(Dispatchers.Default) {
+        json.asObject()
+            .getArray("hits")
+            ?.map { it.asObject() }
+            ?.mapNotNull(::parseTorrentObject)
+            .orEmpty()
+    }
+
+    /**
      * Parses a single result entry into a [Torrent].
      *
      * Example structure:
@@ -94,11 +118,9 @@ class Knaben : SearchProvider {
         val name = obj.getString("title") ?: return null
         val magnetUri = obj.getString("magnetUrl") ?: return null
         val infoHash = TorrentUtils.getInfoHashFromMagnetUri(magnetUri)
-        val sizeBytes = obj.getLong("bytes") ?: return null
-        val size = FileSizeUtils.formatBytes(sizeBytes.toFloat())
-
-        val seeders = obj.getUInt("seeders") ?: 0u
-        val peers = obj.getUInt("peers") ?: 0u
+        val size = obj.getLong("bytes")?.toFloat()?.let(FileSizeUtils::formatBytes)
+        val seeders = obj.getUInt("seeders")
+        val peers = obj.getUInt("peers")
         val uploadDate = obj.getString("date")?.let(TorrentDateParser::parseIso)
         val descriptionPageUrl = obj.getString("details").orEmpty()
         val category = extractCategory(obj)
@@ -106,31 +128,15 @@ class Knaben : SearchProvider {
         return Torrent(
             infoHash = infoHash,
             name = name,
-            size = size,
-            seeders = seeders,
-            peers = peers,
-            providerName = this.name,
+            size = size ?: "0 KB",
+            seeders = seeders ?: 0U,
+            peers = peers ?: 0U,
+            providerName = providerName,
             uploadDate = uploadDate,
             descriptionPageUrl = descriptionPageUrl,
             magnetUri = magnetUri,
             category = category,
         )
-    }
-
-    /**
-     * Maps the internal [Category] enum to a list of Knaben category IDs.
-     */
-    private fun getKnabenCategoryIds(category: Category): List<Int> = when (category) {
-        Category.All -> listOf()
-        Category.Music -> listOf(1000000)
-        Category.Series -> listOf(2000000)
-        Category.Movies -> listOf(3000000)
-        Category.Apps -> listOf(4000000)
-        Category.Porn -> listOf(5000000)
-        Category.Anime -> listOf(6000000)
-        Category.Games -> listOf(7000000)
-        Category.Books -> listOf(9000000)
-        Category.Other -> listOf(10000000)
     }
 
     /**
@@ -177,9 +183,5 @@ class Knaben : SearchProvider {
             in 10000000L..10999999L -> Category.Other
             else -> Category.All
         }
-    }
-
-    private companion object {
-        private const val API_URL = "https://api.knaben.org"
     }
 }
