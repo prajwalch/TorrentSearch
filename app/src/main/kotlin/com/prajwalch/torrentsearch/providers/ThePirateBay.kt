@@ -18,7 +18,11 @@ import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonObject
 
-class ThePirateBay : SearchProvider, TorrentDetailsProvider {
+class ThePirateBay :
+    SearchProvider,
+    TorrentDetailsProvider,
+    LatestTorrentsProvider,
+    TopTorrentsProvider {
     override val id = "thepiratebay"
     override val name = "ThePirateBay"
     override val url = "https://thepiratebay.org"
@@ -44,7 +48,8 @@ class ThePirateBay : SearchProvider, TorrentDetailsProvider {
 
     override suspend fun search(query: String, context: SearchContext): List<Torrent> {
         val requestUrl = buildString {
-            append(URL)
+            append(API_URL)
+            append("/q.php")
             append("?q=$query")
 
             val categoryIndex = categoryId(context.category)
@@ -57,9 +62,38 @@ class ThePirateBay : SearchProvider, TorrentDetailsProvider {
 
     override suspend fun getDetails(detailsPageUrl: String): TorrentDetails? {
         val id = detailsPageUrl.takeLastWhile { it != '=' }
-        val requestUrl = "https://apibay.org/t.php?id=$id"
+        val requestUrl = "$API_URL/t.php?id=$id"
 
         return HttpClient.getJson(requestUrl)?.let { TBPDetailsJsonParser.parse(it) }
+    }
+
+    override suspend fun getLastestTorrents(category: Category): List<Torrent> {
+        val requestUrl = if (category == Category.All) {
+            "$API_URL/precompiled/data_top100_recent.json"
+        } else {
+            val categoryId = categoryId(category)
+            "$API_URL/q.php?q=category%3A$categoryId"
+        }
+        val responseJson = HttpClient.getJson(requestUrl) ?: return emptyList()
+
+        return resultsJsonParser.parse(responseJson)
+    }
+
+    override suspend fun getTopTorrents(category: Category): List<Torrent> {
+        val requestUrl = buildString {
+            append(API_URL)
+            append("/precompiled")
+
+            if (category == Category.All) {
+                append("/data_top100_48h.json")
+            } else {
+                val categoryId = categoryId(category)
+                append("/data_top100_48h_$categoryId.json")
+            }
+        }
+        val responseJson = HttpClient.getJson(requestUrl) ?: return emptyList()
+
+        return resultsJsonParser.parse(responseJson)
     }
 
     /**
@@ -79,7 +113,7 @@ class ThePirateBay : SearchProvider, TorrentDetailsProvider {
     }
 
     private companion object {
-        private const val URL = "https://apibay.org/q.php"
+        private const val API_URL = "https://apibay.org"
     }
 }
 
@@ -148,7 +182,6 @@ private class TBPResultsJsonParser(
             descriptionPageUrl = descriptionPageUrl,
         )
     }
-
 }
 
 private object TBPDetailsJsonParser {
