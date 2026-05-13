@@ -14,7 +14,10 @@ import com.prajwalch.torrentsearch.util.TorrentUtils
 
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonObject
+
+import java.time.Instant
 
 class SubsPlease : SearchProvider {
     override val id = "subsplease"
@@ -23,6 +26,9 @@ class SubsPlease : SearchProvider {
     override val supportedCategories = setOf(Category.Anime)
     override val safetyStatus = SearchProviderSafetyStatus.Safe
     override val enabledByDefault = false
+
+    private val resultsJsonParser =
+        SubsPleaseResultsJsonParser(providerName = name, providerUrl = url)
 
     override suspend fun search(query: String, context: SearchContext): List<Torrent> {
         val requestUrl = buildString {
@@ -34,55 +40,60 @@ class SubsPlease : SearchProvider {
         }
         val responseJson = context.httpClient.getJson(url = requestUrl) ?: return emptyList()
 
-        return withContext(Dispatchers.Default) {
-            try {
-                parseResponseObject(responseObject = responseJson.asObject())
-            } catch (_: IllegalArgumentException) {
-                emptyList()
-            }
-        }
+        return resultsJsonParser.parse(responseJson)
     }
+}
 
-    private fun parseResponseObject(responseObject: JsonObject): List<Torrent> {
-        return responseObject
+private class SubsPleaseResultsJsonParser(
+    private val providerName: String,
+    private val providerUrl: String,
+) {
+    suspend fun parse(json: JsonElement): List<Torrent> = withContext(Dispatchers.Default) {
+        json.asObject()
             .values
-            .mapNotNull { parseAnimeObject(animeObject = it.asObject()) }
+            .mapNotNull { parseAnimeObject(it.asObject()) }
             .flatten()
     }
 
     private fun parseAnimeObject(animeObject: JsonObject): List<Torrent>? {
         val name = animeObject.getString("show") ?: return null
-        val uploadDate = animeObject.getString("release_date")
-            ?.let(TorrentDateParser::parseRFC1123)
-        val descriptionPageUrl = animeObject.getString("page")
-            ?.let { "$url/$it" }
-            ?: return null
+        val uploadDate = animeObject.getString("release_date")?.let(TorrentDateParser::parseRFC1123)
+        val detailsPageUrl = animeObject.getString("page")?.let { "$providerUrl/$it" }
 
-        return animeObject.getArray("downloads")
-            ?.map { it.asObject() }
-            ?.mapNotNull { parseDownloadObject(it) }
-            ?.map { downloadLink ->
-                Torrent(
-                    infoHash = TorrentUtils.getInfoHashFromMagnetUri(downloadLink.magnetUri),
-                    name = "$name (${downloadLink.resolution})",
-                    size = downloadLink.size,
-                    seeders = 1U,
-                    peers = 1U,
-                    uploadDate = uploadDate,
-                    category = Category.Anime,
-                    descriptionPageUrl = descriptionPageUrl,
-                    magnetUri = downloadLink.magnetUri,
-                    providerName = this.name,
-                )
-            }
+        return animeObject.getArray("downloads")?.mapNotNull {
+            parseDownloadObject(
+                downloadObject = it.asObject(),
+                torrentName = name,
+                uploadDate = uploadDate,
+                detailsPageUrl = detailsPageUrl,
+            )
+        }
     }
 
-    private fun parseDownloadObject(downloadObject: JsonObject): DownloadLink? {
-        val resolution = downloadObject.getString("res")?.let { "${it}p" } ?: return null
+    private fun parseDownloadObject(
+        downloadObject: JsonObject,
+        torrentName: String,
+        uploadDate: Instant?,
+        detailsPageUrl: String?,
+    ): Torrent? {
         val magnetUri = downloadObject.getString("magnet") ?: return null
-        val size = parseSizeFromMagnetUri(magnetUri = magnetUri) ?: return null
+        val size = parseSizeFromMagnetUri(magnetUri = magnetUri)
 
-        return DownloadLink(resolution = resolution, size = size, magnetUri = magnetUri)
+        val resolution = downloadObject.getString("res")?.let { "${it}p" }
+        val finalTorrentName = if (resolution == null) torrentName else "$torrentName [$resolution]"
+
+        return Torrent(
+            infoHash = TorrentUtils.getInfoHashFromMagnetUri(magnetUri),
+            name = finalTorrentName,
+            size = size ?: "0 KB",
+            seeders = 0U,
+            peers = 0U,
+            uploadDate = uploadDate,
+            category = Category.Anime,
+            descriptionPageUrl = detailsPageUrl ?: "",
+            magnetUri = magnetUri,
+            providerName = providerName,
+        )
     }
 
     private fun parseSizeFromMagnetUri(magnetUri: MagnetUri): String? {
@@ -96,9 +107,3 @@ class SubsPlease : SearchProvider {
             ?.let(FileSizeUtils::formatBytes)
     }
 }
-
-private data class DownloadLink(
-    val resolution: String,
-    val size: String,
-    val magnetUri: MagnetUri,
-)
