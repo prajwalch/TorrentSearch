@@ -16,7 +16,13 @@ import kotlinx.coroutines.withContext
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Element
 
-class BitSearch : SearchProvider, TorrentDetailsProvider {
+import java.time.format.DateTimeParseException
+
+class BitSearch :
+    SearchProvider,
+    TorrentDetailsProvider,
+    LatestTorrentsProvider,
+    TopTorrentsProvider {
     override val id = "bitsearch"
     override val name = "BitSearch"
     override val url = "https://bitsearch.to"
@@ -94,6 +100,28 @@ class BitSearch : SearchProvider, TorrentDetailsProvider {
         val responseHtml = HttpClient.get(detailsPageUrl)
         return BitSearchDetailsPageParser.parse(html = responseHtml, pageUrl = detailsPageUrl)
     }
+
+    override suspend fun getLastestTorrents(category: Category): List<Torrent> {
+        val requestUrl = buildString {
+            append(url)
+            append("/latest")
+            getCategoryId(category)?.let { append("?category=$it") }
+        }
+        val responseHtml = HttpClient.get(requestUrl)
+
+        return resultsPageParser.parse(html = responseHtml, pageUrl = requestUrl)
+    }
+
+    override suspend fun getTopTorrents(category: Category): List<Torrent> {
+        val requestUrl = buildString {
+            append(url)
+            append("/trending")
+            getCategoryId(category)?.let { append("?category=$it") }
+        }
+        val responseHtml = HttpClient.get(requestUrl)
+
+        return resultsPageParser.parse(html = responseHtml, pageUrl = requestUrl)
+    }
 }
 
 private class BitSearchResultsPageParser(private val providerName: String) {
@@ -111,8 +139,13 @@ private class BitSearchResultsPageParser(private val providerName: String) {
         val size = listItem.selectFirst(SIZE)?.ownText()
         val seeders = listItem.selectFirst(SEEDERS)?.ownText()
         val peers = listItem.selectFirst(PEERS)?.ownText()
-        val uploadDate = listItem.selectFirst(UPLOAD_DATE)?.ownText()
-            ?.let { TorrentDateParser.parse(date = it, format = "M/d/yyyy") }
+        val uploadDate = listItem.selectFirst(UPLOAD_DATE)?.ownText()?.let {
+            try {
+                TorrentDateParser.parse(date = it, format = "M/d/yyyy")
+            } catch (_: DateTimeParseException) {
+                TorrentDateParser.tryParseRelative(it)
+            }
+        }
         val category = listItem.selectFirst(CATEGORY)?.ownText()?.let(::categoryFromRawString)
         val fileDownloadLink = listItem.selectFirst(FILE_DOWNLOAD_LINK)?.attr("abs:href")
         val detailsPageUrl = listItem.selectFirst(DETAILS_PAGE_URL)?.attr("abs:href")
