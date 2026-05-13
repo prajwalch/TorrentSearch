@@ -7,6 +7,7 @@ import com.prajwalch.torrentsearch.extension.getArray
 import com.prajwalch.torrentsearch.extension.getLong
 import com.prajwalch.torrentsearch.extension.getString
 import com.prajwalch.torrentsearch.extension.getUInt
+import com.prajwalch.torrentsearch.network.HttpClient
 import com.prajwalch.torrentsearch.util.FileSizeUtils
 import com.prajwalch.torrentsearch.util.TorrentDateParser
 import com.prajwalch.torrentsearch.util.TorrentUtils
@@ -23,7 +24,7 @@ import kotlinx.serialization.json.putJsonArray
  * Provider implementation using the official [Knaben API](https://knaben.org/api/v1).
  * Returns magnet-based torrents.
  */
-class Knaben : SearchProvider {
+class Knaben : SearchProvider, LatestTorrentsProvider, TopTorrentsProvider {
     override val id = "knaben"
     override val name = "Knaben"
     override val url = "https://knaben.org"
@@ -44,7 +45,11 @@ class Knaben : SearchProvider {
     private val resultsJsonParser = KnabenResultsJsonParser(providerName = name)
 
     override suspend fun search(query: String, context: SearchContext): List<Torrent> {
-        val requestBody = buildRequestJson(query, context.category)
+        val requestBody = buildRequestJson(
+            query = query,
+            category = context.category,
+            orderBy = "seeders",
+        )
         val responseJson = context.httpClient.postJson(
             url = "$API_URL/v1",
             payload = requestBody,
@@ -53,12 +58,29 @@ class Knaben : SearchProvider {
         return resultsJsonParser.parse(responseJson)
     }
 
+    override suspend fun getLastestTorrents(category: Category): List<Torrent> {
+        val requestBody = buildRequestJson(query = null, category = category, orderBy = "date")
+        val responseJson = HttpClient.postJson(url = "$API_URL/v1", payload = requestBody)
+            ?: return emptyList()
+
+        return resultsJsonParser.parse(responseJson)
+    }
+
+    override suspend fun getTopTorrents(category: Category): List<Torrent> {
+        val requestBody = buildRequestJson(query = null, category = category, orderBy = "seeders")
+        val responseJson = HttpClient.postJson(url = "$API_URL/v1", payload = requestBody)
+            ?: return emptyList()
+
+        return resultsJsonParser.parse(responseJson)
+    }
+
     /** Builds the API request payload. */
-    private fun buildRequestJson(query: String, category: Category): JsonObject {
+    private fun buildRequestJson(query: String?, category: Category, orderBy: String): JsonObject {
         return buildJsonObject {
-            put("query", JsonPrimitive(query))
+            query?.let { put("query", JsonPrimitive(it)) }
+
             put("size", JsonPrimitive(300))
-            put("order_by", JsonPrimitive("seeders"))
+            put("order_by", JsonPrimitive(orderBy))
             put("order_direction", JsonPrimitive("desc"))
             put("hide_unsafe", JsonPrimitive(true))
             put("hide_xxx", JsonPrimitive(false)) // TODO: NSFW can be implemented here
