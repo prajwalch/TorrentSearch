@@ -189,7 +189,7 @@ fun HomeScreen(
                         contentDescription = null,
                     )
                     Spacer(modifier = Modifier.width(ButtonDefaults.IconSpacing))
-                    Text(stringResource(R.string.home_button_explore))
+                    Text(stringResource(R.string.home_button_browse))
                 }
             }
         }

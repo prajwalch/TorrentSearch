@@ -82,7 +82,7 @@
 
     <string name="home_search_query_hint">Search…</string>
     <string name="home_button_search">Search</string>
-    <string name="home_button_explore">Explore</string>
+    <string name="home_button_browse">Browse</string>
 
     <string name="search_action_view_errors">View errors</string>
     <string name="search_action_settings">Settings</string>
