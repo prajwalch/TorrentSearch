@@ -8,6 +8,7 @@ import com.prajwalch.torrentsearch.domain.model.Torrent
 import com.prajwalch.torrentsearch.extension.asObject
 import com.prajwalch.torrentsearch.extension.getArray
 import com.prajwalch.torrentsearch.extension.getString
+import com.prajwalch.torrentsearch.network.HttpClient
 import com.prajwalch.torrentsearch.util.FileSizeUtils
 import com.prajwalch.torrentsearch.util.TorrentDateParser
 import com.prajwalch.torrentsearch.util.TorrentUtils
@@ -19,7 +20,7 @@ import kotlinx.serialization.json.JsonObject
 
 import java.time.Instant
 
-class SubsPlease : SearchProvider {
+class SubsPlease : SearchProvider, LatestTorrentsProvider {
     override val id = "subsplease"
     override val name = "SubsPlease"
     override val url = "https://subsplease.org"
@@ -39,6 +40,13 @@ class SubsPlease : SearchProvider {
             append("&s=$query")
         }
         val responseJson = context.httpClient.getJson(url = requestUrl) ?: return emptyList()
+
+        return resultsJsonParser.parse(responseJson)
+    }
+
+    override suspend fun getLastestTorrents(category: Category): List<Torrent> {
+        val requestUrl = "$url/api/?f=latest&tz=$"
+        val responseJson = HttpClient.getJson(requestUrl) ?: return emptyList()
 
         return resultsJsonParser.parse(responseJson)
     }
