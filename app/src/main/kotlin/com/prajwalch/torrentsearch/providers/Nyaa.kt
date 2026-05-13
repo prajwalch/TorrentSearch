@@ -13,7 +13,7 @@ import kotlinx.coroutines.withContext
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Element
 
-class Nyaa : SearchProvider, TorrentDetailsProvider {
+class Nyaa : SearchProvider, TorrentDetailsProvider, LatestTorrentsProvider, TopTorrentsProvider {
     override val id = "nyaasi"
     override val name = "Nyaa"
     override val url = "https://nyaa.si"
@@ -56,6 +56,22 @@ class Nyaa : SearchProvider, TorrentDetailsProvider {
     override suspend fun getDetails(detailsPageUrl: String): TorrentDetails? {
         val responseHtml = HttpClient.get(detailsPageUrl)
         return NyaaDetailsPageParser.parse(html = responseHtml, pageUrl = detailsPageUrl)
+    }
+
+    override suspend fun getLastestTorrents(category: Category): List<Torrent> {
+        val categoryId = categoryMap[category] ?: categoryMap[Category.All]!!
+        val requestUrl = "$url?c=$categoryId"
+        val responseHtml = HttpClient.get(requestUrl)
+
+        return resultsPageParser.parse(html = responseHtml, pageUrl = requestUrl)
+    }
+
+    override suspend fun getTopTorrents(category: Category): List<Torrent> {
+        val categoryId = categoryMap[category] ?: categoryMap[Category.All]!!
+        val requestUrl = "$url?s=seeders&o=desc&c=$categoryId"
+        val responseHtml = HttpClient.get(requestUrl)
+
+        return resultsPageParser.parse(html = responseHtml, pageUrl = requestUrl)
     }
 }
 
