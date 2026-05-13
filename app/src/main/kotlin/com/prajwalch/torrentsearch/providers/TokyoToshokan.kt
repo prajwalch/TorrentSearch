@@ -14,7 +14,7 @@ import kotlinx.coroutines.withContext
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Element
 
-class TokyoToshokan : SearchProvider, TorrentDetailsProvider {
+class TokyoToshokan : SearchProvider, TorrentDetailsProvider, LatestTorrentsProvider {
     override val id = "tokyotoshokan"
     override val name = "TokyoToshokan"
     override val url = "https://tokyotosho.info"
@@ -57,6 +57,20 @@ class TokyoToshokan : SearchProvider, TorrentDetailsProvider {
     override suspend fun getDetails(detailsPageUrl: String): TorrentDetails? {
         val responseHtml = HttpClient.get(detailsPageUrl)
         return TokyoToshokanDetailsPageParser.parse(html = responseHtml, pageUrl = detailsPageUrl)
+    }
+
+    override suspend fun getLastestTorrents(category: Category): List<Torrent> {
+        val requestUrl = buildString {
+            append(url)
+            append("/index.php")
+
+            if (category != Category.All) {
+                categoryMap[category]?.let { append("?cat=$it") }
+            }
+        }
+        val responseHtml = HttpClient.get(requestUrl)
+
+        return resultsPageParser.parse(html = responseHtml, pageUrl = requestUrl)
     }
 }
 
