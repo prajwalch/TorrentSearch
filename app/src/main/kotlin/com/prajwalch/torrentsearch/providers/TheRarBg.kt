@@ -17,7 +17,11 @@ import kotlinx.coroutines.withContext
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Element
 
-class TheRarBg : SearchProvider, TorrentDetailsProvider {
+class TheRarBg :
+    SearchProvider,
+    TorrentDetailsProvider,
+    LatestTorrentsProvider,
+    TopTorrentsProvider {
     override val id = "therarbag"
     override val name = "TheRarBg"
     override val url = "https://therarbg.com"
@@ -58,6 +62,38 @@ class TheRarBg : SearchProvider, TorrentDetailsProvider {
     override suspend fun getDetails(detailsPageUrl: String): TorrentDetails? {
         val responseHtml = HttpClient.get(detailsPageUrl)
         return TheRarBgDetailsPageParser.parse(responseHtml)
+    }
+
+    override suspend fun getLastestTorrents(category: Category): List<Torrent> {
+        val requestUrl = buildString {
+            append(url)
+            append("/get-posts")
+            append("/time:2D")
+
+            if (category != Category.All) {
+                val categoryName = categoryName(category)
+                append(":category:$categoryName")
+            }
+        }
+        val responseHtml = HttpClient.get(requestUrl)
+
+        return resultsPageParser.parse(html = responseHtml, pageUrl = requestUrl)
+    }
+
+    override suspend fun getTopTorrents(category: Category): List<Torrent> {
+        val requestUrl = buildString {
+            append(url)
+            append("/get-posts")
+            append("/time:2D:order:-se")
+
+            if (category != Category.All) {
+                val categoryName = categoryName(category)
+                append(":category:$categoryName")
+            }
+        }
+        val responseHtml = HttpClient.get(requestUrl)
+
+        return resultsPageParser.parse(html = responseHtml, pageUrl = requestUrl)
     }
 
     /** Returns the compatible category string. */
