@@ -15,7 +15,11 @@ import kotlinx.coroutines.withContext
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Element
 
-class MyPornClub : SearchProvider, TorrentDetailsProvider {
+class MyPornClub :
+    SearchProvider,
+    TorrentDetailsProvider,
+    LatestTorrentsProvider,
+    TopTorrentsProvider {
     override val id = "mypornclub"
     override val name = "MyPornClub"
     override val url = "https://myporn.club"
@@ -37,6 +41,20 @@ class MyPornClub : SearchProvider, TorrentDetailsProvider {
     override suspend fun getDetails(detailsPageUrl: String): TorrentDetails? {
         val responseHtml = HttpClient.get(detailsPageUrl)
         return MyPornClubDetailsPageParser.parse(html = responseHtml, pageUrl = detailsPageUrl)
+    }
+
+    override suspend fun getLastestTorrents(category: Category): List<Torrent> {
+        val requestUrl = "$url/ts/latest/alltime"
+        val responseHtml = HttpClient.get(requestUrl)
+
+        return resultsPageParser.parse(html = responseHtml, pageUrl = requestUrl)
+    }
+
+    override suspend fun getTopTorrents(category: Category): List<Torrent> {
+        val requestUrl = "$url/ts/hits/alltime"
+        val responseHtml = HttpClient.get(requestUrl)
+
+        return resultsPageParser.parse(html = responseHtml, pageUrl = requestUrl)
     }
 }
 
