@@ -13,7 +13,11 @@ import kotlinx.coroutines.withContext
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Element
 
-class Sukebei : SearchProvider, TorrentDetailsProvider {
+class Sukebei :
+    SearchProvider,
+    TorrentDetailsProvider,
+    LatestTorrentsProvider,
+    TopTorrentsProvider {
     override val id = "sukebeinyaa"
     override val name = "Sukebei"
     override val url = "https://sukebei.nyaa.si"
@@ -40,6 +44,18 @@ class Sukebei : SearchProvider, TorrentDetailsProvider {
     override suspend fun getDetails(detailsPageUrl: String): TorrentDetails? {
         val responseHtml = HttpClient.get(detailsPageUrl)
         return SukebeiDetailsPageParser.parse(html = responseHtml, pageUrl = detailsPageUrl)
+    }
+
+    override suspend fun getLastestTorrents(category: Category): List<Torrent> {
+        val responseHtml = HttpClient.get(url)
+        return resultsPageParser.parse(html = responseHtml, pageUrl = url)
+    }
+
+    override suspend fun getTopTorrents(category: Category): List<Torrent> {
+        val requestUrl = "$url/?s=seeders&o=desc"
+        val responseHtml = HttpClient.get(requestUrl)
+
+        return resultsPageParser.parse(html = responseHtml, pageUrl = requestUrl)
     }
 }
 
