@@ -15,7 +15,7 @@ import org.jsoup.nodes.Element
 
 import java.time.Instant
 
-class UIndex : SearchProvider, TorrentDetailsProvider {
+class UIndex : SearchProvider, TorrentDetailsProvider, LatestTorrentsProvider, TopTorrentsProvider {
     override val id = "uindex"
     override val name = "UIndex"
     override val url = "https://uindex.org"
@@ -65,14 +65,41 @@ class UIndex : SearchProvider, TorrentDetailsProvider {
         val responseHtml = HttpClient.get(detailsPageUrl)
         return UIndexDetailsPageParser.parse(responseHtml, detailsPageUrl)
     }
+
+    override suspend fun getLastestTorrents(category: Category): List<Torrent> {
+        val requestUrl = buildString {
+            append(url)
+            append("/search.php")
+            val categoryId = categoryMap[category] ?: categoryMap[Category.All]!!
+            append("?c=$categoryId")
+        }
+        val responseHtml = HttpClient.get(requestUrl)
+
+        return resultsPageParser.parse(html = responseHtml, pageUrl = requestUrl)
+    }
+
+    override suspend fun getTopTorrents(category: Category): List<Torrent> {
+        val requestUrl = buildString {
+            append(url)
+            append("/top.php")
+            append("?t=24h")
+            val categoryId = categoryMap[category] ?: categoryMap[Category.All]!!
+            append("&c=$categoryId")
+        }
+        val responseHtml = HttpClient.get(requestUrl)
+
+        return resultsPageParser.parse(html = responseHtml, pageUrl = requestUrl)
+    }
 }
 
 private class UIndexResultsPageParser(private val providerName: String) {
     suspend fun parse(html: String, pageUrl: String): List<Torrent> =
         withContext(Dispatchers.Default) {
             Jsoup.parse(html, pageUrl)
-                .select(LIST_ITEM)
-                .mapNotNull(::parseListItem)
+                .selectFirst(LIST_ITEM_CONTAINER)
+                ?.select(LIST_ITEM)
+                ?.mapNotNull(::parseListItem)
+                .orEmpty()
         }
 
     private fun parseListItem(listItem: Element): Torrent? {
@@ -81,7 +108,8 @@ private class UIndexResultsPageParser(private val providerName: String) {
         val size = listItem.selectFirst(SIZE)?.ownText()
         val seeders = listItem.selectFirst(SEEDERS)?.ownText()?.filter { it != ',' }?.toUIntOrNull()
         val peers = listItem.selectFirst(PEERS)?.ownText()?.filter { it != ',' }?.toUIntOrNull()
-        val uploadDate = listItem.selectFirst(UPLOAD_DATE)?.ownText()
+        val uploadDate = listItem.selectFirst(UPLOAD_DATE)
+            ?.ownText()
             ?.let(TorrentDateParser::tryParseRelative)
         val category = listItem.selectFirst(CATEGORY)?.ownText()?.let(::categoryFromRawString)
         val detailsPageUrl = listItem.selectFirst(DETAILS_PAGE_URL)?.attr("abs:href")
@@ -101,7 +129,8 @@ private class UIndexResultsPageParser(private val providerName: String) {
     }
 
     private companion object {
-        private const val LIST_ITEM = "table.sr-table > tbody > tr"
+        private const val LIST_ITEM_CONTAINER = "table.sr-table, table.top-table"
+        private const val LIST_ITEM = "tbody > tr"
         private const val NAME = "td.sr-col-name > a.sr-torrent-link"
         private const val SIZE = "td.sr-col-size"
         private const val SEEDERS = "td.sr-col-seeders > span.sr-seed"
