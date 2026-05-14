@@ -15,7 +15,11 @@ import kotlinx.coroutines.withContext
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Element
 
-class XXXClub : SearchProvider, TorrentDetailsProvider {
+class XXXClub :
+    SearchProvider,
+    TorrentDetailsProvider,
+    LatestTorrentsProvider,
+    TopTorrentsProvider {
     override val id = "xxxclub"
     override val name = "XXXClub"
     override val url = "https://xxxclub.to"
@@ -36,21 +40,37 @@ class XXXClub : SearchProvider, TorrentDetailsProvider {
         val responseHtml = HttpClient.get(detailsPageUrl)
         return XXXClubDetailsPageParser.parse(responseHtml, detailsPageUrl)
     }
+
+    override suspend fun getLastestTorrents(category: Category): List<Torrent> {
+        val requestUrl = "$url/torrents/browse/all"
+        val responseHtml = HttpClient.get(requestUrl)
+
+        return resultsPageParser.parse(html = responseHtml, pageUrl = requestUrl)
+    }
+
+    override suspend fun getTopTorrents(category: Category): List<Torrent> {
+        val requestUrl = "$url/torrents/top100"
+        val responseHtml = HttpClient.get(requestUrl)
+
+        return resultsPageParser.parse(html = responseHtml, pageUrl = requestUrl)
+    }
 }
 
 private class XXXClubResultsPageParser(private val providerName: String) {
     suspend fun parse(html: String, pageUrl: String): List<Torrent> =
         withContext(Dispatchers.Default) {
-            Jsoup
-                .parse(html, pageUrl)
-                .select(LIST_ITEM)
-                .map { async { parseListItem(it) } }
-                .awaitAll()
-                .filterNotNull()
+            Jsoup.parse(html, pageUrl)
+                .selectFirst(LIST_ITEM_CONTAINER)
+                ?.select(LIST_ITEM)
+                ?.map { async { parseListItem(it) } }
+                ?.awaitAll()
+                ?.filterNotNull()
+                .orEmpty()
         }
 
     private suspend fun parseListItem(listItem: Element): Torrent? {
-        val detailsPageUrl = listItem.selectFirst(DETAILS_PAGE_URL)?.attr("abs:href")
+        val detailsPageUrl = listItem.selectFirst(DETAILS_PAGE_URL)
+            ?.attr("abs:href")
             ?: return null
         val detailsPageHtml = HttpClient.get(detailsPageUrl)
         val torrentDetails = XXXClubDetailsPageParser.parse(
@@ -62,7 +82,8 @@ private class XXXClubResultsPageParser(private val providerName: String) {
         val size = listItem.selectFirst(SIZE)?.ownText()
         val seeders = listItem.selectFirst(SEEDERS)?.ownText()?.toUIntOrNull()
         val peers = listItem.selectFirst(PEERS)?.ownText()?.toUIntOrNull()
-        val uploadDate = listItem.selectFirst(UPLOAD_DATE)?.ownText()
+        val uploadDate = listItem.selectFirst(UPLOAD_DATE)
+            ?.ownText()
             ?.let { TorrentDateParser.parse(date = it, format = "dd MMM yyyy HH:mm:ss") }
 
         return Torrent(
@@ -81,8 +102,9 @@ private class XXXClubResultsPageParser(private val providerName: String) {
     }
 
     private companion object {
-        private const val LIST_ITEM = "ul.tsearch > li"
-        private const val NAME = "span:nth-child(2) > a:nth-child(2)"
+        private const val LIST_ITEM_CONTAINER = "div.browsetableinside, div.divtableinside"
+        private const val LIST_ITEM = "ul > li"
+        private const val NAME = """span:nth-child(2) > a[href^="/torrents/details"]"""
         private const val SIZE = "span.siz"
         private const val SEEDERS = "span.see"
         private const val PEERS = "span.lee"
@@ -125,7 +147,9 @@ private object XXXClubDetailsPageParser {
             val uploader = html.selectFirst(UPLOADER)?.ownText()
             val lastChecked = html.selectFirst(LAST_CHECKED)
                 ?.ownText()
-                ?.let { TorrentDateParser.parse(date = it, format = DATE_FORMAT) }
+                // Some torrents will have "Pending" status.
+                ?.let { runCatching { TorrentDateParser.parse(date = it, format = DATE_FORMAT) } }
+                ?.getOrNull()
             val fileDownloadLink = html.selectFirst(FILE_DOWNLOAD_LINK)?.attr("abs:href")
             val description = html.selectFirst(DESCRIPTION)
                 ?.html()
