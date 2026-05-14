@@ -19,7 +19,6 @@ class TorrentDatabase : SearchProvider, TorrentDetailsProvider {
     override val name = "TorrentDatabase"
     override val url = "https://developify.ca"
     override val supportedCategories = setOf(
-        Category.Anime,
         Category.Apps,
         Category.Books,
         Category.Games,
@@ -32,9 +31,6 @@ class TorrentDatabase : SearchProvider, TorrentDetailsProvider {
     override val enabledByDefault = false
 
     private val categoryMap = mapOf(
-        Category.All to "",
-        Category.Anime to "",
-        Category.Other to "",
         Category.Apps to "software",
         Category.Books to "e-books",
         Category.Games to "games",
@@ -51,7 +47,10 @@ class TorrentDatabase : SearchProvider, TorrentDetailsProvider {
             append(url)
             append("/newest")
             append("?q=$query")
-            append("&category=${categoryMap[context.category]}")
+
+            categoryMap[context.category]?.let {
+                append("&category=$it")
+            }
         }
 
         val responseHtml = context.httpClient.get(url = requestUrl)
