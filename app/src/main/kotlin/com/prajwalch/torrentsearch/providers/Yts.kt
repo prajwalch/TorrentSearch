@@ -12,6 +12,7 @@ import com.prajwalch.torrentsearch.util.TorrentDateParser
 
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonObject
 
 class Yts : SearchProvider {
@@ -22,89 +23,33 @@ class Yts : SearchProvider {
     override val safetyStatus = SearchProviderSafetyStatus.Safe
     override val enabledByDefault = true
 
+    private val resultsJsonParser = YtsResultsJsonParser(providerName = name)
+
     override suspend fun search(query: String, context: SearchContext): List<Torrent> {
-        return if (isQueryIMDBId(query)) {
-            singleMovieLinks(query, context)
-        } else {
-            multipleMovieLinks(query, context)
-        }
-    }
-
-    private fun isQueryIMDBId(query: String): Boolean {
-        return query.startsWith("tt") && (query.trimStart('t').toUIntOrNull() != null)
-    }
-
-    /**
-     * Fetches and returns all the available torrents of a movie associated with
-     * the given `imdbid` if the response is in expected layout, otherwise empty list.
-     *
-     * Response layout. Visit https://yts.mx/api for more details.
-     *
-     *     status: "ok" | "error"
-     *     status_message: <string>
-     *     data:
-     *        movie:       <movie object>
-     *
-     * @see [parseMovieObject]
-     */
-    private suspend fun singleMovieLinks(imdbId: String, context: SearchContext): List<Torrent> {
-        val requestUrl = buildString {
-            append(API_BASE_URL)
-            append("/movie_details.json")
-            append("?imdb_id=$imdbId")
-        }
-
-        val responseJson = context.httpClient.getJson(url = requestUrl) ?: return emptyList()
-        val torrents = withContext(Dispatchers.Default) {
-            responseJson
-                .asObject()
-                .getObject("data")
-                ?.getObject("movie")
-                ?.let { movieObject ->
-                    parseMovieObject(movieObject = movieObject)
-                }
-        }
-
-        return torrents.orEmpty()
-    }
-
-    /**
-     * Fetches and returns all the available torrents of all movies that the
-     * given `query` can pull.
-     *
-     * Response layout. Visit https://yts.mx/api for more details.
-     *
-     *     status: "ok" | "error"
-     *     status_message: <string>
-     *     data:
-     *        movie_count:  <number>
-     *        limit:        <number>
-     *        page_number:  <number>
-     *        movies:       <array of movie object>
-     *
-     * @see [parseMovieObject]
-     */
-    private suspend fun multipleMovieLinks(query: String, context: SearchContext): List<Torrent> {
         val requestUrl = buildString {
             append(API_BASE_URL)
             append("/list_movies.json")
             append("?query_term=$query")
             append("&limit=50")
         }
-
         val responseJson = context.httpClient.getJson(url = requestUrl) ?: return emptyList()
-        val torrents = withContext(Dispatchers.Default) {
-            responseJson
-                .asObject()
-                .getObject("data")
-                ?.getArray("movies")
-                ?.map { rawArrayItem -> rawArrayItem.asObject() }
-                ?.flatMap { movieObject ->
-                    parseMovieObject(movieObject = movieObject)
-                }
-        }
 
-        return torrents.orEmpty()
+        return resultsJsonParser.parse(responseJson)
+    }
+
+    private companion object {
+        private const val API_BASE_URL = "https://movies-api.accel.li/api/v2"
+    }
+}
+
+private class YtsResultsJsonParser(private val providerName: String) {
+    suspend fun parse(json: JsonElement): List<Torrent> = withContext(Dispatchers.Default) {
+        json.asObject()
+            .getObject("data")
+            ?.getArray("movies")
+            ?.map { item -> item.asObject() }
+            ?.flatMap(::parseMovieObject)
+            .orEmpty()
     }
 
     /**
@@ -120,20 +65,18 @@ class Yts : SearchProvider {
      * @see [parseTorrentObject]
      */
     private fun parseMovieObject(movieObject: JsonObject): List<Torrent> {
-        val descriptionPageUrl = movieObject.getString("url") ?: return emptyList()
         val titleLong = movieObject.getString("title_long") ?: return emptyList()
+        val detailsPageUrl = movieObject.getString("url")
 
-        val torrents = movieObject.getArray("torrents")
-            ?.map { rawArrayItem -> rawArrayItem.asObject() }
-            ?.mapNotNull { torrentObject ->
+        return movieObject.getArray("torrents")
+            ?.mapNotNull {
                 parseTorrentObject(
-                    descriptionPageUrl = descriptionPageUrl,
+                    torrentObject = it.asObject(),
                     movieTitle = titleLong,
-                    torrentObject = torrentObject,
+                    detailsPageUrl = detailsPageUrl,
                 )
             }
-
-        return torrents.orEmpty()
+            .orEmpty()
     }
 
     /**
@@ -157,16 +100,16 @@ class Yts : SearchProvider {
      *     Day of the Fight (1951) [720p] [bluray] [x264]
      */
     private fun parseTorrentObject(
-        descriptionPageUrl: String,
-        movieTitle: String,
         torrentObject: JsonObject,
+        movieTitle: String,
+        detailsPageUrl: String?,
     ): Torrent? {
+        val infoHash = torrentObject.getString("hash")?.lowercase() ?: return null
+
         val quality = torrentObject.getString("quality") ?: "-"
         val type = torrentObject.getString("type") ?: "-"
         val codec = torrentObject.getString("video_codec") ?: "-"
-
         val name = "$movieTitle [$quality] [$type] [$codec]"
-        val infoHash = torrentObject.getString("hash") ?: return null
 
         val size = torrentObject.getString("size") ?: return null
         val seeders = torrentObject.getUInt("seeds") ?: return null
@@ -181,14 +124,10 @@ class Yts : SearchProvider {
             size = size,
             seeders = seeders,
             peers = peers,
-            providerName = this.name,
+            providerName = providerName,
             uploadDate = uploadDate,
             category = Category.Movies,
-            descriptionPageUrl = descriptionPageUrl,
+            descriptionPageUrl = detailsPageUrl ?: "",
         )
-    }
-
-    private companion object {
-        private const val API_BASE_URL = "https://movies-api.accel.li/api/v2"
     }
 }
