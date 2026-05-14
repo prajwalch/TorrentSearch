@@ -190,4 +190,8 @@
     <string name="settings_blur_nsfw_images_summary">Автоматично розмиває NSFW-зображення</string>
     <string name="settings_open_torrent_details_in_app">Відкрити відомості про торент у застосунку</string>
     <string name="settings_open_torrent_details_in_app_summary">Відкриває відомості про торент прямо на екрані програми</string>
+    <string name="home_button_browse">Огляд</string>
+    <string name="browse_screen_title">Огляд</string>
+    <string name="browse_sort_latest">Найновіші</string>
+    <string name="browse_sort_top">Популярні</string>
 </resources>
