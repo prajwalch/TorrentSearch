@@ -8,6 +8,7 @@ import com.prajwalch.torrentsearch.extension.getLong
 import com.prajwalch.torrentsearch.extension.getObject
 import com.prajwalch.torrentsearch.extension.getString
 import com.prajwalch.torrentsearch.extension.getUInt
+import com.prajwalch.torrentsearch.network.HttpClient
 import com.prajwalch.torrentsearch.util.TorrentDateParser
 
 import kotlinx.coroutines.Dispatchers
@@ -15,7 +16,7 @@ import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonObject
 
-class Yts : SearchProvider {
+class Yts : SearchProvider, LatestTorrentsProvider, TopTorrentsProvider {
     override val id = "ytsmx"
     override val name = "Yts"
     override val url = "https://yts.bz"
@@ -35,6 +36,20 @@ class Yts : SearchProvider {
         val responseJson = context.httpClient.getJson(url = requestUrl) ?: return emptyList()
 
         return resultsJsonParser.parse(responseJson)
+    }
+
+    override suspend fun getLastestTorrents(category: Category): List<Torrent> {
+        val requestUrl = "$API_BASE_URL/list_movies.json"
+        val responseJson = HttpClient.getJson(requestUrl) ?: return emptyList()
+
+        return resultsJsonParser.parse(responseJson)
+    }
+
+    override suspend fun getTopTorrents(category: Category): List<Torrent> {
+        // Using this url doesn't work. For some reason the server ignores the
+        // 'sort_by' param.
+        // https://movies-api.accel.li/api/v2/list_movies.json&sort_by=seeds
+        return getLastestTorrents(category)
     }
 
     private companion object {
