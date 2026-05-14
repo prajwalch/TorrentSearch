@@ -13,7 +13,11 @@ import kotlinx.coroutines.withContext
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Element
 
-class XXXTracker : SearchProvider, TorrentDetailsProvider {
+class XXXTracker :
+    SearchProvider,
+    TorrentDetailsProvider,
+    LatestTorrentsProvider,
+    TopTorrentsProvider {
     override val id = "xxxtracker"
     override val name = "XXXTracker"
     override val url = "https://xxxtor.com"
@@ -37,6 +41,20 @@ class XXXTracker : SearchProvider, TorrentDetailsProvider {
     override suspend fun getDetails(detailsPageUrl: String): TorrentDetails? {
         val responseHtml = HttpClient.get(detailsPageUrl)
         return XXXTrackerDetailsPageParser.parse(html = responseHtml, pageUrl = detailsPageUrl)
+    }
+
+    override suspend fun getLastestTorrents(category: Category): List<Torrent> {
+        val requestUrl = "$url/b.php"
+        val responseHtml = HttpClient.get(requestUrl)
+
+        return resultsPageParser.parse(html = responseHtml, pageUrl = requestUrl)
+    }
+
+    override suspend fun getTopTorrents(category: Category): List<Torrent> {
+        val requestUrl = "$url/top"
+        val responseHtml = HttpClient.get(requestUrl)
+
+        return resultsPageParser.parse(html = responseHtml, pageUrl = requestUrl)
     }
 
     // We need to access this during bookmarks migration.
