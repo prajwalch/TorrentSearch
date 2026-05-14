@@ -78,19 +78,35 @@ class SearchProvidersManager @Inject constructor(
     }
 
     /**
-     * Returns latest torrents providers instances.
+     * Returns a list containing instances of latest torrents providers that
+     * are currently enabled.
      */
-    fun getLatestTorrentsProviders(category: Category): List<LatestTorrentsProvider> {
-        return builtinProviders.filterIsInstance<LatestTorrentsProvider>()
-            .filter { category == Category.All || category in it.supportedCategories }
+    suspend fun getEnabledLatestTorrentsProviders(category: Category): List<LatestTorrentsProvider> {
+        val enabledProviderIds = settingsRepository.enabledSearchProvidersId.firstOrNull().orEmpty()
+        val enabledProviders = builtinProviders.filterIsInstance<LatestTorrentsProvider>()
+            .filter { it.id in enabledProviderIds }
+
+        return if (category == Category.All) {
+            enabledProviders
+        } else {
+            enabledProviders.filter { category in it.supportedCategories }
+        }
     }
 
     /**
-     * Returns top torrents providers instances.
+     * Returns a list containing instances of top torrents providers that are
+     * currently enabled.
      */
-    fun getTopTorrentsProviders(category: Category): List<TopTorrentsProvider> {
-        return builtinProviders.filterIsInstance<TopTorrentsProvider>()
-            .filter { category == Category.All || category in it.supportedCategories }
+    suspend fun getEnabledTopTorrentsProviders(category: Category): List<TopTorrentsProvider> {
+        val enabledProviderIds = settingsRepository.enabledSearchProvidersId.firstOrNull().orEmpty()
+        val enabledProviders = builtinProviders.filterIsInstance<TopTorrentsProvider>()
+            .filter { it.id in enabledProviderIds }
+
+        return if (category == Category.All) {
+            enabledProviders
+        } else {
+            enabledProviders.filter { category in it.supportedCategories }
+        }
     }
 
     /**

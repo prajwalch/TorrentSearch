@@ -95,7 +95,7 @@ class SearchProvidersGateway @Inject constructor(
     }
 
     fun getLatestTorrents(category: Category = Category.All): Flow<List<Torrent>> = channelFlow {
-        val latestTorrentsProvider = searchProvidersManager.getLatestTorrentsProviders(category)
+        val latestTorrentsProvider = searchProvidersManager.getEnabledLatestTorrentsProviders(category)
 
         latestTorrentsProvider.forEach {
             launch {
@@ -114,7 +114,7 @@ class SearchProvidersGateway @Inject constructor(
         .flowOn(Dispatchers.IO)
 
     fun getTopTorrents(category: Category = Category.All): Flow<List<Torrent>> = channelFlow {
-        val topTorrentsProviders = searchProvidersManager.getTopTorrentsProviders(category)
+        val topTorrentsProviders = searchProvidersManager.getEnabledTopTorrentsProviders(category)
 
         topTorrentsProviders.forEach {
             launch {
