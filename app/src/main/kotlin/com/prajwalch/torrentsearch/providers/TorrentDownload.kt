@@ -13,7 +13,11 @@ import kotlinx.coroutines.withContext
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Element
 
-class TorrentDownload : SearchProvider, TorrentDetailsProvider {
+class TorrentDownload :
+    SearchProvider,
+    TorrentDetailsProvider,
+    LatestTorrentsProvider,
+    TopTorrentsProvider {
     override val id = "torrentdownloadinfo"
     override val name = "TorrentDownload"
     override val url = "https://torrentdownload.info"
@@ -47,6 +51,20 @@ class TorrentDownload : SearchProvider, TorrentDetailsProvider {
     override suspend fun getDetails(detailsPageUrl: String): TorrentDetails? {
         val responseHtml = HttpClient.get(detailsPageUrl)
         return TorrentDownloadDetailsPageParser.parse(responseHtml)
+    }
+
+    override suspend fun getLastestTorrents(category: Category): List<Torrent> {
+        val requestUrl = "$url/latest"
+        val responseHtml = HttpClient.get(requestUrl)
+
+        return resultsPageParser.parse(html = responseHtml, pageUrl = requestUrl)
+    }
+
+    override suspend fun getTopTorrents(category: Category): List<Torrent> {
+        val requestUrl = "$url/top"
+        val responseHtml = HttpClient.get(requestUrl)
+
+        return resultsPageParser.parse(html = responseHtml, pageUrl = requestUrl)
     }
 }
 
@@ -91,7 +109,7 @@ private class TorrentDownloadResultsParser(private val providerName: String) {
     }
 
     private companion object {
-        private const val LIST_ITEM = "div.wrapper > table.table2:nth-of-type(2) > tbody > tr"
+        private const val LIST_ITEM = "div.wrapper > table.table2:last-of-type > tbody > tr"
         private const val TORRENT_NAME = "td:nth-child(1) > div.tt-name > a"
         private const val SIZE = "td:nth-child(3)"
         private const val SEEDERS = "td:nth-child(4)"
