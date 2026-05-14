@@ -14,7 +14,7 @@ import kotlinx.coroutines.withContext
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Element
 
-class TorrentDatabase : SearchProvider, TorrentDetailsProvider {
+class TorrentDatabase : SearchProvider, TorrentDetailsProvider, LatestTorrentsProvider {
     override val id = "torrentdatabase"
     override val name = "TorrentDatabase"
     override val url = "https://developify.ca"
@@ -60,6 +60,22 @@ class TorrentDatabase : SearchProvider, TorrentDetailsProvider {
     override suspend fun getDetails(detailsPageUrl: String): TorrentDetails? {
         val responseHtml = HttpClient.get(detailsPageUrl)
         return TdDetailsPageParser.parse(responseHtml)
+    }
+
+    override suspend fun getLastestTorrents(category: Category): List<Torrent> {
+        val requestUrl = buildString {
+            append(url)
+            append("/newest")
+
+            if (category != Category.All) {
+                categoryMap[category]
+                    ?.let { if (category == Category.Books) it.replace("-", "") else it }
+                    ?.let { append("_$it") }
+            }
+        }
+        val responseHtml = HttpClient.get(requestUrl)
+
+        return resultsPageParser.parse(html = responseHtml, pageUrl = requestUrl)
     }
 }
 
