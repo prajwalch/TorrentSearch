@@ -103,7 +103,7 @@ class BrowseViewModel @Inject constructor(
      */
     private val torrentsProcessor = TorrentsProcessor(
         torrents = torrentsLoader.torrents,
-        browseSort = torrentsLoader.queryParams.map { it.sort },
+        queryParams = torrentsLoader.queryParams,
         viewedTorrentHashes = viewedTorrentRepository.getAllViewedHashes(),
         settingsRepository = settingsRepository,
     )
@@ -383,9 +383,11 @@ private class TorrentsProcessor(
      */
     torrents: Flow<List<Torrent>>,
     /**
-     * The sort used by the upstream pipeline.
+     * Query params that is used to fetch torrents.
+     *
+     * Query params are used additionally to remove any unwanted torrents.
      */
-    browseSort: Flow<BrowseSort>,
+    queryParams: Flow<BrowseQueryParams>,
     /**
      * Flow of viewed torrent hashes for filtering.
      */
@@ -418,24 +420,13 @@ private class TorrentsProcessor(
             .map { if (it) viewedTorrentHashes.firstOrNull().orEmpty() else emptySet() }
 
     /**
-     * A [Comparator] which is used during sorting.
-     */
-    private val sortComparator: Flow<Comparator<Torrent>> =
-        browseSort.map {
-            when (it) {
-                BrowseSort.Latest -> compareByDescending { torrent -> torrent.uploadDate }
-                BrowseSort.Top -> compareByDescending { torrent -> torrent.seeders }
-            }
-        }
-
-    /**
      * The output stream of processed torrents.
      */
     val processedTorrents: Flow<ImmutableList<Torrent>> =
         combine(
             torrents,
+            queryParams,
             _viewFilters,
-            sortComparator,
             currentlyViewedTorrentHashes,
             settingsRepository.enableNSFWMode,
             ::processTorrents,
@@ -447,15 +438,20 @@ private class TorrentsProcessor(
      */
     private fun processTorrents(
         torrents: List<Torrent>,
+        queryParams: BrowseQueryParams,
         viewFilters: BrowseViewFilters,
-        sortComparator: Comparator<Torrent>,
         viewedTorrentHashes: Set<String>,
         nsfwModeEnabled: Boolean,
     ): ImmutableList<Torrent> {
-        val predicates = buildList<(Torrent) -> Boolean> {
+        val sortComparator: Comparator<Torrent> = when (queryParams.sort) {
+            BrowseSort.Latest -> compareByDescending { torrent -> torrent.uploadDate }
+            BrowseSort.Top -> compareByDescending { torrent -> torrent.seeders }
+        }
+        val predicates: List<(Torrent) -> Boolean> = buildList {
             if (!nsfwModeEnabled) add { !it.isNSFW }
             if (!viewFilters.deadTorrents) add { !it.isDead }
             if (viewFilters.hideViewed) add { it.infoHash !in viewedTorrentHashes }
+            if (queryParams.category != Category.All) add { queryParams.category == it.category }
         }
         val filteredTorrents = if (predicates.isEmpty()) {
             torrents
