@@ -18,6 +18,8 @@ import com.prajwalch.torrentsearch.domain.model.SortCriteria
 import com.prajwalch.torrentsearch.domain.model.SortOptions
 import com.prajwalch.torrentsearch.domain.model.SortOrder
 import com.prajwalch.torrentsearch.domain.model.Torrent
+import com.prajwalch.torrentsearch.domain.model.filterSuccesses
+import com.prajwalch.torrentsearch.domain.model.sortSuccessesWith
 import com.prajwalch.torrentsearch.network.ConnectivityChecker
 import com.prajwalch.torrentsearch.util.createSortComparator
 
@@ -564,26 +566,17 @@ private class SearchResultsProcessor(
         val filterQueryWords = filters.query
             .split(' ', ignoreCase = true)
             .filter { it.isNotBlank() }
-        val processedSuccesses = rawSearchResults
-            .successes
-            .asSequence()
-            .filterNot { it.providerName in filters.excludedProviders }
-            .filter { nsfwModeEnabled || !it.isNSFW }
-            .filter { filters.deadTorrents || !it.isDead }
-            .filter { !filters.hideViewed || it.infoHash !in viewedTorrentHashes }
-            .filter {
-                filters.query.isBlank() || filterQueryWords.any { word ->
-                    it.name.contains(word, ignoreCase = true)
-                }
-            }
-            .filter { filters.category == Category.All || filters.category == it.category }
-            .sortedWith(comparator = sortComparator)
-            .toImmutableList()
 
-        return SearchResults(
-            successes = processedSuccesses,
-            failures = rawSearchResults.failures,
-        )
+        return rawSearchResults.filterSuccesses {
+            add { it.providerName !in filters.excludedProviders }
+            if (!nsfwModeEnabled) add { !it.isNSFW }
+            if (!filters.deadTorrents) add { !it.isDead }
+            if (filters.hideViewed) add { it.infoHash !in viewedTorrentHashes }
+            if (filters.query.isNotBlank()) add {
+                filterQueryWords.any { word -> it.name.contains(word, ignoreCase = true) }
+            }
+            if (filters.category != Category.All) add { filters.category == it.category }
+        }.sortSuccessesWith(sortComparator)
     }
 
     /**

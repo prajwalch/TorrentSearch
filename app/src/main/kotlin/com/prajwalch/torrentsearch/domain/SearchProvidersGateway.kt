@@ -8,10 +8,12 @@ import com.prajwalch.torrentsearch.domain.model.GetTorrentDetailsResponse
 import com.prajwalch.torrentsearch.domain.model.SearchException
 import com.prajwalch.torrentsearch.domain.model.SearchResults
 import com.prajwalch.torrentsearch.domain.model.Torrent
+import com.prajwalch.torrentsearch.domain.model.addResult
 import com.prajwalch.torrentsearch.network.HttpClient
 import com.prajwalch.torrentsearch.providers.SearchContext
 
-import kotlinx.collections.immutable.toImmutableList
+import kotlinx.collections.immutable.PersistentList
+import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
@@ -34,27 +36,28 @@ class SearchProvidersGateway @Inject constructor(
         private const val TAG = "SearchProvidersGateway"
     }
 
-    fun searchTorrents(query: String, category: Category): Flow<SearchResults> = channelFlow {
-        val enabledProviders = searchProvidersManager.getEnabledProvidersByCategory(category)
-        if (enabledProviders.isEmpty()) return@channelFlow
+    fun searchTorrents(query: String, category: Category): Flow<SearchResults> =
+        channelFlow {
+            val enabledProviders = searchProvidersManager.getEnabledProvidersByCategory(category)
+            if (enabledProviders.isEmpty()) return@channelFlow
 
-        val encodedQuery = Uri.encode(query)!!
-        val searchContext = SearchContext(category = category, httpClient = httpClient)
+            val encodedQuery = Uri.encode(query)!!
+            val searchContext = SearchContext(category = category, httpClient = httpClient)
 
-        enabledProviders.forEach {
-            launch {
-                val result = runCatchingProvider(it.name, it.url) {
-                    it.search(encodedQuery, searchContext)
+            enabledProviders.forEach {
+                launch {
+                    val result = runCatchingProvider(it.name, it.url) {
+                        it.search(encodedQuery, searchContext)
+                    }
+                    send(result)
                 }
-                send(result)
             }
         }
-    }
-        .runningFold(SearchResults()) { results, batchResult ->
-            results.appendBatchResult(batchResult)
-        }
-        .drop(1)
-        .flowOn(Dispatchers.IO)
+            .runningFold(SearchResults()) { results, batchResult ->
+                results.addResult(batchResult)
+            }
+            .drop(1)
+            .flowOn(Dispatchers.IO)
 
     private suspend fun runCatchingProvider(
         providerName: String,
@@ -94,53 +97,42 @@ class SearchProvidersGateway @Inject constructor(
             ?: GetTorrentDetailsResponse.DetailsNotFound
     }
 
-    fun getLatestTorrents(category: Category = Category.All): Flow<List<Torrent>> = channelFlow {
-        val latestTorrentsProvider = searchProvidersManager.getEnabledLatestTorrentsProviders(category)
-
-        latestTorrentsProvider.forEach {
-            launch {
-                val result = runCatchingProvider(it.name, it.url) {
-                    it.getLastestTorrents(category)
-                }
-                if (result.isSuccess) {
-                    val torrents = result.getOrNull()!!
-                    send(torrents)
-                }
-            }
-        }
-    }
-        .runningFold(emptyList<Torrent>()) { results, batchResult -> results + batchResult }
-        .drop(1)
-        .flowOn(Dispatchers.IO)
-
-    fun getTopTorrents(category: Category = Category.All): Flow<List<Torrent>> = channelFlow {
-        val topTorrentsProviders = searchProvidersManager.getEnabledTopTorrentsProviders(category)
-
-        topTorrentsProviders.forEach {
-            launch {
-                val result = runCatchingProvider(it.name, it.url) { it.getTopTorrents(category) }
-                if (result.isSuccess) {
-                    val torrents = result.getOrNull()!!
-                    send(torrents)
+    fun getLatestTorrents(category: Category = Category.All): Flow<PersistentList<Torrent>> =
+        channelFlow {
+            searchProvidersManager.getEnabledLatestTorrentsProviders(category).forEach {
+                launch {
+                    val result = runCatchingProvider(it.name, it.url) {
+                        it.getLastestTorrents(category)
+                    }
+                    if (result.isSuccess) {
+                        val torrents = result.getOrNull()!!
+                        send(torrents)
+                    }
                 }
             }
         }
-    }
-        .runningFold(emptyList<Torrent>()) { results, batchResult -> results + batchResult }
-        .drop(1)
-        .flowOn(Dispatchers.IO)
-}
+            .runningFold(persistentListOf<Torrent>()) { results, batchResult ->
+                results.addAll(batchResult)
+            }
+            .drop(1)
+            .flowOn(Dispatchers.IO)
 
-private fun SearchResults.appendBatchResult(batchResult: Result<List<Torrent>>): SearchResults =
-    batchResult.fold(
-        onSuccess = { this.appendSuccesses(it) },
-        onFailure = { this.appendFailure(it as SearchException) },
-    )
-
-private fun SearchResults.appendSuccesses(successes: List<Torrent>): SearchResults {
-    return this.copy(successes = this.successes.plus(successes).toImmutableList())
-}
-
-private fun SearchResults.appendFailure(failure: SearchException): SearchResults {
-    return this.copy(failures = this.failures.plus(failure).toImmutableList())
+    fun getTopTorrents(category: Category = Category.All): Flow<PersistentList<Torrent>> =
+        channelFlow {
+            searchProvidersManager.getEnabledTopTorrentsProviders(category).forEach {
+                launch {
+                    val result =
+                        runCatchingProvider(it.name, it.url) { it.getTopTorrents(category) }
+                    if (result.isSuccess) {
+                        val torrents = result.getOrNull()!!
+                        send(torrents)
+                    }
+                }
+            }
+        }
+            .runningFold(persistentListOf<Torrent>()) { results, batchResult ->
+                results.addAll(batchResult)
+            }
+            .drop(1)
+            .flowOn(Dispatchers.IO)
 }

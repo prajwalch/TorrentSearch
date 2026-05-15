@@ -13,11 +13,14 @@ import com.prajwalch.torrentsearch.domain.TorrentFileDownloadState
 import com.prajwalch.torrentsearch.domain.TorrentFileDownloader
 import com.prajwalch.torrentsearch.domain.model.Category
 import com.prajwalch.torrentsearch.domain.model.Torrent
+import com.prajwalch.torrentsearch.domain.model.filter
+import com.prajwalch.torrentsearch.domain.model.sortedWithComparator
 import com.prajwalch.torrentsearch.network.ConnectivityChecker
 
 import dagger.hilt.android.lifecycle.HiltViewModel
 
 import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.CoroutineScope
@@ -261,7 +264,7 @@ private class TorrentsLoader(
     /**
      * The publicly observable, read-only state of the query params.
      */
-    val queryParams = _queryParams.asStateFlow()
+    val queryParams: StateFlow<BrowseQueryParams> = _queryParams.asStateFlow()
 
     /**
      * The internal, mutable source of truth for the loader state.
@@ -272,12 +275,12 @@ private class TorrentsLoader(
     /**
      * The publicly observable, read-only state of the loader.
      */
-    val state = _state.asStateFlow()
+    val state: StateFlow<State> = _state.asStateFlow()
 
     /**
      * The internal, mutable source of truth for the torrents.
      */
-    private val _torrents = MutableStateFlow(emptyList<Torrent>())
+    private val _torrents = MutableStateFlow(persistentListOf<Torrent>())
 
     /**
      * The publicly observable, read-only state of raw and unprocessed
@@ -285,7 +288,7 @@ private class TorrentsLoader(
      *
      * Downstream pipelines should use this flow for further processing.
      */
-    val torrents = _torrents.asStateFlow()
+    val torrents: StateFlow<PersistentList<Torrent>> = _torrents.asStateFlow()
 
     /**
      * An ongoing background load job.
@@ -381,7 +384,7 @@ private class TorrentsProcessor(
     /**
      * The input stream from where torrents are pulled.
      */
-    torrents: Flow<List<Torrent>>,
+    torrents: Flow<PersistentList<Torrent>>,
     /**
      * Query params that is used to fetch torrents.
      *
@@ -437,7 +440,7 @@ private class TorrentsProcessor(
      * on the given filters and other options.
      */
     private fun processTorrents(
-        torrents: List<Torrent>,
+        torrents: PersistentList<Torrent>,
         queryParams: BrowseQueryParams,
         viewFilters: BrowseViewFilters,
         viewedTorrentHashes: Set<String>,
@@ -447,19 +450,15 @@ private class TorrentsProcessor(
             BrowseSort.Latest -> compareByDescending { torrent -> torrent.uploadDate }
             BrowseSort.Top -> compareByDescending { torrent -> torrent.seeders }
         }
-        val predicates: List<(Torrent) -> Boolean> = buildList {
+
+        return torrents.filter {
             if (!nsfwModeEnabled) add { !it.isNSFW }
             if (!viewFilters.deadTorrents) add { !it.isDead }
             if (viewFilters.hideViewed) add { it.infoHash !in viewedTorrentHashes }
             if (queryParams.category != Category.All) add { queryParams.category == it.category }
         }
-        val filteredTorrents = if (predicates.isEmpty()) {
-            torrents
-        } else {
-            torrents.filter { torrent -> predicates.all { it(torrent) } }
-        }
-
-        return filteredTorrents.sortedWith(comparator = sortComparator).toImmutableList()
+            .sortedWithComparator(sortComparator)
+            .toImmutableList()
     }
 
     /**
