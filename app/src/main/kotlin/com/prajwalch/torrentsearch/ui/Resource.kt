@@ -52,7 +52,7 @@ fun Category?.iconResId(): Int = when (this) {
     Category.Music -> R.drawable.ic_music_note
     Category.Porn -> R.drawable.ic_18_up_rating
     Category.Series -> R.drawable.ic_tv
-    Category.Other -> R.drawable.ic_category
+    Category.Other -> R.drawable.ic_pending
 }
 
 @Composable
