@@ -121,17 +121,15 @@ fun BookmarksScreen(
             onDeleteBookmark = { viewModel.deleteBookmarkById(bookmarkId) },
             onDownloadTorrent = { onDownloadTorrent(bookmark.magnetUri()) },
             onDownloadTorrentFile = {
-                val torrentFileName = bookmark.name.replace(' ', '-')
-
                 if (bookmark.fileDownloadLink != null) {
                     viewModel.downloadTorrentFile(
                         url = bookmark.fileDownloadLink,
-                        fileName = torrentFileName,
+                        fileName = bookmark.name,
                     )
                 } else {
                     viewModel.downloadTorrentFileUsingInfoHash(
                         infoHash = bookmark.infoHash,
-                        fileName = torrentFileName,
+                        fileName = bookmark.name,
                     )
                 }
             },

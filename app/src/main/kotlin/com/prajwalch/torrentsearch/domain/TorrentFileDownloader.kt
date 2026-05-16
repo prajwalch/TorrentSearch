@@ -135,7 +135,8 @@ class TorrentFileDownloader @Inject constructor(private val httpClient: HttpClie
         pendingFileId = downloadFile(url)
 
         val event = if (pendingFileId != null) {
-            TorrentFileDownloadEvent.ReadyToWrite(fileName)
+            val normalizedFileName = fileName.replace(' ', '-')
+            TorrentFileDownloadEvent.ReadyToWrite(normalizedFileName)
         } else {
             TorrentFileDownloadEvent.FileNotFound
         }

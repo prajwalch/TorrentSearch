@@ -177,17 +177,15 @@ fun TorrentDetailsScreen(
                         providerName = viewModel.providerName,
                         onDownloadTorrent = { onDownloadTorrent(torrentDetails.magnetUri) },
                         onDownloadTorrentFile = {
-                            val torrentFileName = torrentDetails.name.replace(' ', '-')
-
                             if (torrentDetails.fileDownloadLink != null) {
                                 viewModel.downloadTorrentFile(
                                     url = torrentDetails.fileDownloadLink,
-                                    fileName = torrentFileName,
+                                    fileName = torrentDetails.name,
                                 )
                             } else {
                                 viewModel.downloadTorrentFileFromInfoHash(
                                     infoHash = torrentDetails.infoHash,
-                                    fileName = torrentFileName,
+                                    fileName = torrentDetails.name,
                                 )
                             }
                         },

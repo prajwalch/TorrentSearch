@@ -115,17 +115,15 @@ fun SearchScreen(
             },
             onDownloadTorrent = { onDownloadTorrent(torrent.magnetUri()) },
             onDownloadTorrentFile = {
-                val torrentFileName = torrent.name.replace(' ', '-')
-
                 if (torrent.fileDownloadLink != null) {
                     viewModel.downloadTorrentFile(
                         url = torrent.fileDownloadLink,
-                        fileName = torrentFileName,
+                        fileName = torrent.name,
                     )
                 } else {
                     viewModel.downloadTorrentFileUsingInfoHash(
                         infoHash = torrent.infoHash,
-                        fileName = torrentFileName,
+                        fileName = torrent.name,
                     )
                 }
             },
