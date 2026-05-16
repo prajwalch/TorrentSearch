@@ -26,7 +26,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 
 import com.prajwalch.torrentsearch.R
-import com.prajwalch.torrentsearch.ui.search.SearchProviderFilterOption
+import com.prajwalch.torrentsearch.ui.search.TorrentFilter
 import com.prajwalch.torrentsearch.ui.theme.spaces
 
 import kotlinx.collections.immutable.ImmutableList
@@ -35,7 +35,7 @@ import kotlinx.collections.immutable.ImmutableList
 @Composable
 fun SearchProvidersFilterBottomSheet(
     onDismiss: () -> Unit,
-    filterOptions: ImmutableList<SearchProviderFilterOption>,
+    filterOptions: ImmutableList<TorrentFilter.SearchProviderOption>,
     onToggleSearchProvider: (providerName: String) -> Unit,
     onSelectAll: () -> Unit,
     onDeselectAll: () -> Unit,
@@ -58,7 +58,7 @@ fun SearchProvidersFilterBottomSheet(
 
 @Composable
 private fun BottomSheetContent(
-    filterOptions: ImmutableList<SearchProviderFilterOption>,
+    filterOptions: ImmutableList<TorrentFilter.SearchProviderOption>,
     onToggleSearchProvider: (providerName: String) -> Unit,
     onSelectAll: () -> Unit,
     onDeselectAll: () -> Unit,
@@ -155,7 +155,7 @@ private fun IconButtonWithTooltip(
 
 @Composable
 private fun SearchProvidersChipRow(
-    filterOptions: ImmutableList<SearchProviderFilterOption>,
+    filterOptions: ImmutableList<TorrentFilter.SearchProviderOption>,
     onToggleSearchProvider: (String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -167,8 +167,8 @@ private fun SearchProvidersChipRow(
         filterOptions.forEach {
             FilterChip(
                 selected = it.selected,
-                onClick = { onToggleSearchProvider(it.searchProviderName) },
-                label = { Text(text = it.searchProviderName) },
+                onClick = { onToggleSearchProvider(it.provider) },
+                label = { Text(text = it.provider) },
             )
         }
     }

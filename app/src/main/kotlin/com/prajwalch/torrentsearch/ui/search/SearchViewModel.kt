@@ -30,7 +30,6 @@ import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -45,7 +44,6 @@ import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onCompletion
-import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -56,31 +54,42 @@ import javax.inject.Inject
 import kotlin.time.Duration.Companion.seconds
 
 data class SearchUiState(
-    val searchQuery: String = "",
-    val searchCategory: Category = Category.All,
+    val searchParams: SearchParams = SearchParams(),
+    val searchState: SearchState = SearchState.Loading,
     val searchResults: SearchResults = SearchResults(),
     val sortOptions: SortOptions = SortOptions(),
-    val filterOptions: FilterOptions = FilterOptions(),
+    val torrentFilter: TorrentFilter = TorrentFilter(),
     val viewedTorrentHashes: Set<String> = emptySet(),
-    val isLoading: Boolean = true,
-    val isSearching: Boolean = false,
-    val isRefreshing: Boolean = false,
-    val isInternetError: Boolean = false,
-    val resultsNotFound: Boolean = false,
-    val resultsFilteredOut: Boolean = false,
 )
 
-data class FilterOptions(
-    val searchProviders: ImmutableList<SearchProviderFilterOption> = persistentListOf(),
-    val deadTorrents: Boolean = true,
+data class SearchParams(
+    val query: String = "",
+    val category: Category = Category.All,
+)
+
+sealed interface SearchState {
+    data object Loading : SearchState
+    data object InternetError : SearchState
+    data object ResultsNotFound : SearchState
+
+    sealed interface ResultsAvailable : SearchState {
+        data object Complete : ResultsAvailable
+        data object Searching : ResultsAvailable
+        data object Refreshing : ResultsAvailable
+    }
+}
+
+data class TorrentFilter(
+    val providers: ImmutableList<SearchProviderOption> = persistentListOf(),
+    val showDeadTorrents: Boolean = true,
     val category: Category = Category.All,
     val hideViewed: Boolean = false,
-)
-
-data class SearchProviderFilterOption(
-    val searchProviderName: String,
-    val selected: Boolean = false,
-)
+) {
+    data class SearchProviderOption(
+        val provider: String,
+        val selected: Boolean = false,
+    )
+}
 
 /**
  * A ViewModel that handles the business logic of search screen.
@@ -94,99 +103,83 @@ class SearchViewModel @Inject constructor(
     private val viewedTorrentRepository: ViewedTorrentRepository,
     private val connectivityChecker: ConnectivityChecker,
     private val torrentFileDownloader: TorrentFileDownloader,
-    savedStateHandle: SavedStateHandle,
+    private val savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
     /**
-     * Current search query.
+     * The search params set by the user.
+     *
+     * Search params are final and not allowed to modify or update for
+     * requesting a new search with new params.
      */
-    private val searchQuery: String = savedStateHandle.get<String>("query")
-        ?.trim()
-        ?: error("SearchViewModel can't function without a search query")
+    private val searchParams = getSearchParams()
 
     /**
-     * Current search category.
+     * The search results loader.
+     *
+     * It produces raw and unprocessed results, which are directly feed into
+     * the processor for post-processing such as filtering and sorting.
      */
-    private val searchCategory: Category = savedStateHandle["category"] ?: Category.All
-
-    /**
-     * The [SearchOrchestrator] responsible for coordinating search task
-     * and managing search related state.
-     */
-    private val searchOrchestrator = SearchOrchestrator(
+    private val resultsLoader = SearchResultsLoader(
         scope = viewModelScope,
         searchTorrentsUseCase = searchTorrentsUseCase,
         connectivityChecker = connectivityChecker,
     )
 
     /**
-     * The search results processor responsible for filtering, sorting, and
-     * managing the related state.
+     * The search results processor.
+     *
+     * It pulls search results from the given flow, does some post-processing
+     * and produces another results, which are finally sent to the UI.
      */
     private val resultsProcessor = SearchResultsProcessor(
-        searchResults = searchOrchestrator.searchResults,
+        searchResults = resultsLoader.searchResults,
         settingsRepository = settingsRepository,
         viewedTorrentHashes = viewedTorrentRepository.getAllViewedHashes(),
-        initialSelectedCategory = searchCategory,
+        initialSelectedCategory = searchParams.category,
     )
 
     /**
-     * The globally observable, read-only state of the torrent file downloader.
+     * The primary, read-only UI state.
+     */
+    val uiState: StateFlow<SearchUiState> =
+        combine(
+            resultsLoader.searchState,
+            resultsProcessor.processedSearchResults,
+            resultsProcessor.sortOptions,
+            resultsProcessor.torrentFilter,
+            viewedTorrentRepository.getAllViewedHashes(),
+        ) {
+                searchState,
+                processedResults,
+                sortOptions,
+                viewFilters,
+                viewedTorrentHashes,
+            ->
+            SearchUiState(
+                searchParams = searchParams,
+                searchState = searchState,
+                searchResults = processedResults,
+                sortOptions = sortOptions,
+                torrentFilter = viewFilters,
+                viewedTorrentHashes = viewedTorrentHashes,
+            )
+        }.stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5.seconds),
+            initialValue = SearchUiState(searchState = SearchState.Loading),
+        )
+
+    /**
+     * The torrent file download state.
      */
     val torrentFileDownloadState: StateFlow<TorrentFileDownloadState> =
         torrentFileDownloader.state
 
     /**
-     * The globally observable, read-only events of the torrent file downloader.
+     * A stream of torrent file download event.
      */
     val torrentFileDownloadEvents: Flow<TorrentFileDownloadEvent> =
         torrentFileDownloader.events
-
-    /**
-     * The primary, read-only UI state.
-     */
-    val uiState = combine(
-        searchOrchestrator.searchState,
-        resultsProcessor.processorState,
-        resultsProcessor.processedSearchResults,
-        resultsProcessor.availableSearchProviders,
-        viewedTorrentRepository.getAllViewedHashes(),
-    ) {
-            searchState,
-            processorState,
-            processedResults,
-            availableSearchProviders,
-            viewedTorrentHashes,
-        ->
-        val resultsFilteredOut = when {
-            searchState.isSearching -> false
-            searchState.isRefreshing -> false
-            searchState.resultsNotFound -> false
-            else -> processedResults.successes.isEmpty()
-        }
-        val filterOptions = createFilterOptions(
-            providers = availableSearchProviders,
-            filters = processorState.filters,
-        )
-
-        SearchUiState(
-            searchQuery = searchQuery,
-            searchCategory = searchCategory,
-            searchResults = processedResults,
-            sortOptions = processorState.sortOptions,
-            filterOptions = filterOptions,
-            viewedTorrentHashes = viewedTorrentHashes,
-            isLoading = searchState.isLoading,
-            isSearching = searchState.isSearching,
-            isRefreshing = searchState.isRefreshing,
-            isInternetError = searchState.isInternetError,
-            resultsNotFound = searchState.resultsNotFound,
-            resultsFilteredOut = resultsFilteredOut,
-        )
-    }.stateIn(
-        scope = viewModelScope,
-        started = SharingStarted.WhileSubscribed(5.seconds),
-        initialValue = SearchUiState(isLoading = true),
-    )
 
     init {
         saveSearchQuery()
@@ -200,42 +193,32 @@ class SearchViewModel @Inject constructor(
         }
     }
 
-    /**
-     * Creates a [FilterOptions] from the given list of search provider name
-     * and the filter values used by the [SearchResultsProcessor] during search
-     * results processing.
-     */
-    private fun createFilterOptions(
-        providers: Set<String>,
-        filters: SearchResultsProcessor.Filters,
-    ): FilterOptions {
-        val searchProvidersFilterOption = providers.map {
-            SearchProviderFilterOption(
-                searchProviderName = it,
-                selected = it !in filters.excludedProviders,
-            )
-        }
+    @Throws(IllegalStateException::class)
+    private fun getSearchParams(): SearchParams {
+        val query = savedStateHandle.get<String>("query")
+            // Accepting the keyboard suggestion will add extra trailing space.
+            // By removing it here, the query remains clean for both history save
+            // and search task.
+            ?.trim()
+        // TODO: Support empty search query.
+            ?: error("Empty search query isn't supported")
+        val category = savedStateHandle.get<Category>("category") ?: Category.All
 
-        return FilterOptions(
-            searchProviders = searchProvidersFilterOption.toImmutableList(),
-            deadTorrents = filters.deadTorrents,
-            category = filters.category,
-            hideViewed = filters.hideViewed,
-        )
+        return SearchParams(query, category)
     }
 
     private fun saveSearchQuery() = viewModelScope.launch {
         if (settingsRepository.saveSearchHistory.first()) {
-            searchHistoryRepository.createNewSearchHistory(query = searchQuery)
+            searchHistoryRepository.createNewSearchHistory(query = searchParams.query)
         }
     }
 
     fun search() {
-        searchOrchestrator.search(searchQuery, searchCategory)
+        resultsLoader.search(searchParams.query, searchParams.category)
     }
 
     fun refreshSearchResults() {
-        searchOrchestrator.refresh(searchQuery, searchCategory)
+        resultsLoader.refresh(searchParams.query, searchParams.category)
     }
 
     fun filterSearchResultsByName(query: String) {
@@ -261,9 +244,9 @@ class SearchViewModel @Inject constructor(
     fun deselectAllSearchProviders() {
         uiState
             .value
-            .filterOptions
-            .searchProviders
-            .map { it.searchProviderName }
+            .torrentFilter
+            .providers
+            .map { it.provider }
             .toSet()
             .let(resultsProcessor::updateExcludedSearchProviders)
     }
@@ -271,16 +254,16 @@ class SearchViewModel @Inject constructor(
     fun invertSearchProvidersSelection() {
         uiState
             .value
-            .filterOptions
-            .searchProviders
+            .torrentFilter
+            .providers
             .filter { it.selected }
-            .map { it.searchProviderName }
+            .map { it.provider }
             .toSet()
             .let(resultsProcessor::updateExcludedSearchProviders)
     }
 
     fun toggleDeadTorrents() {
-        resultsProcessor.toggleDeadTorrents()
+        resultsProcessor.toggleShowDeadTorrents()
     }
 
     fun updateCategoryFilter(category: Category) {
@@ -326,76 +309,60 @@ class SearchViewModel @Inject constructor(
 }
 
 /**
- * Manages and coordinates the search task.
+ * Manages and handles the search results fetching task.
  *
- * It is the first stage in the pipeline which handles the task of producing
- * search results to consume for other stages.
+ * It's the first stage in the search pipeline which is responsible for
+ * maintaining and producing search state and results. As the name suggests,
+ * it doesn't perform any pre-processing on the results.
+ *
+ * @param scope The [CoroutineScope] in which the search is performed.
+ * @param searchTorrentsUseCase The use-case that performs the search.
+ * @param connectivityChecker The helper class for checking network connection.
  */
-private class SearchOrchestrator(
-    /**
-     * The [CoroutineScope] in which the search is performed.
-     */
+private class SearchResultsLoader(
     private val scope: CoroutineScope,
-    /**
-     * A use case which handles the actual search task.
-     */
     private val searchTorrentsUseCase: SearchTorrentsUseCase,
-    /**
-     * A helper class for checking network condition.
-     */
     private val connectivityChecker: ConnectivityChecker,
 ) {
     /**
-     * Represents the current state of search.
-     */
-    data class SearchState(
-        val isLoading: Boolean = true,
-        val isSearching: Boolean = false,
-        val isRefreshing: Boolean = false,
-        val isInternetError: Boolean = false,
-        val resultsNotFound: Boolean = false,
-    )
-
-    /**
-     * The internal, mutable source of truth for the [SearchState].
+     * The internal, mutable state of [SearchState].
      * This flow is updated constantly during the search lifecycle.
      */
-    private val _searchState = MutableStateFlow(SearchState())
+    private val _searchState = MutableStateFlow<SearchState>(SearchState.Loading)
 
     /**
-     * The publicly observable, read-only state of the [SearchState].
+     * The public, read-only state of the [SearchState].
      */
-    val searchState = _searchState.asStateFlow()
+    val searchState: StateFlow<SearchState> = _searchState.asStateFlow()
 
     /**
-     * The internal, mutable source of truth for the search results.
+     * The internal, mutable state of current search results.
      */
     private val _searchResults = MutableStateFlow(SearchResults())
 
     /**
-     * The publicly observable, read-only state of raw and unprocessed
-     * search results.
+     * The public, read-only state of unprocessed search results.
      */
-    val searchResults = _searchResults.asStateFlow()
+    val searchResults: StateFlow<SearchResults> = _searchResults.asStateFlow()
 
     /**
-     * An ongoing background search job.
+     * The ongoing background search job.
      *
-     * Before starting a new lifecycle the ongoing search is explicitly canceled
+     * Before starting a new lifecycle current job is explicitly canceled
      * whether it has completed or not to prevent unnecessary usage of resource.
      */
     private var searchJob: Job? = null
 
     /**
-     * Initiates a new search task for the given query and category.
+     * Initiates a new search for the given query and category.
      */
     fun search(query: String, category: Category) {
         searchJob?.cancel()
         searchJob = scope.launch {
-            _searchState.value = SearchState(isLoading = true)
+            _searchState.value = SearchState.Loading
 
             if (!connectivityChecker.isInternetAvailable()) {
-                _searchState.update { it.copy(isLoading = false, isInternetError = true) }
+                _searchState.value = SearchState.InternetError
                 return@launch
             }
 
@@ -404,15 +371,15 @@ private class SearchOrchestrator(
     }
 
     /**
-     * Initiates a refresh task for the given query and category.
+     * Refreshes the current search results by refetching new results.
      */
     fun refresh(query: String, category: Category) {
         searchJob?.cancel()
         searchJob = scope.launch {
-            _searchState.update { it.copy(isRefreshing = true) }
+            _searchState.value = SearchState.ResultsAvailable.Refreshing
 
             if (!connectivityChecker.isInternetAvailable()) {
-                _searchState.update { it.copy(isRefreshing = false) }
+                _searchState.value = SearchState.ResultsAvailable.Complete
                 return@launch
             }
 
@@ -421,140 +388,143 @@ private class SearchOrchestrator(
     }
 
     /**
-     * Executes a search for the given query and category, updating
-     * [_searchState] throughout the entire search lifecycle.
+     * Executes a new search for the given query and category.
      */
     private suspend fun executeSearch(query: String, category: Category) {
         searchTorrentsUseCase(query = query, category = category)
             .conflate()
-            .onStart { onSearchStart() }
-            .onCompletion { onSearchCompletion() }
-            .collect { _searchResults.value = it }
-    }
-
-    /**
-     * Invoked when search starts.
-     */
-    private fun onSearchStart() {
-        _searchState.update {
-            it.copy(
-                isLoading = false,
-                isRefreshing = false,
-                isSearching = true,
-            )
-        }
-    }
-
-    /**
-     * Invoked when search completes either normally or abnormally.
-     */
-    private fun onSearchCompletion() {
-        _searchState.update {
-            it.copy(
-                isSearching = false,
-                resultsNotFound = _searchResults.value.successes.isEmpty(),
-            )
-        }
+            .onCompletion {
+                _searchState.value = if (_searchResults.value.successes.isEmpty()) {
+                    SearchState.ResultsNotFound
+                } else {
+                    SearchState.ResultsAvailable.Complete
+                }
+            }
+            .collect {
+                _searchResults.value = it
+                _searchState.value = SearchState.ResultsAvailable.Searching
+            }
     }
 }
 
 /**
- * Setups and manages the execution of different *intermediate* transformation
+ * Setups and manages the execution of different transformation
  * operations on the [searchResults].
  *
- * It is the second stage in the search pipeline which handles filtering and
- * sorting operations on the search results.
+ * It's the second stage in the search pipeline, responsible for performing
+ * post-processing on the [searchResults], maintaining and producing
+ * related states and processed search results.
+ *
+ * @param searchResults The flow that emits the [SearchResults].
+ * @param settingsRepository The repository from where user-define filter options are fetched.
+ * @param viewedTorrentHashes The flow that emits the viewed torrent hashes.
+ * @param initialSelectedCategory The [Category] to use as an initial value for filter.
  */
 private class SearchResultsProcessor(
-    /**
-     * The asynchronous input stream from where [SearchResults] are pulled.
-     */
     searchResults: Flow<SearchResults>,
-    /**
-     * The repository for fetching the user-defined transformation options.
-     */
     settingsRepository: SettingsRepository,
-    /**
-     * Flow of viewed torrent hashes for filtering.
-     */
     viewedTorrentHashes: Flow<Set<String>>,
-    /**
-     * The [Category] to use as an initial value for [Filters.category].
-     */
     initialSelectedCategory: Category = Category.All,
 ) {
     /**
-     * Represents the current state of processor.
+     * A snapshot of the current configuration of [TorrentFilter].
      */
-    data class ProcessorState(
-        val filters: Filters,
-        val sortOptions: SortOptions,
-    )
-
-    /**
-     * Represents the different values and options of filters.
-     */
-    data class Filters(
+    private data class TorrentFilterConfig(
         val query: String = "",
         val excludedProviders: Set<String> = emptySet(),
-        val deadTorrents: Boolean = true,
+        val showDeadTorrents: Boolean = true,
         val category: Category = Category.All,
         val hideViewed: Boolean = false,
     )
 
     /**
-     * The internal mutable source for filters.
+     * The internal, mutable state of [TorrentFilterConfig].
      */
-    private val filters = MutableStateFlow(Filters(category = initialSelectedCategory))
+    private val torrentFilterConfig =
+        MutableStateFlow(TorrentFilterConfig(category = initialSelectedCategory))
 
     /**
-     * The internal mutable source for sort options.
+     * Names of search provider that are completed successfully.
      */
-    private val sortOptions = MutableStateFlow(SortOptions())
+    private val completedSearchProviders: Flow<Set<String>> =
+        searchResults.map {
+            it.successes.map { torrent -> torrent.providerName }.toSet()
+        }
 
     /**
-     * The publicly observable state of the processor.
+     * The flow that emits the [TorrentFilter].
      */
-    val processorState: Flow<ProcessorState> = combine(filters, sortOptions, ::ProcessorState)
+    val torrentFilter: Flow<TorrentFilter> =
+        combine(
+            torrentFilterConfig,
+            completedSearchProviders,
+            ::createTorrentFilter,
+        )
 
     /**
-     * Hashes of currently viewed torrents that should be hidden when filter is active.
+     * The internal, mutable state of sort options.
+     */
+    private val _sortOptions = MutableStateFlow(SortOptions())
+
+    /**
+     * The public, read-only state of sort options.
+     */
+    val sortOptions: StateFlow<SortOptions> = _sortOptions.asStateFlow()
+
+    /**
+     * Hashes of currently viewed torrents that should be hidden when
+     * 'hide viewed' filter is turned on.
      *
      * The hashes are captured only when 'hide viewed' filter is enabled to avoid
      * instant hiding.
      */
-    @OptIn(ExperimentalCoroutinesApi::class)
     private val currentlyViewedTorrentHashes: Flow<Set<String>> =
-        filters
+        torrentFilterConfig
             .map { it.hideViewed }
             .map { if (it) viewedTorrentHashes.firstOrNull().orEmpty() else emptySet() }
 
     /**
-     * The asynchronous output stream of processed search results.
+     * The flow that emits the processed [SearchResults].
      */
     val processedSearchResults: Flow<SearchResults> =
         combine(
             searchResults,
-            filters,
-            sortOptions,
+            torrentFilterConfig,
+            _sortOptions,
             settingsRepository.enableNSFWMode,
             currentlyViewedTorrentHashes,
             ::processSearchResults
         ).flowOn(Dispatchers.Default)
 
     /**
-     * List of search providers name extracted from the search results.
+     * Creates a [TorrentFilter] from the given snapshot of filter config.
      */
-    val availableSearchProviders: Flow<Set<String>> = searchResults.map {
-        it.successes.map { torrent -> torrent.providerName }.toSet()
+    private fun createTorrentFilter(
+        filterConfig: TorrentFilterConfig,
+        completedSearchProviders: Set<String>,
+    ): TorrentFilter {
+        val providerFilters = completedSearchProviders.map {
+            TorrentFilter.SearchProviderOption(
+                provider = it,
+                selected = it !in filterConfig.excludedProviders,
+            )
+        }
+
+        return TorrentFilter(
+            providers = providerFilters.toImmutableList(),
+            showDeadTorrents = filterConfig.showDeadTorrents,
+            category = filterConfig.category,
+            hideViewed = filterConfig.hideViewed,
+        )
     }
 
     /**
-     * Processes and returns a new search results based on the given values.
+     * Processes the [searchResults] using given configurations and returns a
+     * new [SearchResults].
      */
     private fun processSearchResults(
-        rawSearchResults: SearchResults,
-        filters: Filters,
+        searchResults: SearchResults,
+        filterConfig: TorrentFilterConfig,
         sortOptions: SortOptions,
         nsfwModeEnabled: Boolean,
         viewedTorrentHashes: Set<String>,
@@ -563,19 +533,19 @@ private class SearchResultsProcessor(
             criteria = sortOptions.criteria,
             order = sortOptions.order,
         )
-        val filterQueryWords = filters.query
+        val filterQueryWords = filterConfig.query
             .split(' ', ignoreCase = true)
             .filter { it.isNotBlank() }
 
-        return rawSearchResults.filterSuccesses {
-            add { it.providerName !in filters.excludedProviders }
+        return searchResults.filterSuccesses {
+            add { it.providerName !in filterConfig.excludedProviders }
             if (!nsfwModeEnabled) add { !it.isNSFW }
-            if (!filters.deadTorrents) add { !it.isDead }
-            if (filters.hideViewed) add { it.infoHash !in viewedTorrentHashes }
-            if (filters.query.isNotBlank()) add {
+            if (!filterConfig.showDeadTorrents) add { !it.isDead }
+            if (filterConfig.hideViewed) add { it.infoHash !in viewedTorrentHashes }
+            if (filterConfig.query.isNotBlank()) add {
                 filterQueryWords.any { word -> it.name.contains(word, ignoreCase = true) }
             }
-            if (filters.category != Category.All) add { filters.category == it.category }
+            if (filterConfig.category != Category.All) add { filterConfig.category == it.category }
         }.sortSuccessesWith(sortComparator)
     }
 
@@ -583,14 +553,14 @@ private class SearchResultsProcessor(
      * Shows only those search results that contains the given query.
      */
     fun updateFilterQuery(query: String) {
-        filters.update { it.copy(query = query.trim()) }
+        torrentFilterConfig.update { it.copy(query = query.trim()) }
     }
 
     /**
      * Shows or hides search results associated with the given provider name.
      */
     fun toggleSearchProviderResults(providerName: String) {
-        filters.update {
+        torrentFilterConfig.update {
             val newExclusions = if (providerName in it.excludedProviders) {
                 // Remove from exclusion list.
                 it.excludedProviders - providerName
@@ -606,41 +576,41 @@ private class SearchResultsProcessor(
      * Updates the current search providers exclusion list with the given one.
      */
     fun updateExcludedSearchProviders(providers: Set<String>) {
-        filters.update { it.copy(excludedProviders = providers) }
+        torrentFilterConfig.update { it.copy(excludedProviders = providers) }
     }
 
     /**
      * Shows or hides dead torrents from search results.
      */
-    fun toggleDeadTorrents() {
-        filters.update { it.copy(deadTorrents = !it.deadTorrents) }
+    fun toggleShowDeadTorrents() {
+        torrentFilterConfig.update { it.copy(showDeadTorrents = !it.showDeadTorrents) }
     }
 
     /**
      * Updates the current category with the given one.
      */
     fun updateCategory(category: Category) {
-        filters.update { it.copy(category = category) }
-    }
-
-    /**
-     * Updates the current sort criteria with the given one.
-     */
-    fun updateSortCriteria(criteria: SortCriteria) {
-        sortOptions.update { it.copy(criteria = criteria) }
-    }
-
-    /**
-     * Updates the current sort order with the given one.
-     */
-    fun updateSortOrder(order: SortOrder) {
-        sortOptions.update { it.copy(order = order) }
+        torrentFilterConfig.update { it.copy(category = category) }
     }
 
     /**
      * Toggles the hide viewed filter.
      */
     fun toggleHideViewed() {
-        filters.update { it.copy(hideViewed = !it.hideViewed) }
+        torrentFilterConfig.update { it.copy(hideViewed = !it.hideViewed) }
+    }
+
+    /**
+     * Updates the current sort criteria with the given one.
+     */
+    fun updateSortCriteria(criteria: SortCriteria) {
+        _sortOptions.update { it.copy(criteria = criteria) }
+    }
+
+    /**
+     * Updates the current sort order with the given one.
+     */
+    fun updateSortOrder(order: SortOrder) {
+        _sortOptions.update { it.copy(order = order) }
     }
 }

@@ -1,5 +1,6 @@
 package com.prajwalch.torrentsearch.ui.search
 
+import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -41,6 +42,7 @@ import com.prajwalch.torrentsearch.R
 import com.prajwalch.torrentsearch.domain.model.Category
 import com.prajwalch.torrentsearch.domain.model.MagnetUri
 import com.prajwalch.torrentsearch.domain.model.SortCriteria
+import com.prajwalch.torrentsearch.domain.model.SortOptions
 import com.prajwalch.torrentsearch.domain.model.SortOrder
 import com.prajwalch.torrentsearch.domain.model.Torrent
 import com.prajwalch.torrentsearch.ui.TorrentFileDownloadEffect
@@ -59,7 +61,7 @@ import com.prajwalch.torrentsearch.ui.rememberTorrentListState
 import com.prajwalch.torrentsearch.ui.search.component.ResultsNotFoundState
 import com.prajwalch.torrentsearch.ui.search.component.SearchFailuresBottomSheet
 import com.prajwalch.torrentsearch.ui.search.component.SearchResults
-import com.prajwalch.torrentsearch.ui.search.component.SearchResultsFilter
+import com.prajwalch.torrentsearch.ui.search.component.TorrentFilter
 
 import kotlinx.coroutines.launch
 
@@ -106,14 +108,12 @@ fun SearchScreen(
             title = torrent.name,
             showNSFWBadge = torrent.isNSFW,
             onBookmarkTorrent = {
-                viewModel.bookmarkTorrent(torrent = torrent)
+                viewModel.bookmarkTorrent(torrent)
                 coroutineScope.launch {
-                    snackbarHostState.showSnackbar(message = torrentBookmarkedMessage)
+                    snackbarHostState.showSnackbar(torrentBookmarkedMessage)
                 }
             },
-            onDownloadTorrent = {
-                onDownloadTorrent(torrent.magnetUri())
-            },
+            onDownloadTorrent = { onDownloadTorrent(torrent.magnetUri()) },
             onDownloadTorrentFile = {
                 val torrentFileName = torrent.name.replace(' ', '-')
 
@@ -131,25 +131,21 @@ fun SearchScreen(
             },
             onCopyMagnetLink = {
                 coroutineScope.launch {
-                    clipboard.copyText(text = torrent.magnetUri())
-                    snackbarHostState.showSnackbar(message = magnetLinkCopiedMessage)
+                    clipboard.copyText(torrent.magnetUri())
+                    snackbarHostState.showSnackbar(magnetLinkCopiedMessage)
                 }
             },
-            onShareMagnetLink = {
-                onShareMagnetLink(torrent.magnetUri())
-            },
+            onShareMagnetLink = { onShareMagnetLink(torrent.magnetUri()) },
             onOpenDescriptionPage = {
                 onOpenDescriptionPage(torrent.descriptionPageUrl, torrent.providerName)
             },
             onCopyDescriptionPageUrl = {
                 coroutineScope.launch {
-                    clipboard.copyText(text = torrent.descriptionPageUrl)
-                    snackbarHostState.showSnackbar(message = urlCopiedMessage)
+                    clipboard.copyText(torrent.descriptionPageUrl)
+                    snackbarHostState.showSnackbar(urlCopiedMessage)
                 }
             },
-            onShareDescriptionPageUrl = {
-                onShareDescriptionPageUrl(torrent.descriptionPageUrl)
-            },
+            onShareDescriptionPageUrl = { onShareDescriptionPageUrl(torrent.descriptionPageUrl) },
             enableDescriptionPageActions = torrent.descriptionPageUrl.isNotEmpty(),
         )
     }
@@ -176,13 +172,15 @@ fun SearchScreen(
             .then(modifier),
         topBar = {
             SearchScreenTopBar(
-                uiState = uiState,
                 onNavigateBack = onNavigateBack,
                 onFilterQueryChange = viewModel::filterSearchResultsByName,
+                sortOptions = uiState.sortOptions,
                 onChangeSortCriteria = viewModel::updateSortCriteria,
                 onChangeSortOrder = viewModel::updateSortOrder,
                 onShowSearchFailures = { showSearchFailures = true },
                 onNavigateToSettings = onNavigateToSettings,
+                enableSearchResultsAction = uiState.searchState is SearchState.ResultsAvailable,
+                enableSearchFailuresAction = uiState.searchResults.failures.isNotEmpty(),
                 scrollBehavior = scrollBehavior,
             )
         },
@@ -194,138 +192,125 @@ fun SearchScreen(
         },
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
     ) { innerPadding ->
-        when {
-            uiState.isLoading -> {
-                Box(
-                    modifier = Modifier
-                        .padding(innerPadding)
-                        .fillMaxSize(),
-                    contentAlignment = Alignment.Center,
-                ) {
-                    CircularProgressIndicator()
-                }
-            }
-
-            uiState.isInternetError && uiState.searchResults.successes.isEmpty() -> {
-                NoInternetConnectionState(
-                    modifier = Modifier
-                        .padding(innerPadding)
-                        .fillMaxSize(),
-                    onTryAgain = viewModel::search,
-                )
-            }
-
-            uiState.resultsNotFound -> {
-                ResultsNotFoundState(
-                    modifier = Modifier
-                        .padding(innerPadding)
-                        .fillMaxSize(),
-                    onTryAgain = viewModel::search,
-                )
-            }
-
-            /*
-            FIXME: If we handle this, the filters (chips) will not be visible.
-            uiState.resultsFilteredOut -> {
-                ResultsNotFound(
-                    modifier = Modifier
-                        .padding(innerPadding)
-                        .fillMaxSize(),
-                )
-            }
-            */
-
-            else -> {
-                Column(
-                    modifier = Modifier
-                        .padding(innerPadding)
-                        .fillMaxSize(),
-                ) {
-                    AnimatedVisibility(
-                        modifier = Modifier.fillMaxWidth(),
-                        visible = uiState.isSearching,
+        AnimatedContent(
+            modifier = Modifier.padding(innerPadding),
+            targetState = uiState.searchState,
+            contentKey = { it.getAnimationContentKey() },
+        ) { searchState ->
+            when (searchState) {
+                SearchState.Loading -> {
+                    Box(
+                        modifier = Modifier.fillMaxSize(),
+                        contentAlignment = Alignment.Center,
                     ) {
-                        LinearProgressIndicator()
+                        CircularProgressIndicator()
                     }
+                }
 
-                    SearchResultsFilter(
-                        filterOptions = uiState.filterOptions,
-                        onToggleDeadTorrents = viewModel::toggleDeadTorrents,
-                        onToggleHideViewed = viewModel::toggleHideViewedTorrents,
-                        onToggleSearchProvider = viewModel::toggleSearchProviderResults,
-                        onSelectAllSearchProviders = viewModel::selectAllSearchProviders,
-                        onDeselectAllSearchProviders = viewModel::deselectAllSearchProviders,
-                        onInvertSearchProvidersSelection = viewModel::invertSearchProvidersSelection,
-                        onUpdateCategory = viewModel::updateCategoryFilter,
-                        enableSearchProvidersFilter = !uiState.isSearching &&
-                                uiState.filterOptions.searchProviders.isNotEmpty(),
-                        // Enable only when there is a chance of receiving mixed category results,
-                        // which is always the case when using `All`.
-                        enableCategoryFilter = uiState.searchCategory == Category.All,
+                SearchState.InternetError -> {
+                    NoInternetConnectionState(
+                        modifier = Modifier.fillMaxSize(),
+                        onTryAgain = viewModel::search,
                     )
-                    SearchResults(
-                        searchResults = uiState.searchResults.successes,
-                        onResultClick = {
-                            selectedResult = it
-                            viewModel.markAsViewed(it.infoHash)
-                        },
-                        searchQuery = uiState.searchQuery,
-                        searchCategory = uiState.searchCategory,
-                        isRefreshing = uiState.isRefreshing,
-                        onRefresh = viewModel::refreshSearchResults,
-                        viewedTorrentHashes = uiState.viewedTorrentHashes,
-                        lazyListState = torrentListState.lazyListState,
+                }
+
+                SearchState.ResultsNotFound -> {
+                    ResultsNotFoundState(
+                        modifier = Modifier.fillMaxSize(),
+                        onTryAgain = viewModel::search,
                     )
+                }
+
+                is SearchState.ResultsAvailable -> {
+                    Column(modifier = Modifier.fillMaxSize()) {
+                        AnimatedVisibility(
+                            modifier = Modifier.fillMaxWidth(),
+                            visible = searchState is SearchState.ResultsAvailable.Searching,
+                        ) {
+                            LinearProgressIndicator()
+                        }
+
+                        TorrentFilter(
+                            filter = uiState.torrentFilter,
+                            onToggleDeadTorrents = viewModel::toggleDeadTorrents,
+                            onToggleHideViewed = viewModel::toggleHideViewedTorrents,
+                            onToggleSearchProvider = viewModel::toggleSearchProviderResults,
+                            onSelectAllSearchProviders = viewModel::selectAllSearchProviders,
+                            onDeselectAllSearchProviders = viewModel::deselectAllSearchProviders,
+                            onInvertSearchProvidersSelection = viewModel::invertSearchProvidersSelection,
+                            onUpdateCategory = viewModel::updateCategoryFilter,
+                            enableSearchProvidersFilter =
+                                searchState is SearchState.ResultsAvailable.Complete &&
+                                        uiState.torrentFilter.providers.isNotEmpty(),
+                            // Enable only when there is a chance of receiving mixed category results,
+                            // which is always the case when using `All`.
+                            enableCategoryFilter = uiState.searchParams.category == Category.All,
+                        )
+                        SearchResults(
+                            searchResults = uiState.searchResults.successes,
+                            onResultClick = {
+                                selectedResult = it
+                                viewModel.markAsViewed(it.infoHash)
+                            },
+                            searchQuery = uiState.searchParams.query,
+                            searchCategory = uiState.searchParams.category,
+                            isRefreshing = searchState is SearchState.ResultsAvailable.Refreshing,
+                            onRefresh = viewModel::refreshSearchResults,
+                            viewedTorrentHashes = uiState.viewedTorrentHashes,
+                            lazyListState = torrentListState.lazyListState,
+                        )
+                    }
                 }
             }
         }
     }
 }
 
+private fun SearchState.getAnimationContentKey() = when (this) {
+    SearchState.InternetError -> SearchState.InternetError::class
+    SearchState.Loading -> SearchState.Loading::class
+    SearchState.ResultsNotFound -> SearchState.ResultsNotFound::class
+    is SearchState.ResultsAvailable -> SearchState.ResultsAvailable::class
+}
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun SearchScreenTopBar(
-    uiState: SearchUiState,
     onNavigateBack: () -> Unit,
     onFilterQueryChange: (String) -> Unit,
+    sortOptions: SortOptions,
     onChangeSortCriteria: (SortCriteria) -> Unit,
     onChangeSortOrder: (SortOrder) -> Unit,
     onShowSearchFailures: () -> Unit,
     onNavigateToSettings: () -> Unit,
     modifier: Modifier = Modifier,
+    enableSearchResultsAction: Boolean = true,
+    enableSearchFailuresAction: Boolean = true,
     scrollBehavior: TopAppBarScrollBehavior? = null,
 ) {
     val searchBarState = rememberCollapsibleSearchBarState(visibleOnInitial = false)
-    var showSortOptions by rememberSaveable(uiState.sortOptions) { mutableStateOf(false) }
+    var showSortOptions by rememberSaveable(sortOptions) { mutableStateOf(false) }
 
     val topBarActions: @Composable RowScope.() -> Unit = @Composable {
-        val enableSearchResultsActions = when {
-            uiState.isInternetError -> false
-            uiState.resultsNotFound -> false
-            uiState.resultsFilteredOut -> true
-            else -> uiState.searchResults.successes.isNotEmpty()
-        }
-
         if (!searchBarState.isVisible) {
             SearchIconButton(
                 onClick = { searchBarState.showSearchBar() },
-                enabled = enableSearchResultsActions,
+                enabled = enableSearchResultsAction,
             )
             SortIconButton(
                 onClick = { showSortOptions = true },
-                enabled = enableSearchResultsActions,
+                enabled = enableSearchResultsAction,
             )
             SortDropdownMenu(
                 expanded = showSortOptions,
                 onDismissRequest = { showSortOptions = false },
-                currentCriteria = uiState.sortOptions.criteria,
+                currentCriteria = sortOptions.criteria,
                 onChangeCriteria = onChangeSortCriteria,
-                currentOrder = uiState.sortOptions.order,
+                currentOrder = sortOptions.order,
                 onChangeOrder = onChangeSortOrder,
             )
         }
 
-        // More menu.
         Box {
             var showMoreActions by rememberSaveable { mutableStateOf(false) }
 
@@ -340,7 +325,7 @@ private fun SearchScreenTopBar(
                 onDismiss = { showMoreActions = false },
                 onShowSearchFailures = onShowSearchFailures,
                 onNavigateToSettings = onNavigateToSettings,
-                enableSearchFailuresAction = uiState.searchResults.failures.isNotEmpty(),
+                enableSearchFailuresAction = enableSearchFailuresAction,
             )
         }
     }
@@ -352,9 +337,7 @@ private fun SearchScreenTopBar(
             CollapsibleSearchBar(
                 state = searchBarState,
                 onQueryChange = onFilterQueryChange,
-                placeholder = {
-                    Text(text = stringResource(R.string.search_filter_query_hint))
-                },
+                placeholder = { Text(stringResource(R.string.search_filter_query_hint)) },
             )
         },
         actions = topBarActions,
@@ -377,7 +360,7 @@ private fun TopBarMoreMenu(
         onDismissRequest = onDismiss,
     ) {
         DropdownMenuItem(
-            text = { Text(text = stringResource(R.string.search_action_view_errors)) },
+            text = { Text(stringResource(R.string.search_action_view_errors)) },
             onClick = {
                 onShowSearchFailures()
                 onDismiss()
@@ -391,7 +374,7 @@ private fun TopBarMoreMenu(
             enabled = enableSearchFailuresAction,
         )
         DropdownMenuItem(
-            text = { Text(text = stringResource(R.string.search_action_settings)) },
+            text = { Text(stringResource(R.string.search_action_settings)) },
             onClick = {
                 onNavigateToSettings()
                 onDismiss()

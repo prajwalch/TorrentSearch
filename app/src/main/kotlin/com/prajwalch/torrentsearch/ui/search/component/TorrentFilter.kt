@@ -26,12 +26,12 @@ import com.prajwalch.torrentsearch.domain.model.Category
 import com.prajwalch.torrentsearch.ui.categoryStringResource
 import com.prajwalch.torrentsearch.ui.component.RoundedDropdownMenu
 import com.prajwalch.torrentsearch.ui.iconResId
-import com.prajwalch.torrentsearch.ui.search.FilterOptions
+import com.prajwalch.torrentsearch.ui.search.TorrentFilter
 import com.prajwalch.torrentsearch.ui.theme.spaces
 
 @Composable
-fun SearchResultsFilter(
-    filterOptions: FilterOptions,
+fun TorrentFilter(
+    filter: TorrentFilter,
     onToggleDeadTorrents: () -> Unit,
     onToggleHideViewed: () -> Unit,
     onToggleSearchProvider: (providerName: String) -> Unit,
@@ -44,15 +44,15 @@ fun SearchResultsFilter(
     enableSearchProvidersFilter: Boolean = true,
     enableCategoryFilter: Boolean = true,
 ) {
-    val numSelectedSearchProviders = rememberSaveable(filterOptions.searchProviders) {
-        filterOptions.searchProviders.count { it.selected }
+    val numSelectedSearchProviders = rememberSaveable(filter.providers) {
+        filter.providers.count { it.selected }
     }
 
     var showSearchProvidersFilter by rememberSaveable { mutableStateOf(false) }
     if (showSearchProvidersFilter) {
         SearchProvidersFilterBottomSheet(
             onDismiss = { showSearchProvidersFilter = false },
-            filterOptions = filterOptions.searchProviders,
+            filterOptions = filter.providers,
             onToggleSearchProvider = onToggleSearchProvider,
             onSelectAll = onSelectAllSearchProviders,
             onDeselectAll = onDeselectAllSearchProviders,
@@ -79,7 +79,7 @@ fun SearchResultsFilter(
     ) {
         item(key = "dead_torrents") {
             FilterChip(
-                selected = filterOptions.deadTorrents,
+                selected = filter.showDeadTorrents,
                 onClick = onToggleDeadTorrents,
                 leadingIcon = {
                     Icon(
@@ -95,7 +95,7 @@ fun SearchResultsFilter(
 
         item(key = "hide_viewed") {
             FilterChip(
-                selected = filterOptions.hideViewed,
+                selected = filter.hideViewed,
                 onClick = onToggleHideViewed,
                 leadingIcon = {
                     Icon(
@@ -131,9 +131,9 @@ fun SearchResultsFilter(
             )
         }
 
-        item(key = "category", contentType = filterOptions.category) {
-            val isDefaultCategorySelected = filterOptions.category == Category.All
-            var showCategoryOptions by rememberSaveable(filterOptions.category) {
+        item(key = "category", contentType = filter.category) {
+            val isDefaultCategorySelected = filter.category == Category.All
+            var showCategoryOptions by rememberSaveable(filter.category) {
                 mutableStateOf(false)
             }
 
@@ -144,18 +144,18 @@ fun SearchResultsFilter(
                     leadingIcon = {
                         Icon(
                             modifier = Modifier.size(FilterChipDefaults.IconSize),
-                            painter = painterResource(filterOptions.category.iconResId()),
+                            painter = painterResource(filter.category.iconResId()),
                             contentDescription = null,
                         )
                     },
-                    label = { Text(text = categoryStringResource(filterOptions.category)) },
+                    label = { Text(text = categoryStringResource(filter.category)) },
                     trailingIcon = arrowDownIcon,
                     enabled = enableCategoryFilter,
                 )
                 CategoryOptionsDropdownMenu(
                     expanded = showCategoryOptions,
                     onDismiss = { showCategoryOptions = false },
-                    selectedCategory = filterOptions.category,
+                    selectedCategory = filter.category,
                     onCategorySelect = onUpdateCategory,
                 )
             }
