@@ -217,6 +217,10 @@ class SearchViewModel @Inject constructor(
         resultsLoader.search(searchParams.query, searchParams.category)
     }
 
+    fun stopSearch() {
+        resultsLoader.stopSearch()
+    }
+
     fun refreshSearchResults() {
         resultsLoader.refresh(searchParams.query, searchParams.category)
     }
@@ -368,6 +372,14 @@ private class SearchResultsLoader(
 
             executeSearch(query = query, category = category)
         }
+    }
+
+    /**
+     * Stops the ongoing search.
+     */
+    fun stopSearch() {
+        searchJob?.cancel()
+        searchJob = null
     }
 
     /**

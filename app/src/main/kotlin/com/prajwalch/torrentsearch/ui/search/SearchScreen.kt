@@ -2,6 +2,7 @@ package com.prajwalch.torrentsearch.ui.search
 
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.RowScope
@@ -175,8 +176,11 @@ fun SearchScreen(
                 sortOptions = uiState.sortOptions,
                 onChangeSortCriteria = viewModel::updateSortCriteria,
                 onChangeSortOrder = viewModel::updateSortOrder,
+                onRefresh = viewModel::refreshSearchResults,
+                onStopSearch = viewModel::stopSearch,
                 onShowSearchFailures = { showSearchFailures = true },
                 onNavigateToSettings = onNavigateToSettings,
+                searchState = uiState.searchState,
                 enableSearchResultsAction = uiState.searchState is SearchState.ResultsAvailable,
                 enableSearchFailuresAction = uiState.searchResults.failures.isNotEmpty(),
                 scrollBehavior = scrollBehavior,
@@ -279,8 +283,11 @@ private fun SearchScreenTopBar(
     sortOptions: SortOptions,
     onChangeSortCriteria: (SortCriteria) -> Unit,
     onChangeSortOrder: (SortOrder) -> Unit,
+    onRefresh: () -> Unit,
+    onStopSearch: () -> Unit,
     onShowSearchFailures: () -> Unit,
     onNavigateToSettings: () -> Unit,
+    searchState: SearchState,
     modifier: Modifier = Modifier,
     enableSearchResultsAction: Boolean = true,
     enableSearchFailuresAction: Boolean = true,
@@ -321,8 +328,11 @@ private fun SearchScreenTopBar(
             TopBarMoreMenu(
                 expanded = showMoreActions,
                 onDismiss = { showMoreActions = false },
+                onRefresh = onRefresh,
+                onStopSearch = onStopSearch,
                 onShowSearchFailures = onShowSearchFailures,
                 onNavigateToSettings = onNavigateToSettings,
+                searchState = searchState,
                 enableSearchFailuresAction = enableSearchFailuresAction,
             )
         }
@@ -347,16 +357,61 @@ private fun SearchScreenTopBar(
 private fun TopBarMoreMenu(
     expanded: Boolean,
     onDismiss: () -> Unit,
+    onRefresh: () -> Unit,
+    onStopSearch: () -> Unit,
     onShowSearchFailures: () -> Unit,
     onNavigateToSettings: () -> Unit,
+    searchState: SearchState,
     modifier: Modifier = Modifier,
     enableSearchFailuresAction: Boolean = true,
 ) {
+    val refreshAction: @Composable (enable: Boolean) -> Unit = @Composable { enable ->
+        DropdownMenuItem(
+            onClick = {
+                onRefresh()
+                onDismiss()
+            },
+            leadingIcon = {
+                Icon(
+                    painter = painterResource(R.drawable.ic_refresh),
+                    contentDescription = null,
+                )
+            },
+            text = { Text(stringResource(R.string.search_action_refresh)) },
+            enabled = enable,
+        )
+    }
+    val stopSearchAction: @Composable (enable: Boolean) -> Unit = @Composable { enable ->
+        DropdownMenuItem(
+            onClick = {
+                onStopSearch()
+                onDismiss()
+            },
+            leadingIcon = {
+                Icon(
+                    painter = painterResource(R.drawable.ic_stop),
+                    contentDescription = null,
+                )
+            },
+            text = { Text(stringResource(R.string.search_action_stop_search)) },
+            enabled = enable,
+        )
+    }
     RoundedDropdownMenu(
         modifier = modifier,
         expanded = expanded,
         onDismissRequest = onDismiss,
     ) {
+        Crossfade(searchState) { innerSearchState ->
+            when (innerSearchState) {
+                SearchState.Loading -> stopSearchAction(false)
+                SearchState.InternetError -> refreshAction(false)
+                SearchState.ResultsNotFound -> refreshAction(false)
+                SearchState.ResultsAvailable.Complete -> refreshAction(true)
+                SearchState.ResultsAvailable.Refreshing -> refreshAction(false)
+                SearchState.ResultsAvailable.Searching -> stopSearchAction(true)
+            }
+        }
         DropdownMenuItem(
             text = { Text(stringResource(R.string.search_action_view_errors)) },
             onClick = {
