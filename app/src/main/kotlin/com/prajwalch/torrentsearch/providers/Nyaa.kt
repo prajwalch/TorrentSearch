@@ -146,6 +146,7 @@ private object NyaaDetailsPageParser {
     private const val SEEDERS = "$TORRENT_INFO_CARD_BODY > div:nth-child(2) > div:nth-child(4)"
     private const val PEERS = "$TORRENT_INFO_CARD_BODY > div:nth-child(3) > div:nth-child(4)"
     private const val UPLOAD_DATE = "$TORRENT_INFO_CARD_BODY > div:nth-child(1) > div:nth-child(4)"
+    private const val CATEGORY = "$TORRENT_INFO_CARD_BODY > div:nth-child(1) > div:nth-child(2)"
     private const val UPLOADER = "$TORRENT_INFO_CARD_BODY > div:nth-child(2) > div:nth-child(2)"
     private const val DESCRIPTION = "#torrent-description"
     private const val MAGNET_URI = """a[href^="magnet:"]"""
@@ -166,6 +167,21 @@ private object NyaaDetailsPageParser {
                 ?.attr("data-timestamp")
                 ?.toLongOrNull()
                 ?.let(TorrentDateParser::epochSecondToInstant)
+            val category = html.selectFirst(CATEGORY)
+                ?.let {
+                    val categoryId = it.selectFirst("a:nth-child(1)")
+                        ?.attr("href")
+                        ?.removePrefix("/?c=")
+                    val subCategoryId = it.selectFirst("a:nth-child(2)")
+                        ?.attr("href")
+                        ?.removePrefix("/?c=")
+
+                    if (subCategoryId == "6_2") {
+                        Category.Games
+                    } else {
+                        categoryId?.let(::categoryFromId)
+                    }
+                }
             val uploader = html.selectFirst(UPLOADER)?.text()?.trim()
             val description = html.selectFirst(DESCRIPTION)?.html()
             val fileDownloadLink = html.selectFirst(FILE_DOWNLOAD_LINK)?.attr("abs:href")
@@ -177,7 +193,7 @@ private object NyaaDetailsPageParser {
                 seeders = seeders,
                 peers = peers,
                 uploadDate = uploadDate,
-                category = Category.Anime,
+                category = category,
                 uploader = uploader,
                 magnetUri = magnetUri,
                 fileDownloadLink = fileDownloadLink,
