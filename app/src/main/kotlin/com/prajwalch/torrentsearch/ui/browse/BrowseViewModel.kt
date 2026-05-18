@@ -38,7 +38,6 @@ import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onCompletion
-import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -54,15 +53,18 @@ data class BrowseUiState(
     val queryParams: BrowseQueryParams = BrowseQueryParams(),
     val viewFilters: BrowseViewFilters = BrowseViewFilters(),
     val viewedTorrentHashes: Set<String> = emptySet(),
-    val isSearching: Boolean = false,
-    val isRefreshing: Boolean = false,
 )
 
 @Stable
 sealed interface BrowseContentState {
     data object Loading : BrowseContentState
     data object InternetError : BrowseContentState
-    data object Ready : BrowseContentState
+
+    sealed interface Ready : BrowseContentState {
+        data object Complete : Ready
+        data object Searching : Ready
+        data object Refreshing : Ready
+    }
 }
 
 data class BrowseQueryParams(
@@ -122,25 +124,17 @@ class BrowseViewModel @Inject constructor(
         viewedTorrentRepository.getAllViewedHashes(),
     ) {
             queryParams,
-            loaderState,
+            contentState,
             torrents,
             viewFilters,
             viewedTorrentHashes,
         ->
-        val contentState = when {
-            loaderState.isLoading -> BrowseContentState.Loading
-            loaderState.isInternetError -> BrowseContentState.InternetError
-            else -> BrowseContentState.Ready
-        }
-
         BrowseUiState(
             contentState = contentState,
             torrents = torrents,
             queryParams = queryParams,
             viewFilters = viewFilters,
             viewedTorrentHashes = viewedTorrentHashes,
-            isSearching = loaderState.isSearching,
-            isRefreshing = loaderState.isRefreshing,
         )
     }.stateIn(
         scope = viewModelScope,
@@ -231,65 +225,47 @@ class BrowseViewModel @Inject constructor(
  *
  * It is the first stage in the load pipeline which handles the task of fetching
  * torrents, and managing load related states.
+ *
+ * @param scope The [CoroutineScope] in which the load is performed.
+ * @param searchProvidersGateway The gateway for interacting with providers.
+ * @param connectivityChecker The helper class for checking internet connection.
  */
 private class TorrentsLoader(
-    /**
-     * The [CoroutineScope] in which the load is performed.
-     */
     private val scope: CoroutineScope,
-    /**
-     * A gateway for interacting with different providers.
-     */
     private val searchProvidersGateway: SearchProvidersGateway,
-    /**
-     * A helper class for checking network condition.
-     */
     private val connectivityChecker: ConnectivityChecker,
 ) {
     /**
-     * Represents the state of loader.
-     */
-    data class State(
-        val isLoading: Boolean = false,
-        val isSearching: Boolean = false,
-        val isRefreshing: Boolean = false,
-        val isInternetError: Boolean = false,
-    )
-
-    /**
-     * The internal, mutable source of truth for the query params.
+     * The internal, mutable state of query params.
      *
      * The query params are updated only on-demand and when doing so, a new
-     * load job is automatically started to fetch new torrents based on
-     * updated query params.
+     * load job is automatically started to fetch new torrents.
      */
     private val _queryParams = MutableStateFlow(BrowseQueryParams())
 
     /**
-     * The publicly observable, read-only state of the query params.
+     * The public, read-only state of the query params.
      */
     val queryParams: StateFlow<BrowseQueryParams> = _queryParams.asStateFlow()
 
     /**
-     * The internal, mutable source of truth for the loader state.
+     * The internal, mutable state of content state.
      * This flow is updated constantly during the load lifecycle.
      */
-    private val _state = MutableStateFlow(State(isLoading = true))
+    private val _state = MutableStateFlow<BrowseContentState>(BrowseContentState.Loading)
 
     /**
-     * The publicly observable, read-only state of the loader.
+     * The public, read-only state of the content state.
      */
-    val state: StateFlow<State> = _state.asStateFlow()
+    val state: StateFlow<BrowseContentState> = _state.asStateFlow()
 
     /**
-     * The internal, mutable source of truth for the torrents.
+     * The internal, mutable state of loaded torrents.
      */
     private val _torrents = MutableStateFlow(persistentListOf<Torrent>())
 
     /**
-     * The publicly observable, read-only state of raw and unprocessed
-     * torrents.
-     *
+     * The public, read-only state of raw and unprocessed torrents.
      * Downstream pipelines should use this flow for further processing.
      */
     val torrents: StateFlow<PersistentList<Torrent>> = _torrents.asStateFlow()
@@ -325,10 +301,10 @@ private class TorrentsLoader(
     fun load() {
         loadJob?.cancel()
         loadJob = scope.launch {
-            _state.update { it.copy(isLoading = true, isInternetError = false) }
+            _state.value = BrowseContentState.Loading
 
             if (!connectivityChecker.isInternetAvailable()) {
-                _state.update { it.copy(isLoading = false, isInternetError = true) }
+                _state.value = BrowseContentState.InternetError
                 return@launch
             }
 
@@ -342,10 +318,10 @@ private class TorrentsLoader(
     fun refresh() {
         loadJob?.cancel()
         loadJob = scope.launch {
-            _state.update { it.copy(isRefreshing = true) }
+            _state.value = BrowseContentState.Ready.Refreshing
 
             if (!connectivityChecker.isInternetAvailable()) {
-                _state.update { it.copy(isRefreshing = false) }
+                _state.value = BrowseContentState.Ready.Complete
                 return@launch
             }
 
@@ -364,15 +340,11 @@ private class TorrentsLoader(
         }
 
         torrentsFlow
-            .onStart {
-                _state.update { it.copy(isSearching = true) }
-            }
-            .onCompletion {
-                _state.update { it.copy(isSearching = false) }
-            }
+            // TODO: Check if it's empty.
+            .onCompletion { _state.value = BrowseContentState.Ready.Complete }
             .collect { torrents ->
                 _torrents.value = torrents
-                _state.update { it.copy(isLoading = false, isRefreshing = false) }
+                _state.value = BrowseContentState.Ready.Searching
             }
     }
 }
@@ -383,25 +355,17 @@ private class TorrentsLoader(
  *
  * It is the second stage in the load pipeline which applies view filters and
  * sorting operations.
+ *
+ * @param torrents The input stream from where torrents are pulled.
+ * @param queryParams The [Flow] that emits the current query params.
+ *                    Query params are used additionally to remove unwanted torrents.
+ * @param viewedTorrentHashes The [Flow] that emits the viewed torrent hashes.
+ * @param settingsRepository The repository for fetching user-defined transformation values.
  */
 private class TorrentsProcessor(
-    /**
-     * The input stream from where torrents are pulled.
-     */
     torrents: Flow<PersistentList<Torrent>>,
-    /**
-     * Query params that is used to fetch torrents.
-     *
-     * Query params are used additionally to remove any unwanted torrents.
-     */
     queryParams: Flow<BrowseQueryParams>,
-    /**
-     * Flow of viewed torrent hashes for filtering.
-     */
     viewedTorrentHashes: Flow<Set<String>>,
-    /**
-     * The repository for fetching user-defined transformation options.
-     */
     settingsRepository: SettingsRepository,
 ) {
     private data class TorrentFilter(

@@ -174,7 +174,7 @@ fun BrowseScreen(
         ) {
             AnimatedVisibility(
                 modifier = Modifier.fillMaxWidth(),
-                visible = uiState.isSearching,
+                visible = uiState.contentState is BrowseContentState.Ready.Searching,
             ) {
                 LinearProgressIndicator()
             }
@@ -212,14 +212,14 @@ fun BrowseScreen(
                         )
                     }
 
-                    BrowseContentState.Ready -> {
+                    is BrowseContentState.Ready -> {
                         TorrentList(
                             torrents = uiState.torrents,
                             onTorrentClick = {
                                 selectedTorrent = it
                                 viewModel.markAsViewed(it.infoHash)
                             },
-                            isRefreshing = uiState.isRefreshing,
+                            isRefreshing = contentState is BrowseContentState.Ready.Refreshing,
                             onRefresh = viewModel::refreshTorrents,
                             viewedTorrentHashes = uiState.viewedTorrentHashes,
                             lazyListState = torrentListState.lazyListState,
