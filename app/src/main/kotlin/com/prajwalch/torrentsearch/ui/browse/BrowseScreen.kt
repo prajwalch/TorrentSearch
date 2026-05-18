@@ -10,6 +10,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -30,6 +32,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalClipboard
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -42,8 +45,10 @@ import com.prajwalch.torrentsearch.ui.browse.component.BrowseFilters
 import com.prajwalch.torrentsearch.ui.browse.component.TorrentList
 import com.prajwalch.torrentsearch.ui.component.AnimatedScrollToTopFAB
 import com.prajwalch.torrentsearch.ui.component.ArrowBackIconButton
+import com.prajwalch.torrentsearch.ui.component.CollapsibleSearchBar
 import com.prajwalch.torrentsearch.ui.component.NoInternetConnectionState
 import com.prajwalch.torrentsearch.ui.component.TorrentActionsBottomSheet
+import com.prajwalch.torrentsearch.ui.component.rememberCollapsibleSearchBarState
 import com.prajwalch.torrentsearch.ui.extension.copyText
 import com.prajwalch.torrentsearch.ui.rememberTorrentListState
 import com.prajwalch.torrentsearch.ui.theme.spaces
@@ -148,6 +153,7 @@ fun BrowseScreen(
         topBar = {
             BrowseScreenTopBar(
                 onNavigateBack = onNavigateBack,
+                onSearchQueryChange = viewModel::searchTorrents,
                 scrollBehavior = scrollBehavior,
             )
         },
@@ -227,13 +233,38 @@ fun BrowseScreen(
 @Composable
 private fun BrowseScreenTopBar(
     onNavigateBack: () -> Unit,
+    onSearchQueryChange: (String) -> Unit,
     modifier: Modifier = Modifier,
+    enableSearchAction: Boolean = true,
     scrollBehavior: TopAppBarScrollBehavior? = null,
 ) {
+    val searchBarState = rememberCollapsibleSearchBarState(visibleOnInitial = false)
+
     TopAppBar(
         modifier = modifier,
         navigationIcon = { ArrowBackIconButton(onClick = onNavigateBack) },
-        title = { Text(stringResource(R.string.browse_screen_title)) },
+        title = {
+            CollapsibleSearchBar(
+                state = searchBarState,
+                onQueryChange = onSearchQueryChange,
+                placeholder = { Text(stringResource(R.string.browse_search_query_hint)) },
+            )
+
+            if (!searchBarState.isVisible) {
+                Text(stringResource(R.string.browse_screen_title))
+            }
+        },
+        actions = {
+            IconButton(
+                onClick = { searchBarState.showSearchBar() },
+                enabled = enableSearchAction,
+            ) {
+                Icon(
+                    painter = painterResource(R.drawable.ic_search),
+                    contentDescription = null,
+                )
+            }
+        },
         scrollBehavior = scrollBehavior,
     )
 }

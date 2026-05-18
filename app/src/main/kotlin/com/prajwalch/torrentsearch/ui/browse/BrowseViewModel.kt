@@ -172,6 +172,10 @@ class BrowseViewModel @Inject constructor(
         torrentsLoader.refresh()
     }
 
+    fun searchTorrents(query: String) {
+        torrentsProcessor.searchTorrents(query)
+    }
+
     fun updateBrowseSort(sort: BrowseSort) {
         torrentsLoader.updateBrowseSort(sort)
     }
@@ -400,15 +404,24 @@ private class TorrentsProcessor(
      */
     settingsRepository: SettingsRepository,
 ) {
-    /**
-     * The internal, mutable state of the view filters.
-     */
-    private val _viewFilters = MutableStateFlow(BrowseViewFilters())
+    private data class TorrentFilter(
+        val searchQuery: String = "",
+        val deadTorrents: Boolean = true,
+        val hideViewed: Boolean = false,
+    )
+
+    private val torrentFilter = MutableStateFlow(TorrentFilter())
 
     /**
      * The publicly observable, read-only state of the view filters.
      */
-    val viewFilters = _viewFilters.asStateFlow()
+    val viewFilters: Flow<BrowseViewFilters> =
+        torrentFilter.map {
+            BrowseViewFilters(
+                deadTorrents = it.deadTorrents,
+                hideViewed = it.hideViewed,
+            )
+        }
 
     /**
      * Hashes of currently viewed torrents that should be hidden when filter is active.
@@ -418,7 +431,7 @@ private class TorrentsProcessor(
      */
     @OptIn(ExperimentalCoroutinesApi::class)
     private val currentlyViewedTorrentHashes: Flow<Set<String>> =
-        _viewFilters
+        torrentFilter
             .map { it.hideViewed }
             .map { if (it) viewedTorrentHashes.firstOrNull().orEmpty() else emptySet() }
 
@@ -429,7 +442,7 @@ private class TorrentsProcessor(
         combine(
             torrents,
             queryParams,
-            _viewFilters,
+            torrentFilter,
             currentlyViewedTorrentHashes,
             settingsRepository.enableNSFWMode,
             ::processTorrents,
@@ -442,7 +455,7 @@ private class TorrentsProcessor(
     private fun processTorrents(
         torrents: PersistentList<Torrent>,
         queryParams: BrowseQueryParams,
-        viewFilters: BrowseViewFilters,
+        torrentFilter: TorrentFilter,
         viewedTorrentHashes: Set<String>,
         nsfwModeEnabled: Boolean,
     ): ImmutableList<Torrent> {
@@ -450,28 +463,38 @@ private class TorrentsProcessor(
             BrowseSort.Latest -> compareByDescending { torrent -> torrent.uploadDate }
             BrowseSort.Top -> compareByDescending { torrent -> torrent.seeders }
         }
+        val searchQueryWords = torrentFilter.searchQuery
+            .split(' ', ignoreCase = true)
+            .filter { it.isNotBlank() }
 
         return torrents.filter {
             if (!nsfwModeEnabled) add { !it.isNSFW }
-            if (!viewFilters.deadTorrents) add { !it.isDead }
-            if (viewFilters.hideViewed) add { it.infoHash !in viewedTorrentHashes }
+            if (!torrentFilter.deadTorrents) add { !it.isDead }
+            if (torrentFilter.hideViewed) add { it.infoHash !in viewedTorrentHashes }
+            if (torrentFilter.searchQuery.isNotBlank()) add {
+                searchQueryWords.any { word -> it.name.contains(word, ignoreCase = true) }
+            }
             if (queryParams.category != Category.All) add { queryParams.category == it.category }
         }
             .sortedWithComparator(sortComparator)
             .toImmutableList()
     }
 
+    fun searchTorrents(query: String) {
+        torrentFilter.update { it.copy(searchQuery = query) }
+    }
+
     /**
      * Shows or hides dead torrents.
      */
     fun toggleDeadTorrents() {
-        _viewFilters.update { it.copy(deadTorrents = !it.deadTorrents) }
+        torrentFilter.update { it.copy(deadTorrents = !it.deadTorrents) }
     }
 
     /**
      * Toggles the "hide viewed" filter.
      */
     fun toggleHideViewed() {
-        _viewFilters.update { it.copy(hideViewed = !it.hideViewed) }
+        torrentFilter.update { it.copy(hideViewed = !it.hideViewed) }
     }
 }

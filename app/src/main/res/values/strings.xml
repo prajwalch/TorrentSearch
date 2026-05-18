@@ -141,6 +141,7 @@
     <string name="bookmarks_empty_message">No bookmarks</string>
 
     <string name="browse_screen_title">Browse</string>
+    <string name="browse_search_query_hint">Search torrents</string>
     <string name="browse_sort_latest">Latest</string>
     <string name="browse_sort_top">Top</string>
 
