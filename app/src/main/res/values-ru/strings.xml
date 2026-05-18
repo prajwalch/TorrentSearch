@@ -25,8 +25,6 @@
     <string name="torrent_client_not_found_title">Торрент-клиент не найден</string>
     <string name="torrent_client_not_found_content">Чтобы воспользоваться функцией загрузки, установите торрент-клиент, настройте его и вернитесь в это приложение.</string>
     <string name="torrent_client_not_found_recommended_client_hint">Рекомендуемый клиент</string>
-    <string name="torrent_list_seeders_format">Сидов %1$s</string>
-    <string name="torrent_list_peers_format">Пиров %1$s</string>
     <string name="torrent_list_action_bookmark_torrent">Добавить торрент в закладки</string>
     <string name="torrent_list_action_delete_bookmark">Удалить закладку</string>
     <string name="torrent_list_action_download_torrent">Загрузить торрент</string>

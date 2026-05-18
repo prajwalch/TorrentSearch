@@ -39,6 +39,4 @@
     <string name="torrent_client_not_found_title">Client torrent non trouvé</string>
     <string name="torrent_client_not_found_content">Pour utiliser la fonction de téléchargement, installez un client torrent, paramétrez-le et revenez à cette application.</string>
     <string name="torrent_client_not_found_recommended_client_hint">Client recommandé</string>
-    <string name="torrent_list_seeders_format">Sources %1$s</string>
-    <string name="torrent_list_peers_format">Pairs %1$s</string>
 </resources>

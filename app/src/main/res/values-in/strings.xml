@@ -39,8 +39,6 @@
     <string name="torrent_client_not_found_title">Klien torrent tidak ditemukan</string>
     <string name="torrent_client_not_found_content">Untuk menggunakan fitur unduhan, instal klien torrent, konfigurasikan, lalu kembali ke aplikasi ini.</string>
     <string name="torrent_client_not_found_recommended_client_hint">Klien yang direkomendasikan</string>
-    <string name="torrent_list_seeders_format">Seeder %1$s</string>
-    <string name="torrent_list_peers_format">Peer %1$s</string>
     <string name="torrent_list_action_bookmark_torrent">Tandai torrent</string>
     <string name="torrent_list_action_delete_bookmark">Hapus penanda</string>
     <string name="torrent_list_action_download_torrent">Unduh torrent</string>

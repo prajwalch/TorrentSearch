@@ -52,8 +52,6 @@
     <string name="action_sort">Sırala</string>
     <string name="action_sort_criteria_seeders">Dağıtıcılar</string>
     <string name="action_sort_criteria_peers">Eşler</string>
-    <string name="torrent_list_seeders_format">%1$s Paylaşımcı</string>
-    <string name="torrent_list_peers_format">%1$s Eş</string>
     <string name="torrent_list_action_copy_description_page_url">Açıklama sayfasının URL\'sini kopyala</string>
     <string name="torrent_list_action_share_description_page_url">Açıklama sayfasının bağlantısını paylaşın</string>
     <string name="torrent_list_magnet_link_copied_message">Magnet bağlantısı panoya kopyalandı!</string>

@@ -24,7 +24,6 @@
     <string name="torrent_client_not_found_title">找不到种子客户端</string>
     <string name="torrent_client_not_found_content">为使用下载功能，请先下载种子客户端，配置好后，返回本软件再试。</string>
     <string name="torrent_client_not_found_recommended_client_hint">推荐客户端</string>
-    <string name="torrent_list_seeders_format">做种者 %1$s</string>
     <string name="torrent_list_action_bookmark_torrent">标记种子</string>
     <string name="torrent_list_action_delete_bookmark">删除书签</string>
     <string name="torrent_list_action_download_torrent">下载种子</string>
@@ -62,7 +61,6 @@
     <string name="search_providers_list_action_delete">删除</string>
     <string name="search_providers_add_screen_title">添加搜索源</string>
     <string name="action_sort_criteria_peers">下载者</string>
-    <string name="torrent_list_peers_format">下载者 %1$s</string>
     <string name="search_providers_learn_how_to_add">了解如何添加</string>
     <string name="search_providers_edit_screen_title">编辑搜索源</string>
     <string name="search_providers_label_name">名称</string>

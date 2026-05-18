@@ -26,8 +26,6 @@
     <string name="torrent_client_not_found_title">لم يتم العثور على عميل التورنت</string>
     <string name="torrent_client_not_found_content">لاستخدام ميزة التنزيل، قم بتثبيت عميل التورنت وإعداده والعودة إلى هذا التطبيق.</string>
     <string name="torrent_client_not_found_recommended_client_hint">العميل الموصى به</string>
-    <string name="torrent_list_seeders_format">الموزعون %1$s</string>
-    <string name="torrent_list_peers_format">المشاركون %1$s</string>
     <string name="torrent_list_action_bookmark_torrent">وضع إشارة مرجعية على التورنت</string>
     <string name="torrent_list_action_delete_bookmark">حذف الإشارة المرجعية</string>
     <string name="torrent_list_action_download_torrent">تنزيل التورنت</string>

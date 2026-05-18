@@ -62,8 +62,6 @@
     <string name="settings_section_sort_criteria">Critério de ordenação</string>
     <string name="button_cancel">Cancelar</string>
     <string name="nsfw">NSFW</string>
-    <string name="torrent_list_seeders_format">%1$s Semeadores</string>
-    <string name="torrent_list_peers_format">%1$s Pares</string>
     <string name="home_button_search">Busca</string>
     <string name="search_filter_query_hint">Resultados da pesquisa</string>
     <string name="search_filter_providers_title">Provedores de busca</string>

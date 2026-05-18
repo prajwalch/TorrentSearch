@@ -45,8 +45,6 @@
     <string name="torrent_client_not_found_title">Client torrent non trovato</string>
     <string name="torrent_client_not_found_content">Per utilizzare la funzionalità di download, installa un client torrent, configuralo e ritorna su quest\'app.</string>
     <string name="torrent_client_not_found_recommended_client_hint">Client raccomandato</string>
-    <string name="torrent_list_seeders_format">Seeder %1$s</string>
-    <string name="torrent_list_peers_format">Peer %1$s</string>
     <string name="torrent_list_action_bookmark_torrent">Salva torrent come preferito</string>
     <string name="torrent_list_action_delete_bookmark">Rimuovi dai preferiti</string>
     <string name="torrent_list_action_download_torrent">Scarica torrent</string>

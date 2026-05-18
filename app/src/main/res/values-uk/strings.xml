@@ -16,8 +16,6 @@
     <string name="torrent_client_not_found_title">Торент-клієнта не знайдено</string>
     <string name="torrent_client_not_found_content">Щоб скористатися функцією завантаження, встановіть і налаштуйте торент-клієнт, а тоді поверніться до цієї програми.</string>
     <string name="torrent_client_not_found_recommended_client_hint">Радимо клієнт</string>
-    <string name="torrent_list_seeders_format">Сідів %1$s</string>
-    <string name="torrent_list_peers_format">Пірів %1$s</string>
     <string name="torrent_list_action_bookmark_torrent">Вподобати торент</string>
     <string name="torrent_list_action_delete_bookmark">Скасувати вподобання</string>
     <string name="torrent_list_action_download_torrent">Завантажити торент</string>

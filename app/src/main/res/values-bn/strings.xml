@@ -28,8 +28,6 @@
     <string name="torrent_client_not_found_title">টরেন্ট ক্লায়েন্ট খুঁজে পাওয়া যায়নি</string>
     <string name="torrent_client_not_found_content">ডাউনলোড বৈশিষ্ট্যটি ব্যবহার করতে, একটি টরেন্ট ক্লায়েন্ট ইনস্টল করুন, এটি সেট আপ করুন এবং এই অ্যাপে ফিরে আসুন।</string>
     <string name="torrent_client_not_found_recommended_client_hint">প্রস্তাবিত ক্লায়েন্ট</string>
-    <string name="torrent_list_seeders_format">সিডার %1$s</string>
-    <string name="torrent_list_peers_format">সঙ্গী%1$s</string>
     <string name="torrent_list_action_bookmark_torrent">বুকমার্ক টরেন্ট</string>
     <string name="torrent_list_action_delete_bookmark">বুকমার্ক মুছুন</string>
     <string name="torrent_list_action_download_torrent">টরেন্ট ডাউনলোড করুন</string>

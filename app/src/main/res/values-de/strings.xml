@@ -28,8 +28,6 @@
     <string name="torrent_client_not_found_title">Torrent Client nicht gefunden</string>
     <string name="torrent_client_not_found_content">Um die Download-Funktion zu nutzen, installieren Sie einen Torrent-Client, richten Sie ihn ein und kehren Sie zu dieser App zurück.</string>
     <string name="torrent_client_not_found_recommended_client_hint">Empholener Client</string>
-    <string name="torrent_list_seeders_format">Seeders %1$s</string>
-    <string name="torrent_list_peers_format">Peers %1$s</string>
     <string name="torrent_list_action_bookmark_torrent">Lesezeichen-Torrent</string>
     <string name="torrent_list_action_delete_bookmark">Lösche das Lesezeichen</string>
     <string name="torrent_list_action_download_torrent">Torrent herunterladen</string>

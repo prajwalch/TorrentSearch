@@ -9,8 +9,6 @@
     <string name="search_no_results_message">ഫലങ്ങൾ ഒന്നും കണ്ടെത്തിയില്ല</string>
     <string name="search_results_count_format">\'%2$s\' ന് %1$s റിസൾട്ടുകൾ (%3$s)</string>
     <string name="action_sort">സോർട്ട് ഓപ്ഷനുകൾ തുറക്കുക</string>
-    <string name="torrent_list_seeders_format">സീഡേഴ്‌സ് %1$s</string>
-    <string name="torrent_list_peers_format">പിയേഴ്സ് %1$s</string>
     <string name="torrent_list_action_bookmark_torrent">ടോറന്റ് ബുക്ക്‌മാർക്ക് ചെയ്യുക</string>
     <string name="torrent_list_action_delete_bookmark">ബുക്ക്‌മാർക്ക് മായ്ക്കുക</string>
     <string name="torrent_list_action_download_torrent">ടോറന്റ് ഡൗൺലോഡ് ചെയ്യുക</string>

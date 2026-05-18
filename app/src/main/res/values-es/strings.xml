@@ -22,8 +22,6 @@
     <string name="torrent_client_not_found_title">Cliente torrent no encontrado</string>
     <string name="torrent_client_not_found_content">Para usar la opción de descarga, instala un cliente torrent, configuralo y vuelve a esta app.</string>
     <string name="torrent_client_not_found_recommended_client_hint">Cliente recomendado</string>
-    <string name="torrent_list_seeders_format">Semillas %1$s</string>
-    <string name="torrent_list_peers_format">Pares %1$s</string>
     <string name="torrent_list_action_bookmark_torrent">Añadir torrent a marcadores</string>
     <string name="torrent_list_action_delete_bookmark">Eliminar marcador</string>
     <string name="torrent_list_action_download_torrent">Descargar torrent</string>

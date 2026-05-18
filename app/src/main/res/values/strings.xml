@@ -66,8 +66,6 @@
     <string name="torrent_client_pikatorrent" translatable="false">PikaTorrent</string>
     <string name="torrent_client_torrserve" translatable="false">TorrServe</string>
 
-    <string name="torrent_list_seeders_format">Seeders %1$s</string>
-    <string name="torrent_list_peers_format">Peers %1$s</string>
     <string name="torrent_list_action_bookmark_torrent">Bookmark torrent</string>
     <string name="torrent_list_action_delete_bookmark">Delete bookmark</string>
     <string name="torrent_list_action_download_torrent">Download torrent</string>
