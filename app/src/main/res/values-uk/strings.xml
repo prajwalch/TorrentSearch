@@ -192,4 +192,6 @@
     <string name="browse_screen_title">Огляд</string>
     <string name="browse_sort_latest">Найновіші</string>
     <string name="browse_sort_top">Популярні</string>
+    <string name="search_action_stop_search">Зупинити пошук</string>
+    <string name="search_action_refresh">Оновити</string>
 </resources>
