@@ -59,6 +59,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun BrowseScreen(
     onNavigateBack: () -> Unit,
+    onNavigateToSettings: () -> Unit,
     onDownloadTorrent: (MagnetUri) -> Unit,
     onShareMagnetLink: (MagnetUri) -> Unit,
     onOpenDescriptionPage: (url: String, providerName: String) -> Unit,
@@ -154,6 +155,7 @@ fun BrowseScreen(
             BrowseScreenTopBar(
                 onNavigateBack = onNavigateBack,
                 onSearchQueryChange = viewModel::searchTorrents,
+                onNavigateToSettings = onNavigateToSettings,
                 scrollBehavior = scrollBehavior,
             )
         },
@@ -234,6 +236,7 @@ fun BrowseScreen(
 private fun BrowseScreenTopBar(
     onNavigateBack: () -> Unit,
     onSearchQueryChange: (String) -> Unit,
+    onNavigateToSettings: () -> Unit,
     modifier: Modifier = Modifier,
     enableSearchAction: Boolean = true,
     scrollBehavior: TopAppBarScrollBehavior? = null,
@@ -255,12 +258,20 @@ private fun BrowseScreenTopBar(
             }
         },
         actions = {
-            IconButton(
-                onClick = { searchBarState.showSearchBar() },
-                enabled = enableSearchAction,
-            ) {
+            if (!searchBarState.isVisible) {
+                IconButton(
+                    onClick = { searchBarState.showSearchBar() },
+                    enabled = enableSearchAction,
+                ) {
+                    Icon(
+                        painter = painterResource(R.drawable.ic_search),
+                        contentDescription = null,
+                    )
+                }
+            }
+            IconButton(onClick = onNavigateToSettings) {
                 Icon(
-                    painter = painterResource(R.drawable.ic_search),
+                    painter = painterResource(R.drawable.ic_settings),
                     contentDescription = null,
                 )
             }

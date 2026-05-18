@@ -152,9 +152,10 @@ fun TorrentSearchApp(
             )
         }
 
-        childComposable<Browse> {
+        parentComposable<Browse> {
             BrowseScreen(
                 onNavigateBack = { navController.navigateUp() },
+                onNavigateToSettings = { navController.navigateToSettings() },
                 onDownloadTorrent = { showTorrentClientNotFoundDialog = !onDownloadTorrent(it) },
                 onShareMagnetLink = onShareMagnetLink,
                 onOpenDescriptionPage = openDescriptionPage,
