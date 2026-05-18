@@ -224,7 +224,7 @@ private fun HomeScreenTopBar(
                     )
                 }
             }
-            IconButton(modifier = modifier, onClick = onNavigateToSettings) {
+            IconButton(onClick = onNavigateToSettings) {
                 Icon(
                     painter = painterResource(R.drawable.ic_settings),
                     contentDescription = null,
