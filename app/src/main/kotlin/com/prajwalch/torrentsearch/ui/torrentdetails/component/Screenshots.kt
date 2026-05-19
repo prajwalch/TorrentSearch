@@ -1,6 +1,5 @@
 package com.prajwalch.torrentsearch.ui.torrentdetails.component
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.aspectRatio
@@ -23,7 +22,6 @@ import com.prajwalch.torrentsearch.ui.theme.spaces
 @Composable
 fun ScreenShots(
     urls: List<String>,
-    onScreenshotClick: (String) -> Unit,
     modifier: Modifier = Modifier,
     contentPadding: PaddingValues = PaddingValues(0.dp),
 ) {
@@ -34,12 +32,7 @@ fun ScreenShots(
         contentPadding = contentPadding,
     ) {
         items(items = urls, key = { it }) {
-            Screenshot(
-                modifier = Modifier
-                    .animateItem()
-                    .clickable { onScreenshotClick(it) },
-                url = it,
-            )
+            Screenshot(modifier = Modifier.animateItem(), url = it)
         }
     }
 }

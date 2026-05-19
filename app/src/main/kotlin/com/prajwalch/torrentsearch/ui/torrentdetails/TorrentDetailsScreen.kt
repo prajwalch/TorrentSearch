@@ -325,7 +325,6 @@ private fun TorrentDetailsScreenContent(
                 ScreenShots(
                     modifier = Modifier.fillMaxWidth(),
                     urls = details.screenshotUrls,
-                    onScreenshotClick = {},
                     contentPadding = PaddingValues(horizontal = MaterialTheme.spaces.large)
                 )
             }
