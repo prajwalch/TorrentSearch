@@ -21,7 +21,7 @@
     <string name="category_porn">色情</string>
     <string name="category_series">电视剧</string>
     <string name="category_other">其他</string>
-    <string name="torrent_client_not_found_title">找不到种子客户端</string>
+    <string name="torrent_client_not_found_title">未找到种子客户端</string>
     <string name="torrent_client_not_found_content">为使用下载功能，请先下载种子客户端，配置好后，返回本软件再试。</string>
     <string name="torrent_client_not_found_recommended_client_hint">推荐客户端</string>
     <string name="torrent_list_action_bookmark_torrent">标记种子</string>
@@ -141,4 +141,9 @@
     <string name="torrent_details_action_share_link">分享页面链接</string>
     <string name="torrent_details_label_seeders">做种者</string>
     <string name="torrent_details_label_peers">下载者</string>
+    <string name="search_action_refresh">刷新</string>
+    <string name="search_action_stop_search">停止搜索</string>
+    <string name="crash_logs_export_success_message">导出日志到文件</string>
+    <string name="home_button_browse">浏览</string>
+    <string name="settings_export_logs_to_file">导出日志到文件</string>
 </resources>
