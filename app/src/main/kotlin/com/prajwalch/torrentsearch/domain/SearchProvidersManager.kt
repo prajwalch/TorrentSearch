@@ -152,6 +152,18 @@ class SearchProvidersManager @Inject constructor(
     }
 
     /**
+     * Enables providers associated with the given IDs.
+     */
+    suspend fun enableProviderByIds(ids: Set<SearchProviderId>) {
+        val currentEnabledProviderIds = settingsRepository.enabledSearchProvidersId
+            .firstOrNull()
+            .orEmpty()
+        val allIds = currentEnabledProviderIds + ids
+
+        settingsRepository.setEnabledSearchProvidersId(allIds)
+    }
+
+    /**
      * Disables the provider associated with the given ID.
      */
     suspend fun disableProvider(id: SearchProviderId) {
@@ -163,6 +175,18 @@ class SearchProvidersManager @Inject constructor(
      */
     suspend fun disableAllProviders() {
         settingsRepository.setEnabledSearchProvidersId(emptySet())
+    }
+
+    /**
+     * Disable providers associated with the given IDs.
+     */
+    suspend fun disableProviderByIds(ids: Set<SearchProviderId>) {
+        val currentEnabledProviderIds = settingsRepository.enabledSearchProvidersId
+            .firstOrNull()
+            .orEmpty()
+        val allIds = currentEnabledProviderIds - ids
+
+        settingsRepository.setEnabledSearchProvidersId(allIds)
     }
 
     /**

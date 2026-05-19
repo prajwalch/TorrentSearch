@@ -82,14 +82,30 @@ class SearchProvidersViewModel @Inject constructor(
     /** Enables all search providers. */
     fun enableAllSearchProviders() {
         viewModelScope.launch {
-            searchProvidersManager.enableAllProviders()
+            // If filter is not applied, enable all.
+            if (selectedCategory.value == null) {
+                searchProvidersManager.enableAllProviders()
+                return@launch
+            }
+
+            // If filter is applied, only enable those that're currently displayed.
+            val providerIds = uiState.value.searchProviders.map { it.id }.toSet()
+            searchProvidersManager.enableProviderByIds(providerIds)
         }
     }
 
     /** Disables all search providers. */
     fun disableAllSearchProviders() {
         viewModelScope.launch {
-            searchProvidersManager.disableAllProviders()
+            // If filter is not applied, disable all.
+            if (selectedCategory.value == null) {
+                searchProvidersManager.disableAllProviders()
+                return@launch
+            }
+
+            // If filter is applied, only disable those that're currently displayed.
+            val providerIds = uiState.value.searchProviders.map { it.id }.toSet()
+            searchProvidersManager.disableProviderByIds(providerIds)
         }
     }
 
