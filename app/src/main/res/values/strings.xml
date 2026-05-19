@@ -144,6 +144,10 @@
     <string name="browse_search_query_hint">Search torrents</string>
     <string name="browse_sort_latest">Latest</string>
     <string name="browse_sort_top">Top</string>
+    <string name="browse_no_torrents_found_title">No torrents found</string>
+    <string name="browse_no_torrent_found_description">Check that at least one provider is enabled</string>
+    <string name="browse_button_go_to_settings">Go to settings</string>
+    <string name="browse_button_try_again">Try again</string>
 
     <string name="search_history_screen_title">Search history</string>
     <string name="search_history_action_delete_all">Delete all</string>

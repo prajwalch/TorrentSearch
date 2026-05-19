@@ -2,7 +2,6 @@ package com.prajwalch.torrentsearch.ui.settings
 
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
-import androidx.navigation.navigation
 
 import com.prajwalch.torrentsearch.ui.extension.childComposable
 import com.prajwalch.torrentsearch.ui.extension.parentComposable
@@ -17,37 +16,36 @@ import kotlinx.serialization.Serializable
 private object Settings
 
 @Serializable
-private object Home
-
-@Serializable
 private object DefaultCategory
 
 @Serializable
 private object DefaultSortOptions
 
 fun NavGraphBuilder.settingsNavigation(navController: NavHostController) {
-    navigation<Settings>(startDestination = Home) {
-        parentComposable<Home> {
-            SettingsScreen(
-                onNavigateBack = { navController.navigateUp() },
-                onNavigateToDefaultCategory = { navController.navigate(DefaultCategory) },
-                onNavigateToSearchProviders = { navController.navigateToSearchProviders() },
-                onNavigateToDefaultSortOptions = { navController.navigate(DefaultSortOptions) },
-            )
-        }
-
-        childComposable<DefaultCategory> {
-            DefaultCategoryScreen(onNavigateBack = { navController.navigateUp() })
-        }
-
-        childComposable<DefaultSortOptions> {
-            DefaultSortOptionsScreen(onNavigateBack = { navController.navigateUp() })
-        }
-
-        searchProvidersNavigation(navController = navController)
+    parentComposable<Settings> {
+        SettingsScreen(
+            onNavigateBack = { navController.navigateUp() },
+            onNavigateToDefaultCategory = { navController.navigate(DefaultCategory) },
+            onNavigateToSearchProviders = { navController.navigateToSearchProviders() },
+            onNavigateToDefaultSortOptions = { navController.navigate(DefaultSortOptions) },
+        )
     }
+
+    childComposable<DefaultCategory> {
+        DefaultCategoryScreen(onNavigateBack = { navController.navigateUp() })
+    }
+
+    childComposable<DefaultSortOptions> {
+        DefaultSortOptionsScreen(onNavigateBack = { navController.navigateUp() })
+    }
+
+    searchProvidersNavigation(navController = navController)
 }
 
 fun NavHostController.navigateToSettings() {
     this.navigate(route = Settings)
+}
+
+fun NavHostController.navigateToSearchProviders() {
+    this.navigateToSearchProviders()
 }

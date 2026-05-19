@@ -42,6 +42,7 @@ import com.prajwalch.torrentsearch.domain.model.MagnetUri
 import com.prajwalch.torrentsearch.domain.model.Torrent
 import com.prajwalch.torrentsearch.ui.TorrentFileDownloadEffect
 import com.prajwalch.torrentsearch.ui.browse.component.BrowseFilters
+import com.prajwalch.torrentsearch.ui.browse.component.NoTorrentsFoundState
 import com.prajwalch.torrentsearch.ui.browse.component.TorrentList
 import com.prajwalch.torrentsearch.ui.component.AnimatedScrollToTopFAB
 import com.prajwalch.torrentsearch.ui.component.ArrowBackIconButton
@@ -60,6 +61,7 @@ import kotlinx.coroutines.launch
 fun BrowseScreen(
     onNavigateBack: () -> Unit,
     onNavigateToSettings: () -> Unit,
+    onNavigateToProvidersSettings: () -> Unit,
     onDownloadTorrent: (MagnetUri) -> Unit,
     onShareMagnetLink: (MagnetUri) -> Unit,
     onOpenDescriptionPage: (url: String, providerName: String) -> Unit,
@@ -209,6 +211,14 @@ fun BrowseScreen(
                         NoInternetConnectionState(
                             modifier = Modifier.fillMaxSize(),
                             onTryAgain = viewModel::loadTorrents,
+                        )
+                    }
+
+                    BrowseContentState.NotAvailable -> {
+                        NoTorrentsFoundState(
+                            modifier = Modifier.fillMaxSize(),
+                            onNavigateToSearchProviders = onNavigateToProvidersSettings,
+                            onRetry = viewModel::loadTorrents,
                         )
                     }
 

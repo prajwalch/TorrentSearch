@@ -59,6 +59,7 @@ data class BrowseUiState(
 sealed interface BrowseContentState {
     data object Loading : BrowseContentState
     data object InternetError : BrowseContentState
+    data object NotAvailable : BrowseContentState
 
     sealed interface Ready : BrowseContentState {
         data object Complete : Ready
@@ -340,8 +341,13 @@ private class TorrentsLoader(
         }
 
         torrentsFlow
-            // TODO: Check if it's empty.
-            .onCompletion { _state.value = BrowseContentState.Ready.Complete }
+            .onCompletion {
+                _state.value = if (_torrents.value.isEmpty()) {
+                    BrowseContentState.NotAvailable
+                } else {
+                    BrowseContentState.Ready.Complete
+                }
+            }
             .collect { torrents ->
                 _torrents.value = torrents
                 _state.value = BrowseContentState.Ready.Searching
