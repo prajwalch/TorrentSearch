@@ -1,3 +1,34 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="button_done">完了</string>
+    <string name="button_cancel">キャンセル</string>
+    <string name="nsfw">閲覧注意</string>
+    <string name="safety_status_unsafe">危険</string>
+    <string name="bookmarked_message">ブックマーク済み</string>
+    <string name="internet_connection_error">インターネット接続がありません</string>
+    <string name="action_sort_criteria_name">名前</string>
+    <string name="action_sort_criteria_seeders">シーダー</string>
+    <string name="action_sort_criteria_peers">ピア</string>
+    <string name="action_sort_criteria_file_size">ファイルサイズ</string>
+    <string name="action_sort_criteria_date">日付</string>
+    <string name="action_sort_order_ascending">昇順</string>
+    <string name="action_sort_order_descending">降順</string>
+    <string name="category_all">全て</string>
+    <string name="category_anime">アニメ</string>
+    <string name="category_apps">アプリ</string>
+    <string name="category_books">書籍</string>
+    <string name="category_games">ゲーム</string>
+    <string name="category_movies">動画</string>
+    <string name="category_music">音楽</string>
+    <string name="category_porn">ポルノ</string>
+    <string name="category_series">シリーズ</string>
+    <string name="category_other">その他</string>
+    <string name="action_sort">並び替え</string>
+    <string name="home_search_query_hint">検索…</string>
+    <string name="home_button_search">検索</string>
+    <string name="search_action_settings">設定</string>
+    <string name="settings_screen_title">設定</string>
+    <string name="torrent_details_label_seeders">シーダー</string>
+    <string name="torrent_details_label_peers">ピア</string>
+    <string name="torrent_details_label_uploader">アップローダー</string>
 </resources>
