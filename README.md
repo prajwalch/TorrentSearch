@@ -141,7 +141,7 @@ Translations are managed on [Weblate](https://hosted.weblate.org/projects/torren
   <img src="https://contrib.rocks/image?repo=prajwalch/TorrentSearch"/>
 </a>
 
-### Tech Stack and Open Source Libraries
+## Tech Stack and Open Source Libraries
 
 - **Language:** [Kotlin](https://kotlinlang.org/)
 - **UI:** [Jetpack Compose](https://developer.android.com/compose), [Material 3](https://m3.material.io/)
