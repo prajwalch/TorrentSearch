@@ -28,10 +28,13 @@ import androidx.compose.ui.unit.dp
 import com.prajwalch.torrentsearch.R
 import com.prajwalch.torrentsearch.domain.model.Category
 import com.prajwalch.torrentsearch.ui.browse.BrowseSort
+import com.prajwalch.torrentsearch.ui.browse.BrowseViewFilters
 import com.prajwalch.torrentsearch.ui.categoryStringResource
 import com.prajwalch.torrentsearch.ui.component.RoundedDropdownMenu
 import com.prajwalch.torrentsearch.ui.iconResId
 import com.prajwalch.torrentsearch.ui.theme.spaces
+
+import kotlinx.collections.immutable.ImmutableList
 
 @Composable
 fun BrowseFilters(
@@ -43,13 +46,34 @@ fun BrowseFilters(
     onToggleDeadTorrents: () -> Unit,
     hideViewed: Boolean,
     onToggleHideViewed: () -> Unit,
+    providerOptions: ImmutableList<BrowseViewFilters.ProviderOption>,
+    onToggleSearchProvider: (providerName: String) -> Unit,
+    onSelectAllSearchProviders: () -> Unit,
+    onDeselectAllSearchProviders: () -> Unit,
+    onInvertSearchProvidersSelection: () -> Unit,
     modifier: Modifier = Modifier,
     enableSort: Boolean = true,
     enableCategory: Boolean = true,
     enableDeadTorrents: Boolean = true,
     enableHideViewed: Boolean = true,
+    enableSearchProvidersFilter: Boolean = true,
     contentPadding: PaddingValues = PaddingValues(0.dp),
 ) {
+    val numSelectedSearchProviders = rememberSaveable(providerOptions) {
+        providerOptions.count { it.selected }
+    }
+
+    var showSearchProvidersFilter by rememberSaveable { mutableStateOf(false) }
+    if (showSearchProvidersFilter) {
+        FilterByProviderBottomSheet(
+            onDismiss = { showSearchProvidersFilter = false },
+            filterOptions = providerOptions,
+            onToggleSearchProvider = onToggleSearchProvider,
+            onSelectAll = onSelectAllSearchProviders,
+            onDeselectAll = onDeselectAllSearchProviders,
+            onInvertSelection = onInvertSearchProvidersSelection,
+        )
+    }
     val arrowDownIcon: @Composable () -> Unit = @Composable {
         Icon(
             modifier = Modifier.size(FilterChipDefaults.IconSize),
@@ -155,6 +179,29 @@ fun BrowseFilters(
                 },
                 label = { Text(text = stringResource(R.string.search_filter_chip_hide_viewed)) },
                 enabled = enableHideViewed,
+            )
+        }
+
+        item(key = "search_providers") {
+            val selected = numSelectedSearchProviders > 0
+            val label = stringResource(R.string.search_filter_chip_search_providers).let {
+                if (selected) "$it ($numSelectedSearchProviders)" else it
+            }
+
+            FilterChip(
+                modifier = Modifier.animateItem(),
+                selected = selected,
+                onClick = { showSearchProvidersFilter = true },
+                leadingIcon = {
+                    Icon(
+                        modifier = Modifier.size(FilterChipDefaults.IconSize),
+                        painter = painterResource(R.drawable.ic_travel_explore),
+                        contentDescription = null,
+                    )
+                },
+                label = { Text(text = label) },
+                trailingIcon = arrowDownIcon,
+                enabled = enableSearchProvidersFilter,
             )
         }
     }

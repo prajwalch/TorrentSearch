@@ -75,9 +75,15 @@ data class BrowseQueryParams(
 )
 
 data class BrowseViewFilters(
+    val providers: ImmutableList<ProviderOption> = persistentListOf(),
     val deadTorrents: Boolean = true,
     val hideViewed: Boolean = false,
-)
+) {
+    data class ProviderOption(
+        val provider: String,
+        val selected: Boolean = false,
+    )
+}
 
 enum class BrowseSort {
     Latest,
@@ -188,6 +194,35 @@ class BrowseViewModel @Inject constructor(
 
     fun toggleHideViewed() {
         torrentsProcessor.toggleHideViewed()
+    }
+
+    fun toggleSearchProviderResults(providerName: String) {
+        torrentsProcessor.toggleSearchProviderResults(providerName)
+    }
+
+    fun selectAllSearchProviders() {
+        torrentsProcessor.updateExcludedSearchProviders(emptySet())
+    }
+
+    fun deselectAllSearchProviders() {
+        uiState
+            .value
+            .viewFilters
+            .providers
+            .map { it.provider }
+            .toSet()
+            .let(torrentsProcessor::updateExcludedSearchProviders)
+    }
+
+    fun invertSearchProvidersSelection() {
+        uiState
+            .value
+            .viewFilters
+            .providers
+            .filter { it.selected }
+            .map { it.provider }
+            .toSet()
+            .let(torrentsProcessor::updateExcludedSearchProviders)
     }
 
     fun bookmarkTorrent(torrent: Torrent) {
@@ -381,6 +416,7 @@ private class TorrentsProcessor(
 ) {
     private data class TorrentFilter(
         val searchQuery: String = "",
+        val excludedProviders: Set<String> = emptySet(),
         val deadTorrents: Boolean = true,
         val hideViewed: Boolean = false,
     )
@@ -388,15 +424,20 @@ private class TorrentsProcessor(
     private val torrentFilter = MutableStateFlow(TorrentFilter())
 
     /**
+     * Names of search provider that are completed successfully.
+     */
+    private val completedSearchProviders: Flow<Set<String>> =
+        torrents.map { it.map { torrent -> torrent.providerName }.toSet() }
+
+    /**
      * The publicly observable, read-only state of the view filters.
      */
     val viewFilters: Flow<BrowseViewFilters> =
-        torrentFilter.map {
-            BrowseViewFilters(
-                deadTorrents = it.deadTorrents,
-                hideViewed = it.hideViewed,
-            )
-        }
+        combine(
+            torrentFilter,
+            completedSearchProviders,
+            ::createBrowseViewFilters,
+        )
 
     /**
      * Hashes of currently viewed torrents that should be hidden when filter is active.
@@ -424,6 +465,27 @@ private class TorrentsProcessor(
         ).flowOn(Dispatchers.Default)
 
     /**
+     * Creates a [BrowseViewFilters] from the given snapshot of filter config.
+     */
+    private fun createBrowseViewFilters(
+        torrentFilter: TorrentFilter,
+        completedSearchProviders: Set<String>,
+    ): BrowseViewFilters {
+        val providerFilters = completedSearchProviders.map {
+            BrowseViewFilters.ProviderOption(
+                provider = it,
+                selected = it !in torrentFilter.excludedProviders,
+            )
+        }
+
+        return BrowseViewFilters(
+            providers = providerFilters.toImmutableList(),
+            deadTorrents = torrentFilter.deadTorrents,
+            hideViewed = torrentFilter.hideViewed,
+        )
+    }
+
+    /**
      * Processes and returns a new list containing processed torrents based
      * on the given filters and other options.
      */
@@ -443,6 +505,7 @@ private class TorrentsProcessor(
             .filter { it.isNotBlank() }
 
         return torrents.filter {
+            add { it.providerName !in torrentFilter.excludedProviders }
             if (!nsfwModeEnabled) add { !it.isNSFW }
             if (!torrentFilter.deadTorrents) add { !it.isDead }
             if (torrentFilter.hideViewed) add { it.infoHash !in viewedTorrentHashes }
@@ -457,6 +520,29 @@ private class TorrentsProcessor(
 
     fun searchTorrents(query: String) {
         torrentFilter.update { it.copy(searchQuery = query) }
+    }
+
+    /**
+     * Shows or hides search results associated with the given provider name.
+     */
+    fun toggleSearchProviderResults(providerName: String) {
+        torrentFilter.update {
+            val newExclusions = if (providerName in it.excludedProviders) {
+                // Remove from exclusion list.
+                it.excludedProviders - providerName
+            } else {
+                // Exclude it.
+                it.excludedProviders + providerName
+            }
+            it.copy(excludedProviders = newExclusions)
+        }
+    }
+
+    /**
+     * Updates the current search providers exclusion list with the given one.
+     */
+    fun updateExcludedSearchProviders(providers: Set<String>) {
+        torrentFilter.update { it.copy(excludedProviders = providers) }
     }
 
     /**

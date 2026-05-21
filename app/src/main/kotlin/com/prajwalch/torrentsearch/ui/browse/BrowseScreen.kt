@@ -192,8 +192,14 @@ fun BrowseScreen(
                 onToggleDeadTorrents = viewModel::toggleDeadTorrents,
                 hideViewed = uiState.viewFilters.hideViewed,
                 onToggleHideViewed = viewModel::toggleHideViewed,
+                providerOptions = uiState.viewFilters.providers,
+                onToggleSearchProvider = viewModel::toggleSearchProviderResults,
+                onSelectAllSearchProviders = viewModel::selectAllSearchProviders,
+                onDeselectAllSearchProviders = viewModel::deselectAllSearchProviders,
+                onInvertSearchProvidersSelection = viewModel::invertSearchProvidersSelection,
                 enableDeadTorrents = enableViewFilters,
                 enableHideViewed = enableViewFilters,
+                enableSearchProvidersFilter = enableViewFilters,
                 contentPadding = PaddingValues(horizontal = MaterialTheme.spaces.large),
             )
 
