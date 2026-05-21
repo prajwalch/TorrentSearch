@@ -10,7 +10,8 @@
 
 # TorrentSearch
 
-TorrentSearch is an Android app for searching torrents across multiple providers simultaneously, with fast search speed, detailed results, category filters, and a full set of torrent actions.
+TorrentSearch is an Android app for searching torrents across multiple providers simultaneously,
+with fast search speed, detailed results, category filters, and a full set of torrent actions.
 </div>
 
 ## Download
@@ -18,7 +19,8 @@ TorrentSearch is an Android app for searching torrents across multiple providers
 > [!NOTE]
 > Android 7.1+ is required
 
-> Nightly builds are available in the artifacts section of the GitHub Actions [workflow](https://github.com/prajwalch/TorrentSearch/actions) runs.
+> Nightly builds are available in the artifacts section of the GitHub
+> Actions [workflow](https://github.com/prajwalch/TorrentSearch/actions) runs.
 
 [<img src="https://f-droid.org/badge/get-it-on.png" alt="Get it on F-Droid" height="80">](https://f-droid.org/packages/com.prajwalch.torrentsearch)
 [<img src="https://gitlab.com/IzzyOnDroid/repo/-/raw/master/assets/IzzyOnDroid.png" alt="Get it on IzzyOnDroid" height="80">](https://apt.izzysoft.de/fdroid/index/apk/com.prajwalch.torrentsearch)
@@ -57,7 +59,8 @@ Each result includes:
 
 ### Torrent Details
 
-- **Native details screen** — view torrent details inside the app without a browser or WebView; can be disabled to open the page directly in your default browser instead
+- **Native details screen** — view torrent details inside the app without a browser or WebView; can
+  be disabled to open the page directly in your default browser instead
 - Media poster with automatic NSFW image blurring (can be disabled)
 - Screenshot previews
 - Full description with inline image support
@@ -68,7 +71,7 @@ Each result includes:
 - Torrents stream in progressively as each provider responds
 - Filter by category and sort order — changing either instantly refreshes results
 - Filter out dead or already-viewed torrents
-- Filter results by torrent name.
+- Filter results by torrent name or provider
 
 ### Bookmarks
 
@@ -108,14 +111,17 @@ See the [wiki](https://github.com/prajwalch/TorrentSearch/wiki) for setup instru
 
 ## Building from Source
 
-The easiest way is to open the project in Android Studio — it handles all setup and lets you run the app in a single click.
+The easiest way is to open the project in Android Studio — it handles all setup and lets you run the
+app in a single click.
 
 ### Command Line
 
 **Requirements:**
 
 - JDK 17+ with `JAVA_HOME` set ([Adoptium](https://adoptium.net/) recommended)
-- Android SDK — version depends on project configuration. If you have Android Studio installed, it has already downloaded, set up, and configured the SDK location for you. Otherwise, install it manually and set `ANDROID_HOME`, or add `sdk.dir` to `local.properties` in the project root.
+- Android SDK — version depends on project configuration. If you have Android Studio installed, it
+  has already downloaded, set up, and configured the SDK location for you. Otherwise, install it
+  manually and set `ANDROID_HOME`, or add `sdk.dir` to `local.properties` in the project root.
 
 ```sh
 git clone https://github.com/prajwalch/TorrentSearch.git
@@ -127,25 +133,28 @@ Output: `app/build/outputs/apk/debug/`
 
 ## Contributing
 
-Bug fixes, new providers, UI improvements, and translations are all welcome. Read [CONTRIBUTING.md](https://github.com/prajwalch/TorrentSearch/blob/main/CONTRIBUTING.md) before opening a pull request.
+Bug fixes, new providers, UI improvements, and translations are all welcome.
+Read [CONTRIBUTING.md](https://github.com/prajwalch/TorrentSearch/blob/main/CONTRIBUTING.md) before
+opening a pull request.
 
 ### Translation
 
-Translations are managed on [Weblate](https://hosted.weblate.org/projects/torrentsearch/) — no local setup needed, contribute directly from your browser.
+Translations are managed on [Weblate](https://hosted.weblate.org/projects/torrentsearch/) — 
+no local setup needed, contribute directly from your browser.
 
 [![Translation status](https://hosted.weblate.org/widget/torrentsearch/multi-auto.svg)](https://hosted.weblate.org/engage/torrentsearch/)
 
 ## Contributors
 
 <a href="https://github.com/prajwalch/TorrentSearch/graphs/contributors">
-  <img src="https://contrib.rocks/image?repo=prajwalch/TorrentSearch"/>
+  <img src="https://contrib.rocks/image?repo=prajwalch/TorrentSearch" alt="TorrentSearch Contributors"/>
 </a>
 
 ## Tech Stack and Open Source Libraries
 
 - **Language:** [Kotlin](https://kotlinlang.org/)
 - **UI:** [Jetpack Compose](https://developer.android.com/compose), [Material 3](https://m3.material.io/)
-- **Architecture:** [Modern App Architecture)](https://developer.android.com/topic/architecture)
+- **Architecture:** [Modern App Architecture](https://developer.android.com/topic/architecture)
 - **Async:** [Coroutines](https://kotlinlang.org/docs/coroutines-overview.html), [Flow](https://kotlinlang.org/docs/flow.html)
 - **Networking:** [Ktor](https://ktor.io/)
 - **Storage:** [Room](https://developer.android.com/training/data-storage/room), [Jetpack DataStore](https://developer.android.com/topic/libraries/architecture/datastore)
@@ -155,14 +164,18 @@ Translations are managed on [Weblate](https://hosted.weblate.org/projects/torren
 - **Immutable collections**: [Kotlinx immutable collections](https://github.com/Kotlin/kotlinx.collections.immutable)
 - **Markdown handling**: [ComposeMarkdown](https://github.com/jeziellago/compose-markdown), [FlexMark (Markdown to HTML)](https://github.com/vsch/flexmark-java)
 - **Scrollbar**: [LazyColumnScrollbar](https://github.com/nanihadesuka/LazyColumnScrollbar)
+- **Image Blurring**: [BlurTransformation](https://github.com/T8RIN/BlurTransformation)
 
 ## Acknowledgements
 
 - [IconKitchen](https://icon.kitchen/) — app icon
-- [Metrolist](https://github.com/MetrolistGroup/Metrolist) and [Canta](https://github.com/samolego/Canta) — referenced for architecture and implementation patterns during development
+- [Metrolist](https://github.com/MetrolistGroup/Metrolist) and [Canta](https://github.com/samolego/Canta) — referenced for architecture and implementation
+  patterns during development
 
 ## Disclaimer
 
-TorrentSearch **does not host, store, or distribute any torrent files or copyrighted content**. It searches publicly accessible third-party sources and displays the results. The developer is not responsible for how those results are accessed or used.
+TorrentSearch **does not host, store, or distribute any torrent files or copyrighted content**.
+It searches publicly accessible third-party sources and displays the results. The developer is not
+responsible for how those results are accessed or used.
 
 Users are responsible for complying with their local laws and regulations.
