@@ -204,7 +204,10 @@ fun BrowseScreen(
                 contentPadding = PaddingValues(horizontal = MaterialTheme.spaces.large),
             )
 
-            AnimatedContent(uiState.contentState) { contentState ->
+            AnimatedContent(
+                targetState = uiState.contentState,
+                contentKey = { it.getAnimationContentKey() },
+            ) { contentState ->
                 when (contentState) {
                     BrowseContentState.Loading -> {
                         Box(
@@ -256,6 +259,13 @@ fun BrowseScreen(
             }
         }
     }
+}
+
+private fun BrowseContentState.getAnimationContentKey() = when (this) {
+    BrowseContentState.InternetError -> BrowseContentState.InternetError::class
+    BrowseContentState.Loading -> BrowseContentState.Loading::class
+    BrowseContentState.NotAvailable -> BrowseContentState.NotAvailable::class
+    is BrowseContentState.Ready -> BrowseContentState.Ready::class
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
