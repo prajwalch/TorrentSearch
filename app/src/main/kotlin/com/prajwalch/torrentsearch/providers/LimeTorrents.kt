@@ -23,7 +23,7 @@ class LimeTorrents : SearchProvider, TorrentDetailsProvider, LatestTorrentsProvi
     TopTorrentsProvider {
     override val id = "limetorrents"
     override val name = "LimeTorrents"
-    override val url = "https://limetorrents.lol"
+    override val url = "https://limetorrents.fun"
     override val supportedCategories = setOf(
         Category.Anime,
         Category.Apps,
