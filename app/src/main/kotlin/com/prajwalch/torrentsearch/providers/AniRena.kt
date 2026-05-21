@@ -2,6 +2,8 @@ package com.prajwalch.torrentsearch.providers
 
 import com.prajwalch.torrentsearch.domain.model.Category
 import com.prajwalch.torrentsearch.domain.model.Torrent
+import com.prajwalch.torrentsearch.network.HttpClient
+import com.prajwalch.torrentsearch.util.TorrentDateParser
 import com.prajwalch.torrentsearch.util.TorrentUtils
 
 import kotlinx.coroutines.Dispatchers
@@ -14,98 +16,112 @@ class AniRena : SearchProvider {
     override val id = "anirena"
     override val name = "AniRena"
     override val url = "https://anirena.com"
-    override val supportedCategories = setOf(Category.Anime)
+    override val supportedCategories = setOf(
+        Category.Anime,
+        Category.Apps,
+        Category.Books,
+        Category.Music,
+        Category.Porn,
+        Category.Series,
+        Category.Other,
+    )
     override val safetyStatus = SearchProviderSafetyStatus.Safe
     override val enabledByDefault = false
+
+    private val categoryMap = mapOf(
+        Category.Anime to "anime",
+        Category.Apps to "software",
+        Category.Books to "manga",
+        Category.Music to "audio",
+        Category.Porn to "hentai",
+        Category.Series to "live",
+        Category.Other to "other"
+    )
+    private val resultsPageParser = AniRenaResultsPageParser(providerName = name)
 
     override suspend fun search(query: String, context: SearchContext): List<Torrent> {
         val requestUrl = buildString {
             append(url)
-            append("/index.php")
-            append("?t=2")
-            append("&s=$query")
+            append("?q=$query")
+            append("&page=1")
+
+            if (context.category != Category.All) {
+                categoryMap[context.category]?.let { append("&cat=$it") }
+            }
         }
         val responseHtml = context.httpClient.get(url = requestUrl)
 
-        return withContext(Dispatchers.Default) {
-            parseResponseHtml(html = responseHtml)
+        return resultsPageParser.parse(html = responseHtml, pageUrl = requestUrl)
+    }
+}
+
+private class AniRenaResultsPageParser(private val providerName: String) {
+    suspend fun parse(html: String, pageUrl: String): List<Torrent> =
+        withContext(Dispatchers.Default) {
+            Jsoup.parse(html, pageUrl)
+                .select(LIST_ITEM)
+                .mapNotNull { parseListItem(it) }
         }
-    }
 
-    private fun parseResponseHtml(html: String): List<Torrent> {
-        return Jsoup
-            .parse(html)
-            .select("div.full2:not([id])")
-            // Ignore header.
-            .drop(1)
-            .mapNotNull(::parseDetailsDiv)
-    }
-
-    private fun parseDetailsDiv(div: Element): Torrent? {
-        require(div.hasClass("full2") && !div.hasAttr("id"))
-
-        val tr = div.selectFirst("> table > tbody > tr") ?: return null
-
-        val torrentName = tr
-            .selectFirst("td.torrents_small_info_data1 > div:nth-child(1) > a")
-            ?.ownText()
+    private suspend fun parseListItem(listItem: Element): Torrent? {
+        val magnetUriSourceLink = listItem.selectFirst(MAGNET_URI)?.attr("abs:href") ?: return null
+        val magnetUri = HttpClient.getResponse(magnetUriSourceLink)
+            .let { it.headers["Location"] }
             ?: return null
-        val fileDownloadLink = tr
-            .selectFirst("td.torrents_small_info_data2 > div > a:nth-child(1)")
-            ?.attr("href")
-        val magnetUri = tr
-            .selectFirst("td.torrents_small_info_data2 > div > a:nth-child(2)")
-            ?.attr("href")
-            ?: return null
-        val infoHash = TorrentUtils.getInfoHashFromMagnetUri(magnetUri)
-        val size = tr
-            .selectFirst("td.torrents_small_size_data1")
-            ?.ownText()
-            ?: return null
-        val seeders = tr
-            .selectFirst("td.torrents_small_seeders_data1")
-            ?.text()
-            ?.toUIntOrNull()
-            ?: 0U
-        val peers = tr
-            .selectFirst("td.torrents_small_leechers_data1")
-            ?.text()
-            ?.toUIntOrNull()
-            ?: 0U
 
-        /*
-        val torrentIdContainingDiv = div.nextElementSibling() ?: return null
-        val torrentId = torrentIdContainingDiv.attr("id").removePrefix("details")
-
-        val uploadDate = getUploadDate(torrentId = torrentId, httpClient = /* Pass client */)
-            ?.let(DateUtils::formatRFC1123Date)
-            ?: return null
-         */
+        val torrentName = listItem.selectFirst(TORRENT_NAME)?.ownText() ?: return null
+        val size = listItem.selectFirst(SIZE)?.ownText()
+        val seeders = listItem.selectFirst(SEEDERS)?.ownText()?.toUIntOrNull()
+        val peers = listItem.selectFirst(PEERS)?.ownText()?.toUIntOrNull()
+        val uploadDate = listItem.attr("data-created-ts")
+            .takeIf { it.isNotBlank() }
+            ?.toLongOrNull()
+            ?.let(TorrentDateParser::epochSecondToInstant)
+        val category = listItem.selectFirst(CATEGORY)
+            ?.attr("title")
+            ?.takeIf { it.isNotBlank() }
+            ?.takeWhile { it != '/' }
+            ?.trim()
+            ?.let(::getCategoryFromRawString)
+        val fileDownloadLink = listItem.selectFirst(FILE_DOWNLOAD_LINK)?.attr("abs:href")
+        val detailsPageUrl = listItem.selectFirst(DETAILS_PAGE_URL)?.attr("abs:href")
 
         return Torrent(
-            infoHash = infoHash,
+            infoHash = TorrentUtils.getInfoHashFromMagnetUri(magnetUri),
             name = torrentName,
-            size = size,
-            seeders = seeders,
-            peers = peers,
-            category = Category.Anime,
-            providerName = name,
-            descriptionPageUrl = "",
+            size = size ?: "0 KB",
+            seeders = seeders ?: 0U,
+            peers = peers ?: 0U,
+            uploadDate = uploadDate,
+            category = category,
+            providerName = providerName,
             magnetUri = magnetUri,
             fileDownloadLink = fileDownloadLink,
+            descriptionPageUrl = detailsPageUrl ?: "",
         )
     }
 
-    /*
-    private suspend fun getUploadDate(torrentId: String, httpClient: HttpClient): String? {
-        return withContext(Dispatchers.IO) {
-            // https://www.anirena.com/torrent_details.php?id={id}
-            val requestUrl = "${info.url}/torrent_details.php?id=$torrentId"
-
-            httpClient.getJson(url = requestUrl)
-                ?.asObject()
-                ?.getString("UPLOADED")
-        }
+    private companion object {
+        private const val LIST_ITEM = "table.tl-table > tbody > tr"
+        private const val TORRENT_NAME = "td.col-name > div.tl-name-wrap > a.tl-torrent-name"
+        private const val SIZE = "td.col-size"
+        private const val SEEDERS = "td.col-se > span.tl-se"
+        private const val PEERS = "td.col-le > span.tl-le"
+        private const val CATEGORY = "td.col-cat"
+        private const val MAGNET_URI = "td.col-actions > div.tl-actions > a:nth-child(1)"
+        private const val FILE_DOWNLOAD_LINK = "td.col-actions > div.tl-actions > a:nth-child(2)"
+        private const val DETAILS_PAGE_URL = TORRENT_NAME
     }
-     */
+}
+
+private fun getCategoryFromRawString(raw: String) = when (raw) {
+    "Anime" -> Category.Anime
+    "Manga" -> Category.Books
+    "Audio" -> Category.Music
+    "Literature" -> Category.Books
+    "Live Action" -> Category.Series
+    "Software" -> Category.Apps
+    "Hentai" -> Category.Porn
+    "Other" -> Category.Other
+    else -> Category.Other
 }
