@@ -183,7 +183,7 @@ fun HomeScreen(
                 ) {
                     Icon(
                         modifier = Modifier.size(ButtonDefaults.IconSize),
-                        painter = painterResource(R.drawable.ic_explore),
+                        painter = painterResource(R.drawable.ic_browse),
                         contentDescription = null,
                     )
                     Spacer(modifier = Modifier.width(ButtonDefaults.IconSpacing))
