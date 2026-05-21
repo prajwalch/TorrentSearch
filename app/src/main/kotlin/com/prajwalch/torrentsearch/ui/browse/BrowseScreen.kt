@@ -158,6 +158,7 @@ fun BrowseScreen(
                 onNavigateBack = onNavigateBack,
                 onSearchQueryChange = viewModel::searchTorrents,
                 onNavigateToSettings = onNavigateToSettings,
+                enableSearchAction = uiState.contentState is BrowseContentState.Ready,
                 scrollBehavior = scrollBehavior,
             )
         },
