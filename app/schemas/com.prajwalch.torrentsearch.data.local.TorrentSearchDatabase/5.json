@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 5,
-    "identityHash": "caabad7281b958593479d297bc3eecbd",
+    "identityHash": "db936b67b93651259b236d3dc8c5d87b",
     "entities": [
       {
         "tableName": "bookmarks",
@@ -86,18 +86,7 @@
           "columnNames": [
             "id"
           ]
-        },
-        "indices": [
-          {
-            "name": "index_bookmarks_name",
-            "unique": true,
-            "columnNames": [
-              "name"
-            ],
-            "orders": [],
-            "createSql": "CREATE UNIQUE INDEX IF NOT EXISTS `index_bookmarks_name` ON `${TABLE_NAME}` (`name`)"
-          }
-        ]
+        }
       },
       {
         "tableName": "search_history",
@@ -214,7 +203,7 @@
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'caabad7281b958593479d297bc3eecbd')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'db936b67b93651259b236d3dc8c5d87b')"
     ]
   }
 }

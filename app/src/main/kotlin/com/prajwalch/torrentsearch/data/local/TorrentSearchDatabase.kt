@@ -180,10 +180,7 @@ private val MIGRATION_4_5 = object : Migration(4, 5) {
         // 4. Drop old bookmarks table.
         db.execSQL("DROP TABLE bookmarks_old")
 
-        // 5. Create unique index on name (must be after rename)
-        db.execSQL("CREATE UNIQUE INDEX IF NOT EXISTS index_bookmarks_name ON bookmarks (name)")
-
-        // 6. Create a new viewed_torrents table.
+        // 5. Create a new viewed_torrents table.
         db.execSQL(
             """
             CREATE TABLE IF NOT EXISTS viewed_torrents (

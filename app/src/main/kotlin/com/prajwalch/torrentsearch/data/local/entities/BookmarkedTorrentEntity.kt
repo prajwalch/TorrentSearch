@@ -2,16 +2,12 @@ package com.prajwalch.torrentsearch.data.local.entities
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity
-import androidx.room.Index
 import androidx.room.PrimaryKey
 
 import kotlinx.serialization.Serializable
 
-@Entity(
-    tableName = "bookmarks",
-    indices = [Index("name", unique = true)],
-)
 @Serializable
+@Entity(tableName = "bookmarks")
 data class BookmarkedTorrentEntity(
     @PrimaryKey(autoGenerate = true)
     val id: Long = 0,
