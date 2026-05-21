@@ -163,7 +163,6 @@ fun HomeScreen(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Button(
-                    modifier = Modifier.weight(1f),
                     onClick = {
                         onSearch(textFieldState.text.toString(), uiState.selectedCategory)
                     },
@@ -179,7 +178,6 @@ fun HomeScreen(
                     Text(text = stringResource(R.string.home_button_search))
                 }
                 OutlinedButton(
-                    modifier = Modifier.weight(1f),
                     onClick = onBrowse,
                     contentPadding = ButtonDefaults.ButtonWithIconContentPadding,
                 ) {
