@@ -46,7 +46,7 @@ private data class TorrentDetails(
 )
 
 @Serializable
-private object Browse
+private data class Browse(val category: Category = Category.All)
 
 @Serializable
 private object Bookmarks
@@ -108,7 +108,7 @@ fun TorrentSearchApp(
                 onNavigateToSearchHistory = { navController.navigate(SearchHistory) },
                 onNavigateToSettings = { navController.navigateToSettings() },
                 onSearch = { query, category -> navController.navigate(Search(query, category)) },
-                onBrowse = { navController.navigate(Browse) },
+                onBrowse = { category -> navController.navigate(Browse(category)) },
             )
         }
 

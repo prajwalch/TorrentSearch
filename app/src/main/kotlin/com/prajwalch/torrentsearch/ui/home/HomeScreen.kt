@@ -62,7 +62,7 @@ import kotlinx.coroutines.launch
 fun HomeScreen(
     onNavigateToBookmarks: () -> Unit,
     onNavigateToSearchHistory: () -> Unit,
-    onBrowse: () -> Unit,
+    onBrowse: (Category) -> Unit,
     onNavigateToSettings: () -> Unit,
     onSearch: (String, Category) -> Unit,
     modifier: Modifier = Modifier,
@@ -178,7 +178,7 @@ fun HomeScreen(
                     Text(text = stringResource(R.string.home_button_search))
                 }
                 OutlinedButton(
-                    onClick = onBrowse,
+                    onClick = { onBrowse(uiState.selectedCategory) },
                     contentPadding = ButtonDefaults.ButtonWithIconContentPadding,
                 ) {
                     Icon(

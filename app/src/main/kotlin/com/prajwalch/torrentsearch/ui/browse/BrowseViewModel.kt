@@ -1,6 +1,7 @@
 package com.prajwalch.torrentsearch.ui.browse
 
 import androidx.compose.runtime.Stable
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 
@@ -91,6 +92,7 @@ class BrowseViewModel @Inject constructor(
     searchProvidersGateway: SearchProvidersGateway,
     connectivityChecker: ConnectivityChecker,
     settingsRepository: SettingsRepository,
+    savedStateHandle: SavedStateHandle,
     private val bookmarkRepository: BookmarkRepository,
     private val viewedTorrentRepository: ViewedTorrentRepository,
     private val torrentFileDownloader: TorrentFileDownloader,
@@ -99,6 +101,7 @@ class BrowseViewModel @Inject constructor(
      * A torrents' loader.
      */
     private val torrentsLoader = TorrentsLoader(
+        category = savedStateHandle["category"] ?: Category.All,
         scope = viewModelScope,
         searchProvidersGateway = searchProvidersGateway,
         connectivityChecker = connectivityChecker,
@@ -227,11 +230,13 @@ class BrowseViewModel @Inject constructor(
  * It is the first stage in the load pipeline which handles the task of fetching
  * torrents, and managing load related states.
  *
+ * @param category The initial search [Category]
  * @param scope The [CoroutineScope] in which the load is performed.
  * @param searchProvidersGateway The gateway for interacting with providers.
  * @param connectivityChecker The helper class for checking internet connection.
  */
 private class TorrentsLoader(
+    category: Category,
     private val scope: CoroutineScope,
     private val searchProvidersGateway: SearchProvidersGateway,
     private val connectivityChecker: ConnectivityChecker,
@@ -242,7 +247,7 @@ private class TorrentsLoader(
      * The query params are updated only on-demand and when doing so, a new
      * load job is automatically started to fetch new torrents.
      */
-    private val _queryParams = MutableStateFlow(BrowseQueryParams())
+    private val _queryParams = MutableStateFlow(BrowseQueryParams(category = category))
 
     /**
      * The public, read-only state of the query params.
