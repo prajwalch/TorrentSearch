@@ -19,7 +19,8 @@ import org.jsoup.nodes.Element
  * Extracts torrent results from the HTML search page.
  * This provider uses InfoHash, not Magnet URIs.
  */
-class LimeTorrents : SearchProvider, TorrentDetailsProvider {
+class LimeTorrents : SearchProvider, TorrentDetailsProvider, LatestTorrentsProvider,
+    TopTorrentsProvider {
     override val id = "limetorrents"
     override val name = "LimeTorrents"
     override val url = "https://limetorrents.lol"
@@ -40,7 +41,7 @@ class LimeTorrents : SearchProvider, TorrentDetailsProvider {
     private val resultsPageParser = LimeTorrentsResultsPageParser(name)
 
     override suspend fun search(query: String, context: SearchContext): List<Torrent> {
-        val categoryString = getCategoryString(context.category)
+        val categoryString = getCategorySearchString(context.category)
         val requestUrl = "$url/search/$categoryString/$query/date/1/"
 
         val responseHtml = context.httpClient.get(url = requestUrl)
@@ -52,8 +53,36 @@ class LimeTorrents : SearchProvider, TorrentDetailsProvider {
         return LimeTorrentsDetailsPageParser.parse(responseHtml)
     }
 
+    override suspend fun getLastestTorrents(category: Category): List<Torrent> {
+        if (category !in supportedCategories) return emptyList()
+
+        val categoryString = getCategoryBrowseString(category)
+        val requestUrl = "$url/browse-torrents/$categoryString/"
+        val responseHtml = HttpClient.get(requestUrl)
+
+        return resultsPageParser.parse(
+            html = responseHtml,
+            pageUrl = requestUrl,
+            searchCategory = category,
+        )
+    }
+
+    override suspend fun getTopTorrents(category: Category): List<Torrent> {
+        if (category !in supportedCategories) return emptyList()
+
+        val categoryString = getCategoryBrowseString(category)
+        val requestUrl = "$url/cat_top/16/$categoryString/"
+        val responseHtml = HttpClient.get(requestUrl)
+
+        return resultsPageParser.parse(
+            html = responseHtml,
+            pageUrl = requestUrl,
+            searchCategory = category,
+        )
+    }
+
     /** Returns the category string used by it. */
-    private fun getCategoryString(category: Category): String = when (category) {
+    private fun getCategorySearchString(category: Category): String = when (category) {
         Category.All, Category.Books, Category.Porn -> "all"
         Category.Anime -> "anime"
         Category.Apps -> "applications"
@@ -63,17 +92,34 @@ class LimeTorrents : SearchProvider, TorrentDetailsProvider {
         Category.Series -> "tv"
         Category.Other -> "other"
     }
+
+    private fun getCategoryBrowseString(category: Category): String = when (category) {
+        Category.All -> throw IllegalStateException()
+        Category.Anime -> "Anime"
+        Category.Apps -> "Applications"
+        Category.Books -> "Other-E-books"
+        Category.Games -> "Games"
+        Category.Movies -> "Movies"
+        Category.Music -> "Music"
+        Category.Porn -> throw IllegalStateException()
+        Category.Series -> "TV-shows"
+        Category.Other -> "Other"
+    }
 }
 
 private class LimeTorrentsResultsPageParser(private val providerName: String) {
-    suspend fun parse(html: String, pageUrl: String): List<Torrent> =
+    suspend fun parse(
+        html: String,
+        pageUrl: String,
+        searchCategory: Category? = null,
+    ): List<Torrent> =
         withContext(Dispatchers.Default) {
             Jsoup.parse(html, pageUrl)
                 .select(LIST_ITEM)
-                .mapNotNull(::parseListItem)
+                .mapNotNull { parseListItem(it, searchCategory) }
         }
 
-    private fun parseListItem(listItem: Element): Torrent? {
+    private fun parseListItem(listItem: Element, searchCategory: Category? = null): Torrent? {
         val torrentName = listItem.selectFirst(TORRENT_NAME)?.ownText() ?: return null
         val fileDownloadLink = listItem.selectFirst(FILE_DOWNLOAD_LINK)
             ?.attr("href")
@@ -87,11 +133,10 @@ private class LimeTorrentsResultsPageParser(private val providerName: String) {
         val peers = listItem.selectFirst(PEERS)?.ownText()?.toUIntOrNull()
         val (rawUploadDate, rawCategory) = listItem.selectFirst(UPLOAD_DATE_AND_CATEGORY)
             ?.ownText()
-            ?.split("in", limit = 2)
-            ?.map { it.trim() }
-            ?: listOf(null, null)
+            ?.let(::parseDateAndCategory)
+            ?: Pair(null, null)
         val uploadDate = rawUploadDate?.let(TorrentDateParser::tryParseRelative)
-        val category = rawCategory?.removePrefix("in ")?.let(::categoryFromRawString)
+        val category = rawCategory?.let(::categoryFromRawString) ?: searchCategory
         val detailsPageUrl = listItem.selectFirst(DETAILS_PAGE_URL)?.attr("abs:href")
 
         return Torrent(
@@ -106,6 +151,14 @@ private class LimeTorrentsResultsPageParser(private val providerName: String) {
             descriptionPageUrl = detailsPageUrl ?: "",
             fileDownloadLink = fileDownloadLink,
         )
+    }
+
+    private fun parseDateAndCategory(text: String): Pair<String?, String?> {
+        // Pair<Date, Category>
+        if (!text.contains("- in")) return Pair(text.trim(), null)
+
+        val (rawUploadDate, rawCategory) = text.split("-", limit = 2).map { it.trim() }
+        return Pair(rawUploadDate, rawCategory.removePrefix("in ").removeSuffix("."))
     }
 
     private companion object {
