@@ -45,7 +45,7 @@
     <string name="search_filter_chip_dead_torrents">মৃত টরেন্ট</string>
     <string name="internet_connection_error">ইন্টারনেট সংযোগ নেই</string>
     <string name="button_try_again">আবার চেষ্টা করুন</string>
-    <string name="search_no_results_message">কোন ফলাফল পাওয়া যায়নি</string>
+    <string name="search_no_results_found_format">কোন ফলাফল পাওয়া যায়নি</string>
     <string name="search_results_count_format">%1$s এর ফলাফল \'%2$s\' (%3$s)</string>
     <string name="bookmarks_screen_title">বুকমার্ক</string>
     <plurals name="bookmarks_count_format">

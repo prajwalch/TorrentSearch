@@ -68,7 +68,7 @@
     <string name="search_filter_providers_action_select_all">Seleziona tutto</string>
     <string name="search_filter_providers_action_deselect_all">Deseleziona tutto</string>
     <string name="search_filter_providers_action_invert_selection">Inverti selezione</string>
-    <string name="search_no_results_message">Nessun risultato trovato</string>
+    <string name="search_no_results_found_format">Nessun risultato trovato</string>
     <string name="search_results_count_format">%1$s risultati per \'%2$s\' (%3$s)</string>
     <string name="search_errors_bottom_sheet_title">Provider di ricerca falliti</string>
     <string name="search_unexpected_error">Errore inaspettato</string>

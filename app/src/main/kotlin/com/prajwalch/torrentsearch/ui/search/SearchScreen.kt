@@ -220,6 +220,8 @@ fun SearchScreen(
                     ResultsNotFoundState(
                         modifier = Modifier.fillMaxSize(),
                         onTryAgain = viewModel::search,
+                        query = uiState.searchParams.query,
+                        category = uiState.searchParams.category,
                     )
                 }
 

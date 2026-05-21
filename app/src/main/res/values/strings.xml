@@ -94,7 +94,7 @@
     <string name="search_filter_providers_action_select_all">Select all</string>
     <string name="search_filter_providers_action_deselect_all">Deselect all</string>
     <string name="search_filter_providers_action_invert_selection">Invert selection</string>
-    <string name="search_no_results_message">No results found</string>
+    <string name="search_no_results_found_format">No results found for \'%1$s\' in %2$s</string>
     <string name="search_results_count_format">%1$s results for \'%2$s\' (%3$s)</string>
     <string name="search_errors_bottom_sheet_title">Failed search providers</string>
     <string name="search_unexpected_error">Unexpected error</string>

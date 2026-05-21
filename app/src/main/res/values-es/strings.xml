@@ -39,7 +39,7 @@
     <string name="search_filter_chip_dead_torrents">Torrents muertos</string>
     <string name="internet_connection_error">Sin conexión a Internet</string>
     <string name="button_try_again">Volver a intentar</string>
-    <string name="search_no_results_message">Sin resultados de búsqueda</string>
+    <string name="search_no_results_found_format">Sin resultados de búsqueda</string>
     <string name="bookmarks_screen_title">Marcadores</string>
     <string name="bookmarks_search_query_hint">Buscar marcadores</string>
     <string name="bookmarks_action_delete_all">Eliminar todo</string>
