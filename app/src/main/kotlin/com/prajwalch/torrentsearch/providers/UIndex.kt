@@ -155,7 +155,6 @@ private object UIndexDetailsPageParser {
         "#content > div.dt-info-card > div > div:nth-child(2) > div:nth-child(3) > span.dt-info-value > span.dt-info-dim"
     private const val DESCRIPTION = ".dt-descr-body"
     private const val THUMBNAIL = ".tmdb-poster > img"
-    private const val PREVIEW_IMAGE = "img.torrent-img"
     private const val MAGNET_URI = "a.dt-download-btn"
 
     suspend fun parse(responseHtml: String, baseUrl: String): TorrentDetails? =
@@ -182,7 +181,6 @@ private object UIndexDetailsPageParser {
                 TorrentUtils.HtmlToMarkdownConverter.convert(it)
             }
             val thumbnailUrl = html.selectFirst(THUMBNAIL)?.attr("abs:src")
-            val previewImageUrls = html.select(PREVIEW_IMAGE).map { it.attr("src") }
 
             TorrentDetails(
                 infoHash = infoHash,
@@ -196,7 +194,6 @@ private object UIndexDetailsPageParser {
                 magnetUri = magnetUri,
                 description = description,
                 posterUrl = thumbnailUrl,
-                screenshotUrls = previewImageUrls,
             )
         }
 
