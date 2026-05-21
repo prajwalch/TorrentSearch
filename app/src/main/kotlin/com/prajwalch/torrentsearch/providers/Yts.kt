@@ -2,6 +2,7 @@ package com.prajwalch.torrentsearch.providers
 
 import com.prajwalch.torrentsearch.domain.model.Category
 import com.prajwalch.torrentsearch.domain.model.Torrent
+import com.prajwalch.torrentsearch.domain.model.TorrentDetails
 import com.prajwalch.torrentsearch.extension.asObject
 import com.prajwalch.torrentsearch.extension.getArray
 import com.prajwalch.torrentsearch.extension.getLong
@@ -9,14 +10,16 @@ import com.prajwalch.torrentsearch.extension.getObject
 import com.prajwalch.torrentsearch.extension.getString
 import com.prajwalch.torrentsearch.extension.getUInt
 import com.prajwalch.torrentsearch.network.HttpClient
+import com.prajwalch.torrentsearch.util.FileSizeUtils
 import com.prajwalch.torrentsearch.util.TorrentDateParser
+import com.prajwalch.torrentsearch.util.TorrentUtils
 
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonObject
 
-class Yts : SearchProvider, LatestTorrentsProvider, TopTorrentsProvider {
+class Yts : SearchProvider, LatestTorrentsProvider, TopTorrentsProvider, TorrentDetailsProvider {
     override val id = "ytsmx"
     override val name = "Yts"
     override val url = "https://yts.bz"
@@ -52,6 +55,21 @@ class Yts : SearchProvider, LatestTorrentsProvider, TopTorrentsProvider {
         return getLastestTorrents(category)
     }
 
+    override suspend fun getDetails(detailsPageUrl: String): TorrentDetails? {
+        val (movieId, infoHash) = detailsPageUrl.takeLastWhile { it != '?' }
+            .split("&", limit = 2)
+            .let { (movieId, infoHash) ->
+                Pair(
+                    movieId.removePrefix("movieid="),
+                    infoHash.removePrefix("infohash="),
+                )
+            }
+        val requestUrl = "$API_BASE_URL/movie_details.json?movie_id=$movieId&with_images=true"
+        val responseJson = HttpClient.getJson(requestUrl) ?: return null
+
+        return YtsDetailsJsonParser.parse(json = responseJson, torrentInfoHash = infoHash)
+    }
+
     private companion object {
         private const val API_BASE_URL = "https://movies-api.accel.li/api/v2"
     }
@@ -80,14 +98,16 @@ private class YtsResultsJsonParser(private val providerName: String) {
      * @see [parseTorrentObject]
      */
     private fun parseMovieObject(movieObject: JsonObject): List<Torrent> {
-        val titleLong = movieObject.getString("title_long") ?: return emptyList()
+        val movieId = movieObject.getLong("id") ?: return emptyList()
+        val movieTitle = movieObject.getString("title_long") ?: return emptyList()
         val detailsPageUrl = movieObject.getString("url")
 
         return movieObject.getArray("torrents")
             ?.mapNotNull {
                 parseTorrentObject(
                     torrentObject = it.asObject(),
-                    movieTitle = titleLong,
+                    movieId = movieId,
+                    movieTitle = movieTitle,
                     detailsPageUrl = detailsPageUrl,
                 )
             }
@@ -116,6 +136,7 @@ private class YtsResultsJsonParser(private val providerName: String) {
      */
     private fun parseTorrentObject(
         torrentObject: JsonObject,
+        movieId: Long,
         movieTitle: String,
         detailsPageUrl: String?,
     ): Torrent? {
@@ -132,6 +153,7 @@ private class YtsResultsJsonParser(private val providerName: String) {
         val uploadDate = torrentObject
             .getLong("date_uploaded_unix")
             ?.let(TorrentDateParser::epochSecondToInstant)
+        val detailsPageUrl = detailsPageUrl?.let { "$it?movieid=$movieId&infohash=$infoHash" }
 
         return Torrent(
             infoHash = infoHash,
@@ -145,4 +167,57 @@ private class YtsResultsJsonParser(private val providerName: String) {
             descriptionPageUrl = detailsPageUrl ?: "",
         )
     }
+}
+
+private object YtsDetailsJsonParser {
+    suspend fun parse(json: JsonElement, torrentInfoHash: String): TorrentDetails? =
+        withContext(Dispatchers.Default) {
+            val movieObject = json.asObject()
+                .getObject("data")
+                ?.getObject("movie")
+                ?: return@withContext null
+            val torrentObject = movieObject.getArray("torrents")
+                ?.map { it.asObject() }
+                ?.find { it.getString("hash")?.lowercase() == torrentInfoHash }
+                ?: return@withContext null
+
+            val movieTitle = movieObject.getString("title_long") ?: return@withContext null
+            val description = movieObject.getString("description_full")
+            val posterUrl = movieObject.getString("medium_cover_image")
+            val screenshotUrls = listOfNotNull(
+                movieObject.getString("medium_screenshot_image1"),
+                movieObject.getString("medium_screenshot_image2"),
+                movieObject.getString("medium_screenshot_image3"),
+            )
+
+            val size = torrentObject.getLong("size_bytes")
+                ?.toFloat()
+                ?.let(FileSizeUtils::formatBytes)
+            val seeders = torrentObject.getUInt("seeds")
+            val peers = torrentObject.getUInt("peers")
+            val uploadDate = torrentObject.getLong("date_uploaded_unix")
+                ?.let(TorrentDateParser::epochSecondToInstant)
+            val magnetUri = TorrentUtils.createMagnetUri(torrentInfoHash)
+            val fileDownloadLink = torrentObject.getString("url")
+
+            val quality = torrentObject.getString("quality") ?: "-"
+            val type = torrentObject.getString("type") ?: "-"
+            val codec = torrentObject.getString("video_codec") ?: "-"
+            val torrentName = "$movieTitle [$quality] [$type] [$codec]"
+
+            TorrentDetails(
+                infoHash = torrentInfoHash,
+                name = torrentName,
+                size = size,
+                seeders = seeders,
+                peers = peers,
+                uploadDate = uploadDate,
+                category = Category.Movies,
+                magnetUri = magnetUri,
+                fileDownloadLink = fileDownloadLink,
+                description = description,
+                posterUrl = posterUrl,
+                screenshotUrls = screenshotUrls,
+            )
+        }
 }
