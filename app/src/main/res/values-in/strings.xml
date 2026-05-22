@@ -185,4 +185,16 @@
     <string name="limetorrents_unsafe_reason">Secara teknis tidak berbahaya, tetapi mengabaikan pemilihan kategori. Pilih dengan cermat.</string>
     <string name="tpb_unsafe_reason">Banyak laporan malware akibat moderasi yang tidak memadai.</string>
     <string name="therarbg_unsafe_reason">Klon dari RARBG asli dengan banyak torrent palsu. Gunakan dengan sangat hati-hati.</string>
+    <string name="home_button_browse">Jelajahi</string>
+    <string name="search_action_refresh">Segarkan</string>
+    <string name="search_action_stop_search">Hentikan pencarian</string>
+    <string name="browse_screen_title">Jelajahi</string>
+    <string name="browse_search_query_hint">Cari torrent</string>
+    <string name="browse_sort_latest">Terbaru</string>
+    <string name="browse_sort_top">Terpopuler</string>
+    <string name="browse_torrents_count_format">Ditemukan %1$d torrent</string>
+    <string name="browse_no_torrents_found_title">Tidak ada torrent yang ditemukan</string>
+    <string name="browse_no_torrent_found_description">Periksa bahwa setidaknya satu penyedia diaktifkan</string>
+    <string name="browse_button_go_to_settings">Pergi ke pengaturan</string>
+    <string name="browse_button_try_again">Coba lagi</string>
 </resources>
