@@ -58,20 +58,24 @@ private class SubsPleaseResultsJsonParser(
 ) {
     suspend fun parse(json: JsonElement): List<Torrent> = withContext(Dispatchers.Default) {
         json.asObject()
-            .values
-            .mapNotNull { parseAnimeObject(it.asObject()) }
+            .entries
+            .mapNotNull { (showName, animeObject) ->
+                parseAnimeObject(
+                    showName = showName,
+                    animeObject = animeObject.asObject(),
+                )
+            }
             .flatten()
     }
 
-    private fun parseAnimeObject(animeObject: JsonObject): List<Torrent>? {
-        val name = animeObject.getString("show") ?: return null
+    private fun parseAnimeObject(showName: String, animeObject: JsonObject): List<Torrent>? {
         val uploadDate = animeObject.getString("release_date")?.let(TorrentDateParser::parseRFC1123)
         val detailsPageUrl = animeObject.getString("page")?.let { "$providerUrl/$it" }
 
         return animeObject.getArray("downloads")?.mapNotNull {
             parseDownloadObject(
                 downloadObject = it.asObject(),
-                torrentName = name,
+                torrentName = showName,
                 uploadDate = uploadDate,
                 detailsPageUrl = detailsPageUrl,
             )
