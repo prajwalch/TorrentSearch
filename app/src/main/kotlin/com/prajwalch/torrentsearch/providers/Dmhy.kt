@@ -14,7 +14,7 @@ import kotlinx.coroutines.withContext
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Element
 
-class Dmhy : SearchProvider, TorrentDetailsProvider, LatestTorrentsProvider {
+class Dmhy : SearchProvider, TorrentDetailsProvider, LatestTorrentsProvider, TopTorrentsProvider {
     override val id = "dmhy"
     override val name = "Dmhy"
     override val url = "https://share.dmhy.org"
@@ -68,6 +68,10 @@ class Dmhy : SearchProvider, TorrentDetailsProvider, LatestTorrentsProvider {
         val responseHtml = HttpClient.get(requestUrl)
 
         return resultsPageParser.parse(html = responseHtml, pageUrl = requestUrl)
+    }
+
+    override suspend fun getTopTorrents(category: Category): List<Torrent> {
+        return getLastestTorrents(category)
     }
 }
 
