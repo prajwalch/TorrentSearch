@@ -391,7 +391,7 @@ private fun TopBarMoreMenu(
             },
             leadingIcon = {
                 Icon(
-                    painter = painterResource(R.drawable.ic_stop),
+                    painter = painterResource(R.drawable.ic_cancel),
                     contentDescription = null,
                 )
             },
