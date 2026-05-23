@@ -1,10 +1,12 @@
 package com.prajwalch.torrentsearch.ui.browse.component
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -13,6 +15,8 @@ import androidx.compose.ui.graphics.graphicsLayer
 import com.prajwalch.torrentsearch.domain.model.Torrent
 import com.prajwalch.torrentsearch.ui.component.LazyColumnWithScrollbar
 import com.prajwalch.torrentsearch.ui.component.TorrentListItem
+import com.prajwalch.torrentsearch.ui.search.component.TorrentsCount
+import com.prajwalch.torrentsearch.ui.theme.spaces
 
 import kotlinx.collections.immutable.ImmutableList
 
@@ -32,6 +36,15 @@ fun TorrentList(
         onRefresh = onRefresh,
     ) {
         LazyColumnWithScrollbar(state = lazyListState) {
+            item {
+                TorrentsCount(
+                    modifier = Modifier.padding(
+                        horizontal = MaterialTheme.spaces.large,
+                        vertical = MaterialTheme.spaces.small,
+                    ),
+                    count = torrents.size,
+                )
+            }
             itemsIndexed(
                 items = torrents,
                 contentType = { _, torrent -> torrent.category },

@@ -52,7 +52,6 @@ import com.prajwalch.torrentsearch.ui.component.TorrentActionsBottomSheet
 import com.prajwalch.torrentsearch.ui.component.rememberCollapsibleSearchBarState
 import com.prajwalch.torrentsearch.ui.extension.copyText
 import com.prajwalch.torrentsearch.ui.rememberTorrentListState
-import com.prajwalch.torrentsearch.ui.search.component.TorrentsCount
 import com.prajwalch.torrentsearch.ui.theme.spaces
 
 import kotlinx.coroutines.launch
@@ -234,26 +233,17 @@ fun BrowseScreen(
                     }
 
                     is BrowseContentState.Ready -> {
-                        Column {
-                            TorrentsCount(
-                                modifier = Modifier.padding(
-                                    horizontal = MaterialTheme.spaces.large,
-                                    vertical = MaterialTheme.spaces.small,
-                                ),
-                                count = uiState.torrents.size,
-                            )
-                            TorrentList(
-                                torrents = uiState.torrents,
-                                onTorrentClick = {
-                                    selectedTorrent = it
-                                    viewModel.markAsViewed(it.infoHash)
-                                },
-                                isRefreshing = contentState is BrowseContentState.Ready.Refreshing,
-                                onRefresh = viewModel::refreshTorrents,
-                                viewedTorrentHashes = uiState.viewedTorrentHashes,
-                                lazyListState = torrentListState.lazyListState,
-                            )
-                        }
+                        TorrentList(
+                            torrents = uiState.torrents,
+                            onTorrentClick = {
+                                selectedTorrent = it
+                                viewModel.markAsViewed(it.infoHash)
+                            },
+                            isRefreshing = contentState is BrowseContentState.Ready.Refreshing,
+                            onRefresh = viewModel::refreshTorrents,
+                            viewedTorrentHashes = uiState.viewedTorrentHashes,
+                            lazyListState = torrentListState.lazyListState,
+                        )
                     }
                 }
             }
