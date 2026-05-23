@@ -111,8 +111,8 @@ See the [wiki](https://github.com/prajwalch/TorrentSearch/wiki) for setup instru
 
 ## Building from Source
 
-The easiest way is to open the project in Android Studio — it handles all setup and lets you run the
-app in a single click.
+The easiest way is to open the project in [Android Studio](https://developer.android.com/studio) — 
+it handles all setup and lets you run the app in a single click.
 
 ### Command Line
 
