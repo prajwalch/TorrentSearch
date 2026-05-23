@@ -7,6 +7,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 
 import com.prajwalch.torrentsearch.R
 import com.prajwalch.torrentsearch.ui.component.ContentState
@@ -14,7 +15,10 @@ import com.prajwalch.torrentsearch.ui.component.ContentStateDefaults
 import com.prajwalch.torrentsearch.ui.component.TryAgainButton
 
 @Composable
-fun DetailsNotFoundState(onTryAgain: () -> Unit, modifier: Modifier = Modifier) {
+fun DetailsUnavailableState(
+    onTryAgain: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
     ContentState(
         modifier = modifier,
         icon = {
@@ -24,7 +28,13 @@ fun DetailsNotFoundState(onTryAgain: () -> Unit, modifier: Modifier = Modifier) 
                 contentDescription = null,
             )
         },
-        title = { Text(stringResource(R.string.torrent_details_error_not_found)) },
+        title = { Text(stringResource(R.string.torrent_details_state_unavailable_title)) },
+        description = {
+            Text(
+                text = stringResource(R.string.torrent_details_state_unavailable_description),
+                textAlign = TextAlign.Center,
+            )
+        },
         action = { TryAgainButton(onClick = onTryAgain) },
     )
 }

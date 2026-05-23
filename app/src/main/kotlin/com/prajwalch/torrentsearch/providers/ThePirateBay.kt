@@ -40,6 +40,7 @@ class ThePirateBay :
         reason = R.string.tpb_unsafe_reason,
     )
     override val enabledByDefault = false
+    override val alternateUrlDomains = listOf("https://knaben.xyz/thepiratebay/")
 
     private val resultsJsonParser = TBPResultsJsonParser(
         providerName = name,

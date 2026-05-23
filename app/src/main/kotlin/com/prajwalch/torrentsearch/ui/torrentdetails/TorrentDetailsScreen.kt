@@ -40,7 +40,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-
 import com.prajwalch.torrentsearch.R
 import com.prajwalch.torrentsearch.domain.model.MagnetUri
 import com.prajwalch.torrentsearch.domain.model.TorrentDetails
@@ -53,16 +52,15 @@ import com.prajwalch.torrentsearch.ui.component.SearchProviderBadge
 import com.prajwalch.torrentsearch.ui.extension.copyText
 import com.prajwalch.torrentsearch.ui.theme.spaces
 import com.prajwalch.torrentsearch.ui.torrentdetails.component.CallToActionButton
-import com.prajwalch.torrentsearch.ui.torrentdetails.component.DetailsNotFoundState
+import com.prajwalch.torrentsearch.ui.torrentdetails.component.DetailsUnavailableState
 import com.prajwalch.torrentsearch.ui.torrentdetails.component.HeroBackgroundImage
 import com.prajwalch.torrentsearch.ui.torrentdetails.component.MediaPoster
 import com.prajwalch.torrentsearch.ui.torrentdetails.component.NsfwMediaPoster
-import com.prajwalch.torrentsearch.ui.torrentdetails.component.ProviderNotSupportedState
 import com.prajwalch.torrentsearch.ui.torrentdetails.component.ScreenShots
 import com.prajwalch.torrentsearch.ui.torrentdetails.component.SomethingWentWrongState
 import com.prajwalch.torrentsearch.ui.torrentdetails.component.TorrentDescription
 import com.prajwalch.torrentsearch.ui.torrentdetails.component.TorrentInfo
-
+import com.prajwalch.torrentsearch.ui.torrentdetails.component.UnsupportedTorrentSiteState
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -112,9 +110,9 @@ fun TorrentDetailsScreen(
         },
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
     ) { innerPadding ->
-        AnimatedContent(targetState = uiState.contentState) { contentState ->
+        AnimatedContent(targetState = uiState.state) { contentState ->
             when (contentState) {
-                TorrentDetailsContentState.Loading -> {
+                TorrentDetailsState.Loading -> {
                     Box(
                         modifier = Modifier
                             .padding(innerPadding)
@@ -125,7 +123,7 @@ fun TorrentDetailsScreen(
                     }
                 }
 
-                TorrentDetailsContentState.NoInternetConnection -> {
+                TorrentDetailsState.NoInternetConnection -> {
                     NoInternetConnectionState(
                         modifier = Modifier
                             .padding(innerPadding)
@@ -134,8 +132,8 @@ fun TorrentDetailsScreen(
                     )
                 }
 
-                TorrentDetailsContentState.DetailsNotFound -> {
-                    DetailsNotFoundState(
+                TorrentDetailsState.Unavailable -> {
+                    DetailsUnavailableState(
                         modifier = Modifier
                             .padding(innerPadding)
                             .fillMaxSize(),
@@ -143,18 +141,18 @@ fun TorrentDetailsScreen(
                     )
                 }
 
-                is TorrentDetailsContentState.ProviderNotSupported -> {
-                    ProviderNotSupportedState(
+                is TorrentDetailsState.UnsupportedTorrentSite -> {
+                    UnsupportedTorrentSiteState(
                         modifier = Modifier
                             .padding(innerPadding)
                             .fillMaxSize()
                             .padding(horizontal = MaterialTheme.spaces.large),
-                        providerName = viewModel.providerName,
+                        host = contentState.host,
                         onOpenInBrowser = { uriHandler.openUri(viewModel.detailsPageUrl) },
                     )
                 }
 
-                is TorrentDetailsContentState.SomethingWentWrong -> {
+                is TorrentDetailsState.SomethingWentWrong -> {
                     SomethingWentWrongState(
                         modifier = Modifier
                             .padding(innerPadding)
@@ -165,7 +163,7 @@ fun TorrentDetailsScreen(
                     )
                 }
 
-                is TorrentDetailsContentState.LoadSucceed -> {
+                is TorrentDetailsState.Available -> {
                     val torrentDetails = contentState.details
 
                     TorrentDetailsScreenContent(

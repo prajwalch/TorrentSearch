@@ -156,8 +156,8 @@
     <string name="torrent_details_action_share_link">Bagikan tautan halaman</string>
     <string name="torrent_details_tap_to_reveal_hint">Ketuk untuk menampilkan</string>
     <string name="torrent_details_error_provider_not_supported">Penyedia pencarian \'%1$s\' tidak didukung</string>
-    <string name="torrent_details_error_not_found">Detail tidak ditemukan di penyedia</string>
-    <string name="torrent_details_error_something_wrong">Terjadi kesalahan</string>
+    <string name="torrent_details_state_unavailable_title">Detail tidak ditemukan di penyedia</string>
+    <string name="torrent_details_state_something_wrong_title">Terjadi kesalahan</string>
     <string name="torrent_details_title_info">Info torrent</string>
     <string name="torrent_details_title_description">Deskripsi</string>
     <string name="torrent_details_label_file_size">Ukuran file</string>

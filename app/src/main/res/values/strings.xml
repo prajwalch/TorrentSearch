@@ -107,8 +107,11 @@
     <string name="torrent_details_action_share_link">Share page link</string>
     <string name="torrent_details_tap_to_reveal_hint">Tap to reveal</string>
     <string name="torrent_details_error_provider_not_supported">Search provider \'%1$s\' is not supported</string>
-    <string name="torrent_details_error_not_found">Details not found on the provider</string>
-    <string name="torrent_details_error_something_wrong">Something went wrong</string>
+    <string name="torrent_details_state_unavailable_title">Details unavailable</string>
+    <string name="torrent_details_state_unavailable_description">The page layout may have changed or the host is temporarily offline.</string>
+    <string name="torrent_details_state_unsupported_site_title">Unsupported URL</string>
+    <string name="torrent_details_state_unsupported_site_description">Couldn\'t retrieve details from %1$s. This torrent site may not be supported yet. Try opening details page in the browser instead.</string>
+    <string name="torrent_details_state_something_wrong_title">Something went wrong</string>
     <string name="torrent_details_title_info">Torrent info</string>
     <string name="torrent_details_title_description">Description</string>
     <string name="torrent_details_label_file_size">File size</string>

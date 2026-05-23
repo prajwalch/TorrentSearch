@@ -78,6 +78,20 @@ class SearchProvidersManager @Inject constructor(
     }
 
     /**
+     * Finds a torrent details provider associated with the given URL.
+     */
+    fun findDetailsProviderByUrl(url: String): TorrentDetailsProvider? {
+        return builtinProviders.filterIsInstance<TorrentDetailsProvider>()
+            .find { detailsProvider ->
+                if (url.startsWith(detailsProvider.url)) {
+                    true
+                } else {
+                    detailsProvider.alternateUrlDomains.any { url.startsWith(it) }
+                }
+            }
+    }
+
+    /**
      * Returns a list containing instances of latest torrents providers that
      * are currently enabled.
      */

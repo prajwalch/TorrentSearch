@@ -165,7 +165,7 @@
     <string name="torrent_details_action_copy_link">Copiar enlace de página</string>
     <string name="torrent_details_action_share_link">Compartir enlace de página</string>
     <string name="torrent_details_tap_to_reveal_hint">Toque para revelar</string>
-    <string name="torrent_details_error_something_wrong">Se produjo un problema</string>
+    <string name="torrent_details_state_something_wrong_title">Se produjo un problema</string>
     <string name="torrent_details_title_info">Información del torrent</string>
     <string name="torrent_details_title_description">Descripción</string>
     <string name="torrent_details_label_file_size">Tamaño de archivo</string>
@@ -180,7 +180,7 @@
     <string name="torrent_details_button_download_torrent">Descargar torrent</string>
     <string name="torrent_details_button_download_torrent_file">Descargar archivo torrent</string>
     <string name="torrent_details_error_provider_not_supported">No se admite el proveedor de búsquedas «%1$s»</string>
-    <string name="torrent_details_error_not_found">No se encontraron detalles sobre el proveedor</string>
+    <string name="torrent_details_state_unavailable_title">No se encontraron detalles sobre el proveedor</string>
     <string name="settings_open_torrent_details_in_app_summary">Abre los detalles del torrent directamente en la pantalla nativa de la aplicación</string>
     <string name="settings_open_torrent_details_in_app">Abrir detalles del torrent en la aplicación</string>
     <string name="settings_blur_nsfw_images_summary">Desenfoca automáticamente las imágenes para adultos</string>

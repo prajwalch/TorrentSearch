@@ -27,6 +27,7 @@ class Nyaa : SearchProvider, TorrentDetailsProvider, LatestTorrentsProvider, Top
     )
     override val safetyStatus = SearchProviderSafetyStatus.Safe
     override val enabledByDefault = true
+    override val alternateUrlDomains = listOf("https://nyaa.iss.ink")
 
     private val resultsPageParser = NyaaResultsPageParser(providerName = name)
     private val categoryMap = mapOf(

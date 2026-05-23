@@ -51,6 +51,11 @@ interface SearchProvider {
  */
 interface TorrentDetailsProvider : SearchProvider {
     /**
+     * List of alternate domains for details page.
+     */
+    val alternateUrlDomains: List<String> get() = emptyList()
+
+    /**
      * Extracts and returns [TorrentDetails] from the given URL if successful,
      * otherwise returns `null`.
      */

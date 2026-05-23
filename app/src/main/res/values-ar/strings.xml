@@ -169,8 +169,8 @@
     <string name="torrent_details_action_share_link">شارك رابط الصفحة</string>
     <string name="torrent_details_tap_to_reveal_hint">انقر للكشف</string>
     <string name="torrent_details_error_provider_not_supported">موفر البحث \'%1$s\' غير مدعوم</string>
-    <string name="torrent_details_error_not_found">لم يتم العثور على التفاصيل لدى المزوّد</string>
-    <string name="torrent_details_error_something_wrong">حدث خطأ ما</string>
+    <string name="torrent_details_state_unavailable_title">لم يتم العثور على التفاصيل لدى المزوّد</string>
+    <string name="torrent_details_state_something_wrong_title">حدث خطأ ما</string>
     <string name="torrent_details_title_info">معلومات التورنت</string>
     <string name="torrent_details_title_description">الوصف</string>
     <string name="torrent_details_label_file_size">حجم الملف،</string>

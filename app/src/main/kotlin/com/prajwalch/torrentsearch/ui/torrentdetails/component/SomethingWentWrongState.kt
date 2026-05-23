@@ -35,7 +35,7 @@ fun SomethingWentWrongState(
         },
         title = {
             Text(
-                text = stringResource(R.string.torrent_details_error_something_wrong),
+                text = stringResource(R.string.torrent_details_state_something_wrong_title),
                 color = MaterialTheme.colorScheme.error,
             )
         },

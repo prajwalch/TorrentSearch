@@ -89,12 +89,13 @@ class SearchProvidersGateway @Inject constructor(
         detailsPageUrl: String,
         providerName: String,
     ): GetTorrentDetailsResponse {
-        val detailsProvider = searchProvidersManager.findDetailsProviderByName(providerName)
-            ?: return GetTorrentDetailsResponse.RequestNotSupported
+        val detailsProvider = searchProvidersManager.findDetailsProviderByUrl(detailsPageUrl)
+            ?: searchProvidersManager.findDetailsProviderByName(providerName)
+            ?: return GetTorrentDetailsResponse.UnsupportedUrl
 
         return detailsProvider.getDetails(detailsPageUrl)
             ?.let(GetTorrentDetailsResponse::Success)
-            ?: GetTorrentDetailsResponse.DetailsNotFound
+            ?: GetTorrentDetailsResponse.Unavailable
     }
 
     fun getLatestTorrents(category: Category = Category.All): Flow<PersistentList<Torrent>> =
