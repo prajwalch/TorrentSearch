@@ -69,7 +69,7 @@ fun ContentState(
         Row(
             modifier = Modifier.padding(vertical = MaterialTheme.spaces.extraLarge),
             horizontalArrangement = Arrangement.spacedBy(
-                space = MaterialTheme.spaces.large,
+                space = MaterialTheme.spaces.small,
                 alignment = Alignment.CenterHorizontally
             ),
             verticalAlignment = Alignment.CenterVertically,
