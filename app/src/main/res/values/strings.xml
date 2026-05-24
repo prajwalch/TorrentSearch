@@ -96,6 +96,7 @@
     <string name="search_filter_providers_action_invert_selection">Invert selection</string>
     <string name="search_state_results_not_found_title">No results found</string>
     <string name="search_state_results_not_found_description">No torrents matched \'%1$s\' in %2$s. Try a different query or check that search providers are enabled.</string>
+    <string name="search_button_go_to_providers">Go to providers</string>
     <string name="search_results_count_format">%1$s results for \'%2$s\' (%3$s)</string>
     <string name="search_errors_bottom_sheet_title">Failed search providers</string>
     <string name="search_unexpected_error">Unexpected error</string>

@@ -73,6 +73,7 @@ import kotlinx.coroutines.launch
 fun SearchScreen(
     onNavigateBack: () -> Unit,
     onNavigateToSettings: () -> Unit,
+    onNavigateToProviders: () -> Unit,
     onDownloadTorrent: (MagnetUri) -> Unit,
     onShareMagnetLink: (MagnetUri) -> Unit,
     onOpenDescriptionPage: (url: String, providerName: String) -> Unit,
@@ -223,6 +224,7 @@ fun SearchScreen(
                         modifier = Modifier
                             .fillMaxSize()
                             .padding(horizontal = MaterialTheme.spaces.large),
+                        onNavigateToProviders = onNavigateToProviders,
                         onTryAgain = viewModel::search,
                         query = uiState.searchParams.query,
                         category = uiState.searchParams.category,
