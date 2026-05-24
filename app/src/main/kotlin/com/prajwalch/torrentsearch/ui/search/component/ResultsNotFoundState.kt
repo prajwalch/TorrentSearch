@@ -7,6 +7,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 
 import com.prajwalch.torrentsearch.R
 import com.prajwalch.torrentsearch.domain.model.Category
@@ -46,13 +47,15 @@ fun ResultsNotFoundState(
                 contentDescription = null,
             )
         },
-        title = {
+        title = { Text(stringResource(R.string.search_state_results_not_found_title)) },
+        description = {
             Text(
-                stringResource(
-                    R.string.search_no_results_found_format,
+                text = stringResource(
+                    R.string.search_state_results_not_found_description,
                     query,
                     categoryStringResource(category),
-                )
+                ),
+                textAlign = TextAlign.Center,
             )
         },
         action = { TryAgainButton(onClick = onTryAgain) }

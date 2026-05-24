@@ -7,7 +7,7 @@
     <string name="home_search_query_hint">Pesquisa…</string>
     <string name="internet_connection_error">Sem conexão de internet</string>
     <string name="button_try_again">Tente novamente</string>
-    <string name="search_no_results_found_format">Nenhum resultado encontrado</string>
+    <string name="search_state_results_not_found_title">Nenhum resultado encontrado</string>
     <string name="action_sort">Abrir opções de ordenação</string>
     <string name="torrent_list_action_bookmark_torrent">Favoritar torrent</string>
     <string name="torrent_list_action_delete_bookmark">Deletar favorito</string>

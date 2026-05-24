@@ -32,7 +32,7 @@
     <string name="search_filter_chip_dead_torrents">Ölü torrentler</string>
     <string name="internet_connection_error">İnternet bağlantısı yok</string>
     <string name="button_try_again">Tekrar dene</string>
-    <string name="search_no_results_found_format">Hiçbir sonuç bulunamadı</string>
+    <string name="search_state_results_not_found_title">Hiçbir sonuç bulunamadı</string>
     <string name="search_results_count_format">\'%2$s\' için %1$s sonuç (%3$s)</string>
     <string name="bookmarks_screen_title">Yer işaretleri</string>
     <plurals name="bookmarks_count_format">

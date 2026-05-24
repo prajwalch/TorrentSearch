@@ -59,7 +59,7 @@
     <string name="search_filter_chip_dead_torrents">Torrent tidak aktif</string>
     <string name="internet_connection_error">Tidak ada koneksi internet</string>
     <string name="button_try_again">Coba lagi</string>
-    <string name="search_no_results_found_format">Tidak ada hasil yang ditemukan</string>
+    <string name="search_state_results_not_found_title">Tidak ada hasil yang ditemukan</string>
     <string name="search_results_count_format">%1$s hasil untuk \'%2$s\' (%3$s)</string>
     <string name="search_errors_bottom_sheet_title">Penyedia pencarian yang gagal</string>
     <string name="search_unexpected_error">Kesalahan tidak terduga</string>
