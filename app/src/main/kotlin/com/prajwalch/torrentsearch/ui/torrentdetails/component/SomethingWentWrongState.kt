@@ -42,7 +42,7 @@ fun SomethingWentWrongState(
         description = message?.let {
             { Text(text = it, textAlign = TextAlign.Center) }
         },
-        action = { TryAgainButton(onClick = onTryAgain) },
+        primaryAction = { TryAgainButton(onClick = onTryAgain) },
     )
 }
 

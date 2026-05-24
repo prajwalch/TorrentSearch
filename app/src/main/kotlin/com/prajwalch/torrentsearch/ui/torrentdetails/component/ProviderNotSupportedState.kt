@@ -39,7 +39,7 @@ fun ProviderNotSupportedState(
                 ),
             )
         },
-        action = {
+        primaryAction = {
             Button(
                 onClick = onOpenInBrowser,
                 contentPadding = ButtonDefaults.ButtonWithIconContentPadding,

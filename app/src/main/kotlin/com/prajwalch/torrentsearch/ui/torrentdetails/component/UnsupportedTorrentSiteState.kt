@@ -42,7 +42,7 @@ fun UnsupportedTorrentSiteState(
                 textAlign = TextAlign.Center,
             )
         },
-        action = {
+        primaryAction = {
             Button(
                 onClick = onOpenInBrowser,
                 contentPadding = ButtonDefaults.ButtonWithIconContentPadding,

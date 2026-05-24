@@ -22,6 +22,6 @@ fun NoInternetConnectionState(onTryAgain: () -> Unit, modifier: Modifier = Modif
             )
         },
         title = { Text(stringResource(R.string.internet_connection_error)) },
-        action = { TryAgainButton(onClick = onTryAgain) }
+        primaryAction = { TryAgainButton(onClick = onTryAgain) }
     )
 }

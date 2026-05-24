@@ -35,6 +35,6 @@ fun DetailsUnavailableState(
                 textAlign = TextAlign.Center,
             )
         },
-        action = { TryAgainButton(onClick = onTryAgain) },
+        primaryAction = { TryAgainButton(onClick = onTryAgain) },
     )
 }
