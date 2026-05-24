@@ -158,7 +158,7 @@ fun BrowseScreen(
                 onNavigateBack = onNavigateBack,
                 onSearchQueryChange = viewModel::searchTorrents,
                 onNavigateToSettings = onNavigateToSettings,
-                enableSearchAction = uiState.contentState is BrowseContentState.Ready,
+                enableSearchAction = uiState.contentState is BrowseContentState.Available,
                 scrollBehavior = scrollBehavior,
             )
         },
@@ -177,12 +177,12 @@ fun BrowseScreen(
         ) {
             AnimatedVisibility(
                 modifier = Modifier.fillMaxWidth(),
-                visible = uiState.contentState is BrowseContentState.Ready.Searching,
+                visible = uiState.contentState is BrowseContentState.Available.Searching,
             ) {
                 LinearProgressIndicator()
             }
 
-            val enableViewFilters = uiState.contentState is BrowseContentState.Ready
+            val enableViewFilters = uiState.contentState is BrowseContentState.Available
             BrowseFilters(
                 sort = uiState.queryParams.sort,
                 onChangeSort = viewModel::updateBrowseSort,
@@ -232,14 +232,14 @@ fun BrowseScreen(
                         )
                     }
 
-                    is BrowseContentState.Ready -> {
+                    is BrowseContentState.Available -> {
                         TorrentList(
                             torrents = uiState.torrents,
                             onTorrentClick = {
                                 selectedTorrent = it
                                 viewModel.markAsViewed(it.infoHash)
                             },
-                            isRefreshing = contentState is BrowseContentState.Ready.Refreshing,
+                            isRefreshing = contentState is BrowseContentState.Available.Refreshing,
                             onRefresh = viewModel::refreshTorrents,
                             viewedTorrentHashes = uiState.viewedTorrentHashes,
                             lazyListState = torrentListState.lazyListState,
@@ -255,7 +255,7 @@ private fun BrowseContentState.getAnimationContentKey() = when (this) {
     BrowseContentState.InternetError -> BrowseContentState.InternetError::class
     BrowseContentState.Loading -> BrowseContentState.Loading::class
     BrowseContentState.NotAvailable -> BrowseContentState.NotAvailable::class
-    is BrowseContentState.Ready -> BrowseContentState.Ready::class
+    is BrowseContentState.Available -> BrowseContentState.Available::class
 }
 
 @OptIn(ExperimentalMaterial3Api::class)

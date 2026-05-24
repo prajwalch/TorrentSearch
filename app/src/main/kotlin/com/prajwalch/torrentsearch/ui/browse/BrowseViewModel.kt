@@ -62,10 +62,10 @@ sealed interface BrowseContentState {
     data object InternetError : BrowseContentState
     data object NotAvailable : BrowseContentState
 
-    sealed interface Ready : BrowseContentState {
-        data object Complete : Ready
-        data object Searching : Ready
-        data object Refreshing : Ready
+    sealed interface Available : BrowseContentState {
+        data object Complete : Available
+        data object Searching : Available
+        data object Refreshing : Available
     }
 }
 
@@ -359,10 +359,10 @@ private class TorrentsLoader(
     fun refresh() {
         loadJob?.cancel()
         loadJob = scope.launch {
-            _state.value = BrowseContentState.Ready.Refreshing
+            _state.value = BrowseContentState.Available.Refreshing
 
             if (!connectivityChecker.isInternetAvailable()) {
-                _state.value = BrowseContentState.Ready.Complete
+                _state.value = BrowseContentState.Available.Complete
                 return@launch
             }
 
@@ -385,12 +385,12 @@ private class TorrentsLoader(
                 _state.value = if (_torrents.value.isEmpty()) {
                     BrowseContentState.NotAvailable
                 } else {
-                    BrowseContentState.Ready.Complete
+                    BrowseContentState.Available.Complete
                 }
             }
             .collect { torrents ->
                 _torrents.value = torrents
-                _state.value = BrowseContentState.Ready.Searching
+                _state.value = BrowseContentState.Available.Searching
             }
     }
 }
