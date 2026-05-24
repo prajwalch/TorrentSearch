@@ -103,7 +103,6 @@
     <string name="torrent_details_action_copy_link">Copy page link</string>
     <string name="torrent_details_action_share_link">Share page link</string>
     <string name="torrent_details_tap_to_reveal_hint">Tap to reveal</string>
-    <string name="torrent_details_error_provider_not_supported">Search provider \'%1$s\' is not supported</string>
     <string name="torrent_details_state_unavailable_title">Details unavailable</string>
     <string name="torrent_details_state_unavailable_description">The page layout may have changed or the host is temporarily offline.</string>
     <string name="torrent_details_state_unsupported_site_title">Unsupported URL</string>

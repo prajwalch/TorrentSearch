@@ -166,7 +166,6 @@
     <string name="torrent_details_action_copy_link">Копіювати посилання на сторінку</string>
     <string name="torrent_details_action_share_link">Поділитися посиланням на сторінку</string>
     <string name="torrent_details_tap_to_reveal_hint">Торкніться, щоб переглянути</string>
-    <string name="torrent_details_error_provider_not_supported">Пошукова система «%1$s» не підтримується</string>
     <string name="torrent_details_state_unavailable_title">Деталей не знайдено в системі</string>
     <string name="torrent_details_state_something_wrong_title">Щось пішло не так</string>
     <string name="torrent_details_title_info">Відомості про торент</string>

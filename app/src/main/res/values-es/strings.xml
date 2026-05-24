@@ -179,7 +179,6 @@
     <string name="torrent_details_message_link_copied">¡Enlace copiado al portapapeles!</string>
     <string name="torrent_details_button_download_torrent">Descargar torrent</string>
     <string name="torrent_details_button_download_torrent_file">Descargar archivo torrent</string>
-    <string name="torrent_details_error_provider_not_supported">No se admite el proveedor de búsquedas «%1$s»</string>
     <string name="torrent_details_state_unavailable_title">No se encontraron detalles sobre el proveedor</string>
     <string name="settings_open_torrent_details_in_app_summary">Abre los detalles del torrent directamente en la pantalla nativa de la aplicación</string>
     <string name="settings_open_torrent_details_in_app">Abrir detalles del torrent en la aplicación</string>
