@@ -152,7 +152,7 @@
     <string name="browse_torrents_count_format">Found %1$d torrents</string>
     <string name="browse_state_unavailable_title">Torrents unavailable</string>
     <string name="browse_state_unavailable_description">No torrents to show. The required providers may be disabled or unreachable.</string>
-    <string name="browse_button_go_to_settings">Go to settings</string>
+    <string name="browse_button_go_to_providers">Go to providers</string>
     <string name="browse_button_try_again">Try again</string>
 
     <string name="search_history_screen_title">Search history</string>

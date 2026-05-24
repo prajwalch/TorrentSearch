@@ -36,6 +36,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+
 import com.prajwalch.torrentsearch.R
 import com.prajwalch.torrentsearch.domain.model.MagnetUri
 import com.prajwalch.torrentsearch.domain.model.Torrent
@@ -52,6 +53,7 @@ import com.prajwalch.torrentsearch.ui.component.rememberCollapsibleSearchBarStat
 import com.prajwalch.torrentsearch.ui.extension.copyText
 import com.prajwalch.torrentsearch.ui.rememberTorrentListState
 import com.prajwalch.torrentsearch.ui.theme.spaces
+
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -59,7 +61,7 @@ import kotlinx.coroutines.launch
 fun BrowseScreen(
     onNavigateBack: () -> Unit,
     onNavigateToSettings: () -> Unit,
-    onNavigateToProvidersSettings: () -> Unit,
+    onNavigateToProviders: () -> Unit,
     onDownloadTorrent: (MagnetUri) -> Unit,
     onShareMagnetLink: (MagnetUri) -> Unit,
     onOpenDescriptionPage: (url: String, providerName: String) -> Unit,
@@ -227,8 +229,8 @@ fun BrowseScreen(
                             modifier = Modifier
                                 .fillMaxSize()
                                 .padding(horizontal = MaterialTheme.spaces.large),
-                            onNavigateToSearchProviders = onNavigateToProvidersSettings,
-                            onRetry = viewModel::loadTorrents,
+                            onNavigateToProviders = onNavigateToProviders,
+                            onTryAgain = viewModel::loadTorrents,
                         )
                     }
 

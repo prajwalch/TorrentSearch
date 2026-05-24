@@ -158,7 +158,7 @@ fun TorrentSearchApp(
             BrowseScreen(
                 onNavigateBack = { navController.navigateUp() },
                 onNavigateToSettings = { navController.navigateToSettings() },
-                onNavigateToProvidersSettings = { navController.navigateToSearchProviders() },
+                onNavigateToProviders = { navController.navigateToSearchProviders() },
                 onDownloadTorrent = { showTorrentClientNotFoundDialog = !onDownloadTorrent(it) },
                 onShareMagnetLink = onShareMagnetLink,
                 onOpenDescriptionPage = openDescriptionPage,

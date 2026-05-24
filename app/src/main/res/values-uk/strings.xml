@@ -197,7 +197,7 @@
     <string name="browse_torrents_count_format">Знайдено торентів: %1$d</string>
     <string name="browse_state_unavailable_title">Торентів не знайдено</string>
     <string name="browse_state_unavailable_description">Упевніться, що вибрано хоча б одну пошукову систему</string>
-    <string name="browse_button_go_to_settings">Перейти до параметрів</string>
+    <string name="browse_button_go_to_providers">Перейти до параметрів</string>
     <string name="browse_button_try_again">Повторити спробу</string>
     <string name="browse_search_query_hint">Пошук торентів</string>
 </resources>

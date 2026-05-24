@@ -20,8 +20,8 @@ import com.prajwalch.torrentsearch.ui.component.ContentStateDefaults
 
 @Composable
 fun TorrentsUnavailableState(
-    onNavigateToSearchProviders: () -> Unit,
-    onRetry: () -> Unit,
+    onNavigateToProviders: () -> Unit,
+    onTryAgain: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     ContentState(
@@ -42,7 +42,7 @@ fun TorrentsUnavailableState(
         },
         primaryAction = {
             Button(
-                onClick = onNavigateToSearchProviders,
+                onClick = onNavigateToProviders,
                 contentPadding = ButtonDefaults.ButtonWithIconContentPadding,
             ) {
                 Icon(
@@ -51,12 +51,12 @@ fun TorrentsUnavailableState(
                     contentDescription = null,
                 )
                 Spacer(Modifier.width(ButtonDefaults.IconSpacing))
-                Text(stringResource(R.string.browse_button_go_to_settings))
+                Text(stringResource(R.string.browse_button_go_to_providers))
             }
         },
         secondaryAction = {
             OutlinedButton(
-                onClick = onRetry,
+                onClick = onTryAgain,
                 contentPadding = ButtonDefaults.ButtonWithIconContentPadding,
             ) {
                 Icon(
