@@ -74,8 +74,8 @@ fun ContentState(
             ),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            primaryAction?.let { it() }
             secondaryAction?.let { it() }
+            primaryAction?.let { it() }
         }
     }
 }
