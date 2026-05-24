@@ -224,7 +224,7 @@ fun BrowseScreen(
                         )
                     }
 
-                    BrowseContentState.NotAvailable -> {
+                    BrowseContentState.Unavailable -> {
                         NoTorrentsFoundState(
                             modifier = Modifier.fillMaxSize(),
                             onNavigateToSearchProviders = onNavigateToProvidersSettings,
@@ -254,7 +254,7 @@ fun BrowseScreen(
 private fun BrowseContentState.getAnimationContentKey() = when (this) {
     BrowseContentState.InternetError -> BrowseContentState.InternetError::class
     BrowseContentState.Loading -> BrowseContentState.Loading::class
-    BrowseContentState.NotAvailable -> BrowseContentState.NotAvailable::class
+    BrowseContentState.Unavailable -> BrowseContentState.Unavailable::class
     is BrowseContentState.Available -> BrowseContentState.Available::class
 }
 
