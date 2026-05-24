@@ -16,6 +16,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 
 import com.prajwalch.torrentsearch.R
 import com.prajwalch.torrentsearch.ui.component.ContentState
@@ -23,7 +24,7 @@ import com.prajwalch.torrentsearch.ui.component.ContentStateDefaults
 import com.prajwalch.torrentsearch.ui.theme.spaces
 
 @Composable
-fun NoTorrentsFoundState(
+fun TorrentsUnavailableState(
     onNavigateToSearchProviders: () -> Unit,
     onRetry: () -> Unit,
     modifier: Modifier = Modifier,
@@ -33,12 +34,17 @@ fun NoTorrentsFoundState(
         icon = {
             Icon(
                 modifier = Modifier.size(ContentStateDefaults.IconSize),
-                painter = painterResource(R.drawable.ic_results_not_found),
+                painter = painterResource(R.drawable.ic_cloud_off),
                 contentDescription = null,
             )
         },
-        title = { Text(stringResource(R.string.browse_no_torrents_found_title)) },
-        description = { Text(stringResource(R.string.browse_no_torrent_found_description)) },
+        title = { Text(stringResource(R.string.browse_state_unavailable_title)) },
+        description = {
+            Text(
+                text = stringResource(R.string.browse_state_unavailable_description),
+                textAlign = TextAlign.Center,
+            )
+        },
         action = {
             Row(
                 horizontalArrangement = Arrangement.Center,

@@ -193,8 +193,8 @@
     <string name="browse_sort_latest">Terbaru</string>
     <string name="browse_sort_top">Terpopuler</string>
     <string name="browse_torrents_count_format">Ditemukan %1$d torrent</string>
-    <string name="browse_no_torrents_found_title">Tidak ada torrent yang ditemukan</string>
-    <string name="browse_no_torrent_found_description">Periksa bahwa setidaknya satu penyedia diaktifkan</string>
+    <string name="browse_state_unavailable_title">Tidak ada torrent yang ditemukan</string>
+    <string name="browse_state_unavailable_description">Periksa bahwa setidaknya satu penyedia diaktifkan</string>
     <string name="browse_button_go_to_settings">Pergi ke pengaturan</string>
     <string name="browse_button_try_again">Coba lagi</string>
 </resources>

@@ -36,14 +36,13 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-
 import com.prajwalch.torrentsearch.R
 import com.prajwalch.torrentsearch.domain.model.MagnetUri
 import com.prajwalch.torrentsearch.domain.model.Torrent
 import com.prajwalch.torrentsearch.ui.TorrentFileDownloadEffect
 import com.prajwalch.torrentsearch.ui.browse.component.BrowseFilters
-import com.prajwalch.torrentsearch.ui.browse.component.NoTorrentsFoundState
 import com.prajwalch.torrentsearch.ui.browse.component.TorrentList
+import com.prajwalch.torrentsearch.ui.browse.component.TorrentsUnavailableState
 import com.prajwalch.torrentsearch.ui.component.AnimatedScrollToTopFAB
 import com.prajwalch.torrentsearch.ui.component.ArrowBackIconButton
 import com.prajwalch.torrentsearch.ui.component.CollapsibleSearchBar
@@ -53,7 +52,6 @@ import com.prajwalch.torrentsearch.ui.component.rememberCollapsibleSearchBarStat
 import com.prajwalch.torrentsearch.ui.extension.copyText
 import com.prajwalch.torrentsearch.ui.rememberTorrentListState
 import com.prajwalch.torrentsearch.ui.theme.spaces
-
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -225,8 +223,10 @@ fun BrowseScreen(
                     }
 
                     BrowseContentState.Unavailable -> {
-                        NoTorrentsFoundState(
-                            modifier = Modifier.fillMaxSize(),
+                        TorrentsUnavailableState(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .padding(horizontal = MaterialTheme.spaces.large),
                             onNavigateToSearchProviders = onNavigateToProvidersSettings,
                             onRetry = viewModel::loadTorrents,
                         )
