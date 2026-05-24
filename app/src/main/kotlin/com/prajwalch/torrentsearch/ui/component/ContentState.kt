@@ -46,7 +46,7 @@ fun ContentState(
         ),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        icon?.let { it() }
+        icon?.invoke()
 
         Column(
             verticalArrangement = Arrangement.spacedBy(
@@ -62,7 +62,7 @@ fun ContentState(
             CompositionLocalProvider(
                 LocalTextStyle provides ContentStateDefaults.DescriptionTextStyle
             ) {
-                description?.let { it() }
+                description?.invoke()
             }
         }
 
@@ -74,8 +74,8 @@ fun ContentState(
             ),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            secondaryAction?.let { it() }
-            primaryAction?.let { it() }
+            secondaryAction?.invoke()
+            primaryAction?.invoke()
         }
     }
 }
