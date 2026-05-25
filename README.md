@@ -1,3 +1,27 @@
+# Table of Contents
+
+- [TorrentSearch](#torrentsearch)
+   * [Download](#download)
+   * [Features](#features)
+      + [Search](#search)
+      + [Detailed Results](#detailed-results)
+      + [Torrent Actions](#torrent-actions)
+      + [Torrent Details](#torrent-details)
+      + [Browse](#browse)
+      + [Bookmarks](#bookmarks)
+      + [Safe Mode](#safe-mode)
+      + [Integrations](#integrations)
+      + [Material 3 Design](#material-3-design)
+   * [Screenshots](#screenshots)
+   * [Building from Source](#building-from-source)
+      + [Command Line](#command-line)
+   * [Contributing](#contributing)
+      + [Translation](#translation)
+   * [Contributors](#contributors)
+   * [Tech Stack and Open Source Libraries](#tech-stack-and-open-source-libraries)
+   * [Acknowledgements](#acknowledgements)
+   * [Disclaimer](#disclaimer)
+
 <div align="center">
 
 ![TorrentSearch icon](https://github.com/prajwalch/TorrentSearch/blob/main/fastlane/metadata/android/en-US/images/icon.png)
