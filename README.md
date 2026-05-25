@@ -1,42 +1,46 @@
-# Table of Contents
-
-- [TorrentSearch](#torrentsearch)
-   * [Download](#download)
-   * [Features](#features)
-      + [Search](#search)
-      + [Detailed Results](#detailed-results)
-      + [Torrent Actions](#torrent-actions)
-      + [Torrent Details](#torrent-details)
-      + [Browse](#browse)
-      + [Bookmarks](#bookmarks)
-      + [Safe Mode](#safe-mode)
-      + [Integrations](#integrations)
-      + [Material 3 Design](#material-3-design)
-   * [Screenshots](#screenshots)
-   * [Building from Source](#building-from-source)
-      + [Command Line](#command-line)
-   * [Contributing](#contributing)
-      + [Translation](#translation)
-   * [Contributors](#contributors)
-   * [Tech Stack and Open Source Libraries](#tech-stack-and-open-source-libraries)
-   * [Acknowledgements](#acknowledgements)
-   * [Disclaimer](#disclaimer)
-
 <div align="center">
 
 ![TorrentSearch icon](https://github.com/prajwalch/TorrentSearch/blob/main/fastlane/metadata/android/en-US/images/icon.png)
+
+<h1>Torrent Search</h1>
 <br/>
+
 [![Latest release](https://img.shields.io/github/v/release/prajwalch/TorrentSearch?style=for-the-badge&color=green)](https://github.com/prajwalch/TorrentSearch/releases)
 [![F-Droid](https://img.shields.io/f-droid/v/com.prajwalch.torrentsearch?style=for-the-badge&color=blue)](https://f-droid.org/packages/com.prajwalch.torrentsearch)
 [![IzzyOnDroid](https://img.shields.io/endpoint?style=for-the-badge&color=skyblue&url=https://apt.izzysoft.de/fdroid/api/v1/shield/com.prajwalch.torrentsearch)](https://apt.izzysoft.de/fdroid/index/apk/com.prajwalch.torrentsearch)
 [![Downloads](https://img.shields.io/github/downloads/prajwalch/TorrentSearch/total?style=for-the-badge&color=lightgreen)](https://github.com/prajwalch/TorrentSearch/releases)
 [![Translation status](https://img.shields.io/weblate/progress/torrentsearch?style=for-the-badge)](https://hosted.weblate.org/engage/torrentsearch/)
 
-# TorrentSearch
+</div>
+
+# Table of Contents
+
+- [Intro](#intro)
+- [Download](#download)
+- [Features](#features)
+   * [Search](#search)
+   * [Detailed Results](#detailed-results)
+   * [Torrent Actions](#torrent-actions)
+   * [Torrent Details](#torrent-details)
+   * [Browse](#browse)
+   * [Bookmarks](#bookmarks)
+   * [Safe Mode](#safe-mode)
+   * [Integrations](#integrations)
+   * [Material 3 Design](#material-3-design)
+- [Screenshots](#screenshots)
+- [Building from Source](#building-from-source)
+   * [Command Line](#command-line)
+- [Contributing](#contributing)
+   * [Translation](#translation)
+- [Contributors](#contributors)
+- [Tech Stack and Open Source Libraries](#tech-stack-and-open-source-libraries)
+- [Acknowledgements](#acknowledgements)
+- [Disclaimer](#disclaimer)
+
+## Intro
 
 TorrentSearch is an Android app for searching torrents across multiple providers simultaneously,
 with fast search speed, detailed results, category filters, and a full set of torrent actions.
-</div>
 
 ## Download
 
