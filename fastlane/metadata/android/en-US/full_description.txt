@@ -1,1 +1,23 @@
-<p><i>Torrent Search</i> is a modern Material 3 design Android app to search and download torrents from multiple providers.</p><p><br><b>Features:</b></p><ul><li>Modern Material 3 design UI</li><li>Different category selections</li><li>Detailed view of search results</li><li>Bookmark/Download torrent</li><li>Copy/share magnet link</li><li>Open torrent description page</li><li>Copy/share torrent description page URL<li>Safe mode option</li><li>Option to enable or disable individual providers</li><li>Jackett/Prowlarr/other *arr service integration using Torznab API</li></ul><p><b>Disclaimer:</b></p><p>This app does not host, store, or distribute any torrent files or copyrighted content; it only searches publicly available content from third-party sources. The developer is not responsible for how users access or use this information.</p><p>Use at your own risk and ensure compliance with applicable laws.</p>
+TorrentSearch is a modern Android app that lets you search torrents across multiple providers simultaneously.
+
+Features:
+
+- Search multiple providers in parallel for fast, progressive results
+- Enable or disable individual providers
+- Sort and filter results to find what you need
+- Detailed results including size, seeders, peers, upload date, category, provider, and NSFW indicator
+- Open magnet links using your preferred external torrent client
+- Download .torrent file to local storage
+- View torrent details directly inside the app or open the full page in your browser
+- Copy or share the magnet link or details page URL
+- Explore top and latest torrents directly from the app
+- Bookmark torrents for quick access later
+- Safe Mode to automatically hide NSFW content and providers
+- Torznab integration for Jackett, Prowlarr, and compatible *arr services
+- Dynamic Material 3 design with full light/dark mode support
+
+Disclaimer:
+
+TorrentSearch does not host, store, or distribute any torrent files or copyrighted content. It searches publicly accessible third-party sources and displays the results. The developer is not responsible for how those results are accessed or used.
+
+Users are responsible for complying with their local laws and regulations.
