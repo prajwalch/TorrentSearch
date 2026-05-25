@@ -33,7 +33,7 @@
     <string name="search_filter_chip_dead_torrents">Неактивні торенти</string>
     <string name="internet_connection_error">Нема з\\\'єднання з інтернетом</string>
     <string name="button_try_again">Повторити спробу</string>
-    <string name="search_state_results_not_found_title">Не знайдено «%1$s» у %2$s</string>
+    <string name="search_state_results_not_found_title">Результатів не знайдено</string>
     <string name="search_results_count_format">%1$s результатів для «%2$s» (%3$s)</string>
     <string name="bookmarks_search_query_hint">Пошук вподобаного</string>
     <string name="bookmarks_action_delete_all">Скасувати всі</string>
@@ -195,8 +195,13 @@
     <string name="search_action_refresh">Оновити</string>
     <string name="browse_torrents_count_format">Знайдено торентів: %1$d</string>
     <string name="browse_state_unavailable_title">Торентів не знайдено</string>
-    <string name="browse_state_unavailable_description">Упевніться, що вибрано хоча б одну пошукову систему</string>
+    <string name="browse_state_unavailable_description">Нема торентів для показу. Можливо, необхідні пошукові системи вимкнені чи недоступні.</string>
     <string name="browse_button_go_to_providers">Перейти до параметрів</string>
     <string name="browse_button_try_again">Повторити спробу</string>
     <string name="browse_search_query_hint">Пошук торентів</string>
+    <string name="search_state_results_not_found_description">Не знайдено торентів «%1$s» у %2$s. Спробуйте інший запит або перевірте вибір пошукових систем.</string>
+    <string name="search_button_go_to_providers">Пошукові системи</string>
+    <string name="torrent_details_state_unavailable_description">Можливо, верстку сторінки змінено або сервер тимчасово недоступний.</string>
+    <string name="torrent_details_state_unsupported_site_title">URL-адреса не підтримується</string>
+    <string name="torrent_details_state_unsupported_site_description">Не вдалося отримати відомості про %1$s. Можливо, цей торент-сайт поки не підтримується. Спробуйте натомість відкрити сторінку відомостей у браузері.</string>
 </resources>
