@@ -1,61 +1,34 @@
 package com.prajwalch.torrentsearch.ui.home
 
-import android.os.Build
-
-import androidx.compose.foundation.focusable
-import androidx.compose.foundation.layout.Arrangement
+import android.content.res.Configuration
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.text.input.rememberTextFieldState
-import androidx.compose.foundation.text.input.setTextAndPlaceCursorAtEnd
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.LargeTopAppBar
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.material3.TopAppBarScrollBehavior
-import androidx.compose.material3.rememberSearchBarState
+import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 
 import com.prajwalch.torrentsearch.R
 import com.prajwalch.torrentsearch.domain.model.Category
-import com.prajwalch.torrentsearch.ui.component.CategoryChipsRow
-import com.prajwalch.torrentsearch.ui.component.ExpandableSearchBar
-import com.prajwalch.torrentsearch.ui.home.component.SearchHistoryList
+import com.prajwalch.torrentsearch.ui.home.component.AppBranding
+import com.prajwalch.torrentsearch.ui.home.component.SearchBox
 import com.prajwalch.torrentsearch.ui.theme.spaces
-
-import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.drop
-import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -69,12 +42,10 @@ fun HomeScreen(
     viewModel: HomeViewModel = hiltViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-    val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
 
     Scaffold(
         modifier = Modifier
             .fillMaxSize()
-            .nestedScroll(connection = scrollBehavior.nestedScrollConnection)
             .then(modifier),
         topBar = {
             HomeScreenTopBar(
@@ -82,114 +53,37 @@ fun HomeScreen(
                 enableSearchHistory = uiState.searchHistoryEnabled,
                 onNavigateToSearchHistory = onNavigateToSearchHistory,
                 onNavigateToSettings = onNavigateToSettings,
-                scrollBehavior = scrollBehavior,
             )
         },
     ) { innerPadding ->
-        // Prevent search bar from being autofocused on older Android versions
-        // which range from 7.1 to 8.1 (<9).
-        val focusableModifier = if (Build.VERSION.SDK_INT < Build.VERSION_CODES.P) {
-            Modifier.focusable()
-        } else {
-            Modifier
-        }
-
         Column(
             modifier = Modifier
-                .fillMaxSize()
-                .verticalScroll(state = rememberScrollState())
                 .padding(innerPadding)
-                .padding(vertical = MaterialTheme.spaces.extraLarge)
-                .then(focusableModifier),
+                .fillMaxSize()
+                .padding(bottom = MaterialTheme.spaces.extraLarge)
+                .verticalScroll(rememberScrollState()),
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(
-                space = MaterialTheme.spaces.large,
-            ),
         ) {
-            val coroutineScope = rememberCoroutineScope()
-            val searchBarState = rememberSearchBarState()
-            val textFieldState = rememberTextFieldState()
+            // TODO: Use WindowSizeClass for better responsive layout.
+            val configuration = LocalConfiguration.current
+            val isPortraitMode = configuration.orientation == Configuration.ORIENTATION_PORTRAIT
 
-            val enableSearchButton by remember {
-                derivedStateOf { textFieldState.text.isNotBlank() }
+            if (isPortraitMode) {
+                Spacer(Modifier.height(MaterialTheme.spaces.extraLarge * 5))
             }
 
-            LaunchedEffect(Unit) {
-                snapshotFlow { textFieldState.text }
-                    // Ignore the initial empty text.
-                    .drop(1)
-                    .distinctUntilChanged()
-                    .collectLatest { viewModel.filterSearchHistories(query = it.toString()) }
-            }
+            AppBranding()
+            Spacer(Modifier.height(32.dp))
 
-            ExpandableSearchBar(
-                state = searchBarState,
-                textFieldState = textFieldState,
-                onSearch = {
-                    onSearch(textFieldState.text.toString(), uiState.selectedCategory)
-                    coroutineScope.launch { searchBarState.animateToCollapsed() }
-                },
-                placeholder = { Text(stringResource(R.string.home_search_query_hint)) },
-            ) {
-                CategoryChipsRow(
-                    categories = uiState.categories,
-                    selectedCategory = uiState.selectedCategory,
-                    onCategoryClick = viewModel::setCategory,
-                    contentPadding = PaddingValues(horizontal = MaterialTheme.spaces.large),
-                )
-
-                SearchHistoryList(
-                    histories = uiState.histories,
-                    onSearchRequest = {
-                        onSearch(it, uiState.selectedCategory)
-                        textFieldState.setTextAndPlaceCursorAtEnd(it)
-                        coroutineScope.launch { searchBarState.animateToCollapsed() }
-                    },
-                    onInsertQuery = textFieldState::setTextAndPlaceCursorAtEnd,
-                )
-            }
-
-            CategoryChipsRow(
+            SearchBox(
+                onSearch = { query -> onSearch(query, uiState.selectedCategory) },
+                onBrowse = { onBrowse(uiState.selectedCategory) },
                 categories = uiState.categories,
                 selectedCategory = uiState.selectedCategory,
-                onCategoryClick = viewModel::setCategory,
-                contentPadding = PaddingValues(horizontal = MaterialTheme.spaces.large),
+                onCategorySelect = viewModel::setCategory,
+                histories = uiState.histories,
+                onFilterSearchHistories = viewModel::filterSearchHistories,
             )
-
-            Spacer(modifier = Modifier.height(MaterialTheme.spaces.small))
-            Row(
-                modifier = Modifier.padding(horizontal = MaterialTheme.spaces.large),
-                horizontalArrangement = Arrangement.spacedBy(MaterialTheme.spaces.small),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Button(
-                    onClick = {
-                        onSearch(textFieldState.text.toString(), uiState.selectedCategory)
-                    },
-                    enabled = enableSearchButton,
-                    contentPadding = ButtonDefaults.ButtonWithIconContentPadding,
-                ) {
-                    Icon(
-                        modifier = Modifier.size(ButtonDefaults.IconSize),
-                        painter = painterResource(R.drawable.ic_search),
-                        contentDescription = null,
-                    )
-                    Spacer(modifier = Modifier.width(ButtonDefaults.IconSpacing))
-                    Text(text = stringResource(R.string.home_button_search))
-                }
-                OutlinedButton(
-                    onClick = { onBrowse(uiState.selectedCategory) },
-                    contentPadding = ButtonDefaults.ButtonWithIconContentPadding,
-                ) {
-                    Icon(
-                        modifier = Modifier.size(ButtonDefaults.IconSize),
-                        painter = painterResource(R.drawable.ic_browse),
-                        contentDescription = null,
-                    )
-                    Spacer(modifier = Modifier.width(ButtonDefaults.IconSpacing))
-                    Text(stringResource(R.string.home_button_browse))
-                }
-            }
         }
     }
 }
@@ -202,11 +96,10 @@ private fun HomeScreenTopBar(
     onNavigateToSearchHistory: () -> Unit,
     onNavigateToSettings: () -> Unit,
     modifier: Modifier = Modifier,
-    scrollBehavior: TopAppBarScrollBehavior? = null,
 ) {
-    LargeTopAppBar(
+    TopAppBar(
         modifier = modifier,
-        title = { Text(text = stringResource(R.string.app_name)) },
+        title = {},
         actions = {
             IconButton(onClick = onNavigateToBookmarks) {
                 Icon(
@@ -229,6 +122,5 @@ private fun HomeScreenTopBar(
                 )
             }
         },
-        scrollBehavior = scrollBehavior,
     )
 }
