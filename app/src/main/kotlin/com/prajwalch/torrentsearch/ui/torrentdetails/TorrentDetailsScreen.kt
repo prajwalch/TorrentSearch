@@ -308,6 +308,7 @@ private fun TorrentDetailsScreenContent(
                 onDownloadTorrentFile = onDownloadTorrentFile,
             )
             HorizontalDivider()
+
             TorrentInfo(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -321,14 +322,17 @@ private fun TorrentDetailsScreenContent(
                 lastChecked = details.lastChecked,
                 infoHash = details.infoHash,
             )
+            HorizontalDivider()
+
             if (details.screenshotUrls.isNotEmpty()) {
                 ScreenShots(
                     modifier = Modifier.fillMaxWidth(),
                     urls = details.screenshotUrls,
                     contentPadding = PaddingValues(horizontal = MaterialTheme.spaces.large)
                 )
+                HorizontalDivider()
             }
-            HorizontalDivider()
+
             TorrentDescription(
                 modifier = Modifier
                     .fillMaxWidth()

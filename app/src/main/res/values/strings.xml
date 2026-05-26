@@ -110,6 +110,7 @@
     <string name="torrent_details_state_unsupported_site_description">Couldn\'t retrieve details from %1$s. This torrent site may not be supported yet. Try opening details page in the browser instead.</string>
     <string name="torrent_details_state_something_wrong_title">Something went wrong</string>
     <string name="torrent_details_title_info">Torrent info</string>
+    <string name="torrent_details_title_screenshots">Screenshots</string>
     <string name="torrent_details_title_description">Description</string>
     <string name="torrent_details_label_file_size">File size</string>
     <string name="torrent_details_label_seeders">Seeders</string>
