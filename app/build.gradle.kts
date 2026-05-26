@@ -64,6 +64,10 @@ android {
     androidResources {
         generateLocaleConfig = true
     }
+
+    packaging {
+        resources.excludes += "DebugProbesKt.bin"
+    }
 }
 
 room {
