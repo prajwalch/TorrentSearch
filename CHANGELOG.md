@@ -1,3 +1,118 @@
+# v0.5.0
+
+### What's new
+
+- Added an in-app torrent details screen
+- Added support for browsing latest and top torrents
+- Added a viewed indicator for torrents, by [@armanmaurya](https://github.com/armanmaurya)
+- Improved category support for providers
+- Extended `.torrent` file download support
+- Improved filtering torrents by name
+- UI enhancements across the whole app
+- Added [NikoBT](https://nikobt.to) as an Anime provider (disabled by default)
+- Added Japanese translation by [@Sakuya_San](https://github.com/Sakuya_San)
+- Added Italian translation by [@elenaferr0](https://github.com/elenaferr0)
+- In the search screen, an ongoing search can now be cancelled via `⋮ > Stop Search`
+- The enabled/total provider count (e.g., "3 of 24 enabled") is now displayed as a subtitle in the
+  "Search providers" screen's top bar
+- `TokyoToshokan` now provides a file download link
+
+### In-app torrent details screen
+
+The new opt-in details screen lets you view torrent details directly inside the app.
+It displays all the essential torrent information and description, complete with image loading
+support. Extended capabilities include a media poster (shown only when a poster URL is available)
+with automatic NSFW image blurring and screenshot previews. This feature is disabled by default,
+but can be easily enabled from the settings screen. A dedicated option to toggle automatic NSFW
+image blurring is also available.
+
+### Browse screen
+
+Explore the latest and top torrents through a brand-new Browse screen, accessible via a dedicated
+button on the Home screen. Category chips are shared across both Search and Browse — with one key
+difference: selecting a category in Browse fetches new torrents, while in Search it filters
+existing results client-side. Like Search, Browse queries only your enabled providers.
+
+### Viewed indicator for torrents
+
+[@armanmaurya](https://github.com/armanmaurya) introduced a new feature that marks torrents as
+viewed and dims them after you tap on them, making it easier to track what you've already seen. 
+A `Hide viewed` filter on the Search and Browse screens lets you hide viewed torrents manually.
+Note that it hides viewed torrents at the time of activation, so toggle it off and on to hide newly
+viewed ones. To clear your viewed history, use "Clear viewed torrents" in settings.
+
+### Extended `.torrent` file download support
+
+TorrentSearch now uses [itorrents.net](https://itorrents.net) as a fallback source for downloading
+`.torrent` files when a provider doesn't return a download link. As a result, the
+`Download torrent file` action is now displayed for all torrents but the file availability is not
+guaranteed, and a message will be shown if the file cannot be found.
+
+### Improved filtering torrents by name
+
+Filtering torrents by name now matches each word in your query individually, so torrents matching
+any word is included rather than requiring an exact phrase match. This feature applies to all
+Search, Bookmarks and Browse screen.
+
+Examples:
+
+`primer 1080` matches:
+
+- **Primer**.2004.**1080p**.BluRay
+- **Primer**.2004.DVDRip
+- Interstellar.**1080p**.BluRay
+
+`breaking bad 720` matches:
+
+- **Breaking**.**Bad**.S01.**720p**
+- **Breaking**.**Bad**.S02.1080p
+- Inception.**720p**.WEB-DL
+
+### Improved category support for providers
+
+Previously, providers were limited to declaring a single supported category. This caused two
+problems: providers supporting many categories, like `Nyaa`, were restricted to just one
+(e.g. `Anime`), while providers with partial support, like `InternetArchive`, were forced to
+declare `All` even though they don't cover everything.
+
+Providers now declare all their supported categories, improving provider selection during search.
+`Nyaa`, for example, now supports all its categories instead of just `Anime`. Providers like
+`InternetArchive`, which were previously forced to `All`, now accurately reflect only the categories
+they actually support. The "Search providers" screen now shows all supported categories for each
+provider.
+
+### What's changed
+
+- Improved the "No results found" message with a clearer description, a solution hint, and a direct
+  navigation button to the providers screen
+- Updated `LimeTorrents` provider URL to [limetorrents.fun](https://limetorrents.fun)
+- Improved the efficiency of large search result accumulation.
+- Improved date handling for torrents to ensure a consistent, social-media-style upload date format.
+  This also fixes the previously broken "Sort by date" feature for torrent lists.
+- Improved HTML scraping speed for the `XXXClub`, `TheRarBg`, and `MyPornClub` providers
+- Updated `Yts` provider URL to [https://yts.bz](https://yts.bz)
+- The `Other` category is no longer marked as NSFW
+- Torrents are no longer marked as NSFW when no category is available
+- The `Default category` setting is now deprecated. It remains in the app temporarily but is
+non-functional except for home screen and will be removed in a future version.
+
+### What's fixed
+
+- "Enable all" and "Disable all" on the Search Providers screen now respect active filters
+  Previously, these actions ignored any active category filter and affected all providers regardless
+- Fixed an issue where enabling a provider immediately after a fresh app install would
+  inadvertently disable other providers
+- Fixed an issue that caused some torrents to have an empty magnet URI, by
+  [@armanmaurya](https://github.com/armanmaurya)
+- Bookmarking torrents with duplicate names is now allowed.
+  Previously, it would silently fail if another bookmark with the same name already existed.
+- Added a fix that automatically trims a trailing space (e.g., "ubuntu ") when accepting a keyboard
+  suggestion ensuring clean queries, correct results, and accurate search history entries
+- Fixed `SubsPlease` provider to correctly extract show names with episode numbers
+- Fixed `AniRena` provider for the updated website layout
+- Fixed `TorrentDatabase` provider for the updated website layout
+- Fixed `UIndex` provider, which was returning truncated torrent names
+
 # v0.4.9
 
 ## Important news
