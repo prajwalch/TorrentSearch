@@ -22,7 +22,3 @@
 
 # Prevent R8 from minifying
 -keep class com.prajwalch.torrentsearch.domain.model.Category { *; }
-
-# Ignore intended-to-be-optional re2j classes - only needed if using re2j for jsoup regex
-# jsoup safely falls back to JDK regex if re2j not on classpath, but has concrete re2j refs
--dontwarn com.google.re2j.**
