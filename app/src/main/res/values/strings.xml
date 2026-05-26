@@ -45,7 +45,7 @@
     <string name="torrent_file_save_error">Torrent file save failed</string>
 
     <string name="torrent_client_not_found_title">Torrent client not found</string>
-    <string name="torrent_client_not_found_content">To use the download feature, install a torrent client, set it up, and return to this app.</string>
+    <string name="torrent_client_not_found_content">Install a torrent client to open magnet links.</string>
     <string name="torrent_client_not_found_recommended_client_hint">Recommended client</string>
     <string name="torrent_client_libretorrent" translatable="false">LibreTorrent</string>
     <string name="torrent_client_aria2" translatable="false">Aria2App</string>
