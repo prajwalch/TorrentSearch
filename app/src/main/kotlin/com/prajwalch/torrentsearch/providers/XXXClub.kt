@@ -7,6 +7,8 @@ import com.prajwalch.torrentsearch.network.HttpClient
 import com.prajwalch.torrentsearch.util.TorrentDateParser
 import com.prajwalch.torrentsearch.util.TorrentUtils
 
+import com.vladsch.flexmark.html2md.converter.FlexmarkHtmlConverter
+
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
@@ -133,6 +135,7 @@ private object XXXClubDetailsPageParser {
     suspend fun parse(html: String, pageUrl: String): TorrentDetails? =
         withContext(Dispatchers.Default) {
             val html = Jsoup.parse(html, pageUrl)
+            val htmlToMarkdownConverter = FlexmarkHtmlConverter.builder().build()
 
             val name = html.selectFirst(NAME)?.ownText() ?: return@withContext null
             val magnetUri = html.selectFirst(MAGNET_URI)?.attr("href") ?: return@withContext null
@@ -153,7 +156,7 @@ private object XXXClubDetailsPageParser {
             val fileDownloadLink = html.selectFirst(FILE_DOWNLOAD_LINK)?.attr("abs:href")
             val description = html.selectFirst(DESCRIPTION)
                 ?.html()
-                ?.let(TorrentUtils.HtmlToMarkdownConverter::convert)
+                ?.let(htmlToMarkdownConverter::convert)
             val posterUrl = html.selectFirst(POSTER_URL)?.attr("src")
 
             TorrentDetails(

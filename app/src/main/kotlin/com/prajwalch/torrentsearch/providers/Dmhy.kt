@@ -8,6 +8,8 @@ import com.prajwalch.torrentsearch.util.FileSizeUtils
 import com.prajwalch.torrentsearch.util.TorrentDateParser
 import com.prajwalch.torrentsearch.util.TorrentUtils
 
+import com.vladsch.flexmark.html2md.converter.FlexmarkHtmlConverter
+
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
@@ -134,6 +136,7 @@ private object DmhyDetailsPageParser {
 
     suspend fun parse(html: String): TorrentDetails? = withContext(Dispatchers.Default) {
         val html = Jsoup.parse(html)
+        val htmlToMarkdownConverter = FlexmarkHtmlConverter.builder().build()
 
         val torrentName = html.selectFirst(TORRENT_NAME)?.text() ?: return@withContext null
         val magnetUri = html.selectFirst(MAGNET_URI)?.attr("href") ?: return@withContext null
@@ -149,7 +152,7 @@ private object DmhyDetailsPageParser {
         val description = html.selectFirst(DESCRIPTION)
             ?.apply { select("> *:lt(2)").remove() }
             ?.html()
-            ?.let(TorrentUtils.HtmlToMarkdownConverter::convert)
+            ?.let(htmlToMarkdownConverter::convert)
 
         TorrentDetails(
             infoHash = TorrentUtils.getInfoHashFromMagnetUri(magnetUri),

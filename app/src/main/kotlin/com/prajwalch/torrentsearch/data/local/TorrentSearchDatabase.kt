@@ -138,17 +138,20 @@ private val MIGRATION_4_5 = object : Migration(4, 5) {
                 // See https://github.com/prajwalch/TorrentSearch/pull/94.
                 if (magnetUri == "null") continue
 
-                val infoHash = TorrentUtils.getInfoHashFromMagnetUri(magnetUri)
+                val infoHash = runCatching { TorrentUtils.getInfoHashFromMagnetUri(magnetUri) }
+                    .getOrNull() ?: continue
                 val name = cursor.getString(cursor.getColumnIndexOrThrow("name"))
                 val size = cursor.getString(cursor.getColumnIndexOrThrow("size"))
                 val seeders = cursor.getInt(cursor.getColumnIndexOrThrow("seeders"))
                 val peers = cursor.getInt(cursor.getColumnIndexOrThrow("peers"))
                 val providerName = cursor.getString(cursor.getColumnIndexOrThrow("providerName"))
                 val uploadDate = cursor.getString(cursor.getColumnIndexOrThrow("uploadDate"))
-                val newUploadDate = parseOldTorrentUploadDate(
-                    date = uploadDate,
-                    providerName = providerName,
-                )?.toEpochMilli()
+                val newUploadDate = runCatching {
+                    parseOldTorrentUploadDate(
+                        date = uploadDate,
+                        providerName = providerName,
+                    )?.toEpochMilli()
+                }.getOrNull()
                 val category = cursor.getString(cursor.getColumnIndexOrThrow("category"))
                 val descriptionPageUrl = cursor
                     .getString(cursor.getColumnIndexOrThrow("descriptionPageUrl"))

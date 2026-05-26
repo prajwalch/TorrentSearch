@@ -7,6 +7,8 @@ import com.prajwalch.torrentsearch.network.HttpClient
 import com.prajwalch.torrentsearch.util.TorrentDateParser
 import com.prajwalch.torrentsearch.util.TorrentUtils
 
+import com.vladsch.flexmark.html2md.converter.FlexmarkHtmlConverter
+
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
@@ -150,6 +152,7 @@ private object XXXTrackerDetailsPageParser {
     suspend fun parse(html: String, pageUrl: String): TorrentDetails? =
         withContext(Dispatchers.Default) {
             val html = Jsoup.parse(html, pageUrl)
+            val htmlToMarkdownConverter = FlexmarkHtmlConverter.builder().build()
 
             val name = html.selectFirst(NAME)?.text() ?: return@withContext null
             val magnetUri = html.selectFirst(MAGNET_URI)?.attr("href") ?: return@withContext null
@@ -168,7 +171,7 @@ private object XXXTrackerDetailsPageParser {
                 // Remove poster and two new lines after the poster from description.
                 ?.apply { select("> *:lt(3)").remove() }
                 ?.html()
-                ?.let(TorrentUtils.HtmlToMarkdownConverter::convert)
+                ?.let(htmlToMarkdownConverter::convert)
 
             TorrentDetails(
                 infoHash = infoHash,
