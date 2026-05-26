@@ -13,7 +13,7 @@
 
 </div>
 
-# Table of Contents
+## Table of Contents
 
 - [Intro](#intro)
 - [Download](#download)
