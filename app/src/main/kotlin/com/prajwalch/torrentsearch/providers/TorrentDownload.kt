@@ -71,9 +71,13 @@ class TorrentDownload :
 private class TorrentDownloadResultsParser(private val providerName: String) {
     suspend fun parse(html: String, pageUrl: String): List<Torrent> =
         withContext(Dispatchers.Default) {
-            Jsoup.parse(html, pageUrl)
-                .select(LIST_ITEM)
-                .mapNotNull(::parseListItem)
+            val html = Jsoup.parse(html, pageUrl)
+
+            if (html.selectFirst("h2")?.ownText() == "No Results Found") {
+                emptyList()
+            } else {
+                html.select(LIST_ITEM).mapNotNull(::parseListItem)
+            }
         }
 
     private fun parseListItem(listItem: Element): Torrent? {
