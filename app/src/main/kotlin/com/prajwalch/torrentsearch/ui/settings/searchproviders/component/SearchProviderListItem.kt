@@ -155,7 +155,7 @@ private fun SearchProviderUrl(url: String, modifier: Modifier = Modifier) {
         Text(
             modifier = modifier,
             text = url,
-            overflow = TextOverflow.Companion.Ellipsis,
+            overflow = TextOverflow.Ellipsis,
             maxLines = 2,
         )
     }
