@@ -75,7 +75,7 @@ fun UnsafeBadge(modifier: Modifier = Modifier) {
 fun BadgeRow(modifier: Modifier = Modifier, badges: @Composable (RowScope.() -> Unit)) {
     Row(
         modifier = modifier,
-        horizontalArrangement = Arrangement.spacedBy(space = MaterialTheme.spaces.small),
+        horizontalArrangement = Arrangement.spacedBy(space = MaterialTheme.spaces.extraSmall),
         verticalAlignment = Alignment.CenterVertically,
         content = badges,
     )

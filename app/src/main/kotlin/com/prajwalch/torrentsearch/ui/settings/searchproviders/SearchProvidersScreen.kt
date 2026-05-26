@@ -87,7 +87,12 @@ fun SearchProvidersScreen(
                 contentPadding = PaddingValues(horizontal = MaterialTheme.spaces.large),
             )
             SearchProviderList(
-                contentPadding = PaddingValues(bottom = 80.dp),
+                contentPadding = PaddingValues(
+                    start = MaterialTheme.spaces.large,
+                    top = MaterialTheme.spaces.large,
+                    end = MaterialTheme.spaces.large,
+                    bottom = 80.dp,
+                ),
                 searchProviders = uiState.searchProviders,
                 onEnableSearchProvider = viewModel::enableSearchProvider,
                 onEditConfig = onNavigateToEditSearchProvider,

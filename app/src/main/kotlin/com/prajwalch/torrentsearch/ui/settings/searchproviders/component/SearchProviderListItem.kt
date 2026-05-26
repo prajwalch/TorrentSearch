@@ -1,16 +1,27 @@
 package com.prajwalch.torrentsearch.ui.settings.searchproviders.component
 
+import android.content.res.Configuration
+
 import androidx.compose.foundation.LocalIndication
+import androidx.compose.foundation.background
 import androidx.compose.foundation.combinedClickable
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.material3.FilledTonalIconButton
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.ListItem
+import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
@@ -21,15 +32,23 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 
 import com.prajwalch.torrentsearch.R
 import com.prajwalch.torrentsearch.domain.model.Category
 import com.prajwalch.torrentsearch.providers.SearchProviderSafetyStatus
 import com.prajwalch.torrentsearch.providers.SearchProviderType
-import com.prajwalch.torrentsearch.ui.categoryStringResource
+import com.prajwalch.torrentsearch.ui.component.BadgeRow
+import com.prajwalch.torrentsearch.ui.component.CategoryBadge
+import com.prajwalch.torrentsearch.ui.component.TextUrl
 import com.prajwalch.torrentsearch.ui.component.TorznabBadge
 import com.prajwalch.torrentsearch.ui.component.UnsafeBadge
 import com.prajwalch.torrentsearch.ui.theme.spaces
@@ -45,18 +64,9 @@ fun SearchProviderListItem(
     onEnable: (Boolean) -> Unit,
     onEditConfig: () -> Unit,
     onDeleteConfig: () -> Unit,
+    onShowUnsafeReason: (resId: Int) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    var showUnsafeReason by rememberSaveable { mutableStateOf<Int?>(null) }
-    showUnsafeReason?.let { reasonResId ->
-        SearchProviderUnsafeDetailsDialog(
-            onDismissRequest = { showUnsafeReason = null },
-            providerName = name,
-            url = url,
-            unsafeReason = stringResource(reasonResId),
-        )
-    }
-
     var showTorznabContextMenu by rememberSaveable { mutableStateOf(false) }
 
     // Long click handler for showing Torznab context menu.
@@ -71,11 +81,14 @@ fun SearchProviderListItem(
         onClick = { onEnable(!enabled) },
         onLongClick = longClickHandler,
     )
+    val containerColor = MaterialTheme.colorScheme.surfaceContainer
 
     Box(modifier = modifier.fillMaxWidth()) {
         ListItem(
-            modifier = Modifier.then(clickableModifier),
-            headlineContent = { Text(text = name) },
+            modifier = Modifier
+                .clip(shape = MaterialTheme.shapes.large)
+                .then(clickableModifier),
+            headlineContent = { Text(name) },
             supportingContent = {
                 Column(
                     verticalArrangement = Arrangement.spacedBy(
@@ -84,32 +97,14 @@ fun SearchProviderListItem(
                     ),
                 ) {
                     SearchProviderUrl(url = url)
-                    // TODO: Use new UI.
-                    FlowRow(
-                        horizontalArrangement = Arrangement.spacedBy(MaterialTheme.spaces.extraSmall),
-                        verticalArrangement = Arrangement.spacedBy(MaterialTheme.spaces.extraSmall),
-                    ) {
-                        val cats = buildString {
-                            supportedCategories.forEachIndexed { index, category ->
-                                append(categoryStringResource(category))
-                                if (index != supportedCategories.size - 1) {
-                                    append(", ")
-                                }
-                            }
-                        }
-                        Text(text = cats, color = MaterialTheme.colorScheme.secondary)
-//                        categories.forEach {
-//                            Text(text = categoryStringResource(it))
-//                        }
-//                        categories.forEach { CategoryBadge(it) }
+                    SupportedCategories(
+                        categories = supportedCategories,
+                        containerColor = containerColor,
+                    )
+                    BadgeRow {
                         if (type == SearchProviderType.Torznab) TorznabBadge()
                         if (safetyStatus.isUnsafe()) UnsafeBadge()
                     }
-//                    BadgeRow {
-////                        CategoryBadge(category)
-//                        if (type == SearchProviderType.Torznab) TorznabBadge()
-//                        if (safetyStatus.isUnsafe()) UnsafeBadge()
-//                    }
                 }
             },
             trailingContent = {
@@ -121,11 +116,13 @@ fun SearchProviderListItem(
                     val isUnsafe = safetyStatus is SearchProviderSafetyStatus.Unsafe
 
                     if (isBuiltinProvider && isUnsafe) {
-                        QuestionMarkButton(onClick = { showUnsafeReason = safetyStatus.reason })
+                        QuestionMarkButton(onClick = { onShowUnsafeReason(safetyStatus.reason) })
                     }
+
                     Switch(checked = enabled, onCheckedChange = onEnable)
                 }
             },
+            colors = ListItemDefaults.colors(containerColor = containerColor),
         )
 
         TorznabContextMenu(
@@ -144,11 +141,77 @@ fun SearchProviderListItem(
 }
 
 @Composable
+private fun SearchProviderUrl(url: String, modifier: Modifier = Modifier) {
+    val uriHandler = LocalUriHandler.current
+    val isHttps = url.startsWith("https://")
+
+    if (isHttps) {
+        TextUrl(
+            modifier = modifier,
+            text = url.removePrefix("https://"),
+            onClick = { uriHandler.openUri(url) },
+        )
+    } else {
+        Text(
+            modifier = modifier,
+            text = url,
+            overflow = TextOverflow.Companion.Ellipsis,
+            maxLines = 2,
+        )
+    }
+}
+
+@Composable
+private fun SupportedCategories(
+    categories: Set<Category>,
+    containerColor: Color,
+    modifier: Modifier = Modifier,
+) {
+    val hasOverflowed = categories.size > 5
+    val fadeOutWidth = 32.dp
+    val fadeOutGradient = Brush.horizontalGradient(
+        colors = listOf(Color.Transparent, containerColor),
+    )
+
+    // TODO: For maximum flexibility, use WindowSizeClass.
+    val currentOrientation = LocalConfiguration.current.orientation
+    val isPortraitMode = currentOrientation == Configuration.ORIENTATION_PORTRAIT
+    val showFadeOut = if (isPortraitMode) hasOverflowed else false
+
+    Box(modifier = modifier.height(IntrinsicSize.Max)) {
+        BadgeRow(Modifier.horizontalScroll(rememberScrollState())) {
+            categories.forEach { CategoryBadge(it) }
+
+            if (showFadeOut) {
+                Spacer(Modifier.width(fadeOutWidth))
+            }
+        }
+
+        if (showFadeOut) {
+            Box(
+                modifier = Modifier
+                    .align(Alignment.CenterEnd)
+                    .width(fadeOutWidth)
+                    .fillMaxHeight()
+                    .background(fadeOutGradient),
+            )
+        }
+    }
+}
+
+@Composable
 private fun QuestionMarkButton(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
+    contentColor: Color = MaterialTheme.colorScheme.error,
 ) {
-    FilledTonalIconButton(modifier = modifier, onClick = onClick) {
+    IconButton(
+        modifier = modifier,
+        onClick = onClick,
+        colors = IconButtonDefaults.iconButtonColors(
+            contentColor = contentColor,
+        ),
+    ) {
         Icon(
             painter = painterResource(R.drawable.ic_question_mark),
             contentDescription = null,
@@ -164,10 +227,11 @@ private fun SearchProviderListItemPreview() {
         url = "https://thepiratebay.org",
         supportedCategories = Category.entries.toSet(),
         type = SearchProviderType.Builtin,
-        safetyStatus = SearchProviderSafetyStatus.Safe,
+        safetyStatus = SearchProviderSafetyStatus.Unsafe(R.string.tpb_unsafe_reason),
         enabled = true,
         onEnable = {},
         onEditConfig = {},
         onDeleteConfig = {},
+        onShowUnsafeReason = {},
     )
 }
