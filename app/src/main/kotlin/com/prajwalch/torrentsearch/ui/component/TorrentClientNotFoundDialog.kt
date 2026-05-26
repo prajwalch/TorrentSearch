@@ -7,7 +7,8 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -20,6 +21,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -143,29 +146,42 @@ private fun DialogContent(modifier: Modifier = Modifier) {
         ),
     ) {
         Text(stringResource(R.string.torrent_client_not_found_content))
-        TorrentClientList(clients = torrentClients)
-    }
-}
 
-@Composable
-private fun TorrentClientList(clients: List<TorrentClient>, modifier: Modifier = Modifier) {
-    LazyColumn(
-        modifier = modifier,
-        verticalArrangement = Arrangement.spacedBy(
-            space = MaterialTheme.spaces.extraSmall,
-        ),
-    ) {
-        items(items = clients) {
-            TorrentClientListItem(
-                modifier = modifier,
-                client = it,
-            )
+        val baseRoundedShape = MaterialTheme.shapes.large
+        val rectangleShape = RectangleShape
+
+        LazyColumn(verticalArrangement = Arrangement.spacedBy(MaterialTheme.spaces.extraSmall)) {
+            itemsIndexed(items = torrentClients) { index, client ->
+                val shape = when (index) {
+                    0 -> baseRoundedShape.copy(
+                        bottomStart = CornerSize(0.dp),
+                        bottomEnd = CornerSize(0.dp),
+                    )
+
+                    torrentClients.lastIndex -> baseRoundedShape.copy(
+                        topStart = CornerSize(0.dp),
+                        topEnd = CornerSize(0.dp),
+                    )
+
+                    else -> rectangleShape
+                }
+
+                TorrentClientListItem(
+                    modifier = modifier,
+                    client = client,
+                    shape = shape,
+                )
+            }
         }
     }
 }
 
 @Composable
-private fun TorrentClientListItem(client: TorrentClient, modifier: Modifier = Modifier) {
+private fun TorrentClientListItem(
+    client: TorrentClient,
+    shape: Shape,
+    modifier: Modifier = Modifier,
+) {
     val colorScheme = MaterialTheme.colorScheme
 
     val primaryColors = ListItemDefaults.colors(
@@ -187,7 +203,7 @@ private fun TorrentClientListItem(client: TorrentClient, modifier: Modifier = Mo
 
     ListItem(
         modifier = Modifier
-            .clip(shape = MaterialTheme.shapes.medium)
+            .clip(shape = shape)
             .height(60.dp)
             .then(modifier),
         headlineContent = {
