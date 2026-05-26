@@ -100,6 +100,7 @@
     <string name="search_unexpected_error">Unexpected error</string>
     <string name="search_info_troubleshoot_help">To help troubleshoot issues, export the logs from the settings screen and create a GitHub issue with the logs attached.</string>
 
+    <string name="torrent_details_screen_title">Details</string>
     <string name="torrent_details_action_open_link">Open link in browser</string>
     <string name="torrent_details_action_copy_link">Copy page link</string>
     <string name="torrent_details_action_share_link">Share page link</string>

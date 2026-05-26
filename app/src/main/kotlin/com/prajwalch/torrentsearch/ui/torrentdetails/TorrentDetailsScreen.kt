@@ -210,7 +210,7 @@ private fun TorrentDetailsScreenTopBar(
     TopAppBar(
         modifier = modifier,
         navigationIcon = { ArrowBackIconButton(onClick = onNavigateBack) },
-        title = {},
+        title = { Text(stringResource(R.string.torrent_details_screen_title)) },
         actions = {
             IconButton(onClick = onOpenPageLink) {
                 Icon(
