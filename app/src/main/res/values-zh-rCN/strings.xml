@@ -26,7 +26,7 @@
     <string name="torrent_client_not_found_recommended_client_hint">推荐客户端</string>
     <string name="torrent_list_action_bookmark_torrent">标记种子</string>
     <string name="torrent_list_action_delete_bookmark">删除书签</string>
-    <string name="torrent_list_action_download_torrent">下载种子</string>
+    <string name="torrent_list_action_open_magnet_link">下载种子</string>
     <string name="torrent_list_action_copy_magnet_link">复制磁链</string>
     <string name="torrent_list_action_share_magnet_link">分享磁链</string>
     <string name="torrent_list_action_open_description_page">详细信息</string>
@@ -132,7 +132,7 @@
     <string name="torrent_file_saved_message">种子文件已保存</string>
     <string name="torrent_file_save_error">种子文件保存失败</string>
     <string name="torrent_details_message_link_copied">链接已复制到剪贴板！</string>
-    <string name="torrent_details_button_download_torrent">下载种子</string>
+    <string name="torrent_details_button_open_magnet_link">下载种子</string>
     <string name="torrent_details_button_download_torrent_file">下载种子文件</string>
     <string name="search_providers_button_save">保存</string>
     <string name="settings_clear_viewed_torrents_dialog_button_cancel">取消</string>

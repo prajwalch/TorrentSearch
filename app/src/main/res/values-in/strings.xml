@@ -41,7 +41,7 @@
     <string name="torrent_client_not_found_recommended_client_hint">Klien yang direkomendasikan</string>
     <string name="torrent_list_action_bookmark_torrent">Tandai torrent</string>
     <string name="torrent_list_action_delete_bookmark">Hapus penanda</string>
-    <string name="torrent_list_action_download_torrent">Unduh torrent</string>
+    <string name="torrent_list_action_open_magnet_link">Unduh torrent</string>
     <string name="torrent_list_action_download_torrent_file">Unduh file torrent</string>
     <string name="torrent_list_action_copy_magnet_link">Salin tautan magnet</string>
     <string name="torrent_list_action_share_magnet_link">Bagikan tautan magnet</string>
@@ -169,7 +169,7 @@
     <string name="torrent_details_label_info_hash">Hash info</string>
     <string name="torrent_details_message_not_available">Tidak tersedia</string>
     <string name="torrent_details_message_link_copied">Tautan disalin ke papan klip!</string>
-    <string name="torrent_details_button_download_torrent">Unduh torrent</string>
+    <string name="torrent_details_button_open_magnet_link">Unduh torrent</string>
     <string name="torrent_details_button_download_torrent_file">Unduh file torrent</string>
     <string name="torrent_details_button_open_in_browser">Buka di peramban</string>
     <string name="settings_blur_nsfw_images">Kaburkan gambar NSFW</string>

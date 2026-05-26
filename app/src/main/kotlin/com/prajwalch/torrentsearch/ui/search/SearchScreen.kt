@@ -74,7 +74,7 @@ fun SearchScreen(
     onNavigateBack: () -> Unit,
     onNavigateToSettings: () -> Unit,
     onNavigateToProviders: () -> Unit,
-    onDownloadTorrent: (MagnetUri) -> Unit,
+    onOpenMagnetLink: (MagnetUri) -> Unit,
     onShareMagnetLink: (MagnetUri) -> Unit,
     onOpenDescriptionPage: (url: String, providerName: String) -> Unit,
     onShareDescriptionPageUrl: (String) -> Unit,
@@ -117,7 +117,7 @@ fun SearchScreen(
                     snackbarHostState.showSnackbar(torrentBookmarkedMessage)
                 }
             },
-            onDownloadTorrent = { onDownloadTorrent(torrent.magnetUri()) },
+            onOpenMagnetLink = { onOpenMagnetLink(torrent.magnetUri()) },
             onDownloadTorrentFile = {
                 if (torrent.fileDownloadLink != null) {
                     viewModel.downloadTorrentFile(

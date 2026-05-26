@@ -30,7 +30,7 @@
     <string name="torrent_client_not_found_recommended_client_hint">Empholener Client</string>
     <string name="torrent_list_action_bookmark_torrent">Lesezeichen-Torrent</string>
     <string name="torrent_list_action_delete_bookmark">Lösche das Lesezeichen</string>
-    <string name="torrent_list_action_download_torrent">Torrent herunterladen</string>
+    <string name="torrent_list_action_open_magnet_link">Torrent herunterladen</string>
     <string name="torrent_list_action_copy_magnet_link">Kopieren den Magnet Link</string>
     <string name="torrent_list_action_share_magnet_link">Teile den Magnet Link</string>
     <string name="torrent_list_action_open_description_page">Beschreibungsseite öffnen</string>

@@ -11,7 +11,7 @@
     <string name="action_sort">സോർട്ട് ഓപ്ഷനുകൾ തുറക്കുക</string>
     <string name="torrent_list_action_bookmark_torrent">ടോറന്റ് ബുക്ക്‌മാർക്ക് ചെയ്യുക</string>
     <string name="torrent_list_action_delete_bookmark">ബുക്ക്‌മാർക്ക് മായ്ക്കുക</string>
-    <string name="torrent_list_action_download_torrent">ടോറന്റ് ഡൗൺലോഡ് ചെയ്യുക</string>
+    <string name="torrent_list_action_open_magnet_link">ടോറന്റ് ഡൗൺലോഡ് ചെയ്യുക</string>
     <string name="torrent_list_action_copy_magnet_link">മാഗ്നറ്റ് ലിങ്ക് കോപ്പി ചെയ്യുക</string>
     <string name="torrent_list_action_share_magnet_link">മാഗ്നറ്റ് ലിങ്ക് ഷെയർ ചെയ്യുക</string>
     <string name="torrent_list_action_open_description_page">ഡിസ്ക്രിപ്ഷൻ പേജ് തുറക്കുക</string>

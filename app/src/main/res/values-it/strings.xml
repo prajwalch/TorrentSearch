@@ -47,7 +47,7 @@
     <string name="torrent_client_not_found_recommended_client_hint">Client raccomandato</string>
     <string name="torrent_list_action_bookmark_torrent">Salva torrent come preferito</string>
     <string name="torrent_list_action_delete_bookmark">Rimuovi dai preferiti</string>
-    <string name="torrent_list_action_download_torrent">Scarica torrent</string>
+    <string name="torrent_list_action_open_magnet_link">Scarica torrent</string>
     <string name="torrent_list_action_download_torrent_file">Scarica file torrent</string>
     <string name="torrent_list_action_copy_magnet_link">Copia link magnet</string>
     <string name="torrent_list_action_share_magnet_link">Condividi link magnet</string>

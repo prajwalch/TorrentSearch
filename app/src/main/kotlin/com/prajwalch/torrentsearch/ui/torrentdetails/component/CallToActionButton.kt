@@ -28,7 +28,7 @@ import com.prajwalch.torrentsearch.ui.theme.spaces
 
 @Composable
 fun CallToActionButton(
-    onDownloadTorrent: () -> Unit,
+    onOpenMagnetLink: () -> Unit,
     onDownloadTorrentFile: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -38,12 +38,12 @@ fun CallToActionButton(
         verticalAlignment = Alignment.CenterVertically,
     ) {
         DownloadTorrentFileButton(onClick = onDownloadTorrentFile)
-        DownloadTorrentButton(onClick = onDownloadTorrent)
+        OpenMagnetLinkButton(onClick = onOpenMagnetLink)
     }
 }
 
 @Composable
-private fun DownloadTorrentButton(onClick: () -> Unit, modifier: Modifier = Modifier) {
+private fun OpenMagnetLinkButton(onClick: () -> Unit, modifier: Modifier = Modifier) {
     Button(
         modifier = modifier,
         onClick = onClick,
@@ -55,7 +55,7 @@ private fun DownloadTorrentButton(onClick: () -> Unit, modifier: Modifier = Modi
             contentDescription = null,
         )
         Spacer(Modifier.width(ButtonDefaults.IconSpacing))
-        Text(stringResource(R.string.torrent_details_button_download_torrent))
+        Text(stringResource(R.string.torrent_details_button_open_magnet_link))
     }
 }
 

@@ -25,7 +25,7 @@
     <string name="torrent_client_not_found_recommended_client_hint">Önerilen istemci</string>
     <string name="torrent_list_action_bookmark_torrent">Torrent\'i yer işaretlerine ekle</string>
     <string name="torrent_list_action_delete_bookmark">Yer işaretini sil</string>
-    <string name="torrent_list_action_download_torrent">Torrent indir</string>
+    <string name="torrent_list_action_open_magnet_link">Torrent indir</string>
     <string name="torrent_list_action_copy_magnet_link">Magnet bağlantısını kopyala</string>
     <string name="torrent_list_action_share_magnet_link">Magnet bağlantısını paylaş</string>
     <string name="torrent_list_action_open_description_page">Açıklama sayfasını aç</string>

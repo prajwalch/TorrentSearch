@@ -24,7 +24,7 @@
     <string name="torrent_client_not_found_recommended_client_hint">Cliente recomendado</string>
     <string name="torrent_list_action_bookmark_torrent">Añadir torrent a marcadores</string>
     <string name="torrent_list_action_delete_bookmark">Eliminar marcador</string>
-    <string name="torrent_list_action_download_torrent">Descargar torrent</string>
+    <string name="torrent_list_action_open_magnet_link">Descargar torrent</string>
     <string name="torrent_list_action_copy_magnet_link">Copiar enlace magnet</string>
     <string name="torrent_list_action_share_magnet_link">Compartir enlace magnet</string>
     <string name="torrent_list_action_open_description_page">Abrir página de descripción</string>
@@ -177,7 +177,7 @@
     <string name="torrent_details_label_last_checked">Última comprobación</string>
     <string name="torrent_details_message_not_available">No disponible</string>
     <string name="torrent_details_message_link_copied">¡Enlace copiado al portapapeles!</string>
-    <string name="torrent_details_button_download_torrent">Descargar torrent</string>
+    <string name="torrent_details_button_open_magnet_link">Descargar torrent</string>
     <string name="torrent_details_button_download_torrent_file">Descargar archivo torrent</string>
     <string name="torrent_details_state_unavailable_title">No se encontraron detalles sobre el proveedor</string>
     <string name="settings_open_torrent_details_in_app_summary">Abre los detalles del torrent directamente en la pantalla nativa de la aplicación</string>

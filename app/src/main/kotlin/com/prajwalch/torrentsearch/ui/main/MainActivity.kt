@@ -58,7 +58,7 @@ class MainActivity : ComponentActivity() {
             ) {
                 Surface {
                     TorrentSearchApp(
-                        onDownloadTorrent = ::downloadTorrentViaClient,
+                        onOpenMagnetLink = ::openMagnetLink,
                         onShareMagnetLink = ::shareMagnetLink,
                         onShareDescriptionPageUrl = ::shareDescriptionPageUrl,
                         initialSearchQuery = initialSearchQuery,
@@ -128,12 +128,12 @@ class MainActivity : ComponentActivity() {
     }
 
     /**
-     * Starts the available torrent client for downloading the given torrent.
+     * Attempts to open the given magnet URI.
      *
-     * @return `true` if the client starts successfully, `false` otherwise.
+     * @return `true` if the client is found, `false` otherwise.
      */
-    private fun downloadTorrentViaClient(magnetUri: MagnetUri): Boolean {
-        Log.d(TAG, "downloadTorrentClientViaClient")
+    private fun openMagnetLink(magnetUri: MagnetUri): Boolean {
+        Log.d(TAG, "openMagnetLink")
 
         return try {
             val torrentClientOpenIntent = Intent(Intent.ACTION_VIEW, magnetUri.toUri())

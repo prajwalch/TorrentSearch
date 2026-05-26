@@ -30,7 +30,7 @@
     <string name="torrent_client_not_found_recommended_client_hint">প্রস্তাবিত ক্লায়েন্ট</string>
     <string name="torrent_list_action_bookmark_torrent">বুকমার্ক টরেন্ট</string>
     <string name="torrent_list_action_delete_bookmark">বুকমার্ক মুছুন</string>
-    <string name="torrent_list_action_download_torrent">টরেন্ট ডাউনলোড করুন</string>
+    <string name="torrent_list_action_open_magnet_link">টরেন্ট ডাউনলোড করুন</string>
     <string name="torrent_list_action_copy_magnet_link">ম্যাগনেট লিঙ্ক কপি করুন</string>
     <string name="torrent_list_action_share_magnet_link">ম্যাগনেট লিঙ্ক শেয়ার করুন</string>
     <string name="torrent_list_action_open_description_page">বর্ণনা পৃষ্ঠা খুলুন</string>

@@ -23,7 +23,7 @@
     <string name="torrent_client_not_found_recommended_client_hint">برنامه دانلود از تورنت پیشنهادی</string>
     <string name="torrent_list_action_bookmark_torrent">نشانه گذاری تورنت</string>
     <string name="torrent_list_action_delete_bookmark">حذف نشانه گذاری</string>
-    <string name="torrent_list_action_download_torrent">دانلود از تورنت</string>
+    <string name="torrent_list_action_open_magnet_link">دانلود از تورنت</string>
     <string name="torrent_list_action_copy_magnet_link">کپی کردن لینک magnet</string>
     <string name="torrent_list_action_share_magnet_link">اشتراک گذاری لینک magnet</string>
     <string name="torrent_list_action_open_description_page">مشاهده صفحه توضیحات</string>

@@ -62,7 +62,7 @@ fun BrowseScreen(
     onNavigateBack: () -> Unit,
     onNavigateToSettings: () -> Unit,
     onNavigateToProviders: () -> Unit,
-    onDownloadTorrent: (MagnetUri) -> Unit,
+    onOpenMagnetLink: (MagnetUri) -> Unit,
     onShareMagnetLink: (MagnetUri) -> Unit,
     onOpenDescriptionPage: (url: String, providerName: String) -> Unit,
     onShareDescriptionPageUrl: (String) -> Unit,
@@ -101,9 +101,7 @@ fun BrowseScreen(
                     snackbarHostState.showSnackbar(message = torrentBookmarkedMessage)
                 }
             },
-            onDownloadTorrent = {
-                onDownloadTorrent(torrent.magnetUri())
-            },
+            onOpenMagnetLink = { onOpenMagnetLink(torrent.magnetUri()) },
             onDownloadTorrentFile = {
                 if (torrent.fileDownloadLink != null) {
                     viewModel.downloadTorrentFile(
@@ -123,9 +121,7 @@ fun BrowseScreen(
                     snackbarHostState.showSnackbar(message = magnetLinkCopiedMessage)
                 }
             },
-            onShareMagnetLink = {
-                onShareMagnetLink(torrent.magnetUri())
-            },
+            onShareMagnetLink = { onShareMagnetLink(torrent.magnetUri()) },
             onOpenDescriptionPage = {
                 onOpenDescriptionPage(torrent.descriptionPageUrl, torrent.providerName)
             },
@@ -135,9 +131,7 @@ fun BrowseScreen(
                     snackbarHostState.showSnackbar(message = urlCopiedMessage)
                 }
             },
-            onShareDescriptionPageUrl = {
-                onShareDescriptionPageUrl(torrent.descriptionPageUrl)
-            },
+            onShareDescriptionPageUrl = { onShareDescriptionPageUrl(torrent.descriptionPageUrl) },
             enableDescriptionPageActions = torrent.descriptionPageUrl.isNotEmpty(),
         )
     }

@@ -70,7 +70,7 @@ import kotlinx.coroutines.launch
 fun BookmarksScreen(
     onNavigateBack: () -> Unit,
     onNavigateToSettings: () -> Unit,
-    onDownloadTorrent: (MagnetUri) -> Unit,
+    onOpenMagnetLink: (MagnetUri) -> Unit,
     onShareMagnetLink: (MagnetUri) -> Unit,
     onOpenDescriptionPage: (url: String, providerName: String) -> Unit,
     onShareDescriptionPageUrl: (String) -> Unit,
@@ -119,7 +119,7 @@ fun BookmarksScreen(
             title = bookmark.name,
             showNSFWBadge = bookmark.isNSFW,
             onDeleteBookmark = { viewModel.deleteBookmarkById(bookmarkId) },
-            onDownloadTorrent = { onDownloadTorrent(bookmark.magnetUri()) },
+            onOpenMagnetLink = { onOpenMagnetLink(bookmark.magnetUri()) },
             onDownloadTorrentFile = {
                 if (bookmark.fileDownloadLink != null) {
                     viewModel.downloadTorrentFile(
@@ -139,9 +139,7 @@ fun BookmarksScreen(
                     snackbarHostState.showSnackbar(message = magnetLinkCopiedMessage)
                 }
             },
-            onShareMagnetLink = {
-                onShareMagnetLink(bookmark.magnetUri())
-            },
+            onShareMagnetLink = { onShareMagnetLink(bookmark.magnetUri()) },
             onOpenDescriptionPage = {
                 onOpenDescriptionPage(bookmark.descriptionPageUrl, bookmark.providerName)
             },
@@ -151,9 +149,7 @@ fun BookmarksScreen(
                     snackbarHostState.showSnackbar(message = urlCopiedMessage)
                 }
             },
-            onShareDescriptionPageUrl = {
-                onShareDescriptionPageUrl(bookmark.descriptionPageUrl)
-            },
+            onShareDescriptionPageUrl = { onShareDescriptionPageUrl(bookmark.descriptionPageUrl) },
             enableDescriptionPageActions = bookmark.descriptionPageUrl.isNotEmpty(),
         )
     }

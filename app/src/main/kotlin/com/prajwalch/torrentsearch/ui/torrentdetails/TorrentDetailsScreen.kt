@@ -40,6 +40,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+
 import com.prajwalch.torrentsearch.R
 import com.prajwalch.torrentsearch.domain.model.MagnetUri
 import com.prajwalch.torrentsearch.domain.model.TorrentDetails
@@ -61,13 +62,14 @@ import com.prajwalch.torrentsearch.ui.torrentdetails.component.SomethingWentWron
 import com.prajwalch.torrentsearch.ui.torrentdetails.component.TorrentDescription
 import com.prajwalch.torrentsearch.ui.torrentdetails.component.TorrentInfo
 import com.prajwalch.torrentsearch.ui.torrentdetails.component.UnsupportedTorrentSiteState
+
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TorrentDetailsScreen(
     onNavigateBack: () -> Unit,
-    onDownloadTorrent: (MagnetUri) -> Unit,
+    onOpenMagnetLink: (MagnetUri) -> Unit,
     onShareDetailsPageLink: (url: String) -> Unit,
     modifier: Modifier = Modifier,
     viewModel: TorrentDetailsViewModel = hiltViewModel(),
@@ -173,7 +175,7 @@ fun TorrentDetailsScreen(
                             .padding(vertical = MaterialTheme.spaces.large),
                         details = torrentDetails,
                         providerName = viewModel.providerName,
-                        onDownloadTorrent = { onDownloadTorrent(torrentDetails.magnetUri) },
+                        onOpenMagnetLink = { onOpenMagnetLink(torrentDetails.magnetUri) },
                         onDownloadTorrentFile = {
                             if (torrentDetails.fileDownloadLink != null) {
                                 viewModel.downloadTorrentFile(
@@ -238,7 +240,7 @@ private fun TorrentDetailsScreenTopBar(
 private fun TorrentDetailsScreenContent(
     details: TorrentDetails,
     providerName: String,
-    onDownloadTorrent: () -> Unit,
+    onOpenMagnetLink: () -> Unit,
     onDownloadTorrentFile: () -> Unit,
     modifier: Modifier = Modifier,
     blurNSFWImages: Boolean = true,
@@ -302,7 +304,7 @@ private fun TorrentDetailsScreenContent(
                 modifier = Modifier
                     .fillMaxWidth()
                     .then(horizontalPaddingModifier),
-                onDownloadTorrent = onDownloadTorrent,
+                onOpenMagnetLink = onOpenMagnetLink,
                 onDownloadTorrentFile = onDownloadTorrentFile,
             )
             HorizontalDivider()

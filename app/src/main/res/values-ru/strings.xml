@@ -27,7 +27,7 @@
     <string name="torrent_client_not_found_recommended_client_hint">Рекомендуемый клиент</string>
     <string name="torrent_list_action_bookmark_torrent">Добавить торрент в закладки</string>
     <string name="torrent_list_action_delete_bookmark">Удалить закладку</string>
-    <string name="torrent_list_action_download_torrent">Загрузить торрент</string>
+    <string name="torrent_list_action_open_magnet_link">Загрузить торрент</string>
     <string name="torrent_list_action_copy_magnet_link">Скопировать magnet-ссылку</string>
     <string name="torrent_list_action_share_magnet_link">Поделиться magnet-ссылкой</string>
     <string name="torrent_list_action_open_description_page">Открыть страницу описания</string>

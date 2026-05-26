@@ -11,7 +11,7 @@
     <string name="action_sort">Abrir opções de ordenação</string>
     <string name="torrent_list_action_bookmark_torrent">Favoritar torrent</string>
     <string name="torrent_list_action_delete_bookmark">Deletar favorito</string>
-    <string name="torrent_list_action_download_torrent">Baixar torrent</string>
+    <string name="torrent_list_action_open_magnet_link">Baixar torrent</string>
     <string name="torrent_list_action_copy_magnet_link">Copiar link magnético</string>
     <string name="torrent_list_action_share_magnet_link">Compartilhar link magnético</string>
     <string name="torrent_list_action_open_description_page">Abrir descrição da página</string>

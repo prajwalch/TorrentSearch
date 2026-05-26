@@ -55,7 +55,7 @@
 
     <string name="torrent_list_action_bookmark_torrent">Bookmark torrent</string>
     <string name="torrent_list_action_delete_bookmark">Delete bookmark</string>
-    <string name="torrent_list_action_download_torrent">Download torrent</string>
+    <string name="torrent_list_action_open_magnet_link">Open magnet link</string>
     <string name="torrent_list_action_download_torrent_file">Download torrent file</string>
     <string name="torrent_list_action_copy_magnet_link">Copy magnet link</string>
     <string name="torrent_list_action_share_magnet_link">Share magnet link</string>
@@ -120,7 +120,7 @@
     <string name="torrent_details_label_info_hash">Info hash</string>
     <string name="torrent_details_message_not_available">Not available</string>
     <string name="torrent_details_message_link_copied">Link copied to clipboard!</string>
-    <string name="torrent_details_button_download_torrent">Download torrent</string>
+    <string name="torrent_details_button_open_magnet_link">Open magnet link</string>
     <string name="torrent_details_button_download_torrent_file">Download torrent file</string>
     <string name="torrent_details_button_open_in_browser">Open in browser</string>
 

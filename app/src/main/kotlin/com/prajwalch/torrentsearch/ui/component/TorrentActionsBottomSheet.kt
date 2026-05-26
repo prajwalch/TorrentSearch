@@ -53,7 +53,7 @@ private data class TorrentAction(
 fun TorrentActionsBottomSheet(
     onDismiss: () -> Unit,
     title: String,
-    onDownloadTorrent: () -> Unit,
+    onOpenMagnetLink: () -> Unit,
     onCopyMagnetLink: () -> Unit,
     onShareMagnetLink: () -> Unit,
     onOpenDescriptionPage: () -> Unit,
@@ -83,8 +83,8 @@ fun TorrentActionsBottomSheet(
     val primaryActions = listOf(
         TorrentAction(
             icon = R.drawable.ic_magnet,
-            label = R.string.torrent_list_action_download_torrent,
-            onClick = onDownloadTorrent,
+            label = R.string.torrent_list_action_open_magnet_link,
+            onClick = onOpenMagnetLink,
         ),
         TorrentAction(
             icon = R.drawable.ic_download,
@@ -302,7 +302,7 @@ private fun TorrentActionsBottomSheetPreview() {
         TorrentActionsBottomSheet(
             onDismiss = {},
             title = "Torrent Actions Bottom Sheet Title",
-            onDownloadTorrent = {},
+            onOpenMagnetLink = {},
             onCopyMagnetLink = {},
             onShareMagnetLink = {},
             onOpenDescriptionPage = {},

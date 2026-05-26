@@ -56,7 +56,7 @@ private object SearchHistory
 
 @Composable
 fun TorrentSearchApp(
-    onDownloadTorrent: (MagnetUri) -> Boolean,
+    onOpenMagnetLink: (MagnetUri) -> Boolean,
     onShareMagnetLink: (MagnetUri) -> Unit,
     onShareDescriptionPageUrl: (String) -> Unit,
     initialSearchQuery: String? = null,
@@ -117,7 +117,7 @@ fun TorrentSearchApp(
                 onNavigateBack = { navController.navigateUp() },
                 onNavigateToSettings = { navController.navigateToSettings() },
                 onNavigateToProviders = { navController.navigateToSearchProviders() },
-                onDownloadTorrent = { showTorrentClientNotFoundDialog = !onDownloadTorrent(it) },
+                onOpenMagnetLink = { showTorrentClientNotFoundDialog = !onOpenMagnetLink(it) },
                 onShareMagnetLink = onShareMagnetLink,
                 onOpenDescriptionPage = openDescriptionPage,
                 onShareDescriptionPageUrl = onShareDescriptionPageUrl,
@@ -127,7 +127,7 @@ fun TorrentSearchApp(
         childComposable<TorrentDetails> {
             TorrentDetailsScreen(
                 onNavigateBack = navController::navigateUp,
-                onDownloadTorrent = { showTorrentClientNotFoundDialog = !onDownloadTorrent(it) },
+                onOpenMagnetLink = { showTorrentClientNotFoundDialog = !onOpenMagnetLink(it) },
                 onShareDetailsPageLink = onShareDescriptionPageUrl,
             )
         }
@@ -136,7 +136,7 @@ fun TorrentSearchApp(
             BookmarksScreen(
                 onNavigateBack = { navController.navigateUp() },
                 onNavigateToSettings = { navController.navigateToSettings() },
-                onDownloadTorrent = { showTorrentClientNotFoundDialog = !onDownloadTorrent(it) },
+                onOpenMagnetLink = { showTorrentClientNotFoundDialog = !onOpenMagnetLink(it) },
                 onShareMagnetLink = onShareMagnetLink,
                 onOpenDescriptionPage = openDescriptionPage,
                 onShareDescriptionPageUrl = onShareDescriptionPageUrl,
@@ -159,7 +159,7 @@ fun TorrentSearchApp(
                 onNavigateBack = { navController.navigateUp() },
                 onNavigateToSettings = { navController.navigateToSettings() },
                 onNavigateToProviders = { navController.navigateToSearchProviders() },
-                onDownloadTorrent = { showTorrentClientNotFoundDialog = !onDownloadTorrent(it) },
+                onOpenMagnetLink = { showTorrentClientNotFoundDialog = !onOpenMagnetLink(it) },
                 onShareMagnetLink = onShareMagnetLink,
                 onOpenDescriptionPage = openDescriptionPage,
                 onShareDescriptionPageUrl = onShareDescriptionPageUrl,

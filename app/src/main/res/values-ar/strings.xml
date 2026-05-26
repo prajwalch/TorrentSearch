@@ -28,7 +28,7 @@
     <string name="torrent_client_not_found_recommended_client_hint">العميل الموصى به</string>
     <string name="torrent_list_action_bookmark_torrent">وضع إشارة مرجعية على التورنت</string>
     <string name="torrent_list_action_delete_bookmark">حذف الإشارة المرجعية</string>
-    <string name="torrent_list_action_download_torrent">تنزيل التورنت</string>
+    <string name="torrent_list_action_open_magnet_link">تنزيل التورنت</string>
     <string name="torrent_list_action_copy_magnet_link">نسخ رابط الماغنيت</string>
     <string name="torrent_list_action_share_magnet_link">مشاركة رابط الماغنيت</string>
     <string name="torrent_list_action_open_description_page">افتح صفحة الوصف</string>
@@ -182,7 +182,7 @@
     <string name="torrent_details_label_info_hash">تجزئة المعلومات</string>
     <string name="torrent_details_message_not_available">غير متوفر</string>
     <string name="torrent_details_message_link_copied">تم نسخ الرابط إلى الحافظة!</string>
-    <string name="torrent_details_button_download_torrent">تنزيل التورنت</string>
+    <string name="torrent_details_button_open_magnet_link">تنزيل التورنت</string>
     <string name="torrent_details_button_download_torrent_file">قم بتنزيل ملف التورنت</string>
     <string name="settings_blur_nsfw_images">تشويش الصور غير اللائقة</string>
     <string name="settings_blur_nsfw_images_summary">يقوم تلقائيًا بتشويش الصور غير اللائقة.</string>

@@ -18,7 +18,7 @@
     <string name="torrent_client_not_found_recommended_client_hint">Радимо клієнт</string>
     <string name="torrent_list_action_bookmark_torrent">Вподобати торент</string>
     <string name="torrent_list_action_delete_bookmark">Скасувати вподобання</string>
-    <string name="torrent_list_action_download_torrent">Завантажити торент</string>
+    <string name="torrent_list_action_open_magnet_link">Завантажити торент</string>
     <string name="torrent_list_action_copy_magnet_link">Копіювати magnet-посилання</string>
     <string name="torrent_list_action_share_magnet_link">Поширити magnet-посилання</string>
     <string name="torrent_list_action_open_description_page">Сторінка опису</string>
@@ -180,7 +180,7 @@
     <string name="torrent_details_label_info_hash">Інфо-хеш</string>
     <string name="torrent_details_message_not_available">Недоступно</string>
     <string name="torrent_details_message_link_copied">Посилання скопійовано до буфера!</string>
-    <string name="torrent_details_button_download_torrent">Завантажити торент</string>
+    <string name="torrent_details_button_open_magnet_link">Завантажити торент</string>
     <string name="torrent_details_button_download_torrent_file">Завантажити торент-файл</string>
     <string name="torrent_details_button_open_in_browser">Відкрити в браузері</string>
     <string name="settings_blur_nsfw_images">Розмити NSFW-зображення</string>
