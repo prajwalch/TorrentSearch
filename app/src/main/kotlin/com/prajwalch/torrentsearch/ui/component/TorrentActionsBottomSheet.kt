@@ -230,7 +230,7 @@ private object ActionListItemShapes {
     val DefaultShape: Shape = RectangleShape
 
     val RoundedShape: CornerBasedShape
-        @Composable get() = MaterialTheme.shapes.medium
+        @Composable get() = MaterialTheme.shapes.large
 
     @Composable
     fun shape(index: Int, count: Int): Shape {
