@@ -39,7 +39,7 @@
 
     <string name="torrent_file_downloading_message">Downloading torrent file…</string>
     <string name="torrent_file_download_error">Download failed</string>
-    <string name="torrent_file_not_found_error">Torrent file not found on the provider</string>
+    <string name="torrent_file_not_found_error">Torrent file not found on any source</string>
     <string name="torrent_file_saving_message">Saving torrent file…</string>
     <string name="torrent_file_saved_message">Torrent file saved</string>
     <string name="torrent_file_save_error">Torrent file save failed</string>
