@@ -79,6 +79,7 @@
     <string name="home_button_search">Search</string>
     <string name="home_button_browse">Browse</string>
 
+    <string name="search_screen_title">Search</string>
     <string name="search_action_refresh">Refresh</string>
     <string name="search_action_stop_search">Stop search</string>
     <string name="search_action_view_errors">View errors</string>

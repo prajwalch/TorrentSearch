@@ -355,6 +355,10 @@ private fun SearchScreenTopBar(
                 onQueryChange = onFilterQueryChange,
                 placeholder = { Text(stringResource(R.string.search_filter_query_hint)) },
             )
+
+            if (!searchBarState.isVisible) {
+                Text(stringResource(R.string.search_screen_title))
+            }
         },
         actions = topBarActions,
         scrollBehavior = scrollBehavior,
