@@ -45,10 +45,11 @@ with fast search speed, detailed results, category filters, and a full set of to
 ## Download
 
 > [!NOTE]
-> Android 7.1+ is required
-
-> Nightly builds are available in the artifacts section of the GitHub
-> Actions [workflow](https://github.com/prajwalch/TorrentSearch/actions) runs.
+> TorrentSearch requires Android 7.1 or newer.
+>
+> Nightly builds are available in the artifacts section of GitHub
+> [Actions](https://github.com/prajwalch/TorrentSearch/actions) workflow runs.
+> They are generated automatically for each commit and may be unstable.
 
 [<img src="https://f-droid.org/badge/get-it-on.png" alt="Get it on F-Droid" height="80">](https://f-droid.org/packages/com.prajwalch.torrentsearch)
 [<img src="https://gitlab.com/IzzyOnDroid/repo/-/raw/master/assets/IzzyOnDroid.png" alt="Get it on IzzyOnDroid" height="80">](https://apt.izzysoft.de/fdroid/index/apk/com.prajwalch.torrentsearch)
@@ -61,8 +62,8 @@ with fast search speed, detailed results, category filters, and a full set of to
 
 - Query all providers simultaneously, with per-provider enable/disable toggles
 - Search by category: `Anime`, `Apps`, `Books`, `Games`, `Movies`, `Series`, and more
-- Results stream in progressively as each provider responds
-- Sort by `torrent name`, `seeders`, `peers`, `file size`, or `date`
+- Results are shown progressively as providers respond
+- Sort by `torrent name`, `seeders`, `peers`, `file size`, or `upload date`
 - Filter out dead or already-viewed torrents
 - Filter results by name, provider or category
 
@@ -85,6 +86,8 @@ Each result includes:
 - **View torrent details** directly inside the app or open the full page in your browser
 - **Copy or share** the magnet link or details page URL
 
+If no torrent client is installed, TorrentSearch provides links to FOSS torrent clients.
+
 ### Torrent Details
 
 - **Native details screen** — view torrent details inside the app without a browser or WebView; can
@@ -96,24 +99,21 @@ Each result includes:
 ### Browse
 
 - Explore **top** and **latest** torrents from your enabled providers
-- Torrents stream in progressively as each provider responds
 - Filter by category and sort order — changing either instantly refreshes results
 - Filter out dead or already-viewed torrents
-- Filter results by torrent name or provider
+- Filter torrents by name or provider
 
 ### Bookmarks
 
 - Save torrents for later
-- Export bookmarks for backup or migration
-- Import previously exported bookmarks
+- Export and import bookmarks
 
 ### Safe Mode
 
 When enabled, Safe Mode automatically:
 
 - Disables unsafe and NSFW providers
-- Hides NSFW categories
-- Hides NSFW search results
+- Hides NSFW categories and torrents
 
 ### Integrations
 
