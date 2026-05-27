@@ -4,7 +4,7 @@
     <string name="button_cancel">إلغاء</string>
     <string name="nsfw">غير مناسب للعمل</string>
     <string name="safety_status_unsafe">غير آمن</string>
-    <string name="bookmarked_message">مُشار إليه</string>
+    <string name="bookmarked_message">تمت الإضافة إلى الإشارات المرجعية</string>
     <string name="action_sort">ضبط على</string>
     <string name="action_sort_criteria_name">اسم</string>
     <string name="action_sort_criteria_seeders">الموزعون</string>
@@ -24,7 +24,7 @@
     <string name="category_series">سلاسل</string>
     <string name="category_other">أخرى</string>
     <string name="torrent_client_not_found_title">لم يتم العثور على عميل التورنت</string>
-    <string name="torrent_client_not_found_content">لاستخدام ميزة التنزيل، قم بتثبيت عميل التورنت وإعداده والعودة إلى هذا التطبيق.</string>
+    <string name="torrent_client_not_found_content">قم بتثبيت عميل تورنت لفتح روابط الماغنيت.</string>
     <string name="torrent_client_not_found_recommended_client_hint">العميل الموصى به</string>
     <string name="torrent_list_action_bookmark_torrent">وضع إشارة مرجعية على التورنت</string>
     <string name="torrent_list_action_delete_bookmark">حذف الإشارة المرجعية</string>
@@ -38,7 +38,7 @@
     <string name="torrent_list_url_copied_message">تم نسخ الرابط إلى الحافظة!</string>
     <string name="home_search_query_hint">البحث…</string>
     <string name="home_button_search">أبحث</string>
-    <string name="search_filter_query_hint">نتائج البحث</string>
+    <string name="search_filter_query_hint">ابحث عن ملفات التورنت</string>
     <string name="search_filter_providers_title">مزوّدو البحث</string>
     <string name="search_filter_chip_dead_torrents">التورنت الميتة</string>
     <string name="internet_connection_error">لا يوجد اتصال بالإنترنت</string>
@@ -154,7 +154,7 @@
     <string name="search_filter_providers_action_select_all">تحديد الكل</string>
     <string name="search_filter_providers_action_deselect_all">إلغاء تحديد الكل</string>
     <string name="search_filter_providers_action_invert_selection">عكس التحديد</string>
-    <string name="torrent_file_not_found_error">لم يتم العثور على ملف التورنت لدى المزود</string>
+    <string name="torrent_file_not_found_error">لم يتم العثور على ملف التورنت في أي مصدر</string>
     <string name="search_filter_chip_hide_viewed">إخفاء المشاهدات</string>
     <string name="limetorrents_unsafe_reason">ليس الأمر غير آمن من الناحية الفنية، ولكنه يتجاهل اختيار الفئة. اختر بعناية.</string>
     <string name="tpb_unsafe_reason">العديد من تقارير البرامج الضارة ناتجة عن عدم كفاية الرقابة.</string>
@@ -188,4 +188,25 @@
     <string name="settings_blur_nsfw_images_summary">يقوم تلقائيًا بتشويش الصور غير اللائقة.</string>
     <string name="settings_open_torrent_details_in_app">فتح تفاصيل التورنت في التطبيق</string>
     <string name="settings_open_torrent_details_in_app_summary">يفتح تفاصيل التورنت مباشرة في الشاشة الأصلية للتطبيق</string>
+    <string name="home_button_browse">تصفح</string>
+    <string name="search_screen_title">أبحث</string>
+    <string name="search_action_refresh">تجديد</string>
+    <string name="search_action_stop_search">أوقف البحث</string>
+    <string name="search_state_results_not_found_description">لم يتم العثور على أي تورنتات تطابق \'%1$s\' في %2$s. يُرجى تجربة استعلام بحث مختلف، أو التأكد من تمكين مزودات البحث.</string>
+    <string name="search_button_go_to_providers">انتقل إلى المزودات</string>
+    <string name="torrent_details_screen_title">التفاصيل</string>
+    <string name="torrent_details_state_unavailable_description">قد يكون تخطيط الصفحة قد تغير أو أن المضيف غير متصل مؤقتاً.</string>
+    <string name="torrent_details_state_unsupported_site_title">عنوان URL غير مدعوم</string>
+    <string name="torrent_details_state_unsupported_site_description">تعذر استرداد التفاصيل من %1$s. قد لا يكون موقع التورنت هذا مدعوماً بعد. بدلاً من ذلك، حاول فتح صفحة التفاصيل في المتصفح.</string>
+    <string name="torrent_details_title_screenshots">لقطات الشاشة</string>
+    <string name="torrent_details_button_open_in_browser">افتح في المتصفح</string>
+    <string name="browse_screen_title">تصفح</string>
+    <string name="browse_search_query_hint">ابحث عن ملفات التورنت</string>
+    <string name="browse_sort_latest">الأحدث</string>
+    <string name="browse_sort_top">الأفضل</string>
+    <string name="browse_torrents_count_format">تم العثور على %1$d تورنت</string>
+    <string name="browse_state_unavailable_title">التورنتات غير متوفرة</string>
+    <string name="browse_state_unavailable_description">لا توجد تورنتات لعرضها. قد تكون المزودات المطلوبة معطلة أو لا يمكن الوصول إليها.</string>
+    <string name="browse_button_go_to_providers">انتقل إلى المزودات</string>
+    <string name="browse_button_try_again">إعادة المحاولة</string>
 </resources>
