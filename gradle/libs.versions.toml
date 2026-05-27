@@ -9,7 +9,6 @@ coreSplashscreen = "1.2.0"
 datastorePreferences = "1.2.1"
 desugarJdkLibs = "2.1.5"
 espressoCore = "3.7.0"
-flexmark = "0.64.8"
 hilt = "2.59.2"
 hiltNavigationCompose = "1.3.0"
 jsoup = "1.22.2"
@@ -51,8 +50,6 @@ coil-compose = { group = "io.coil-kt.coil3", name = "coil-compose", version.ref 
 coil-network-okhttp = { group = "io.coil-kt.coil3", name = "coil-network-okhttp", version.ref = "coil" }
 compose-markdown = { group = "com.github.jeziellago", name = "compose-markdown", version.ref = "composeMarkdown" }
 desugar-jdk-libs = { module = "com.android.tools:desugar_jdk_libs", version.ref = "desugarJdkLibs" }
-flexmark-html2md-converter = { group = "com.vladsch.flexmark", name = "flexmark-html2md-converter", version.ref = "flexmark" }
-flexmark-util = { group = "com.vladsch.flexmark", name = "flexmark-util", version.ref = "flexmark" }
 hilt-android = { group = "com.google.dagger", name = "hilt-android", version.ref = "hilt" }
 hilt-android-compiler = { group = "com.google.dagger", name = "hilt-android-compiler", version.ref = "hilt" }
 jsoup = { group = "org.jsoup", name = "jsoup", version.ref = "jsoup" }

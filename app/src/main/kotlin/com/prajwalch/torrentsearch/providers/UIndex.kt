@@ -7,8 +7,6 @@ import com.prajwalch.torrentsearch.network.HttpClient
 import com.prajwalch.torrentsearch.util.TorrentDateParser
 import com.prajwalch.torrentsearch.util.TorrentUtils
 
-import com.vladsch.flexmark.html2md.converter.FlexmarkHtmlConverter
-
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
@@ -162,7 +160,6 @@ private object UIndexDetailsPageParser {
     suspend fun parse(responseHtml: String, baseUrl: String): TorrentDetails? =
         withContext(Dispatchers.Default) {
             val html = Jsoup.parse(responseHtml, baseUrl)
-            val htmlToMarkdownConverter = FlexmarkHtmlConverter.builder().build()
 
             // Required data. Return early as possible.
             val name = html.selectFirst(NAME)?.ownText() ?: return@withContext null
@@ -180,9 +177,7 @@ private object UIndexDetailsPageParser {
                 ?.text()
                 ?.takeIf { it.isNotBlank() }
                 ?.let(::parseDate)
-            val description = html.selectFirst(DESCRIPTION)?.let {
-                htmlToMarkdownConverter.convert(it)
-            }
+            val description = html.selectFirst(DESCRIPTION)?.html()
             val thumbnailUrl = html.selectFirst(THUMBNAIL)?.attr("abs:src")
 
             TorrentDetails(

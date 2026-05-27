@@ -7,8 +7,6 @@ import com.prajwalch.torrentsearch.network.HttpClient
 import com.prajwalch.torrentsearch.util.TorrentDateParser
 import com.prajwalch.torrentsearch.util.TorrentUtils
 
-import com.vladsch.flexmark.html2md.converter.FlexmarkHtmlConverter
-
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
@@ -127,7 +125,6 @@ private object NekoBTDetailsPageParser {
     suspend fun parse(html: String, pageUrl: String): TorrentDetails? =
         withContext(Dispatchers.Default) {
             val html = Jsoup.parse(html, pageUrl)
-            val htmlToMarkdownConverter = FlexmarkHtmlConverter.builder().build()
 
             val torrentName = html.selectFirst(TORRENT_NAME)?.ownText() ?: return@withContext null
             val magnetUri = html.selectFirst(MAGNET_URI)?.attr("href") ?: return@withContext null
@@ -139,9 +136,7 @@ private object NekoBTDetailsPageParser {
                 ?.let { TorrentDateParser.parse(date = it, format = "yyyy-MM-dd HH:mm:ss") }
             val uploader = html.selectFirst(UPLOADER)?.ownText()
             val fileDownloadLink = html.selectFirst(FILE_DOWNLOAD_LINK)?.attr("abs:href")
-            val description = html.selectFirst(DESCRIPTION)
-                ?.html()
-                ?.let(htmlToMarkdownConverter::convert)
+            val description = html.selectFirst(DESCRIPTION)?.html()
             val posterUrl = html.selectFirst(POSTER_URL)?.attr("abs:src")
 
             TorrentDetails(

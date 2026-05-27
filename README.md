@@ -190,7 +190,7 @@ no local setup needed, contribute directly from your browser.
 - **Image loading:** [Coil](https://coil-kt.github.io/coil/)
 - **HTML parsing**: [Jsoup](https://github.com/jhy/jsoup)
 - **Immutable collections**: [Kotlinx immutable collections](https://github.com/Kotlin/kotlinx.collections.immutable)
-- **Markdown handling**: [ComposeMarkdown](https://github.com/jeziellago/compose-markdown), [FlexMark (Markdown to HTML)](https://github.com/vsch/flexmark-java)
+- **Markdown rendering**: [ComposeMarkdown](https://github.com/jeziellago/compose-markdown)
 - **Scrollbar**: [LazyColumnScrollbar](https://github.com/nanihadesuka/LazyColumnScrollbar)
 - **Image Blurring**: [BlurTransformation](https://github.com/T8RIN/BlurTransformation)
 
