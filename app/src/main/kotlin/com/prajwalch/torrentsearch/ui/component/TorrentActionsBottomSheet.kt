@@ -6,6 +6,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CornerBasedShape
 import androidx.compose.foundation.shape.CornerSize
@@ -280,6 +281,7 @@ private fun ActionListItem(
         modifier = modifier.clickable(onClick = onClick, enabled = enabled),
         leadingContent = {
             Icon(
+                modifier = Modifier.size(22.dp),
                 painter = painterResource(icon),
                 contentDescription = null,
             )
