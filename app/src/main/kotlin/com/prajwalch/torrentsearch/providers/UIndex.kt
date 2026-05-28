@@ -167,8 +167,14 @@ private object UIndexDetailsPageParser {
             val infoHash = TorrentUtils.getInfoHashFromMagnetUri(magnetUri)
 
             val size = html.selectFirst(SIZE)?.ownText()
-            val seeders = html.selectFirst(SEEDERS)?.ownText()?.toUIntOrNull()
-            val peers = html.selectFirst(PEERS)?.ownText()?.toUIntOrNull()
+            val seeders = html.selectFirst(SEEDERS)
+                ?.ownText()
+                ?.filter { it != ',' }
+                ?.toUIntOrNull()
+            val peers = html.selectFirst(PEERS)
+                ?.ownText()
+                ?.filter { it != ',' }
+                ?.toUIntOrNull()
             val uploadDate = html.selectFirst(UPLOAD_DATE)
                 ?.ownText()
                 ?.let(::parseDate)
