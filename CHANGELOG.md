@@ -1,5 +1,6 @@
 # Unreleased
 
+- Fixed `TorrentDownload`, which was returning truncated torrent names
 - Fixed `UIndex` to correctly extract seeders and peers from details page (6dd36cb1)
 
 # v0.5.0

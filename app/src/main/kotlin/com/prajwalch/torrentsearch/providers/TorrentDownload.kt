@@ -81,7 +81,7 @@ private class TorrentDownloadResultsParser(private val providerName: String) {
         }
 
     private fun parseListItem(listItem: Element): Torrent? {
-        val torrentName = listItem.selectFirst(TORRENT_NAME)?.ownText() ?: return null
+        val torrentName = listItem.selectFirst(TORRENT_NAME)?.text() ?: return null
         val detailsPageUrl = listItem.selectFirst(DETAILS_PAGE_URL)?.attr("abs:href") ?: return null
         val infoHash = detailsPageUrl
             .dropLastWhile { it != '/' }
