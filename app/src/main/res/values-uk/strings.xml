@@ -14,7 +14,7 @@
     <string name="settings_section_sort_criteria">Ознака сортування</string>
     <string name="settings_section_sort_order">Порядок сортування</string>
     <string name="torrent_client_not_found_title">Торент-клієнта не знайдено</string>
-    <string name="torrent_client_not_found_content">Щоб скористатися функцією завантаження, встановіть і налаштуйте торент-клієнт, а тоді поверніться до цієї програми.</string>
+    <string name="torrent_client_not_found_content">Щоб відкривати magnet-посилання, встановіть торент-клієнт.</string>
     <string name="torrent_client_not_found_recommended_client_hint">Радимо клієнт</string>
     <string name="torrent_list_action_bookmark_torrent">Вподобати торент</string>
     <string name="torrent_list_action_delete_bookmark">Скасувати вподобання</string>
@@ -28,7 +28,7 @@
     <string name="torrent_list_url_copied_message">URL-адресу скопійовано!</string>
     <string name="home_search_query_hint">Пошук…</string>
     <string name="home_button_search">Пошук</string>
-    <string name="search_filter_query_hint">Результати пошуку</string>
+    <string name="search_filter_query_hint">Пошук торентів</string>
     <string name="search_filter_providers_title">Фільтрувати за пошуковою системою</string>
     <string name="search_filter_chip_dead_torrents">Неактивні торенти</string>
     <string name="internet_connection_error">Нема з\\\'єднання з інтернетом</string>
@@ -143,7 +143,7 @@
     <string name="settings_export_logs_to_file_summary">Генерує файл з діями програми, які можуть допомогти у вирішенні проблем</string>
     <string name="torrent_file_downloading_message">Завантаження торент-файлу…</string>
     <string name="torrent_file_download_error">Помилка завантаження</string>
-    <string name="torrent_file_not_found_error">Торент-файлу не знайдено в провайдера</string>
+    <string name="torrent_file_not_found_error">Торент-файлу не знайдено в жодному джерелі</string>
     <string name="torrent_file_saving_message">Збереження торент-файлу…</string>
     <string name="torrent_file_saved_message">Торент-файл збережено</string>
     <string name="torrent_file_save_error">Помилка збереження торент-файлу</string>
@@ -204,4 +204,7 @@
     <string name="torrent_details_state_unavailable_description">Можливо, верстку сторінки змінено або сервер тимчасово недоступний.</string>
     <string name="torrent_details_state_unsupported_site_title">URL-адреса не підтримується</string>
     <string name="torrent_details_state_unsupported_site_description">Не вдалося отримати відомості про %1$s. Можливо, цей торент-сайт поки не підтримується. Спробуйте натомість відкрити сторінку відомостей у браузері.</string>
+    <string name="search_screen_title">Пошук</string>
+    <string name="torrent_details_screen_title">Відомості</string>
+    <string name="torrent_details_title_screenshots">Знімки екрана</string>
 </resources>
