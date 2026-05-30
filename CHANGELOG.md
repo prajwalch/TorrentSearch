@@ -1,5 +1,6 @@
 # Unreleased
 
+- Fixed `TorrentDatebase`, which was failing to handle upload and last checked date of torrent details
 - Fixed `TorrentDownload`, which was returning truncated torrent names
 - Fixed `UIndex` to correctly extract seeders and peers from details page (6dd36cb1)
 
