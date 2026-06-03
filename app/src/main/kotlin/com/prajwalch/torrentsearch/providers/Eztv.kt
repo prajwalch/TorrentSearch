@@ -14,8 +14,10 @@ class Eztv : SearchProvider {
     override val id = "eztvx"
     override val name = "Eztv"
     override val url = "https://eztvx.to"
+    override val cloudflareSolverUrl = "$url/home"
     override val supportedCategories = setOf(Category.Series)
     override val safetyStatus = SearchProviderSafetyStatus.Safe
+    override val isCloudflareProtected = true
     override val enabledByDefault = true
 
     override suspend fun search(query: String, context: SearchContext): List<Torrent> {
