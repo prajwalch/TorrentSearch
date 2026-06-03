@@ -42,6 +42,7 @@ fun SearchProvidersScreen(
     onNavigateBack: () -> Unit,
     onNavigateToAddSearchProvider: () -> Unit,
     onNavigateToEditSearchProvider: (SearchProviderId) -> Unit,
+    onUnlockProtection: (id: SearchProviderId, url: String) -> Unit,
     modifier: Modifier = Modifier,
     viewModel: SearchProvidersViewModel = hiltViewModel(),
 ) {
@@ -95,6 +96,7 @@ fun SearchProvidersScreen(
                 ),
                 searchProviders = uiState.searchProviders,
                 onEnableSearchProvider = viewModel::enableSearchProvider,
+                onUnlockProtection = onUnlockProtection,
                 onEditConfig = onNavigateToEditSearchProvider,
                 onDeleteConfig = viewModel::deleteTorznabConfig,
             )

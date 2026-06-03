@@ -108,6 +108,9 @@ class SettingsRepository @Inject constructor(
         ::SortOptions,
     )
 
+    val protectionUnlockedProviderIds: Flow<Set<SearchProviderId>> =
+        dataStore.getOrDefault(key = PROTECTION_UNLOCKED_PROVIDER_IDS, default = emptySet())
+
     suspend fun enableDynamicTheme(enable: Boolean) {
         dataStore.setOrUpdate(key = ENABLE_DYNAMIC_THEME, enable)
     }
@@ -190,6 +193,26 @@ class SettingsRepository @Inject constructor(
         dataStore.setOrUpdate(key = BOOKMARKS_SORT_ORDER, value = order.name)
     }
 
+    suspend fun addProtectionUnlockedProviderId(id: SearchProviderId) {
+        dataStore.edit {
+            val currentIds = it[PROTECTION_UNLOCKED_PROVIDER_IDS] ?: emptySet()
+            it[PROTECTION_UNLOCKED_PROVIDER_IDS] = currentIds + id
+        }
+    }
+
+    suspend fun removeProtectionUnlockedProviderId(id: SearchProviderId) {
+        dataStore.edit {
+            it[PROTECTION_UNLOCKED_PROVIDER_IDS]?.let { currentIds ->
+                val updatedIds = currentIds - id
+                it[PROTECTION_UNLOCKED_PROVIDER_IDS] = updatedIds
+            }
+        }
+    }
+
+    suspend fun setProtectionUnlockedProviderIds(ids: Set<SearchProviderId>) {
+        dataStore.setOrUpdate(key = PROTECTION_UNLOCKED_PROVIDER_IDS, value = ids)
+    }
+
     private companion object PreferencesKeys {
         // Appearance
         val ENABLE_DYNAMIC_THEME = booleanPreferencesKey("enable_dynamic_theme")
@@ -219,6 +242,9 @@ class SettingsRepository @Inject constructor(
         // Bookmarks screen sort options.
         val BOOKMARKS_SORT_CRITERIA = stringPreferencesKey("bookmarks_sort_criteria")
         val BOOKMARKS_SORT_ORDER = stringPreferencesKey("bookmarks_sort_order")
+
+        val PROTECTION_UNLOCKED_PROVIDER_IDS =
+            stringSetPreferencesKey("protection_unlocked_provider_ids")
     }
 }
 

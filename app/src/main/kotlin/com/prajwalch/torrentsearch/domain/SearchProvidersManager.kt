@@ -3,8 +3,10 @@ package com.prajwalch.torrentsearch.domain
 import com.prajwalch.torrentsearch.data.repository.SettingsRepository
 import com.prajwalch.torrentsearch.data.repository.TorznabConfigRepository
 import com.prajwalch.torrentsearch.domain.model.Category
+import com.prajwalch.torrentsearch.domain.model.CloudflareProtectionStatus
 import com.prajwalch.torrentsearch.domain.model.SearchProviderInfo
 import com.prajwalch.torrentsearch.domain.model.TorznabConfig
+import com.prajwalch.torrentsearch.network.HttpClient
 import com.prajwalch.torrentsearch.providers.LatestTorrentsProvider
 import com.prajwalch.torrentsearch.providers.SearchProvider
 import com.prajwalch.torrentsearch.providers.SearchProviderId
@@ -130,9 +132,15 @@ class SearchProvidersManager @Inject constructor(
         combine(
             torznabConfigRepository.getAllConfigs(),
             settingsRepository.enabledSearchProvidersId,
-        ) { torznabConfigs, enabledProvidersId ->
+            settingsRepository.protectionUnlockedProviderIds,
+        ) { torznabConfigs, enabledProvidersId, protectionUnlockedProviderIds ->
             val builtinProviderInfos = builtinProviders.map {
-                it.getInfo(isEnabled = it.id in enabledProvidersId)
+                val cloudflareProtectionStatus = when {
+                    !it.isCloudflareProtected -> CloudflareProtectionStatus.UnProtected
+                    it.id in protectionUnlockedProviderIds -> CloudflareProtectionStatus.Unlocked
+                    else -> CloudflareProtectionStatus.Locked
+                }
+                it.getInfo(isEnabled = it.id in enabledProvidersId, cloudflareProtectionStatus)
             }
             val torznabProviderInfos = torznabConfigs.map {
                 it.getInfo(isEnabled = it.id in enabledProvidersId)
@@ -223,6 +231,21 @@ class SearchProvidersManager @Inject constructor(
     }
 
     /**
+     * Unlocks the provider associated with the given ID.
+     */
+    suspend fun unlockProvider(id: SearchProviderId) {
+        settingsRepository.addProtectionUnlockedProviderId(id)
+    }
+
+    /**
+     * Locks and disables the provider associated with the given ID.
+     */
+    suspend fun lockProvider(id: SearchProviderId) {
+        disableProvider(id)
+        settingsRepository.removeProtectionUnlockedProviderId(id)
+    }
+
+    /**
      * Resets current providers setting to default.
      */
     suspend fun resetToDefault() {
@@ -231,6 +254,8 @@ class SearchProvidersManager @Inject constructor(
             .map { it.id }
             .toSet()
             .let { settingsRepository.setEnabledSearchProvidersId(it) }
+        settingsRepository.setProtectionUnlockedProviderIds(emptySet())
+        HttpClient.removeAllCookies()
     }
 
     /**
@@ -286,18 +311,22 @@ class SearchProvidersManager @Inject constructor(
     }
 }
 
-fun SearchProvider.getInfo(isEnabled: Boolean) =
-    SearchProviderInfo(
-        id = this.id,
-        name = this.name,
-        url = this.url,
-        supportedCategories = this.supportedCategories,
-        safetyStatus = this.safetyStatus,
-        type = this.type,
-        isEnabled = isEnabled,
-    )
+private fun SearchProvider.getInfo(
+    isEnabled: Boolean,
+    protectionStatus: CloudflareProtectionStatus,
+) = SearchProviderInfo(
+    id = this.id,
+    name = this.name,
+    url = this.url,
+    cloudflareSolverUrl = this.cloudflareSolverUrl,
+    supportedCategories = this.supportedCategories,
+    safetyStatus = this.safetyStatus,
+    type = this.type,
+    cloudflareProtectionStatus = protectionStatus,
+    isEnabled = isEnabled,
+)
 
-fun TorznabConfig.getInfo(isEnabled: Boolean) =
+private fun TorznabConfig.getInfo(isEnabled: Boolean) =
     SearchProviderInfo(
         id = this.id,
         name = this.searchProviderName,
@@ -305,5 +334,6 @@ fun TorznabConfig.getInfo(isEnabled: Boolean) =
         supportedCategories = setOf(this.category),
         safetyStatus = SearchProviderSafetyStatus.Safe,
         type = SearchProviderType.Torznab,
+        cloudflareProtectionStatus = CloudflareProtectionStatus.UnProtected,
         isEnabled = isEnabled,
     )

@@ -22,6 +22,7 @@ import com.prajwalch.torrentsearch.ui.theme.spaces
 fun SearchProviderList(
     searchProviders: List<SearchProviderInfo>,
     onEnableSearchProvider: (SearchProviderId, Boolean) -> Unit,
+    onUnlockProtection: (id: SearchProviderId, url: String) -> Unit,
     onEditConfig: (SearchProviderId) -> Unit,
     onDeleteConfig: (SearchProviderId) -> Unit,
     modifier: Modifier = Modifier,
@@ -50,8 +51,12 @@ fun SearchProviderList(
                 supportedCategories = it.supportedCategories,
                 type = it.type,
                 safetyStatus = it.safetyStatus,
+                protectionStatus = it.cloudflareProtectionStatus,
                 enabled = it.isEnabled,
                 onEnable = { enable -> onEnableSearchProvider(it.id, enable) },
+                onUnlockProtection = {
+                    onUnlockProtection(it.id, it.cloudflareSolverUrl ?: it.url)
+                },
                 onEditConfig = { onEditConfig(it.id) },
                 onDeleteConfig = { onDeleteConfig(it.id) },
                 onShowUnsafeReason = { reasonResId -> showUnsafeReason = reasonResId },

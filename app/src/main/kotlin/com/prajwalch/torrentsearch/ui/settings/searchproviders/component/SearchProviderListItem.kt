@@ -2,6 +2,7 @@ package com.prajwalch.torrentsearch.ui.settings.searchproviders.component
 
 import android.content.res.Configuration
 
+import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.LocalIndication
 import androidx.compose.foundation.background
 import androidx.compose.foundation.combinedClickable
@@ -44,6 +45,7 @@ import androidx.compose.ui.unit.dp
 
 import com.prajwalch.torrentsearch.R
 import com.prajwalch.torrentsearch.domain.model.Category
+import com.prajwalch.torrentsearch.domain.model.CloudflareProtectionStatus
 import com.prajwalch.torrentsearch.providers.SearchProviderSafetyStatus
 import com.prajwalch.torrentsearch.providers.SearchProviderType
 import com.prajwalch.torrentsearch.ui.component.BadgeRow
@@ -60,8 +62,10 @@ fun SearchProviderListItem(
     supportedCategories: Set<Category>,
     type: SearchProviderType,
     safetyStatus: SearchProviderSafetyStatus,
+    protectionStatus: CloudflareProtectionStatus,
     enabled: Boolean,
     onEnable: (Boolean) -> Unit,
+    onUnlockProtection: () -> Unit,
     onEditConfig: () -> Unit,
     onDeleteConfig: () -> Unit,
     onShowUnsafeReason: (resId: Int) -> Unit,
@@ -88,7 +92,15 @@ fun SearchProviderListItem(
             modifier = Modifier
                 .clip(shape = MaterialTheme.shapes.large)
                 .then(clickableModifier),
-            headlineContent = { Text(name) },
+            headlineContent = {
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(MaterialTheme.spaces.extraSmall),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Text(name)
+                    SearchProviderProtectionStatus(protectionStatus)
+                }
+            },
             supportingContent = {
                 Column(
                     verticalArrangement = Arrangement.spacedBy(
@@ -119,7 +131,18 @@ fun SearchProviderListItem(
                         QuestionMarkButton(onClick = { onShowUnsafeReason(safetyStatus.reason) })
                     }
 
-                    Switch(checked = enabled, onCheckedChange = onEnable)
+                    AnimatedContent(protectionStatus) { protectionStatus ->
+                        if (protectionStatus == CloudflareProtectionStatus.Locked) {
+                            IconButton(onClick = onUnlockProtection) {
+                                Icon(
+                                    painter = painterResource(R.drawable.ic_lock_open),
+                                    contentDescription = null,
+                                )
+                            }
+                        } else {
+                            Switch(checked = enabled, onCheckedChange = onEnable)
+                        }
+                    }
                 }
             },
             colors = ListItemDefaults.colors(containerColor = containerColor),
@@ -137,6 +160,34 @@ fun SearchProviderListItem(
                 showTorznabContextMenu = false
             },
         )
+    }
+}
+
+@Composable
+private fun SearchProviderProtectionStatus(
+    protectionStatus: CloudflareProtectionStatus,
+    modifier: Modifier = Modifier,
+) {
+    AnimatedContent(modifier = modifier, targetState = protectionStatus) { status ->
+        when (status) {
+            CloudflareProtectionStatus.Locked -> {
+                Icon(
+                    painter = painterResource(R.drawable.ic_shield_lock),
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.error,
+                )
+            }
+
+            CloudflareProtectionStatus.Unlocked -> {
+                Icon(
+                    painter = painterResource(R.drawable.ic_shield_checked),
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.secondary,
+                )
+            }
+
+            else -> {}
+        }
     }
 }
 
@@ -228,8 +279,10 @@ private fun SearchProviderListItemPreview() {
         supportedCategories = Category.entries.toSet(),
         type = SearchProviderType.Builtin,
         safetyStatus = SearchProviderSafetyStatus.Unsafe(R.string.tpb_unsafe_reason),
+        protectionStatus = CloudflareProtectionStatus.UnProtected,
         enabled = true,
         onEnable = {},
+        onUnlockProtection = {},
         onEditConfig = {},
         onDeleteConfig = {},
         onShowUnsafeReason = {},

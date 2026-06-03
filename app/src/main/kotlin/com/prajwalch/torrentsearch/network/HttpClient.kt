@@ -1,6 +1,7 @@
 package com.prajwalch.torrentsearch.network
 
 import android.util.Log
+import android.webkit.CookieManager
 
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.okhttp.OkHttp
@@ -10,6 +11,7 @@ import io.ktor.client.plugins.HttpRequestRetry
 import io.ktor.client.plugins.HttpRequestTimeoutException
 import io.ktor.client.plugins.HttpTimeout
 import io.ktor.client.plugins.ResponseException
+import io.ktor.client.plugins.UserAgent
 import io.ktor.client.plugins.cache.HttpCache
 import io.ktor.client.request.get
 import io.ktor.client.request.header
@@ -18,6 +20,7 @@ import io.ktor.client.request.setBody
 import io.ktor.client.statement.HttpResponse
 import io.ktor.client.statement.bodyAsText
 import io.ktor.http.ContentType
+import io.ktor.http.HttpStatusCode
 import io.ktor.http.contentType
 
 import kotlinx.coroutines.Dispatchers
@@ -25,6 +28,9 @@ import kotlinx.coroutines.withContext
 import kotlinx.io.IOException
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonElement
+
+class CloudflareChallengeException(url: String) :
+    Exception("Cloudflare challenge encountered [url=$url]")
 
 /** Primary object for making network request. */
 object HttpClient {
@@ -34,7 +40,7 @@ object HttpClient {
     private const val MAX_RETRIES = 3
 
     /**
-     * Time period in which a client should process a HTTP call:
+     * Time period in which a client should process an HTTP call:
      * from sending a request to receiving a response.
      */
     private const val REQUEST_TIMEOUT_MS = 20_000L
@@ -51,11 +57,19 @@ object HttpClient {
      */
     private const val SOCKET_TIMEOUT_MS = 15_000L
 
+    /**
+     * The default user-agent for WebView and every other request.
+     */
+    const val USER_AGENT = "Mozilla/5.0 (Linux; Android 10; K) " +
+            "AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Mobile Safari/537.36"
+
     /** The underlying client. */
     private val innerClient by lazy { createClient() }
 
     /** Creates and configures the inner/underlying http client. */
     private fun createClient() = HttpClient(OkHttp) {
+        install(UserAgent) { agent = USER_AGENT }
+        install(HttpCache)
         install(HttpRequestRetry) {
             retryOnServerErrors(maxRetries = MAX_RETRIES)
             retryOnException(maxRetries = MAX_RETRIES, retryOnTimeout = true)
@@ -66,7 +80,6 @@ object HttpClient {
             connectTimeoutMillis = CONNECT_TIMEOUT_MS
             socketTimeoutMillis = SOCKET_TIMEOUT_MS
         }
-        install(HttpCache)
     }
 
     /** Completely closes the connection. */
@@ -104,27 +117,44 @@ object HttpClient {
      * Makes a GET request and returns the response as raw text.
      */
     suspend fun get(url: String, headers: Map<String, String> = emptyMap()): String {
-        Log.d(TAG, "get")
-
-        return innerClient.get(urlString = url) {
-            headers.forEach { (key, value) -> header(key = key, value = value) }
-        }.bodyAsText()
+        Log.d(TAG, "get $url")
+        return getResponse(url, headers).bodyAsText()
     }
 
     suspend fun getResponse(url: String, headers: Map<String, String> = emptyMap()): HttpResponse {
-        Log.d(TAG, "getResponse")
+        Log.d(TAG, "getResponse $url")
 
-        return innerClient.get(urlString = url) {
-            headers.forEach { (key, value) -> header(key = key, value = value) }
+        val response = innerClient.get(urlString = url) {
+            val savedCookie = getCookie(url)
+            var savedCookieSet = false
+
+            headers.forEach { (key, value) ->
+                if (key == "Cookie" && savedCookie != null) {
+                    header(key, "$value; $savedCookie")
+                    savedCookieSet = true
+                } else {
+                    header(key, value)
+                }
+            }
+
+            if (!savedCookieSet) {
+                header("Cookie", savedCookie)
+            }
+        }
+
+        if (isResponseChallenged(response)) {
+            throw CloudflareChallengeException(url)
+        } else {
+            return response
         }
     }
 
     /**
-     * Makes a GET request and returns the response parsed as Json or `null`
+     * Makes a GET request and returns the response parsed as JSON or `null`
      * if parsing fails.
      */
     suspend fun getJson(url: String): JsonElement? {
-        Log.d(TAG, "getJson")
+        Log.d(TAG, "getJson $url")
 
         val content = getResponse(url).bodyAsText()
         if (content.isEmpty()) {
@@ -137,11 +167,11 @@ object HttpClient {
     }
 
     /**
-     * Makes a POST request with the given Json payload and returns the
-     * response parsed as Json or `null` if parsing fails or response is empty.
+     * Makes a POST request with the given JSON payload and returns the
+     * response parsed as JSON or `null` if parsing fails or response is empty.
      */
     suspend fun postJson(url: String, payload: JsonElement): JsonElement? {
-        Log.d(TAG, "postJson")
+        Log.d(TAG, "postJson $url")
 
         val response = post(url = url, payload = payload)
         if (response.isEmpty()) {
@@ -166,7 +196,7 @@ object HttpClient {
     }
 
     /**
-     * Parses and returns the given string as Json or `null` if parsing fails.
+     * Parses and returns the given string as JSON or `null` if parsing fails.
      */
     private suspend fun parseJson(jsonString: String) = withContext(Dispatchers.Default) {
         Log.d(TAG, "parseJson")
@@ -180,9 +210,41 @@ object HttpClient {
             null
         }
     }
+
+    suspend fun isUrlChallenged(url: String): Boolean {
+        val cookie = getCookie(url)
+
+        return innerClient.get(url) { header("Cookie", cookie) }
+            .let(::isResponseChallenged)
+    }
+
+    private fun isResponseChallenged(response: HttpResponse): Boolean {
+        // cf-mitigated is a reliable way to check challenged page.
+        // https://developers.cloudflare.com/cloudflare-challenges/challenge-types/challenge-pages/detect-response/
+        return response.headers.contains("cf-mitigated", "challenge") ||
+                response.status in setOf(
+            HttpStatusCode.Forbidden,
+            HttpStatusCode.ServiceUnavailable,
+        )
+    }
+
+    fun getCookie(url: String): String? {
+        return CookieManager.getInstance().getCookie(url)
+    }
+
+    fun removeAllCookies() {
+        Log.i(TAG, "Removing all cookies")
+        CookieManager.getInstance().removeAllCookies { removed ->
+            if (removed) {
+                Log.i(TAG, "Cookies removed successfully")
+            } else {
+                Log.e(TAG, "Remove failed")
+            }
+        }
+    }
 }
 
-/** Represents a either success or failure response. */
+/** Represents either a success or failure response. */
 sealed class HttpClientResponse<out T> {
     /* Represents a successful response. */
     data class Ok<T>(val result: T) : HttpClientResponse<T>()

@@ -9,8 +9,10 @@ import com.prajwalch.torrentsearch.domain.model.SearchException
 import com.prajwalch.torrentsearch.domain.model.SearchResults
 import com.prajwalch.torrentsearch.domain.model.Torrent
 import com.prajwalch.torrentsearch.domain.model.addResult
+import com.prajwalch.torrentsearch.network.CloudflareChallengeException
 import com.prajwalch.torrentsearch.network.HttpClient
 import com.prajwalch.torrentsearch.providers.SearchContext
+import com.prajwalch.torrentsearch.providers.SearchProvider
 
 import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.persistentListOf
@@ -46,8 +48,8 @@ class SearchProvidersGateway @Inject constructor(
 
             enabledProviders.forEach {
                 launch {
-                    val result = runCatchingProvider(it.name, it.url) {
-                        it.search(encodedQuery, searchContext)
+                    val result = runCatchingProvider(it) {
+                        search(encodedQuery, searchContext)
                     }
                     send(result)
                 }
@@ -59,26 +61,30 @@ class SearchProvidersGateway @Inject constructor(
             .drop(1)
             .flowOn(Dispatchers.IO)
 
-    private suspend fun runCatchingProvider(
-        providerName: String,
-        providerUrl: String,
-        action: suspend () -> List<Torrent>,
+    private suspend fun <T : SearchProvider> runCatchingProvider(
+        provider: T,
+        action: suspend T.() -> List<Torrent>,
     ): Result<List<Torrent>> = try {
-        val torrents = action()
-        Log.i(TAG, "$providerName succeed with ${torrents.size} results")
+        val torrents = provider.action()
+        Log.i(TAG, "${provider.name} succeed with ${torrents.size} results")
 
         Result.success(torrents)
     } catch (e: CancellationException) {
-        Log.i(TAG, "$providerName got canceled")
+        Log.i(TAG, "${provider.name} got canceled")
 
         // Never catch this as this is used to cancel coroutines.
         throw e
     } catch (cause: Throwable) {
-        Log.e(TAG, "$providerName crashed", cause)
+        Log.e(TAG, "${provider.name} crashed", cause)
+
+        if (cause is CloudflareChallengeException) {
+            Log.i(TAG, "Locking ${provider.name} (${provider.id})")
+            searchProvidersManager.lockProvider(provider.id)
+        }
 
         val exception = SearchException(
-            searchProviderName = providerName,
-            searchProviderUrl = providerUrl,
+            searchProviderName = provider.name,
+            searchProviderUrl = provider.url,
             message = cause.message ?: cause.toString(),
             cause = cause,
         )
@@ -102,8 +108,8 @@ class SearchProvidersGateway @Inject constructor(
         channelFlow {
             searchProvidersManager.getEnabledLatestTorrentsProviders(category).forEach {
                 launch {
-                    val result = runCatchingProvider(it.name, it.url) {
-                        it.getLastestTorrents(category)
+                    val result = runCatchingProvider(it) {
+                        getLastestTorrents(category)
                     }
                     if (result.isSuccess) {
                         val torrents = result.getOrNull()!!
@@ -123,7 +129,7 @@ class SearchProvidersGateway @Inject constructor(
             searchProvidersManager.getEnabledTopTorrentsProviders(category).forEach {
                 launch {
                     val result =
-                        runCatchingProvider(it.name, it.url) { it.getTopTorrents(category) }
+                        runCatchingProvider(it) { getTopTorrents(category) }
                     if (result.isSuccess) {
                         val torrents = result.getOrNull()!!
                         send(torrents)

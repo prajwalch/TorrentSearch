@@ -25,6 +25,13 @@ interface SearchProvider {
     val url: String
 
     /**
+     * A URL which is used to solve Cloudflare challenge.
+     *
+     * If it's `null`, the main [url] will be used.
+     */
+    val cloudflareSolverUrl: String? get() = null
+
+    /**
      * Categories supported by the search provider.
      *
      * Include a category if the upstream server either accepts it as a search
@@ -41,6 +48,9 @@ interface SearchProvider {
 
     /** Type of search provider. */
     val type: SearchProviderType get() = SearchProviderType.Builtin
+
+    /** Indicates whether the provider is Cloudflare-protected. */
+    val isCloudflareProtected: Boolean get() = false
 
     /** Performs a search and returns the results. */
     suspend fun search(query: String, context: SearchContext): List<Torrent>
