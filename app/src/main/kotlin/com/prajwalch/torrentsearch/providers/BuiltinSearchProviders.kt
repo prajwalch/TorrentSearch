@@ -15,6 +15,7 @@ val BuiltinSearchProviders = listOf(
     Nyaa(),
     SubsPlease(),
     Sukebei(),
+    ThirteenThirtySevenX(),
     ThePirateBay(),
     TheRarBg(),
     TokyoToshokan(),
