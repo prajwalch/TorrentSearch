@@ -18,6 +18,7 @@ class TorrentDownloads : SearchProvider {
     override val id = "torrentdownloads"
     override val name = "TorrentDownloads"
     override val url = "https://torrentdownloads.pro"
+    override val cloudflareSolverUrl = "$url/search/?s_cat=0&search=ubuntu"
     override val safetyStatus = SearchProviderSafetyStatus.Safe
     override val supportedCategories = setOf(
         Category.Anime,
@@ -29,6 +30,7 @@ class TorrentDownloads : SearchProvider {
         Category.Series,
         Category.Other,
     )
+    override val isCloudflareProtected = true
     override val enabledByDefault = true
 
     override suspend fun search(query: String, context: SearchContext): List<Torrent> {
