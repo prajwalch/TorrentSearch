@@ -2,6 +2,7 @@ package com.prajwalch.torrentsearch.network
 
 import android.util.Log
 import android.webkit.CookieManager
+import androidx.core.net.toUri
 
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.okhttp.OkHttp
@@ -230,6 +231,35 @@ object HttpClient {
 
     fun getCookie(url: String): String? {
         return CookieManager.getInstance().getCookie(url)
+    }
+
+    fun removeCookie(url: String) {
+        Log.i(TAG, "Removing cookie of $url")
+
+        val cookieManager = CookieManager.getInstance()
+        val cookies: String? = cookieManager.getCookie(url)
+
+        if (cookies == null) {
+            Log.i(TAG, "Cookie not found")
+            return
+        }
+
+        for (cookie in cookies.split(";")) {
+            val key = cookie.substringBefore("=").trim()
+            Log.i(TAG, "Removing $key")
+
+            cookieManager.setCookie(url, createExpiredCookie(key, url))
+        }
+
+        cookieManager.flush()
+    }
+
+    private fun createExpiredCookie(key: String, url: String): String {
+        val domain = url.toUri().host!!.let { ".$it" }
+
+        // NOTE: This works only for cf_clearance cookie, which is fine for us.
+        return "$key=; Domain=$domain; Max-Age=0; Path=/; " +
+                "SameSite=None; HttpOnly; Secure; Partitioned"
     }
 
     fun removeAllCookies() {

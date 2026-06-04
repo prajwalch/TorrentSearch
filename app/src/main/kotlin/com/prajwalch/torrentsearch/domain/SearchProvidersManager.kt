@@ -16,10 +16,12 @@ import com.prajwalch.torrentsearch.providers.TopTorrentsProvider
 import com.prajwalch.torrentsearch.providers.TorrentDetailsProvider
 import com.prajwalch.torrentsearch.providers.TorznabSearchProvider
 
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.withContext
 
 import javax.inject.Inject
 
@@ -241,8 +243,13 @@ class SearchProvidersManager @Inject constructor(
      * Locks and disables the provider associated with the given ID.
      */
     suspend fun lockProvider(id: SearchProviderId) {
-        disableProvider(id)
         settingsRepository.removeProtectionUnlockedProviderId(id)
+        builtinProviders.find { it.id == id }?.let {
+            withContext(Dispatchers.IO) {
+                HttpClient.removeCookie(it.cloudflareSolverUrl ?: it.url)
+            }
+        }
+        disableProvider(id)
     }
 
     /**
