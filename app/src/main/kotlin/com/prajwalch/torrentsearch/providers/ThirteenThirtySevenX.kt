@@ -214,96 +214,19 @@ private object ThirteenThirtySevenXDetailsPageParser {
         }
 }
 
+// Thank you Jackett ;)
+// https://github.com/Jackett/Jackett/blob/master/src/Jackett.Common/Definitions/1337x.yml#L32
 private fun getCategoryFromId(id: String): Category = when (id) {
-//# Anime
-//- {id: 28, cat: TV/Anime, desc: "Anime/Anime"}
-//- {id: 78, cat: TV/Anime, desc: "Anime/Dual Audio"}
-//- {id: 79, cat: TV/Anime, desc: "Anime/Dubbed"}
-//- {id: 80, cat: TV/Anime, desc: "Anime/Subbed"}
-//- {id: 81, cat: TV/Anime, desc: "Anime/Raw"}
     "28", "78", "79", "80", "81" -> Category.Anime
-//# Audio
-    "22",
-    "23",
-    "24",
-    "25",
-    "26",
-    "27",
-    "53",
-    "58",
-    "59",
-    "60",
-    "68",
-    "69",
-        -> Category.Music
-//# Movies
-//- {id: 1, cat: Movies/DVD, desc: "Movies/DVD"}
-//- {id: 2, cat: Movies/SD, desc: "Movies/Divx/Xvid"}
-//- {id: 3, cat: Movies, desc: "Movies/SVCD/VCD"}
-//- {id: 4, cat: Movies/Foreign, desc: "Movies/Dubs/Dual Audio"}
-//- {id: 42, cat: Movies/HD, desc: "Movies/HD"}
-//- {id: 54, cat: Movies/HD, desc: "Movies/h.264/x264"}
-//- {id: 55, cat: Movies, desc: "Movies/Mp4"}
-//- {id: 66, cat: Movies/3D, desc: "Movies/3D"}
-//- {id: 70, cat: Movies/HD, desc: "Movies/HEVC/x265"}
-//- {id: 73, cat: Movies, desc: "Movies/Bollywood"}
-//- {id: 76, cat: Movies/UHD, desc: "Movies/UHD"}
+    "22", "23", "24", "25", "26", "27", "53", "58", "59", "60", "68", "69" -> Category.Music
     "1", "2", "3", "4", "42", "54", "55", "66", "70", "73", "76" -> Category.Movies
-//# TV
-//- {id: 5, cat: TV, desc: "TV/DVD"}
-//- {id: 6, cat: TV, desc: "TV/Divx/Xvid"}
-//- {id: 7, cat: TV, desc: "TV/SVCD/VCD"}
-//- {id: 41, cat: TV/HD, desc: "TV/HD"}
-//- {id: 71, cat: TV, desc: "TV/HEVC/x265"}
-//- {id: 74, cat: TV, desc: "TV/Cartoons"}
-//- {id: 75, cat: TV/SD, desc: "TV/SD"}
-//- {id: 9, cat: TV/Documentary, desc: "TV/Documentary"}
     "5", "6", "7", "41", "71", "74", "75", "9" -> Category.Series
-//# Apps
-//- {id: 18, cat: PC, desc: "Apps/PC Software"}
-//- {id: 19, cat: PC/Mac, desc: "Apps/Mac"}
-//- {id: 20, cat: PC, desc: "Apps/Linux"}
-//- {id: 21, cat: PC, desc: "Apps/Other"}
-//- {id: 56, cat: PC/Mobile-Android, desc: "Apps/Android"}
-//- {id: 57, cat: PC/Mobile-iOS, desc: "Apps/iOS"}
     "18", "19", "20", "21", "56", "57" -> Category.Apps
-//# Games
-    "10",
-    "11",
-    "12",
-    "13",
-    "14",
-    "15",
-    "16",
-    "17",
-    "43",
-    "44",
-    "45",
-    "46",
-    "72",
-    "77",
-    "82",
+    "10", "11", "12", "13", "14", "15", "16", "17", "43", "44", "45", "46", "72", "77", "82",
         -> Category.Games
-//# XXX
-    "48",
-    "49",
-    "50",
-    "51",
-    "67",
-        -> Category.Porn
-//# Other
-    "33",
-    "34",
-    "35",
-    "36",
-    "37",
-    "38",
-    "39",
-    "40",
-    "47",
-    "52",
-        -> Category.Other
 
+    "48", "49", "50", "51", "67" -> Category.Porn
+    "33", "34", "35", "36", "37", "38", "39", "40", "47", "52" -> Category.Other
     else -> Category.Other
 }
 
