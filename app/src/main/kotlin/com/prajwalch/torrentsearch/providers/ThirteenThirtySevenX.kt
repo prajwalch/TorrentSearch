@@ -13,6 +13,8 @@ import kotlinx.coroutines.withContext
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Element
 
+import java.time.Instant
+
 class ThirteenThirtySevenX : SearchProvider, TopTorrentsProvider, TorrentDetailsProvider {
     override val id = "1337x"
     override val name = "1337x"
@@ -91,11 +93,7 @@ private class ThirteenThirtySevenXResultsPageParser(private val providerName: St
         val size = listItem.selectFirst(SIZE)?.ownText()?.filter { it != ',' }
         val seeders = listItem.selectFirst(SEEDERS)?.ownText()?.toUIntOrNull()
         val peers = listItem.selectFirst(PEERS)?.ownText()?.toUIntOrNull()
-        val uploadDate = listItem.selectFirst(UPLOAD_DATE)
-            ?.ownText()
-            ?.replace(Regex("(\\d+)(st|nd|rd|th)"), "$1")
-            ?.replace("'", "")
-            ?.let { TorrentDateParser.parse(date = it, format = "MMM. d yy") }
+        val uploadDate = listItem.selectFirst(UPLOAD_DATE)?.ownText()?.let(::parseDate)
         val category = listItem.selectFirst(CATEGORY)?.attr("href")
             ?.removePrefix("/sub/")
             ?.takeWhile { it != '/' }
@@ -114,6 +112,37 @@ private class ThirteenThirtySevenXResultsPageParser(private val providerName: St
             magnetUri = torrentDetails.magnetUri,
             fileDownloadLink = torrentDetails.fileDownloadLink
         )
+    }
+
+    private fun parseDate(date: String): Instant? {
+        // Possible formats:
+        //  12:45am
+        //  8pm Jun. 2nd
+        //  May. 27th '26
+        val normalizedDate = date
+            // 27th, 3rd -> 27, 3
+            .replace(Regex("(\\d+)(st|nd|rd|th)"), "$1")
+            // 8pm, 12:25am -> 8 pm, 12:45 am
+            .replace(Regex("(?<=\\d)(am|pm)\\b"), " $1")
+            // Jun. -> Jun
+            .replace(".", "")
+            // '26 -> 26
+            .replace("'", "")
+
+        return runCatching {
+            // May 31 26 (normalized)
+            TorrentDateParser.parse(date = normalizedDate, format = "MMM d yy")
+        }.recoverCatching {
+            // 8 pm Jun 2 (normalized)
+            val currentYear = TorrentDateParser.getCurrentYear()
+            // 8 pm Jun 2 2020
+            val reconstructedDate = "$normalizedDate $currentYear"
+
+            TorrentDateParser.parse(date = reconstructedDate, format = "h a MMM d yyyy")
+        }.recoverCatching {
+            //  12:45 am (normalized)
+            TorrentDateParser.tryParseTime(normalizedDate)
+        }.getOrNull()
     }
 
     private companion object {

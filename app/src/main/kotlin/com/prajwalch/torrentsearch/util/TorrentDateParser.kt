@@ -4,9 +4,12 @@ import java.time.Duration
 import java.time.Instant
 import java.time.LocalDate
 import java.time.LocalDateTime
+import java.time.LocalTime
 import java.time.OffsetDateTime
+import java.time.Year
 import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
+import java.time.format.DateTimeFormatterBuilder
 import java.time.format.DateTimeParseException
 
 object TorrentDateParser {
@@ -18,7 +21,10 @@ object TorrentDateParser {
     private val DefaultTimeZone = ZoneOffset.UTC
 
     fun parse(date: String, format: String): Instant? {
-        val inputFormatter = DateTimeFormatter.ofPattern(format)
+        val inputFormatter = DateTimeFormatterBuilder()
+            .parseCaseInsensitive()
+            .appendPattern(format)
+            .toFormatter()
 
         return try {
             LocalDateTime.parse(date, inputFormatter)
@@ -69,6 +75,17 @@ object TorrentDateParser {
         else -> null
     }
 
+    fun tryParseTime(time: String): Instant? {
+        val timeFormatter = DateTimeFormatterBuilder()
+            .parseCaseInsensitive()
+            .appendPattern("h:m a")
+            .toFormatter()
+        val localTime = LocalTime.parse(time, timeFormatter)
+        val dateTime = LocalDate.now(DefaultTimeZone).atTime(localTime)
+
+        return dateTime.toInstant(DefaultTimeZone)
+    }
+
     fun epochSecondToInstant(second: Long): Instant =
         Instant.ofEpochSecond(second)
 
@@ -90,4 +107,6 @@ object TorrentDateParser {
             .minusDays(1L)
             .atStartOfDay(DefaultTimeZone)
             .toInstant()
+
+    fun getCurrentYear(): Int = Year.now(DefaultTimeZone).value
 }
