@@ -3,17 +3,53 @@ package com.prajwalch.torrentsearch.ui.settings.searchproviders.cloudflare.compo
 import android.annotation.SuppressLint
 import android.content.Context
 import android.util.Log
-import android.view.View
+import android.view.ViewGroup
 import android.webkit.WebResourceError
 import android.webkit.WebResourceRequest
 import android.webkit.WebResourceResponse
 import android.webkit.WebView
 import android.webkit.WebViewClient
+
+import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.clipToBounds
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.viewinterop.AndroidView
 
 import com.prajwalch.torrentsearch.network.HttpClient
+
+@Composable
+fun BoxedCloudflareWebView(
+    url: String,
+    onChallengeSolved: () -> Unit,
+    height: Dp,
+    modifier: Modifier = Modifier,
+) {
+    Box(
+        modifier = modifier
+            .fillMaxWidth()
+            .height(height)
+            .clip(shape = MaterialTheme.shapes.medium)
+            .border(
+                width = Dp.Hairline,
+                color = MaterialTheme.colorScheme.outline,
+                shape = MaterialTheme.shapes.medium,
+            )
+            .clipToBounds(),
+    ) {
+        CloudflareWebView(
+            modifier = Modifier.matchParentSize(),
+            url = url,
+            onChallengeSolved = onChallengeSolved,
+        )
+    }
+}
 
 @Composable
 fun CloudflareWebView(
@@ -26,7 +62,7 @@ fun CloudflareWebView(
         factory = { context ->
             createWebView(
                 context = context,
-                onChallengeSolved = onChallengeSolved
+                onChallengeSolved = onChallengeSolved,
             ).apply { loadUrl(url) }
         },
         onRelease = {
@@ -41,11 +77,19 @@ private fun createWebView(
     context: Context,
     onChallengeSolved: () -> Unit,
 ): WebView = WebView(context).apply {
-    visibility = View.GONE
+    layoutParams = ViewGroup.LayoutParams(
+        ViewGroup.LayoutParams.MATCH_PARENT,
+        ViewGroup.LayoutParams.MATCH_PARENT,
+    )
 
     settings.javaScriptEnabled = true
     settings.domStorageEnabled = true
     settings.userAgentString = HttpClient.USER_AGENT
+
+    // Pair with theme.
+//    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+//        settings.isAlgorithmicDarkeningAllowed = true
+//    }
 
     webViewClient = CloudflareWebViewClient(onChallengeSolved)
 }
