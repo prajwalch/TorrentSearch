@@ -73,6 +73,13 @@ fun SearchProviderListItem(
 ) {
     var showTorznabContextMenu by rememberSaveable { mutableStateOf(false) }
 
+    val onClick: () -> Unit = {
+        if (protectionStatus == CloudflareProtectionStatus.Locked) {
+            onUnlockProtection()
+        } else {
+            onEnable(!enabled)
+        }
+    }
     // Long click handler for showing Torznab context menu.
     val longClickHandler: (() -> Unit)? = when (type) {
         // Disable it for builtin providers.
@@ -82,7 +89,7 @@ fun SearchProviderListItem(
     val clickableModifier = Modifier.combinedClickable(
         interactionSource = null,
         indication = LocalIndication.current,
-        onClick = { onEnable(!enabled) },
+        onClick = onClick,
         onLongClick = longClickHandler,
     )
     val containerColor = MaterialTheme.colorScheme.surfaceContainer
