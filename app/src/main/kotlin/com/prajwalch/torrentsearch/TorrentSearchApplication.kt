@@ -1,6 +1,7 @@
 package com.prajwalch.torrentsearch
 
 import android.app.Application
+import android.os.StrictMode
 
 import coil3.ImageLoader
 import coil3.PlatformContext
@@ -22,6 +23,21 @@ import dagger.hilt.android.HiltAndroidApp
 class TorrentSearchApplication : Application(), SingletonImageLoader.Factory {
     override fun onCreate() {
         super.onCreate()
+
+        if (BuildConfig.DEBUG) {
+            StrictMode.setThreadPolicy(
+                StrictMode.ThreadPolicy.Builder()
+                    .detectAll()
+                    .penaltyLog()
+                    .build()
+            )
+            StrictMode.setVmPolicy(
+                StrictMode.VmPolicy.Builder()
+                    .detectAll()
+                    .penaltyLog()
+                    .build()
+            )
+        }
 
         Thread.setDefaultUncaughtExceptionHandler(
             TorrentSearchExceptionHandler(
