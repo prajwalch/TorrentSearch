@@ -13,7 +13,8 @@ import kotlinx.coroutines.withContext
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Element
 
-class TorrentDownloads : SearchProvider, TorrentDetailsProvider {
+class TorrentDownloads : SearchProvider, LatestTorrentsProvider, TopTorrentsProvider,
+    TorrentDetailsProvider {
     override val id = "torrentdownloads"
     override val name = "TorrentDownloads"
     override val url = "https://torrentdownloads.pro"
@@ -58,6 +59,40 @@ class TorrentDownloads : SearchProvider, TorrentDetailsProvider {
         Category.Music -> 5
         Category.Series -> 8
         Category.Porn, Category.Other -> 9
+    }
+
+    override suspend fun getLastestTorrents(category: Category): List<Torrent> {
+        val requestUrl = when (category) {
+            Category.Anime -> "$url/view/today/Anime.html"
+            Category.Apps -> "$url/view/today/Software.html"
+            Category.Books -> "$url/view/today/Books.html"
+            Category.Games -> "$url/view/today/Games.html"
+            Category.Movies -> "$url/view/today/Movies.html"
+            Category.Music -> "$url/view/today/Music.html"
+            Category.Series -> "$url/view/today/TV_Shows.html"
+            Category.Other -> "$url/view/today/Other.html"
+            else -> "$url/most-active"
+        }
+        val responseHtml = HttpClient.get(requestUrl)
+
+        return resultsPageParser.parse(html = responseHtml, pageUrl = requestUrl)
+    }
+
+    override suspend fun getTopTorrents(category: Category): List<Torrent> {
+        val requestUrl = when (category) {
+            Category.Anime -> "$url/view/popular/Anime.html"
+            Category.Apps -> "$url/view/popular/Software.html"
+            Category.Books -> "$url/view/popular/Books.html"
+            Category.Games -> "$url/view/popular/Games.html"
+            Category.Movies -> "$url/view/popular/Movies.html"
+            Category.Music -> "$url/view/popular/Music.html"
+            Category.Series -> "$url/view/popular/TV_Shows.html"
+            Category.Other -> "$url/view/popular/Other.html"
+            else -> "$url/most-seeded"
+        }
+        val responseHtml = HttpClient.get(requestUrl)
+
+        return resultsPageParser.parse(html = responseHtml, pageUrl = requestUrl)
     }
 
     override suspend fun getDetails(detailsPageUrl: String): TorrentDetails? {
