@@ -10,16 +10,23 @@ import android.webkit.WebResourceResponse
 import android.webkit.WebView
 import android.webkit.WebViewClient
 
-import androidx.compose.foundation.border
+import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.spring
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 
 import com.prajwalch.torrentsearch.network.HttpClient
@@ -31,17 +38,24 @@ fun BoxedCloudflareWebView(
     height: Dp,
     modifier: Modifier = Modifier,
 ) {
+    val boxAlpha by animateFloatAsState(
+        targetValue = if (height == 0.dp) 0f else 1f,
+        animationSpec = tween(200),
+    )
+
     Box(
         modifier = modifier
             .fillMaxWidth()
+            .animateContentSize(spring(dampingRatio = Spring.DampingRatioLowBouncy))
             .height(height)
             .clip(shape = MaterialTheme.shapes.medium)
-            .border(
-                width = Dp.Hairline,
-                color = MaterialTheme.colorScheme.outline,
-                shape = MaterialTheme.shapes.medium,
-            )
-            .clipToBounds(),
+//            .border(
+//                width = Dp.Hairline,
+//                color = MaterialTheme.colorScheme.outline,
+//                shape = MaterialTheme.shapes.medium,
+//            )
+            .clipToBounds()
+            .alpha(boxAlpha),
     ) {
         CloudflareWebView(
             modifier = Modifier.matchParentSize(),

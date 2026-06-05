@@ -6,7 +6,10 @@ import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -53,7 +56,9 @@ fun CloudflareScreen(
         Column(
             Modifier
                 .padding(innerPadding)
-                .padding(horizontal = MaterialTheme.spaces.large)
+                .fillMaxSize()
+                .padding(MaterialTheme.spaces.large)
+                .verticalScroll(rememberScrollState())
                 .animateContentSize()
         ) {
             AnimatedVisibility(!isChallengeSolved) {
@@ -67,7 +72,12 @@ fun CloudflareScreen(
                 )
             }
 
-            AnimatedContent(isChallengeSolved) { challengeSolved ->
+            AnimatedContent(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1f),
+                targetState = isChallengeSolved,
+            ) { challengeSolved ->
                 if (challengeSolved) {
                     ChallengeSolvedState(
                         modifier = Modifier.fillMaxSize(),
