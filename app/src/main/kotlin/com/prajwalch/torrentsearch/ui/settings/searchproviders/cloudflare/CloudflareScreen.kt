@@ -3,7 +3,6 @@ package com.prajwalch.torrentsearch.ui.settings.searchproviders.cloudflare
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateContentSize
-import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -41,7 +40,6 @@ fun CloudflareScreen(
 ) {
     var isChallengeSolved by rememberSaveable { mutableStateOf(false) }
     var showWebView by rememberSaveable { mutableStateOf(false) }
-    val webViewHeight by animateDpAsState(if (showWebView) 400.dp else 0.dp)
 
     Scaffold(
         modifier = modifier.fillMaxSize(),
@@ -68,7 +66,7 @@ fun CloudflareScreen(
                         isChallengeSolved = true
                         viewModel.markProviderAsUnlocked()
                     },
-                    height = webViewHeight,
+                    height = if (showWebView) 400.dp else 0.dp,
                 )
             }
 
