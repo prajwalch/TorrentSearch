@@ -3,6 +3,8 @@ package com.prajwalch.torrentsearch.ui.component
 import androidx.annotation.StringRes
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconButtonColors
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
@@ -15,8 +17,9 @@ fun ArrowBackIconButton(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
     @StringRes contentDescription: Int? = null,
+    colors: IconButtonColors = IconButtonDefaults.iconButtonColors(),
 ) {
-    IconButton(modifier = modifier, onClick = onClick) {
+    IconButton(modifier = modifier, onClick = onClick, colors = colors) {
         Icon(
             painter = painterResource(R.drawable.ic_arrow_back),
             contentDescription = contentDescription?.let { stringResource(it) },

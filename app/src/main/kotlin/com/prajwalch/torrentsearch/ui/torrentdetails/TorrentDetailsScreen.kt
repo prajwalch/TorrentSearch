@@ -16,6 +16,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
@@ -34,7 +35,9 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Shadow
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalClipboard
 import androidx.compose.ui.platform.LocalUriHandler
@@ -84,7 +87,7 @@ fun TorrentDetailsScreen(
 
     val coroutineScope = rememberCoroutineScope()
     val snackbarHostState = remember { SnackbarHostState() }
-    val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
+    val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
     val linkCopiedMessage = stringResource(R.string.torrent_details_message_link_copied)
 
     TorrentFileDownloadEffect(
@@ -210,31 +213,53 @@ private fun TorrentDetailsScreenTopBar(
     modifier: Modifier = Modifier,
     scrollBehavior: TopAppBarScrollBehavior? = null,
 ) {
+    val iconButtonColors = IconButtonDefaults.iconButtonColors(
+        containerColor = MaterialTheme.colorScheme.scrim.copy(alpha = 0.5f),
+        contentColor = Color.White,
+    )
+
     TopAppBar(
         modifier = modifier,
-        navigationIcon = { ArrowBackIconButton(onClick = onNavigateBack) },
-        title = { Text(stringResource(R.string.torrent_details_screen_title)) },
+        navigationIcon = {
+            ArrowBackIconButton(onClick = onNavigateBack, colors = iconButtonColors)
+        },
+        title = {
+            Text(
+                text = stringResource(R.string.torrent_details_screen_title),
+                color = Color.White,
+                style = MaterialTheme.typography.titleLarge.copy(
+                    shadow = Shadow(
+                        color = Color.Black,
+                        offset = Offset(0f, 1f),
+                        blurRadius = 7f,
+                    ),
+                )
+            )
+        },
         actions = {
-            IconButton(onClick = onOpenPageLink) {
+            IconButton(onClick = onOpenPageLink, colors = iconButtonColors) {
                 Icon(
                     painter = painterResource(R.drawable.ic_open_in_browser),
                     contentDescription = stringResource(R.string.torrent_details_action_open_link),
                 )
             }
-            IconButton(onClick = onCopyPageLink) {
+            IconButton(onClick = onCopyPageLink, colors = iconButtonColors) {
                 Icon(
                     painter = painterResource(R.drawable.ic_copy),
                     contentDescription = stringResource(R.string.torrent_details_action_copy_link),
                 )
             }
-            IconButton(onClick = onSharePageLink) {
+            IconButton(onClick = onSharePageLink, colors = iconButtonColors) {
                 Icon(
                     painter = painterResource(R.drawable.ic_share),
                     contentDescription = stringResource(R.string.torrent_details_action_share_link),
                 )
             }
         },
-        colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Transparent),
+        colors = TopAppBarDefaults.topAppBarColors(
+            containerColor = Color.Transparent,
+            scrolledContainerColor = MaterialTheme.colorScheme.scrim.copy(alpha = 0.3f),
+        ),
         scrollBehavior = scrollBehavior,
     )
 }
