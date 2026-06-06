@@ -19,6 +19,7 @@ class UIndex : SearchProvider, TorrentDetailsProvider, LatestTorrentsProvider, T
     override val id = "uindex"
     override val name = "UIndex"
     override val url = "https://uindex.org"
+    override val cloudflareSolverUrl = "$url/search.php?search=ubuntu"
     override val supportedCategories = setOf(
         Category.Anime,
         Category.Apps,
@@ -30,6 +31,7 @@ class UIndex : SearchProvider, TorrentDetailsProvider, LatestTorrentsProvider, T
         Category.Other,
     )
     override val safetyStatus = SearchProviderSafetyStatus.Safe
+    override val isCloudflareProtected = true
     override val enabledByDefault = true
 
     private val categoryMap = mapOf(
