@@ -28,6 +28,7 @@ import javax.inject.Inject
 
 data class TorrentDetailsUiState(
     val state: TorrentDetailsState = TorrentDetailsState.Loading,
+    val isRefreshing: Boolean = false,
     val blurNSFWImages: Boolean = true,
 )
 
@@ -57,9 +58,11 @@ class TorrentDetailsViewModel @Inject constructor(
 
     private val detailsState: MutableStateFlow<TorrentDetailsState> =
         MutableStateFlow(TorrentDetailsState.Loading)
+    private val isRefreshing = MutableStateFlow(false)
 
     val uiState = combine(
         detailsState,
+        isRefreshing,
         settingsRepository.blurNSFWImages,
         ::TorrentDetailsUiState
     ).stateIn(
@@ -79,6 +82,18 @@ class TorrentDetailsViewModel @Inject constructor(
         viewModelScope.launch {
             detailsState.value = TorrentDetailsState.Loading
             detailsState.value = getTorrentDetails()
+        }
+    }
+
+    fun refreshDetails() {
+        isRefreshing.value = true
+        viewModelScope.launch {
+            val details = getTorrentDetails()
+            if (details is TorrentDetailsState.Available) {
+                detailsState.value = details
+            }
+
+            isRefreshing.value = false
         }
     }
 

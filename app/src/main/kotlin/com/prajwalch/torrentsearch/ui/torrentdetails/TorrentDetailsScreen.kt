@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.plus
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.CircularProgressIndicator
@@ -23,6 +24,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TopAppBarScrollBehavior
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -169,10 +171,7 @@ fun TorrentDetailsScreen(
                     val torrentDetails = contentState.details
 
                     TorrentDetailsScreenContent(
-                        modifier = Modifier
-                            .padding(innerPadding)
-                            .fillMaxSize()
-                            .padding(vertical = MaterialTheme.spaces.large),
+                        modifier = Modifier.fillMaxSize(),
                         details = torrentDetails,
                         providerName = viewModel.providerName,
                         onOpenMagnetLink = { onOpenMagnetLink(torrentDetails.magnetUri) },
@@ -189,7 +188,11 @@ fun TorrentDetailsScreen(
                                 )
                             }
                         },
+                        isRefreshing = uiState.isRefreshing,
+                        onRefresh = viewModel::refreshDetails,
                         blurNSFWImages = uiState.blurNSFWImages,
+                        insetPadding = innerPadding,
+                        contentPadding = PaddingValues(vertical = MaterialTheme.spaces.large),
                     )
                 }
             }
@@ -242,103 +245,113 @@ private fun TorrentDetailsScreenContent(
     providerName: String,
     onOpenMagnetLink: () -> Unit,
     onDownloadTorrentFile: () -> Unit,
+    isRefreshing: Boolean,
+    onRefresh: () -> Unit,
     modifier: Modifier = Modifier,
     blurNSFWImages: Boolean = true,
+    insetPadding: PaddingValues = PaddingValues(),
+    contentPadding: PaddingValues = PaddingValues(),
 ) {
     var revealImage by rememberSaveable(blurNSFWImages) {
         mutableStateOf(!details.isNSFW || !blurNSFWImages)
     }
     var showTapToRevealHint by rememberSaveable { mutableStateOf(true) }
 
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .verticalScroll(rememberScrollState())
+    PullToRefreshBox(
+        modifier = Modifier.fillMaxSize(),
+        isRefreshing = isRefreshing,
+        onRefresh = onRefresh,
     ) {
-        details.posterUrl?.let {
-            HeroBackgroundImage(
-                url = it,
-                revealed = revealImage,
-            )
-        }
-
-        Column(
-            modifier = modifier,
-            verticalArrangement = Arrangement.spacedBy(MaterialTheme.spaces.extraLarge),
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .verticalScroll(rememberScrollState())
         ) {
-            val horizontalPaddingModifier = Modifier.padding(
-                horizontal = MaterialTheme.spaces.large,
-            )
-
             details.posterUrl?.let {
-                val alignModifier = Modifier.align(Alignment.CenterHorizontally)
-
-                if (details.isNSFW) {
-                    NsfwMediaPoster(
-                        modifier = Modifier.then(alignModifier),
-                        url = it,
-                        onToggleReveal = {
-                            showTapToRevealHint = false
-                            revealImage = !revealImage
-                        },
-                        revealed = revealImage,
-                        showTapToRevealHint = showTapToRevealHint,
-                    )
-                } else {
-                    MediaPoster(modifier = Modifier.then(alignModifier), url = it)
-                }
-            }
-
-            Column(modifier = Modifier.then(horizontalPaddingModifier)) {
-                Text(
-                    text = details.name,
-                    style = MaterialTheme.typography.titleLarge,
+                HeroBackgroundImage(
+                    url = it,
+                    revealed = revealImage,
                 )
-                BadgeRow {
-                    SearchProviderBadge(providerName)
-                    if (details.isNSFW) NSFWBadge()
-                }
             }
 
-            CallToActionButton(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .then(horizontalPaddingModifier),
-                onOpenMagnetLink = onOpenMagnetLink,
-                onDownloadTorrentFile = onDownloadTorrentFile,
-            )
-            HorizontalDivider()
+            Column(
+                modifier = modifier.padding(insetPadding + contentPadding),
+                verticalArrangement = Arrangement.spacedBy(MaterialTheme.spaces.extraLarge),
+            ) {
+                val horizontalPaddingModifier = Modifier.padding(
+                    horizontal = MaterialTheme.spaces.large,
+                )
 
-            TorrentInfo(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .then(horizontalPaddingModifier),
-                size = details.size,
-                seeders = details.seeders,
-                peers = details.peers,
-                uploadDate = details.uploadDate,
-                category = details.category,
-                uploader = details.uploader,
-                lastChecked = details.lastChecked,
-                infoHash = details.infoHash,
-            )
-            HorizontalDivider()
+                details.posterUrl?.let {
+                    val alignModifier = Modifier.align(Alignment.CenterHorizontally)
 
-            if (details.screenshotUrls.isNotEmpty()) {
-                ScreenShots(
-                    modifier = Modifier.fillMaxWidth(),
-                    urls = details.screenshotUrls,
-                    contentPadding = PaddingValues(horizontal = MaterialTheme.spaces.large)
+                    if (details.isNSFW) {
+                        NsfwMediaPoster(
+                            modifier = Modifier.then(alignModifier),
+                            url = it,
+                            onToggleReveal = {
+                                showTapToRevealHint = false
+                                revealImage = !revealImage
+                            },
+                            revealed = revealImage,
+                            showTapToRevealHint = showTapToRevealHint,
+                        )
+                    } else {
+                        MediaPoster(modifier = Modifier.then(alignModifier), url = it)
+                    }
+                }
+
+                Column(modifier = Modifier.then(horizontalPaddingModifier)) {
+                    Text(
+                        text = details.name,
+                        style = MaterialTheme.typography.titleLarge,
+                    )
+                    BadgeRow {
+                        SearchProviderBadge(providerName)
+                        if (details.isNSFW) NSFWBadge()
+                    }
+                }
+
+                CallToActionButton(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .then(horizontalPaddingModifier),
+                    onOpenMagnetLink = onOpenMagnetLink,
+                    onDownloadTorrentFile = onDownloadTorrentFile,
                 )
                 HorizontalDivider()
-            }
 
-            TorrentDescription(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .then(horizontalPaddingModifier),
-                description = details.description,
-            )
+                TorrentInfo(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .then(horizontalPaddingModifier),
+                    size = details.size,
+                    seeders = details.seeders,
+                    peers = details.peers,
+                    uploadDate = details.uploadDate,
+                    category = details.category,
+                    uploader = details.uploader,
+                    lastChecked = details.lastChecked,
+                    infoHash = details.infoHash,
+                )
+                HorizontalDivider()
+
+                if (details.screenshotUrls.isNotEmpty()) {
+                    ScreenShots(
+                        modifier = Modifier.fillMaxWidth(),
+                        urls = details.screenshotUrls,
+                        contentPadding = PaddingValues(horizontal = MaterialTheme.spaces.large)
+                    )
+                    HorizontalDivider()
+                }
+
+                TorrentDescription(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .then(horizontalPaddingModifier),
+                    description = details.description,
+                )
+            }
         }
     }
 }
