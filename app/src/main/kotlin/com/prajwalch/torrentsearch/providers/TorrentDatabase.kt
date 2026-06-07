@@ -31,7 +31,6 @@ class TorrentDatabase : SearchProvider,
         Category.Series,
     )
     override val safetyStatus = SearchProviderSafetyStatus.Safe
-    override val isCloudflareProtected = true
     override val enabledByDefault = false
 
     private val categoryMap = mapOf(
