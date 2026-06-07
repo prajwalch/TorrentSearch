@@ -22,7 +22,7 @@
     <string name="category_series">电视剧</string>
     <string name="category_other">其他</string>
     <string name="torrent_client_not_found_title">未找到种子客户端</string>
-    <string name="torrent_client_not_found_content">为使用下载功能，请先下载种子客户端，配置好后，返回本软件再试。</string>
+    <string name="torrent_client_not_found_content">安装种子客户端来打开磁力链接。</string>
     <string name="torrent_client_not_found_recommended_client_hint">推荐客户端</string>
     <string name="torrent_list_action_bookmark_torrent">标记种子</string>
     <string name="torrent_list_action_delete_bookmark">删除书签</string>
@@ -36,7 +36,7 @@
     <string name="torrent_list_url_copied_message">已复制链接！</string>
     <string name="home_search_query_hint">搜索……</string>
     <string name="home_button_search">搜索</string>
-    <string name="search_filter_query_hint">搜索结果</string>
+    <string name="search_filter_query_hint">搜索种子</string>
     <string name="search_filter_providers_title">搜索源</string>
     <string name="search_filter_chip_dead_torrents">死种</string>
     <string name="internet_connection_error">无网络连接</string>
@@ -132,7 +132,7 @@
     <string name="torrent_file_saved_message">种子文件已保存</string>
     <string name="torrent_file_save_error">种子文件保存失败</string>
     <string name="torrent_details_message_link_copied">链接已复制到剪贴板！</string>
-    <string name="torrent_details_button_open_magnet_link">下载种子</string>
+    <string name="torrent_details_button_open_magnet_link">打开磁力链接</string>
     <string name="torrent_details_button_download_torrent_file">下载种子文件</string>
     <string name="search_providers_button_save">保存</string>
     <string name="settings_clear_viewed_torrents_dialog_button_cancel">取消</string>
