@@ -46,6 +46,7 @@ fun CloudflareScreen(
                 onNavigateBack = onNavigateBack,
                 onToggleWebViewVisibility = { showWebView = !showWebView },
                 isWebViewVisible = showWebView,
+                enableWebViewAction = !isChallengeSolved,
             )
         },
     ) { innerPadding ->
@@ -93,6 +94,7 @@ private fun CloudflareScreenTopBar(
     onToggleWebViewVisibility: () -> Unit,
     isWebViewVisible: Boolean,
     modifier: Modifier = Modifier,
+    enableWebViewAction: Boolean = true,
 ) {
     TopAppBar(
         modifier = modifier,
@@ -104,7 +106,7 @@ private fun CloudflareScreenTopBar(
             } else {
                 R.drawable.ic_preview
             }
-            IconButton(onClick = onToggleWebViewVisibility) {
+            IconButton(onClick = onToggleWebViewVisibility, enabled = enableWebViewAction) {
                 Icon(
                     painter = painterResource(webViewVisibilityIcon),
                     contentDescription = null,
