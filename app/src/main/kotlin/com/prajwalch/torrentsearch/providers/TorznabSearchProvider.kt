@@ -293,7 +293,8 @@ class TorznabSearchProvider(private val config: TorznabConfig) : SearchProvider 
             }
         }
 
-        private fun normalizeUrl(url: String) = if (url.endsWith("api")) url else "${url}/api"
+        private fun normalizeUrl(url: String) =
+            url.trimEnd('/').let { if (it.endsWith("api")) it else "${it}/api" }
     }
 }
 
