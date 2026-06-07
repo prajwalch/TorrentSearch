@@ -168,9 +168,9 @@ class SearchProvidersManager @Inject constructor(
      * Enables all providers.
      */
     suspend fun enableAllProviders() {
-        val builtinProviderIds = builtinProviders.map { it.id }
+        val builtinProviderIds = builtinProviders.map { it.id }.toSet()
         val torznabProviderIds = torznabConfigRepository.getAllConfigsId()
-        val allIds = builtinProviderIds union torznabProviderIds
+        val allIds = filterLockedProviderIds(builtinProviderIds) union torznabProviderIds
 
         settingsRepository.setEnabledSearchProvidersId(allIds)
     }
@@ -179,12 +179,24 @@ class SearchProvidersManager @Inject constructor(
      * Enables providers associated with the given IDs.
      */
     suspend fun enableProviderByIds(ids: Set<SearchProviderId>) {
-        val currentEnabledProviderIds = settingsRepository.enabledSearchProvidersId
+        val currentEnabledProviderIds = settingsRepository
+            .enabledSearchProvidersId
             .firstOrNull()
             .orEmpty()
-        val allIds = currentEnabledProviderIds + ids
+        val allIds = currentEnabledProviderIds + filterLockedProviderIds(ids)
 
         settingsRepository.setEnabledSearchProvidersId(allIds)
+    }
+
+    private suspend fun filterLockedProviderIds(ids: Set<SearchProviderId>): Set<SearchProviderId> {
+        return getProviderInfos().firstOrNull()
+            ?.filter {
+                (it.id in ids) &&
+                        (it.cloudflareProtectionStatus != CloudflareProtectionStatus.Locked)
+            }
+            ?.map { it.id }
+            ?.toSet()
+            ?: ids
     }
 
     /**
