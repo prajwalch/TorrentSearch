@@ -361,7 +361,9 @@ private class TorznabResponseXmlParser(
                 "comments" -> descriptionPageUrl = readComments()
                 "pubDate" -> uploadDate = readPubDate()
                 "size" -> size = readSize()
-                "enclosure" if (fileDownloadLink == null) -> fileDownloadLink = readEnclosure()
+                "enclosure" if (fileDownloadLink == null) -> {
+                    fileDownloadLink = readEnclosure()?.takeIf { !it.startsWith("magnet:?") }
+                }
                 // Torznab specific attributes.
                 //
                 // TODO: Attributes are optional so they are not guaranteed to always be present.
