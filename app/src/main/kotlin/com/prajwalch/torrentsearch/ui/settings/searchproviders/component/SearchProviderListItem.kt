@@ -3,9 +3,7 @@ package com.prajwalch.torrentsearch.ui.settings.searchproviders.component
 import android.content.res.Configuration
 
 import androidx.compose.animation.AnimatedContent
-import androidx.compose.foundation.LocalIndication
 import androidx.compose.foundation.background
-import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -14,7 +12,6 @@ import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
@@ -22,18 +19,14 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.ListItem
+import androidx.compose.material3.ListItemColors
 import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
@@ -66,108 +59,61 @@ fun SearchProviderListItem(
     enabled: Boolean,
     onEnable: (Boolean) -> Unit,
     onUnlockProtection: () -> Unit,
-    onEditConfig: () -> Unit,
-    onDeleteConfig: () -> Unit,
     onShowUnsafeReason: (resId: Int) -> Unit,
     modifier: Modifier = Modifier,
+    colors: ListItemColors = ListItemDefaults.colors(),
 ) {
-    var showTorznabContextMenu by rememberSaveable { mutableStateOf(false) }
+    ListItem(
+        modifier = modifier,
+        headlineContent = {
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(MaterialTheme.spaces.extraSmall),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Text(name)
+                SearchProviderProtectionStatus(protectionStatus)
+            }
+        },
+        supportingContent = {
+            Column(
+                verticalArrangement = Arrangement.spacedBy(
+                    space = MaterialTheme.spaces.extraSmall,
+                    alignment = Alignment.CenterVertically,
+                ),
+            ) {
+                SearchProviderUrl(url)
+                SupportedCategories(
+                    categories = supportedCategories,
+                    containerColor = colors.containerColor,
+                )
+                BadgeRow {
+                    if (type == SearchProviderType.Torznab) TorznabBadge()
+                    if (safetyStatus.isUnsafe()) UnsafeBadge()
+                }
+            }
+        },
+        trailingContent = {
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(MaterialTheme.spaces.small),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                if ((type == SearchProviderType.Builtin) &&
+                    (safetyStatus is SearchProviderSafetyStatus.Unsafe)
+                ) {
+                    QuestionMarkButton(onClick = { onShowUnsafeReason(safetyStatus.reason) })
+                }
 
-    val onClick: () -> Unit = {
-        if (protectionStatus == CloudflareProtectionStatus.Locked) {
-            onUnlockProtection()
-        } else {
-            onEnable(!enabled)
-        }
-    }
-    // Long click handler for showing Torznab context menu.
-    val longClickHandler: (() -> Unit)? = when (type) {
-        // Disable it for builtin providers.
-        SearchProviderType.Builtin -> null
-        SearchProviderType.Torznab -> ({ showTorznabContextMenu = true })
-    }
-    val clickableModifier = Modifier.combinedClickable(
-        interactionSource = null,
-        indication = LocalIndication.current,
-        onClick = onClick,
-        onLongClick = longClickHandler,
+                AnimatedContent(protectionStatus) { protectionStatus ->
+                    if (protectionStatus == CloudflareProtectionStatus.Locked) {
+                        LockOpenButton(onClick = onUnlockProtection)
+                    } else {
+                        Switch(checked = enabled, onCheckedChange = onEnable)
+                    }
+                }
+            }
+        },
+        colors = colors,
     )
-    val containerColor = MaterialTheme.colorScheme.surfaceContainer
-
-    Box(modifier = modifier.fillMaxWidth()) {
-        ListItem(
-            modifier = Modifier
-                .clip(shape = MaterialTheme.shapes.large)
-                .then(clickableModifier),
-            headlineContent = {
-                Row(
-                    horizontalArrangement = Arrangement.spacedBy(MaterialTheme.spaces.extraSmall),
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
-                    Text(name)
-                    SearchProviderProtectionStatus(protectionStatus)
-                }
-            },
-            supportingContent = {
-                Column(
-                    verticalArrangement = Arrangement.spacedBy(
-                        space = MaterialTheme.spaces.extraSmall,
-                        alignment = Alignment.CenterVertically,
-                    ),
-                ) {
-                    SearchProviderUrl(url = url)
-                    SupportedCategories(
-                        categories = supportedCategories,
-                        containerColor = containerColor,
-                    )
-                    BadgeRow {
-                        if (type == SearchProviderType.Torznab) TorznabBadge()
-                        if (safetyStatus.isUnsafe()) UnsafeBadge()
-                    }
-                }
-            },
-            trailingContent = {
-                Row(
-                    horizontalArrangement = Arrangement.spacedBy(MaterialTheme.spaces.small),
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
-                    val isBuiltinProvider = (type == SearchProviderType.Builtin)
-                    val isUnsafe = safetyStatus is SearchProviderSafetyStatus.Unsafe
-
-                    if (isBuiltinProvider && isUnsafe) {
-                        QuestionMarkButton(onClick = { onShowUnsafeReason(safetyStatus.reason) })
-                    }
-
-                    AnimatedContent(protectionStatus) { protectionStatus ->
-                        if (protectionStatus == CloudflareProtectionStatus.Locked) {
-                            IconButton(onClick = onUnlockProtection) {
-                                Icon(
-                                    painter = painterResource(R.drawable.ic_lock_open),
-                                    contentDescription = null,
-                                )
-                            }
-                        } else {
-                            Switch(checked = enabled, onCheckedChange = onEnable)
-                        }
-                    }
-                }
-            },
-            colors = ListItemDefaults.colors(containerColor = containerColor),
-        )
-
-        TorznabContextMenu(
-            expanded = showTorznabContextMenu,
-            onDismiss = { showTorznabContextMenu = false },
-            onEditConfiguration = {
-                onEditConfig()
-                showTorznabContextMenu = false
-            },
-            onDelete = {
-                onDeleteConfig()
-                showTorznabContextMenu = false
-            },
-        )
-    }
 }
 
 @Composable
@@ -277,6 +223,16 @@ private fun QuestionMarkButton(
     }
 }
 
+@Composable
+private fun LockOpenButton(onClick: () -> Unit, modifier: Modifier = Modifier) {
+    IconButton(modifier = modifier, onClick = onClick) {
+        Icon(
+            painter = painterResource(R.drawable.ic_lock_open),
+            contentDescription = null,
+        )
+    }
+}
+
 @Preview
 @Composable
 private fun SearchProviderListItemPreview() {
@@ -290,8 +246,6 @@ private fun SearchProviderListItemPreview() {
         enabled = true,
         onEnable = {},
         onUnlockProtection = {},
-        onEditConfig = {},
-        onDeleteConfig = {},
         onShowUnsafeReason = {},
     )
 }
