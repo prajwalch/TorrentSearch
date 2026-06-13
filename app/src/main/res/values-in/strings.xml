@@ -37,7 +37,7 @@
     <string name="crash_button_restart_application">Mulai ulang aplikasi</string>
     <string name="crash_logs_export_success_message">Log berhasil diekspor ke file</string>
     <string name="torrent_client_not_found_title">Klien torrent tidak ditemukan</string>
-    <string name="torrent_client_not_found_content">Untuk menggunakan fitur unduhan, instal klien torrent, konfigurasikan, lalu kembali ke aplikasi ini.</string>
+    <string name="torrent_client_not_found_content">Instal klien torrent untuk membuka tautan magnet.</string>
     <string name="torrent_client_not_found_recommended_client_hint">Klien yang direkomendasikan</string>
     <string name="torrent_list_action_bookmark_torrent">Tandai torrent</string>
     <string name="torrent_list_action_delete_bookmark">Hapus penanda</string>
@@ -52,7 +52,7 @@
     <string name="torrent_list_url_copied_message">URL disalin ke clipboard!</string>
     <string name="home_search_query_hint">Cari…</string>
     <string name="home_button_search">Cari</string>
-    <string name="search_filter_query_hint">Hasil pencarian</string>
+    <string name="search_filter_query_hint">Cari torrent</string>
     <string name="search_action_view_errors">Lihat kesalahan</string>
     <string name="search_action_settings">Pengaturan</string>
     <string name="search_filter_providers_title">Penyedia pencarian</string>
@@ -196,4 +196,17 @@
     <string name="browse_state_unavailable_description">Periksa bahwa setidaknya satu penyedia diaktifkan</string>
     <string name="browse_button_go_to_providers">Pergi ke pengaturan</string>
     <string name="browse_button_try_again">Coba lagi</string>
+    <string name="search_screen_title">Cari</string>
+    <string name="search_state_results_not_found_description">Tidak ada torrent yang cocok dengan \'%1$s\' di %2$s. Coba kueri lain atau periksa apakah penyedia pencarian sudah diaktifkan.</string>
+    <string name="search_button_go_to_providers">Buka penyedia</string>
+    <string name="torrent_details_screen_title">Detail</string>
+    <string name="torrent_details_state_unavailable_description">Tata letak halaman mungkin telah berubah atau host sedang offline sementara.</string>
+    <string name="torrent_details_state_unsupported_site_title">URL tidak didukung</string>
+    <string name="torrent_details_state_unsupported_site_description">Tidak dapat mengambil detail dari %1$s. Situs torrent ini mungkin belum didukung. Coba buka halaman detail di browser sebagai gantinya.</string>
+    <string name="torrent_details_title_screenshots">Tangkapan layar</string>
+    <string name="cloudflare_state_challenge_solving_title">Menyelesaikan tantangan Cloudflare…</string>
+    <string name="cloudflare_state_challenge_solving_description">Proses ini mungkin memerlukan waktu. Tantangan Cloudflare terkadang memerlukan interaksi manual seperti mencentang kotak, jadi jika terlalu lama, buka WebView dari bilah atas untuk menyelesaikannya.</string>
+    <string name="cloudflare_state_challenge_solved_title">Tantangan berhasil diselesaikan!</string>
+    <string name="cloudflare_state_challenge_solved_description">Sekarang Anda bisa kembali.</string>
+    <string name="cloudflare_button_go_back">Kembali</string>
 </resources>
