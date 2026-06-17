@@ -1,4 +1,4 @@
-package com.prajwalch.torrentsearch.ui.settings.searchproviders.cloudflare.component
+package com.prajwalch.torrentsearch.ui.settings.searchproviders.component
 
 import android.annotation.SuppressLint
 import android.content.Context

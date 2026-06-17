@@ -177,12 +177,9 @@
     <string name="search_providers_label_category">Category</string>
     <string name="search_providers_section_additional_options">Additional options</string>
     <string name="search_providers_button_check_connection">Check connection</string>
-
-    <string name="cloudflare_state_challenge_solving_title">Solving Cloudflare challenge…</string>
-    <string name="cloudflare_state_challenge_solving_description">This may take a while. Cloudflare challenges sometimes require manual interaction like checking a box, so if it\'s taking too long, open the WebView from the top bar to complete it.</string>
-    <string name="cloudflare_state_challenge_solved_title">Challenge solved!</string>
-    <string name="cloudflare_state_challenge_solved_description">You can go back now.</string>
-    <string name="cloudflare_button_go_back">Go back</string>
+    <string name="search_providers_state_challenge_solving_title">Solving Cloudflare challenge…</string>
+    <string name="search_providers_state_challenge_solving_description">This may take a while. Cloudflare challenges sometimes require manual interaction like checking a box, so if it\'s taking too long, open the WebView from the top bar to complete it.</string>
+    <string name="search_providers_state_challenge_solved_title">Challenge solved!</string>
 
     <string name="settings_screen_title">Settings</string>
     <string name="settings_section_appearance">Appearance</string>

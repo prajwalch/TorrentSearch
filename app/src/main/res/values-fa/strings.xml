@@ -193,11 +193,9 @@
     <string name="browse_state_unavailable_description">تورنتی برای نمایش وجود ندارد ارائه دهندگان مورد نیاز ممکن است غیرفعال یا غیرقابل دسترسی باشند</string>
     <string name="browse_button_go_to_providers">رفتن به ارائه دهندگان</string>
     <string name="browse_button_try_again">دوباره امتحان کنید</string>
-    <string name="cloudflare_state_challenge_solving_title">در حال حل کردن چالش کلودفلر …</string>
-    <string name="cloudflare_state_challenge_solving_description">این ممکن است کمی طول بکشد لطفا صبور باشید</string>
-    <string name="cloudflare_state_challenge_solved_title">چالش حل شد</string>
-    <string name="cloudflare_state_challenge_solved_description">الان میتونی برگردی</string>
-    <string name="cloudflare_button_go_back">برگرد</string>
+    <string name="search_providers_state_challenge_solving_title">در حال حل کردن چالش کلودفلر …</string>
+    <string name="search_providers_state_challenge_solving_description">این ممکن است کمی طول بکشد لطفا صبور باشید</string>
+    <string name="search_providers_state_challenge_solved_title">چالش حل شد</string>
     <string name="settings_blur_nsfw_images">تار کردن تصاویر +18</string>
     <string name="settings_blur_nsfw_images_summary">تصاویر +18 را به طور خودکار تار می‌ کند</string>
     <string name="settings_clear_viewed_torrents">پاک کردن تورنت های مشاهده شده</string>

@@ -1,4 +1,4 @@
-package com.prajwalch.torrentsearch.ui.settings.searchproviders.cloudflare.component
+package com.prajwalch.torrentsearch.ui.settings.searchproviders.component
 
 import android.util.Log
 

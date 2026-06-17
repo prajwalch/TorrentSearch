@@ -131,4 +131,10 @@ class SearchProvidersViewModel @Inject constructor(
             selectedCategory.value = category
         }
     }
+
+    fun markProviderAsUnlocked(id: SearchProviderId) {
+        viewModelScope.launch {
+            searchProvidersManager.unlockProvider(id)
+        }
+    }
 }

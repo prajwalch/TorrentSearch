@@ -20,6 +20,9 @@ import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.painterResource
@@ -33,8 +36,11 @@ import com.prajwalch.torrentsearch.domain.model.Category
 import com.prajwalch.torrentsearch.providers.SearchProviderId
 import com.prajwalch.torrentsearch.ui.component.ArrowBackIconButton
 import com.prajwalch.torrentsearch.ui.component.CategoryChipsRow
+import com.prajwalch.torrentsearch.ui.settings.searchproviders.component.CloudflareChallengeBottomSheet
 import com.prajwalch.torrentsearch.ui.settings.searchproviders.component.SearchProviderList
 import com.prajwalch.torrentsearch.ui.theme.spaces
+
+private typealias ProtectedProvider = Pair<SearchProviderId, String>
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -42,12 +48,24 @@ fun SearchProvidersScreen(
     onNavigateBack: () -> Unit,
     onNavigateToAddSearchProvider: () -> Unit,
     onNavigateToEditSearchProvider: (SearchProviderId) -> Unit,
-    onUnlockProtection: (id: SearchProviderId, url: String) -> Unit,
     modifier: Modifier = Modifier,
     viewModel: SearchProvidersViewModel = hiltViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
+
+    var protectedProvider by rememberSaveable { mutableStateOf<ProtectedProvider?>(null) }
+    protectedProvider?.let { (searchProviderId, solverUrl) ->
+        CloudflareChallengeBottomSheet(
+            onDismiss = { protectedProvider = null },
+            solverUrl = solverUrl,
+            onChallengeSolved = {
+                protectedProvider = null
+                viewModel.markProviderAsUnlocked(searchProviderId)
+            },
+            webViewMaxHeight = 500.dp,
+        )
+    }
 
     Scaffold(
         modifier = Modifier
@@ -96,7 +114,9 @@ fun SearchProvidersScreen(
                 ),
                 searchProviders = uiState.searchProviders,
                 onEnableSearchProvider = viewModel::enableSearchProvider,
-                onUnlockProtection = onUnlockProtection,
+                onUnlockProtection = { searchProviderId, solverUrl ->
+                    protectedProvider = ProtectedProvider(searchProviderId, solverUrl)
+                },
                 onEditConfig = onNavigateToEditSearchProvider,
                 onDeleteConfig = viewModel::deleteTorznabConfig,
             )

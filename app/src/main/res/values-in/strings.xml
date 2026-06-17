@@ -204,9 +204,7 @@
     <string name="torrent_details_state_unsupported_site_title">URL tidak didukung</string>
     <string name="torrent_details_state_unsupported_site_description">Tidak dapat mengambil detail dari %1$s. Situs torrent ini mungkin belum didukung. Coba buka halaman detail di browser sebagai gantinya.</string>
     <string name="torrent_details_title_screenshots">Tangkapan layar</string>
-    <string name="cloudflare_state_challenge_solving_title">Menyelesaikan tantangan Cloudflare…</string>
-    <string name="cloudflare_state_challenge_solving_description">Proses ini mungkin memerlukan waktu. Tantangan Cloudflare terkadang memerlukan interaksi manual seperti mencentang kotak, jadi jika terlalu lama, buka WebView dari bilah atas untuk menyelesaikannya.</string>
-    <string name="cloudflare_state_challenge_solved_title">Tantangan berhasil diselesaikan!</string>
-    <string name="cloudflare_state_challenge_solved_description">Sekarang Anda bisa kembali.</string>
-    <string name="cloudflare_button_go_back">Kembali</string>
+    <string name="search_providers_state_challenge_solving_title">Menyelesaikan tantangan Cloudflare…</string>
+    <string name="search_providers_state_challenge_solving_description">Proses ini mungkin memerlukan waktu. Tantangan Cloudflare terkadang memerlukan interaksi manual seperti mencentang kotak, jadi jika terlalu lama, buka WebView dari bilah atas untuk menyelesaikannya.</string>
+    <string name="search_providers_state_challenge_solved_title">Tantangan berhasil diselesaikan!</string>
 </resources>

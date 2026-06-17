@@ -1,4 +1,4 @@
-package com.prajwalch.torrentsearch.ui.settings.searchproviders.cloudflare.component
+package com.prajwalch.torrentsearch.ui.settings.searchproviders.component
 
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
@@ -15,10 +15,10 @@ fun ChallengeSolvingState(modifier: Modifier = Modifier) {
     ContentState(
         modifier = modifier,
         icon = { CircularProgressIndicator() },
-        title = { Text(stringResource(R.string.cloudflare_state_challenge_solving_title)) },
+        title = { Text(stringResource(R.string.search_providers_state_challenge_solving_title)) },
         description = {
             Text(
-                text = stringResource(R.string.cloudflare_state_challenge_solving_description),
+                text = stringResource(R.string.search_providers_state_challenge_solving_description),
                 textAlign = TextAlign.Center,
             )
         },

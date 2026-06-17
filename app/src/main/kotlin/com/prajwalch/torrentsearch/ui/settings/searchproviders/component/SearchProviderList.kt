@@ -30,7 +30,7 @@ import com.prajwalch.torrentsearch.ui.theme.spaces
 fun SearchProviderList(
     searchProviders: List<SearchProviderInfo>,
     onEnableSearchProvider: (SearchProviderId, Boolean) -> Unit,
-    onUnlockProtection: (id: SearchProviderId, url: String) -> Unit,
+    onUnlockProtection: (id: SearchProviderId, solverUrl: String) -> Unit,
     onEditConfig: (SearchProviderId) -> Unit,
     onDeleteConfig: (SearchProviderId) -> Unit,
     modifier: Modifier = Modifier,

@@ -207,9 +207,7 @@
     <string name="search_screen_title">Пошук</string>
     <string name="torrent_details_screen_title">Відомості</string>
     <string name="torrent_details_title_screenshots">Знімки екрана</string>
-    <string name="cloudflare_state_challenge_solving_title">Розв\'язання перевірки CloudFlare…</string>
-    <string name="cloudflare_state_challenge_solving_description">Може бути доволі повільно. Зачекайте.</string>
-    <string name="cloudflare_state_challenge_solved_title">Перевірку пройдено!</string>
-    <string name="cloudflare_state_challenge_solved_description">Можете повернутись.</string>
-    <string name="cloudflare_button_go_back">Повернутись</string>
+    <string name="search_providers_state_challenge_solving_title">Розв\'язання перевірки CloudFlare…</string>
+    <string name="search_providers_state_challenge_solving_description">Може бути доволі повільно. Зачекайте.</string>
+    <string name="search_providers_state_challenge_solved_title">Перевірку пройдено!</string>
 </resources>
