@@ -20,6 +20,23 @@ object TorrentDateParser {
 
     private val DefaultTimeZone = ZoneOffset.UTC
 
+    // Russian month abbreviations from the provider are incompatible with
+    // Java's locale data, so we normalize them to English before parsing.
+    private val russianMonthMap = mapOf(
+        "Янв" to "Jan",
+        "Фев" to "Feb",
+        "Мар" to "Mar",
+        "Апр" to "Apr",
+        "Май" to "May",
+        "Июн" to "Jun",
+        "Июл" to "Jul",
+        "Авг" to "Aug",
+        "Сен" to "Sep",
+        "Окт" to "Oct",
+        "Ноя" to "Nov",
+        "Дек" to "Dec",
+    )
+
     fun parse(date: String, format: String): Instant? {
         val inputFormatter = DateTimeFormatterBuilder()
             .parseCaseInsensitive()
@@ -109,4 +126,11 @@ object TorrentDateParser {
             .toInstant()
 
     fun getCurrentYear(): Int = Year.now(DefaultTimeZone).value
+
+    fun convertRussianMonthToEnglish(date: String): String {
+        val (day, russianMonth, year) = date.split(' ', limit = 3)
+        val englishMonth = russianMonthMap[russianMonth]!!
+
+        return "$day $englishMonth $year"
+    }
 }
