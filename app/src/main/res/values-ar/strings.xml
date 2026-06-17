@@ -209,4 +209,7 @@
     <string name="browse_state_unavailable_description">لا توجد تورنتات لعرضها. قد تكون المزودات المطلوبة معطلة أو لا يمكن الوصول إليها.</string>
     <string name="browse_button_go_to_providers">انتقل إلى المزودات</string>
     <string name="browse_button_try_again">إعادة المحاولة</string>
+    <string name="search_providers_state_challenge_solving_title">حل تحدي Cloudflare…</string>
+    <string name="search_providers_state_challenge_solving_description">قد يستغرق هذا بعض الوقت. تتطلب بعض تحديات Cloudflare أحيانًا تفاعلًا يدويًا مثل تحديد مربع، لذا إذا استغرق الأمر وقتًا طويلاً، فافتح WebView من الشريط العلوي لإكماله.</string>
+    <string name="search_providers_state_challenge_solved_title">تم حل التحدي!</string>
 </resources>
