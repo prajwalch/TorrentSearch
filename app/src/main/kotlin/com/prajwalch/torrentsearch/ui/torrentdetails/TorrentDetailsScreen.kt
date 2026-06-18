@@ -258,7 +258,7 @@ private fun TorrentDetailsScreenTopBar(
         },
         colors = TopAppBarDefaults.topAppBarColors(
             containerColor = Color.Transparent,
-            scrolledContainerColor = MaterialTheme.colorScheme.scrim.copy(alpha = 0.3f),
+            scrolledContainerColor = MaterialTheme.colorScheme.scrim.copy(alpha = 0.5f),
         ),
         scrollBehavior = scrollBehavior,
     )
