@@ -21,7 +21,7 @@ kotlinxSerializationJson = "1.11.0"
 ksp = "2.3.7"
 ktor = "3.5.0"
 lazycolumnscrollbar = "2.2.0"
-lifecycleRuntimeKtx = "2.10.0"
+lifecycleRuntimeKtx = "2.11.0"
 navigationCompose = "2.9.8"
 room = "2.8.4"
 
