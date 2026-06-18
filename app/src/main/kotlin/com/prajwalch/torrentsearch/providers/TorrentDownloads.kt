@@ -8,6 +8,8 @@ import com.prajwalch.torrentsearch.util.TorrentDateParser
 import com.prajwalch.torrentsearch.util.TorrentUtils
 
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.withContext
 
 import org.jsoup.Jsoup
@@ -117,13 +119,15 @@ private class TorrentDownloadsResultsPageParser(private val providerName: String
     }
 
     suspend fun parse(html: String, pageUrl: String): List<Torrent> =
-        withContext(Dispatchers.Default) {
+        withContext(Dispatchers.Default.limitedParallelism(3)) {
             Jsoup.parse(html, pageUrl)
                 .select(LIST_ITEM_CONTAINER)
                 .last()
                 ?.select(LIST_ITEM)
                 ?.drop(2)
-                ?.mapNotNull { parseListItem(it) }
+                ?.map { async { parseListItem(it) } }
+                ?.awaitAll()
+                ?.filterNotNull()
                 .orEmpty()
         }
 
