@@ -119,7 +119,7 @@ class SearchProvidersGateway @Inject constructor(
             }
         }
             .runningFold(persistentListOf<Torrent>()) { results, batchResult ->
-                results.addAll(batchResult)
+                results.addingAll(batchResult)
             }
             .drop(1)
             .flowOn(Dispatchers.IO)
@@ -138,7 +138,7 @@ class SearchProvidersGateway @Inject constructor(
             }
         }
             .runningFold(persistentListOf<Torrent>()) { results, batchResult ->
-                results.addAll(batchResult)
+                results.addingAll(batchResult)
             }
             .drop(1)
             .flowOn(Dispatchers.IO)

@@ -27,10 +27,10 @@ fun SearchResults.addResult(result: Result<List<Torrent>>): SearchResults =
     )
 
 private fun SearchResults.addTorrents(torrents: List<Torrent>): SearchResults =
-    with(this) { copy(successes = successes.addAll(torrents)) }
+    with(this) { copy(successes = successes.addingAll(torrents)) }
 
 private fun SearchResults.addFailure(failure: SearchException): SearchResults =
-    with(this) { copy(failures = failures.add(failure)) }
+    with(this) { copy(failures = failures.adding(failure)) }
 
 fun PersistentList<Torrent>.filter(
     predicatesBuilder: PredicatesBuilder,
