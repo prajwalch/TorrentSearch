@@ -14,6 +14,8 @@ import io.ktor.client.plugins.HttpTimeout
 import io.ktor.client.plugins.ResponseException
 import io.ktor.client.plugins.UserAgent
 import io.ktor.client.plugins.cache.HttpCache
+import io.ktor.client.plugins.cookies.CookiesStorage
+import io.ktor.client.plugins.cookies.HttpCookies
 import io.ktor.client.request.get
 import io.ktor.client.request.header
 import io.ktor.client.request.post
@@ -21,8 +23,12 @@ import io.ktor.client.request.setBody
 import io.ktor.client.statement.HttpResponse
 import io.ktor.client.statement.bodyAsText
 import io.ktor.http.ContentType
+import io.ktor.http.Cookie
 import io.ktor.http.HttpStatusCode
+import io.ktor.http.Url
 import io.ktor.http.contentType
+import io.ktor.http.parseServerSetCookieHeader
+import io.ktor.http.renderSetCookieHeader
 
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -70,6 +76,7 @@ object HttpClient {
     /** Creates and configures the inner/underlying http client. */
     private fun createClient() = HttpClient(OkHttp) {
         install(UserAgent) { agent = USER_AGENT }
+        install(HttpCookies) { storage = PersistentCookieStorage() }
         install(HttpCache)
         install(HttpRequestRetry) {
             retryOnServerErrors(maxRetries = MAX_RETRIES)
@@ -126,21 +133,7 @@ object HttpClient {
         Log.d(TAG, "getResponse $url")
 
         val response = innerClient.get(urlString = url) {
-            val savedCookie = getCookie(url)
-            var savedCookieSet = false
-
-            headers.forEach { (key, value) ->
-                if (key == "Cookie" && savedCookie != null) {
-                    header(key, "$value; $savedCookie")
-                    savedCookieSet = true
-                } else {
-                    header(key, value)
-                }
-            }
-
-            if (!savedCookieSet) {
-                header("Cookie", savedCookie)
-            }
+            headers.forEach { (key, value) -> header(key, value) }
         }
 
         if (isResponseChallenged(response)) {
@@ -213,10 +206,7 @@ object HttpClient {
     }
 
     suspend fun isUrlChallenged(url: String): Boolean {
-        val cookie = getCookie(url)
-
-        return innerClient.get(url) { header("Cookie", cookie) }
-            .let(::isResponseChallenged)
+        return innerClient.get(url).let(::isResponseChallenged)
     }
 
     private fun isResponseChallenged(response: HttpResponse): Boolean {
@@ -272,6 +262,22 @@ object HttpClient {
             }
         }
     }
+}
+
+private class PersistentCookieStorage : CookiesStorage {
+    private val cookieManager = CookieManager.getInstance()
+
+    override suspend fun get(requestUrl: Url): List<Cookie> {
+        return cookieManager.getCookie(requestUrl.toString())
+            .split(";")
+            .map(::parseServerSetCookieHeader)
+    }
+
+    override suspend fun addCookie(requestUrl: Url, cookie: Cookie) {
+        cookieManager.setCookie(requestUrl.toString(), renderSetCookieHeader(cookie))
+    }
+
+    override fun close() {}
 }
 
 /** Represents either a success or failure response. */
