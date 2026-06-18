@@ -8,6 +8,8 @@ import com.prajwalch.torrentsearch.util.TorrentDateParser
 import com.prajwalch.torrentsearch.util.TorrentUtils
 
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.withContext
 
 import org.jsoup.Jsoup
@@ -75,10 +77,12 @@ class ThirteenThirtySevenX : SearchProvider, TopTorrentsProvider, TorrentDetails
 
 private class ThirteenThirtySevenXResultsPageParser(private val providerName: String) {
     suspend fun parse(html: String, pageUrl: String): List<Torrent> =
-        withContext(Dispatchers.Default) {
+        withContext(Dispatchers.Default.limitedParallelism(3)) {
             Jsoup.parse(html, pageUrl)
                 .select(LIST_ITEM)
-                .mapNotNull { parseListItem(it) }
+                .map { async { parseListItem(it) } }
+                .awaitAll()
+                .filterNotNull()
         }
 
     private suspend fun parseListItem(listItem: Element): Torrent? {
