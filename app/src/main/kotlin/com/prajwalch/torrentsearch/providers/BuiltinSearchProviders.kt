@@ -3,6 +3,7 @@ package com.prajwalch.torrentsearch.providers
 val BuiltinSearchProviders = listOf(
     AniRena(),
     AnimeTosho(),
+    AudioBookBay(),
     BitSearch(),
     Dmhy(),
     Eztv(),
