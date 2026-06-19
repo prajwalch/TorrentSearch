@@ -268,9 +268,8 @@ private class PersistentCookieStorage : CookiesStorage {
     private val cookieManager = CookieManager.getInstance()
 
     override suspend fun get(requestUrl: Url): List<Cookie> {
-        return cookieManager.getCookie(requestUrl.toString())
-            .split(";")
-            .map(::parseServerSetCookieHeader)
+        val cookies = cookieManager.getCookie(requestUrl.toString()) ?: return emptyList()
+        return cookies.split(";").map(::parseServerSetCookieHeader)
     }
 
     override suspend fun addCookie(requestUrl: Url, cookie: Cookie) {
