@@ -3,6 +3,7 @@ package com.prajwalch.torrentsearch.network
 import android.util.Log
 import android.webkit.CookieManager
 import androidx.core.net.toUri
+
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.okhttp.OkHttp
 import io.ktor.client.network.sockets.ConnectTimeoutException
@@ -30,6 +31,7 @@ import io.ktor.http.contentType
 import io.ktor.http.parameters
 import io.ktor.http.parseServerSetCookieHeader
 import io.ktor.http.renderSetCookieHeader
+
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.io.IOException
