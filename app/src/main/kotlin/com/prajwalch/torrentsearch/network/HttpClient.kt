@@ -3,7 +3,6 @@ package com.prajwalch.torrentsearch.network
 import android.util.Log
 import android.webkit.CookieManager
 import androidx.core.net.toUri
-
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.okhttp.OkHttp
 import io.ktor.client.network.sockets.ConnectTimeoutException
@@ -16,6 +15,7 @@ import io.ktor.client.plugins.UserAgent
 import io.ktor.client.plugins.cache.HttpCache
 import io.ktor.client.plugins.cookies.CookiesStorage
 import io.ktor.client.plugins.cookies.HttpCookies
+import io.ktor.client.request.forms.submitForm
 import io.ktor.client.request.get
 import io.ktor.client.request.header
 import io.ktor.client.request.post
@@ -27,9 +27,9 @@ import io.ktor.http.Cookie
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.Url
 import io.ktor.http.contentType
+import io.ktor.http.parameters
 import io.ktor.http.parseServerSetCookieHeader
 import io.ktor.http.renderSetCookieHeader
-
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.io.IOException
@@ -147,10 +147,10 @@ object HttpClient {
      * Makes a GET request and returns the response parsed as JSON or `null`
      * if parsing fails.
      */
-    suspend fun getJson(url: String): JsonElement? {
+    suspend fun getJson(url: String, headers: Map<String, String> = emptyMap()): JsonElement? {
         Log.d(TAG, "getJson $url")
 
-        val content = getResponse(url).bodyAsText()
+        val content = getResponse(url, headers).bodyAsText()
         if (content.isEmpty()) {
             Log.d(TAG, "Received empty body")
             return null
@@ -173,6 +173,15 @@ object HttpClient {
         }
 
         return parseJson(response)
+    }
+
+    suspend fun submitForm(url: String, formData: Map<String, String>): String? {
+        return innerClient.submitForm(
+            url = url,
+            formParameters = parameters {
+                for ((key, value) in formData) append(key, value)
+            },
+        ).bodyAsText()
     }
 
     /**

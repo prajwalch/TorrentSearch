@@ -6,6 +6,7 @@ val BuiltinSearchProviders = listOf(
     AudioBookBay(),
     BitSearch(),
     Dmhy(),
+    Ext(),
     Eztv(),
     FileMood(),
     InternetArchive(),
