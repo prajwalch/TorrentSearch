@@ -7,6 +7,7 @@ import androidx.compose.ui.res.stringResource
 import com.prajwalch.torrentsearch.R
 import com.prajwalch.torrentsearch.domain.model.Category
 import com.prajwalch.torrentsearch.domain.model.DarkTheme
+import com.prajwalch.torrentsearch.domain.model.DohProvider
 import com.prajwalch.torrentsearch.domain.model.SortCriteria
 import com.prajwalch.torrentsearch.domain.model.SortOrder
 
@@ -76,4 +77,21 @@ fun sortOrderStringResource(sortOrder: SortOrder): String {
     }
 
     return stringResource(id = resId)
+}
+
+fun DohProvider.displayName(): String = when (this) {
+    DohProvider.Default -> "OS default"
+    DohProvider.Cloudflare -> "Cloudflare"
+    DohProvider.NextDNS -> "NextDNS"
+    DohProvider.Google -> "Google"
+    DohProvider.AdGuard -> "AdGuard"
+    DohProvider.Quad9 -> "Quad9"
+    DohProvider.AliDNS -> "AliDNS"
+    DohProvider.DNSPod -> "DNSPod"
+    DohProvider.ThreeSixty -> "360"
+    DohProvider.Quad101 -> "Quad 101"
+    DohProvider.Mullvad -> "Mullvad"
+    DohProvider.ControlD -> "Control D"
+    DohProvider.Njalla -> "Njalla"
+    DohProvider.Shecan -> "Shecan"
 }

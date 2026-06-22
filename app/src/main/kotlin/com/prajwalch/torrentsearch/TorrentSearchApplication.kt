@@ -13,14 +13,19 @@ import coil3.request.CachePolicy
 import coil3.request.allowHardware
 import coil3.request.crossfade
 
+import com.prajwalch.torrentsearch.data.repository.SettingsRepository
 import com.prajwalch.torrentsearch.network.HttpClient
 import com.prajwalch.torrentsearch.ui.crash.CrashActivity
 import com.prajwalch.torrentsearch.util.TorrentSearchExceptionHandler
 
 import dagger.hilt.android.HiltAndroidApp
+import javax.inject.Inject
 
 @HiltAndroidApp
 class TorrentSearchApplication : Application(), SingletonImageLoader.Factory {
+    @Inject
+    lateinit var settingsRepository: SettingsRepository
+
     override fun onCreate() {
         super.onCreate()
 
@@ -45,6 +50,8 @@ class TorrentSearchApplication : Application(), SingletonImageLoader.Factory {
                 activityToLaunch = CrashActivity::class.java,
             ),
         )
+
+        HttpClient.init(settingsRepository)
     }
 
     override fun onTerminate() {

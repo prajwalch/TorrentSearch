@@ -10,7 +10,10 @@ import android.provider.Settings
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -32,6 +35,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalUriHandler
@@ -44,11 +48,14 @@ import com.prajwalch.torrentsearch.BuildConfig
 import com.prajwalch.torrentsearch.R
 import com.prajwalch.torrentsearch.constant.TorrentSearchConstants
 import com.prajwalch.torrentsearch.domain.model.DarkTheme
+import com.prajwalch.torrentsearch.domain.model.DohProvider
 import com.prajwalch.torrentsearch.domain.model.MaxNumResults
 import com.prajwalch.torrentsearch.ui.categoryStringResource
 import com.prajwalch.torrentsearch.ui.component.ArrowBackIconButton
 import com.prajwalch.torrentsearch.ui.darkThemeStringResource
+import com.prajwalch.torrentsearch.ui.displayName
 import com.prajwalch.torrentsearch.ui.settings.component.ClearViewedTorrentsDialog
+import com.prajwalch.torrentsearch.ui.settings.component.DohProvidersDropdownMenu
 import com.prajwalch.torrentsearch.ui.settings.component.ExpandableItem
 import com.prajwalch.torrentsearch.ui.settings.component.MaxNumResultsDialog
 import com.prajwalch.torrentsearch.ui.settings.component.SettingsListItem
@@ -125,6 +132,7 @@ fun SettingsScreen(
                 onEnableOpenTorrentDetailsInApp = viewModel::enableOpenTorrentDetailsInApp,
                 onEnableShareIntegration = viewModel::enableShareIntegration,
                 onEnableQuickSearch = viewModel::enableQuickSearch,
+                onSetDohProvider = viewModel::setDohProvider,
                 onExportLogsToFile = {
                     logsExportLocationChooser.launch(TorrentSearchConstants.APP_LOGS_FILE_NAME)
                 },
@@ -410,6 +418,7 @@ private fun AdvancedSettings(
     onEnableOpenTorrentDetailsInApp: (Boolean) -> Unit,
     onEnableShareIntegration: (Boolean, PackageManager) -> Unit,
     onEnableQuickSearch: (Boolean, PackageManager) -> Unit,
+    onSetDohProvider: (DohProvider) -> Unit,
     onExportLogsToFile: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -459,6 +468,48 @@ private fun AdvancedSettings(
                 )
             },
         )
+
+        Box {
+            var showDohProviders by rememberSaveable(uiState.dohProvider) { mutableStateOf(false) }
+            val trailingIconRotation by animateFloatAsState(if (showDohProviders) 180f else 0f)
+
+            ListItem(
+                modifier = Modifier.clickable(onClick = { showDohProviders = true }),
+                leadingContent = {
+                    Icon(
+                        painter = painterResource(R.drawable.ic_dns),
+                        contentDescription = null,
+                    )
+                },
+                headlineContent = { Text(text = stringResource(R.string.settings_dns_over_https)) },
+                trailingContent = {
+                    Icon(
+                        modifier = Modifier.rotate(trailingIconRotation),
+                        painter = painterResource(R.drawable.ic_keyboard_arrow_down),
+                        contentDescription = null,
+                    )
+                },
+                supportingContent = {
+                    Column(verticalArrangement = Arrangement.Center) {
+                        Text(
+                            stringResource(
+                                R.string.settings_dns_over_https_provider_format,
+                                uiState.dohProvider.displayName(),
+                            )
+                        )
+                        Text(stringResource(R.string.settings_dns_over_https_summary))
+                    }
+                },
+            )
+
+            DohProvidersDropdownMenu(
+                expanded = showDohProviders,
+                onDismiss = { showDohProviders = false },
+                selectedDohProvider = uiState.dohProvider,
+                onDohProviderSelect = onSetDohProvider,
+            )
+        }
+
         SettingsListItem(
             onClick = onExportLogsToFile,
             icon = R.drawable.ic_file_export,

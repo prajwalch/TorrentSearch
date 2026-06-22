@@ -4,6 +4,8 @@ import android.util.Log
 import android.webkit.CookieManager
 import androidx.core.net.toUri
 
+import com.prajwalch.torrentsearch.data.repository.SettingsRepository
+
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.okhttp.OkHttp
 import io.ktor.client.network.sockets.ConnectTimeoutException
@@ -72,11 +74,22 @@ object HttpClient {
     const val USER_AGENT = "Mozilla/5.0 (Linux; Android 10; K) " +
             "AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Mobile Safari/537.36"
 
+    private var settingsRepository: SettingsRepository? = null
+
     /** The underlying client. */
     private val innerClient by lazy { createClient() }
 
+    fun init(settingsRepository: SettingsRepository) {
+        this.settingsRepository = settingsRepository
+    }
+
     /** Creates and configures the inner/underlying http client. */
     private fun createClient() = HttpClient(OkHttp) {
+        engine {
+            settingsRepository?.let {
+                dns = DynamicDns(it)
+            }
+        }
         install(UserAgent) { agent = USER_AGENT }
         install(HttpCookies) { storage = PersistentCookieStorage() }
         install(HttpCache)

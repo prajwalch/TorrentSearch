@@ -224,6 +224,9 @@
     <string name="settings_enable_share_integration_summary">When enabled, adds this app in the share menu.</string>
     <string name="settings_enable_quick_search">Enable quick search</string>
     <string name="settings_enable_quick_search_summary">When enabled, adds this app to the text selection menu (like Copy or Cut).</string>
+    <string name="settings_dns_over_https">DNS over HTTPS (DoH)</string>
+    <string name="settings_dns_over_https_provider_format">Provider: %1$s</string>
+    <string name="settings_dns_over_https_summary">Resolves domain names through a secure connection instead of your network\'s default DNS</string>
     <string name="settings_export_logs_to_file">Export logs to file</string>
     <string name="settings_export_logs_to_file_summary">Generates a file with application activities that can help troubleshoot issues</string>
     <string name="settings_section_about">About</string>

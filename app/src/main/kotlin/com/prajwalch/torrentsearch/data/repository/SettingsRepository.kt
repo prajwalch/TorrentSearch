@@ -10,6 +10,7 @@ import androidx.datastore.preferences.core.stringSetPreferencesKey
 
 import com.prajwalch.torrentsearch.domain.model.Category
 import com.prajwalch.torrentsearch.domain.model.DarkTheme
+import com.prajwalch.torrentsearch.domain.model.DohProvider
 import com.prajwalch.torrentsearch.domain.model.MaxNumResults
 import com.prajwalch.torrentsearch.domain.model.SortCriteria
 import com.prajwalch.torrentsearch.domain.model.SortOptions
@@ -93,6 +94,13 @@ class SettingsRepository @Inject constructor(
 
     val enableQuickSearch: Flow<Boolean> = dataStore
         .getOrDefault(key = ENABLE_QUICK_SEARCH, default = true)
+
+    val dohProvider: Flow<DohProvider> = dataStore
+        .getMapOrDefault(
+            key = DOH_PROVIDER,
+            map = DohProvider::fromId,
+            default = DohProvider.Default,
+        )
 
     val bookmarksSortOptions: Flow<SortOptions> = combine(
         dataStore.getMapOrDefault(
@@ -185,6 +193,10 @@ class SettingsRepository @Inject constructor(
         dataStore.setOrUpdate(key = ENABLE_QUICK_SEARCH, value = enable)
     }
 
+    suspend fun setDohProvider(provider: DohProvider) {
+        dataStore.setOrUpdate(key = DOH_PROVIDER, value = provider.id)
+    }
+
     suspend fun setBookmarksSortCriteria(criteria: SortCriteria) {
         dataStore.setOrUpdate(key = BOOKMARKS_SORT_CRITERIA, value = criteria.name)
     }
@@ -238,6 +250,7 @@ class SettingsRepository @Inject constructor(
         val OPEN_TORRENT_DETAILS_IN_APP = booleanPreferencesKey("open_torrent_details_in_app")
         val ENABLE_SHARE_INTEGRATION = booleanPreferencesKey("enable_share_integration")
         val ENABLE_QUICK_SEARCH = booleanPreferencesKey("enable_quick_search")
+        val DOH_PROVIDER = stringPreferencesKey("doh_provider")
 
         // Bookmarks screen sort options.
         val BOOKMARKS_SORT_CRITERIA = stringPreferencesKey("bookmarks_sort_criteria")

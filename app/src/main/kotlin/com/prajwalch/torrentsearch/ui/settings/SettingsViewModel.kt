@@ -12,6 +12,7 @@ import com.prajwalch.torrentsearch.data.repository.ViewedTorrentRepository
 import com.prajwalch.torrentsearch.domain.SearchProvidersManager
 import com.prajwalch.torrentsearch.domain.model.Category
 import com.prajwalch.torrentsearch.domain.model.DarkTheme
+import com.prajwalch.torrentsearch.domain.model.DohProvider
 import com.prajwalch.torrentsearch.domain.model.MaxNumResults
 import com.prajwalch.torrentsearch.domain.model.SortOptions
 import com.prajwalch.torrentsearch.util.LogsUtils
@@ -27,8 +28,8 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 import java.io.OutputStream
-
 import javax.inject.Inject
+
 import kotlin.time.Duration.Companion.seconds
 
 data class SettingsUiState(
@@ -71,6 +72,7 @@ data class AdvancedSettingsUiState(
     val openTorrentDetailsInApp: Boolean = false,
     val enableShareIntegration: Boolean = true,
     val enableQuickSearch: Boolean = true,
+    val dohProvider: DohProvider = DohProvider.Default,
 )
 
 /** ViewModel that handles the business logic of Settings screen. */
@@ -205,6 +207,12 @@ class SettingsViewModel @Inject constructor(
         )
     }
 
+    fun setDohProvider(provider: DohProvider) {
+        viewModelScope.launch {
+            settingsRepository.setDohProvider(provider)
+        }
+    }
+
     fun exportLogs(outputStream: OutputStream) {
         viewModelScope.launch {
             LogsUtils.exportLogsToOutputStream(outputStream = outputStream)
@@ -257,5 +265,6 @@ private fun SettingsRepository.getAdvancedSettings() =
         this.openTorrentDetailsInApp,
         this.enableShareIntegration,
         this.enableQuickSearch,
+        this.dohProvider,
         ::AdvancedSettingsUiState,
     )

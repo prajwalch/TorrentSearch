@@ -23,6 +23,7 @@ ktor = "3.5.0"
 lazycolumnscrollbar = "2.2.0"
 lifecycleRuntimeKtx = "2.11.0"
 navigationCompose = "2.9.8"
+okhttpDnsoverhttps = "5.4.0"
 room = "2.8.4"
 
 [libraries]
@@ -61,6 +62,7 @@ kotlinx-serialization-json = { group = "org.jetbrains.kotlinx", name = "kotlinx-
 ktor-client-core = { group = "io.ktor", name = "ktor-client-core", version.ref = "ktor" }
 ktor-client-okhttp = { group = "io.ktor", name = "ktor-client-okhttp", version.ref = "ktor" }
 lazycolumnscrollbar = { module = "com.github.nanihadesuka:LazyColumnScrollbar", version.ref = "lazycolumnscrollbar" }
+okhttp-dnsoverhttps = { group = "com.squareup.okhttp3", name = "okhttp-dnsoverhttps", version.ref = "okhttpDnsoverhttps" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

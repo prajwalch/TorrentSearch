@@ -100,6 +100,7 @@ dependencies {
     implementation(libs.ktor.client.core)
     implementation(libs.ktor.client.okhttp)
     implementation(libs.lazycolumnscrollbar)
+    implementation(libs.okhttp.dnsoverhttps)
     implementation(platform(libs.androidx.compose.bom))
 
     ksp(libs.androidx.room.compiler)
