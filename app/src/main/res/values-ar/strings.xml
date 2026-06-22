@@ -212,4 +212,7 @@
     <string name="search_providers_state_challenge_solving_title">حل تحدي Cloudflare…</string>
     <string name="search_providers_state_challenge_solving_description">قد يستغرق هذا بعض الوقت. تتطلب بعض تحديات Cloudflare أحيانًا تفاعلًا يدويًا مثل تحديد مربع، لذا إذا استغرق الأمر وقتًا طويلاً، فافتح WebView من الشريط العلوي لإكماله.</string>
     <string name="search_providers_state_challenge_solved_title">تم حل التحدي!</string>
+    <string name="settings_dns_over_https">DNS عبر بروتوكول HTTPS (DoH)</string>
+    <string name="settings_dns_over_https_provider_format">المزوّد: %1$s</string>
+    <string name="settings_dns_over_https_summary">يحل أسماء النطاقات من خلال اتصال آمن بدلاً من نظام أسماء النطاقات الافتراضي لشبكتك</string>
 </resources>
