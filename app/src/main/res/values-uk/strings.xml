@@ -210,4 +210,7 @@
     <string name="search_providers_state_challenge_solving_title">Розв\'язання перевірки CloudFlare…</string>
     <string name="search_providers_state_challenge_solving_description">Може бути доволі повільно. Зачекайте.</string>
     <string name="search_providers_state_challenge_solved_title">Перевірку пройдено!</string>
+    <string name="settings_dns_over_https">DNS через HTTPS (DoH)</string>
+    <string name="settings_dns_over_https_provider_format">Система: %1$s</string>
+    <string name="settings_dns_over_https_summary">Знаходить сервери, відповідні доменам, через захищене з\'єднання, а не типові DNS вашої мережі</string>
 </resources>
