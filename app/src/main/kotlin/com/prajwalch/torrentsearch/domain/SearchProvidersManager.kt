@@ -1,5 +1,7 @@
 package com.prajwalch.torrentsearch.domain
 
+import android.util.Log
+
 import com.prajwalch.torrentsearch.data.repository.SettingsRepository
 import com.prajwalch.torrentsearch.data.repository.TorznabConfigRepository
 import com.prajwalch.torrentsearch.domain.model.Category
@@ -16,14 +18,26 @@ import com.prajwalch.torrentsearch.providers.TopTorrentsProvider
 import com.prajwalch.torrentsearch.providers.TorrentDetailsProvider
 import com.prajwalch.torrentsearch.providers.TorznabSearchProvider
 
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.supervisorScope
 import kotlinx.coroutines.withContext
 
 import javax.inject.Inject
+
+import kotlin.concurrent.atomics.AtomicInt
+import kotlin.concurrent.atomics.ExperimentalAtomicApi
+import kotlin.concurrent.atomics.incrementAndFetch
+
+data class ProtectionStatusUpdateResult(
+    val numLockedProviders: Int,
+    val numUnlockedProviders: Int,
+)
 
 /**
  * A search providers manager which is responsible for managing and handling
@@ -262,6 +276,44 @@ class SearchProvidersManager @Inject constructor(
             }
         }
         disableProvider(id)
+    }
+
+    @OptIn(ExperimentalAtomicApi::class)
+    suspend fun updateProvidersProtectionStatus() = withContext(Dispatchers.IO) {
+        val cloudflareProtectedProviders = builtinProviders.filter { it.isCloudflareProtected }
+        val numLockedProviders = AtomicInt(0)
+
+        supervisorScope {
+            for (provider in cloudflareProtectedProviders) {
+                val cloudflareSolverUrl = provider.cloudflareSolverUrl ?: provider.url
+
+                launch {
+                    try {
+                        if (HttpClient.isUrlChallenged(cloudflareSolverUrl)) {
+                            settingsRepository.removeProtectionUnlockedProviderId(provider.id)
+                            HttpClient.removeCookie(cloudflareSolverUrl)
+
+                            numLockedProviders.incrementAndFetch()
+                        }
+                    } catch (e: CancellationException) {
+                        throw e
+                    } catch (e: Exception) {
+                        Log.e(
+                            "SearchProvidersManager",
+                            "Couldn't check ${provider.name} protection status",
+                            e
+                        )
+                    }
+                }
+            }
+        }
+
+        numLockedProviders.load().let {
+            ProtectionStatusUpdateResult(
+                numLockedProviders = it,
+                numUnlockedProviders = cloudflareProtectedProviders.size - it,
+            )
+        }
     }
 
     /**

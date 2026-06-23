@@ -1,10 +1,12 @@
 package com.prajwalch.torrentsearch.ui.settings.searchproviders
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
@@ -13,18 +15,24 @@ import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarDuration
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -36,6 +44,7 @@ import com.prajwalch.torrentsearch.domain.model.Category
 import com.prajwalch.torrentsearch.providers.SearchProviderId
 import com.prajwalch.torrentsearch.ui.component.ArrowBackIconButton
 import com.prajwalch.torrentsearch.ui.component.CategoryChipsRow
+import com.prajwalch.torrentsearch.ui.component.RoundedDropdownMenu
 import com.prajwalch.torrentsearch.ui.settings.searchproviders.component.CloudflareChallengeBottomSheet
 import com.prajwalch.torrentsearch.ui.settings.searchproviders.component.SearchProviderList
 import com.prajwalch.torrentsearch.ui.theme.spaces
@@ -67,6 +76,39 @@ fun SearchProvidersScreen(
         )
     }
 
+    val localResources = LocalResources.current
+    val snackbarHostState = remember { SnackbarHostState() }
+
+    LaunchedEffect(uiState.protectionUpdateState) {
+        when (val protectionUpdateState = uiState.protectionUpdateState) {
+            ProtectionUpdateState.Idle -> {
+                /* no op */
+            }
+
+            ProtectionUpdateState.Updating -> {
+                snackbarHostState.showSnackbar(
+                    message = localResources.getString(R.string.search_providers_state_updating_protection_status),
+                    duration = SnackbarDuration.Indefinite,
+                )
+            }
+
+//            is ProtectionUpdateState.Error -> {
+//                val errorMessage = protectionUpdateState.message ?: "Unknown error occurred"
+//                snackbarHostState.showSnackbar("Couldn't update protection status: $errorMessage")
+//            }
+
+            is ProtectionUpdateState.Complete -> {
+                val message = localResources.getString(
+                    R.string.search_providers_state_protection_status_update_complete,
+                    protectionUpdateState.numUnlockedProviders,
+                    protectionUpdateState.numLockedProviders,
+                )
+                snackbarHostState.showSnackbar(message)
+                viewModel.resetProtectionUpdateState()
+            }
+        }
+    }
+
     Scaffold(
         modifier = Modifier
             .fillMaxSize()
@@ -77,6 +119,7 @@ fun SearchProvidersScreen(
                 onNavigateBack = onNavigateBack,
                 onEnableAllSearchProviders = viewModel::enableAllSearchProviders,
                 onDisableAllSearchProviders = viewModel::disableAllSearchProviders,
+                onUpdateProtectionStatus = viewModel::updateProtectionStatus,
                 onResetToDefault = viewModel::resetEnabledSearchProvidersToDefault,
                 subtitle = {
                     val searchProvidersSummary = stringResource(
@@ -89,6 +132,7 @@ fun SearchProvidersScreen(
                 scrollBehavior = scrollBehavior,
             )
         },
+        snackbarHost = { SnackbarHost(snackbarHostState) },
         floatingActionButton = {
             FloatingActionButton(onClick = onNavigateToAddSearchProvider) {
                 Icon(
@@ -130,6 +174,7 @@ private fun SearchProvidersScreenTopBar(
     onNavigateBack: () -> Unit,
     onEnableAllSearchProviders: () -> Unit,
     onDisableAllSearchProviders: () -> Unit,
+    onUpdateProtectionStatus: () -> Unit,
     onResetToDefault: () -> Unit,
     modifier: Modifier = Modifier,
     subtitle: @Composable (() -> Unit)? = null,
@@ -166,15 +211,70 @@ private fun SearchProvidersScreenTopBar(
                     ),
                 )
             }
-            IconButton(onClick = onResetToDefault) {
-                Icon(
-                    painter = painterResource(R.drawable.ic_refresh),
-                    contentDescription = stringResource(
-                        R.string.search_providers_action_reset,
-                    ),
+
+            Box {
+                var showMoreMenu by rememberSaveable { mutableStateOf(false) }
+
+                IconButton(onClick = { showMoreMenu = true }) {
+                    Icon(
+                        painter = painterResource(R.drawable.ic_more_vert),
+                        contentDescription = null,
+                    )
+                }
+                TopBarMoreMenu(
+                    expanded = showMoreMenu,
+                    onDismiss = { showMoreMenu = false },
+                    onUpdateProtectionStatus = {
+                        onUpdateProtectionStatus()
+                        showMoreMenu = false
+                    },
+                    onResetToDefault = {
+                        onResetToDefault()
+                        showMoreMenu = false
+                    },
                 )
             }
         },
         scrollBehavior = scrollBehavior,
     )
+}
+
+@Composable
+private fun TopBarMoreMenu(
+    expanded: Boolean,
+    onDismiss: () -> Unit,
+    onUpdateProtectionStatus: () -> Unit,
+    onResetToDefault: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    RoundedDropdownMenu(
+        modifier = modifier,
+        expanded = expanded,
+        onDismissRequest = onDismiss
+    ) {
+        DropdownMenuItem(
+            leadingIcon = {
+                Icon(
+                    painter = painterResource(R.drawable.ic_safety_check),
+                    contentDescription = stringResource(
+                        R.string.search_providers_action_update_protection_status,
+                    ),
+                )
+            },
+            text = {
+                Text(stringResource(R.string.search_providers_action_update_protection_status))
+            },
+            onClick = onUpdateProtectionStatus,
+        )
+        DropdownMenuItem(
+            leadingIcon = {
+                Icon(
+                    painter = painterResource(R.drawable.ic_reset_settings),
+                    contentDescription = stringResource(R.string.search_providers_action_reset),
+                )
+            },
+            text = { Text(stringResource(R.string.search_providers_action_reset)) },
+            onClick = onResetToDefault,
+        )
+    }
 }

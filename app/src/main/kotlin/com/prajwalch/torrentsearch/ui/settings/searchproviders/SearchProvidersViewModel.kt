@@ -27,7 +27,17 @@ data class SearchProvidersUiState(
     val searchProviders: List<SearchProviderInfo> = emptyList(),
     val totalNumProviders: Int = 0,
     val enabledProvidersCount: Int = 0,
+    val protectionUpdateState: ProtectionUpdateState = ProtectionUpdateState.Idle,
 )
+
+sealed interface ProtectionUpdateState {
+    data object Idle : ProtectionUpdateState
+    data object Updating : ProtectionUpdateState
+    data class Complete(
+        val numLockedProviders: Int,
+        val numUnlockedProviders: Int,
+    ) : ProtectionUpdateState
+}
 
 /** ViewModel which handles the business logic of Search providers screen. */
 @HiltViewModel
@@ -36,6 +46,8 @@ class SearchProvidersViewModel @Inject constructor(
     settingsRepository: SettingsRepository,
 ) : ViewModel() {
     private val selectedCategory = MutableStateFlow<Category?>(null)
+    private val protectionUpdateState =
+        MutableStateFlow<ProtectionUpdateState>(ProtectionUpdateState.Idle)
     private val allCategories = Category.entries.filterNot { it == Category.All }.toSet()
 
     private val searchProviderInfos =
@@ -52,15 +64,23 @@ class SearchProvidersViewModel @Inject constructor(
 
     val uiState = combine(
         selectedCategory,
+        protectionUpdateState,
         searchProviderInfos,
         searchProvidersManager.getProvidersCount(),
         settingsRepository.enabledSearchProvidersId.map { it.size },
-    ) { selectedCategory, searchProviderInfos, totalNumProviders, enabledProvidersCount ->
+    ) {
+            selectedCategory,
+            protectionUpdateState,
+            searchProviderInfos,
+            totalNumProviders,
+            enabledProvidersCount,
+        ->
         SearchProvidersUiState(
             selectedCategory = selectedCategory,
             searchProviders = searchProviderInfos,
             totalNumProviders = totalNumProviders,
             enabledProvidersCount = enabledProvidersCount,
+            protectionUpdateState = protectionUpdateState,
         )
     }.stateIn(
         scope = viewModelScope,
@@ -107,6 +127,22 @@ class SearchProvidersViewModel @Inject constructor(
             val providerIds = uiState.value.searchProviders.map { it.id }.toSet()
             searchProvidersManager.disableProviderByIds(providerIds)
         }
+    }
+
+    fun updateProtectionStatus() {
+        protectionUpdateState.value = ProtectionUpdateState.Updating
+
+        viewModelScope.launch {
+            val result = searchProvidersManager.updateProvidersProtectionStatus()
+            protectionUpdateState.value = ProtectionUpdateState.Complete(
+                numLockedProviders = result.numLockedProviders,
+                numUnlockedProviders = result.numUnlockedProviders,
+            )
+        }
+    }
+
+    fun resetProtectionUpdateState() {
+        protectionUpdateState.value = ProtectionUpdateState.Idle
     }
 
     /** Resets enabled search providers to default. */

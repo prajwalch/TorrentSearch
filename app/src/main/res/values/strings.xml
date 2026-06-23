@@ -163,6 +163,7 @@
     <string name="search_providers_screen_title">Search providers</string>
     <string name="search_providers_action_enable_all">Enable all</string>
     <string name="search_providers_action_disable_all">Disable all</string>
+    <string name="search_providers_action_update_protection_status">Update protection status</string>
     <string name="search_providers_action_reset">Reset to default</string>
     <string name="search_providers_list_action_edit">Edit configuration</string>
     <string name="search_providers_list_action_delete">Delete</string>
@@ -180,6 +181,8 @@
     <string name="search_providers_state_challenge_solving_title">Solving Cloudflare challenge…</string>
     <string name="search_providers_state_challenge_solving_description">This may take a while. Cloudflare challenges sometimes require manual interaction like checking a box, so if it\'s taking too long, open the WebView from the top bar to complete it.</string>
     <string name="search_providers_state_challenge_solved_title">Challenge solved!</string>
+    <string name="search_providers_state_updating_protection_status">Updating protection status…</string>
+    <string name="search_providers_state_protection_status_update_complete">%1$d unlocked, %2$d need unlocking</string>
 
     <string name="settings_screen_title">Settings</string>
     <string name="settings_section_appearance">Appearance</string>
