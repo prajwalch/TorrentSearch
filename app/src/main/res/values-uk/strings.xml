@@ -213,4 +213,7 @@
     <string name="settings_dns_over_https">DNS через HTTPS (DoH)</string>
     <string name="settings_dns_over_https_provider_format">Система: %1$s</string>
     <string name="settings_dns_over_https_summary">Знаходить сервери, відповідні доменам, через захищене з\'єднання, а не типові DNS вашої мережі</string>
+    <string name="search_providers_action_update_protection_status">Оновити стан захисту</string>
+    <string name="search_providers_state_updating_protection_status">Оновлення стану захисту…</string>
+    <string name="search_providers_state_protection_status_update_complete">%1$d оновлено, %2$d на черзі</string>
 </resources>
