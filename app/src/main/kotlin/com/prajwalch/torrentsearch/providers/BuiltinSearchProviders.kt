@@ -15,6 +15,7 @@ val BuiltinSearchProviders = listOf(
     MyPornClub(),
     NekoBT(),
     Nyaa(),
+    OxTorrent(),
     Rutor(),
     SubsPlease(),
     Sukebei(),
