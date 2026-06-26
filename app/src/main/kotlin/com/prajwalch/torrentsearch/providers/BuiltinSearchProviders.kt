@@ -13,6 +13,7 @@ val BuiltinSearchProviders = listOf(
     Knaben(),
     LimeTorrents(),
     LinuxTracker(),
+    Mikan(),
     MyPornClub(),
     NekoBT(),
     Nyaa(),
