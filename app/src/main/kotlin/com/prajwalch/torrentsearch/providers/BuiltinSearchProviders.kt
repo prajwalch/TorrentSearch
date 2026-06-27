@@ -25,6 +25,7 @@ val BuiltinSearchProviders = listOf(
     TheRarBg(),
     ThirteenThirtySevenX(),
     TokyoToshokan(),
+    Torrent9(),
     TorrentDatabase(),
     TorrentDownload(),
     TorrentDownloads(),
