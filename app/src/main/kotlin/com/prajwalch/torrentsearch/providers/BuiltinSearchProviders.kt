@@ -4,6 +4,7 @@ val BuiltinSearchProviders = listOf(
     AniRena(),
     AnimeTosho(),
     AudioBookBay(),
+    BangumiMoe(),
     BitSearch(),
     Dmhy(),
     Ext(),
