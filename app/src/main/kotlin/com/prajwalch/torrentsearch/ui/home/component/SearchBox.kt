@@ -94,8 +94,10 @@ fun SearchBox(
             state = searchBarState,
             textFieldState = textFieldState,
             onSearch = {
-                onSearch(textFieldState.text.toString())
-                coroutineScope.launch { searchBarState.animateToCollapsed() }
+                if (textFieldState.text.isNotBlank()) {
+                    onSearch(textFieldState.text.toString())
+                    coroutineScope.launch { searchBarState.animateToCollapsed() }
+                }
             },
             placeholder = { Text(stringResource(R.string.home_search_query_hint)) },
         ) {
