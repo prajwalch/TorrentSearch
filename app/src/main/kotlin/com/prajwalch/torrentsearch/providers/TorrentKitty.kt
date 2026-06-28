@@ -61,7 +61,7 @@ private class TorrentKittyResultsPageParser(private val providerName: String) {
             size = size,
             uploadDate = uploadDate,
             fileDownloadLink = fileDownloadLink,
-            descriptionPageUrl = detailsPageUrl ?: "",
+            descriptionPageUrl = detailsPageUrl,
             providerName = providerName,
         )
     }

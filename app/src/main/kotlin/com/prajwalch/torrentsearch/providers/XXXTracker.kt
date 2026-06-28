@@ -116,7 +116,7 @@ private class XXXTrackerResultsPageParser(private val providerName: String) {
             peers = peers,
             uploadDate = uploadDate,
             category = Category.Porn,
-            descriptionPageUrl = detailsPageUrl ?: "",
+            descriptionPageUrl = detailsPageUrl,
             providerName = providerName,
             magnetUri = magnetUri,
             fileDownloadLink = fileDownloadLink,

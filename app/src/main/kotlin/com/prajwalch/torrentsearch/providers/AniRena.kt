@@ -113,7 +113,7 @@ private class AniRenaResultsPageParser(private val providerName: String) {
             providerName = providerName,
             magnetUri = magnetUri,
             fileDownloadLink = fileDownloadLink,
-            descriptionPageUrl = detailsPageUrl ?: "",
+            descriptionPageUrl = detailsPageUrl,
         )
     }
 

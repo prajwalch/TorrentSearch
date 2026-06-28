@@ -113,7 +113,7 @@ private class SubsPleaseResultsJsonParser(
             size = size,
             uploadDate = uploadDate,
             category = Category.Anime,
-            descriptionPageUrl = detailsPageUrl ?: "",
+            descriptionPageUrl = detailsPageUrl,
             magnetUri = magnetUri,
             providerName = providerName,
         )

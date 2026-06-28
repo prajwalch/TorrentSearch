@@ -410,7 +410,7 @@ private class TorznabResponseXmlParser(
             providerName = providerName,
             uploadDate = uploadDate,
             category = category,
-            descriptionPageUrl = descriptionPageUrl ?: return,
+            descriptionPageUrl = descriptionPageUrl,
             magnetUri = magnetUri,
             fileDownloadLink = fileDownloadLink,
         )

@@ -121,7 +121,7 @@ private class TokyoToshokanResultsPageParser(private val providerName: String) {
             providerName = providerName,
             uploadDate = uploadDate,
             category = category,
-            descriptionPageUrl = detailsPageUrl ?: "",
+            descriptionPageUrl = detailsPageUrl,
             magnetUri = magnetUri,
             fileDownloadLink = fileDownloadLink,
         )

@@ -164,7 +164,7 @@ private class YtsResultsJsonParser(private val providerName: String) {
             providerName = providerName,
             uploadDate = uploadDate,
             category = Category.Movies,
-            descriptionPageUrl = detailsPageUrl ?: "",
+            descriptionPageUrl = detailsPageUrl,
         )
     }
 }

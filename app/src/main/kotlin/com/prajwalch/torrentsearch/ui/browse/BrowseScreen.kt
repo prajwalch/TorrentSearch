@@ -123,16 +123,24 @@ fun BrowseScreen(
             },
             onShareMagnetLink = { onShareMagnetLink(torrent.magnetUri()) },
             onOpenDescriptionPage = {
-                onOpenDescriptionPage(torrent.descriptionPageUrl, torrent.providerName)
-            },
-            onCopyDescriptionPageUrl = {
-                coroutineScope.launch {
-                    clipboard.copyText(text = torrent.descriptionPageUrl)
-                    snackbarHostState.showSnackbar(message = urlCopiedMessage)
+                torrent.descriptionPageUrl?.let {
+                    onOpenDescriptionPage(it, torrent.providerName)
                 }
             },
-            onShareDescriptionPageUrl = { onShareDescriptionPageUrl(torrent.descriptionPageUrl) },
-            enableDescriptionPageActions = torrent.descriptionPageUrl.isNotEmpty(),
+            onCopyDescriptionPageUrl = {
+                torrent.descriptionPageUrl?.let {
+                    coroutineScope.launch {
+                        clipboard.copyText(it)
+                        snackbarHostState.showSnackbar(urlCopiedMessage)
+                    }
+                }
+            },
+            onShareDescriptionPageUrl = {
+                torrent.descriptionPageUrl?.let {
+                    onShareDescriptionPageUrl(it)
+                }
+            },
+            enableDescriptionPageActions = torrent.descriptionPageUrl != null,
         )
     }
 

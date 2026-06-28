@@ -81,7 +81,6 @@ class TorrentsCSV : SearchProvider {
             providerName = this.name,
             uploadDate = uploadDate,
             category = Category.Other,
-            descriptionPageUrl = "",
         )
     }
 }

@@ -55,7 +55,9 @@ private class FileMoodResultsPageParser(private val providerName: String) {
         val (seeders, peers) = listItem.selectFirst(SEEDERS_PEERS)?.text()
             ?.split('/')
             ?: listOf(null, null)
-        val descriptionPageUrl = listItem.selectFirst(DETAILS_PAGE_URL)?.attr("abs:href")
+        val descriptionPageUrl = listItem.selectFirst(DETAILS_PAGE_URL)
+            ?.attr("abs:href")
+            ?.takeIf { it.isNotBlank() }
         val infoHash = descriptionPageUrl
             ?.removeSuffix(".html")
             ?.takeLastWhile { it != '-' }

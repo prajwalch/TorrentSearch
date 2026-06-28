@@ -117,7 +117,7 @@ private class BangumiMoeResultsJsonParser(
             uploadDate = uploadDate,
             providerName = providerName,
             category = Category.Anime,
-            descriptionPageUrl = detailsPageUrl ?: "",
+            descriptionPageUrl = detailsPageUrl,
         )
     }
 }

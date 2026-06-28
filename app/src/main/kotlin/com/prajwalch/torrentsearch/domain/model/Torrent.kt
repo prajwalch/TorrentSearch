@@ -25,7 +25,7 @@ data class Torrent(
     /** Category of the torrent. */
     val category: Category? = null,
     /** URL of the page where the torrent details is available. */
-    val descriptionPageUrl: String,
+    val descriptionPageUrl: String? = null,
     /** The magnet URI of the torrent. */
     val magnetUri: String? = null,
     /**

@@ -90,7 +90,7 @@ private class SukebeiResultsPageParser(private val providerName: String) {
             providerName = providerName,
             uploadDate = uploadDate,
             category = Category.Porn,
-            descriptionPageUrl = detailsPageUrl ?: "",
+            descriptionPageUrl = detailsPageUrl,
             magnetUri = magnetUri,
             fileDownloadLink = fileDownloadLink,
         )

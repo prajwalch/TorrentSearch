@@ -241,6 +241,7 @@ private val MIGRATION_4_5 = object : Migration(4, 5) {
  * - Changes `bookmarks.size` field from not nullable to nullable.
  * - Changes `bookmarks.seeders` field from not nullable to nullable.
  * - Changes `bookmarks.peers` field from not nullable to nullable.
+ * - Changes `bookmarks.descriptionPageUrl` from not nullable to nullable.
  */
 private val MIGRATION_5_6 = object : Migration(5, 6) {
     override fun migrate(db: SupportSQLiteDatabase) {
@@ -261,7 +262,7 @@ private val MIGRATION_5_6 = object : Migration(5, 6) {
                 `providerName` TEXT NOT NULL,
                 `uploadDate` INTEGER DEFAULT NULL,
                 `category` TEXT NOT NULL,
-                `descriptionPageUrl` TEXT NOT NULL,
+                `descriptionPageUrl` TEXT DEFAULT NULL,
                 `magnetUri` TEXT DEFAULT NULL,
                 `fileDownloadLink` TEXT DEFAULT NULL
             )
@@ -273,7 +274,7 @@ private val MIGRATION_5_6 = object : Migration(5, 6) {
         db.execSQL(
             """
             INSERT INTO bookmarks (id, infoHash, name, size, seeders, peers, providerName, uploadDate, category, descriptionPageUrl, magnetUri, fileDownloadLink)
-            SELECT id, infoHash, name, size, seeders, peers, providerName, uploadDate, category, descriptionPageUrl, magnetUri, fileDownloadLink FROM bookmarks_old
+            SELECT id, infoHash, name, size, seeders, peers, providerName, uploadDate, category, NULLIF(descriptionPageUrl, ''), magnetUri, fileDownloadLink FROM bookmarks_old
         """.trimIndent()
         )
 

@@ -51,7 +51,7 @@ private class AnimeToshoResultsPageParser(private val providerName: String) {
     private fun parseEntryDiv(entryDiv: Element): Torrent? {
         val anchor = entryDiv.selectFirst("div.link > a") ?: return null
         val name = anchor.text()
-        val descriptionPageUrl = anchor.attr("href")
+        val descriptionPageUrl = anchor.attr("href").takeIf { it.isNotBlank() }
 
         val size = entryDiv.selectFirst("div.size")?.ownText() ?: return null
         val (seeders, peers) = parseSeedsAndPeers(entryDiv)

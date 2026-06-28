@@ -137,7 +137,7 @@ private class ExtResultsPageParser(private val providerName: String) {
             uploadDate = uploadDate,
             category = category,
             providerName = providerName,
-            descriptionPageUrl = detailsPageUrl ?: "",
+            descriptionPageUrl = detailsPageUrl,
         )
     }
 

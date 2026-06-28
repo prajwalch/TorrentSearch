@@ -144,7 +144,7 @@ private class KnabenResultsJsonParser(private val providerName: String) {
         val seeders = obj.getUInt("seeders")
         val peers = obj.getUInt("peers")
         val uploadDate = obj.getString("date")?.let(TorrentDateParser::parseIso)
-        val descriptionPageUrl = obj.getString("details").orEmpty()
+        val descriptionPageUrl = obj.getString("details")
         val category = extractCategory(obj)
 
         return Torrent(

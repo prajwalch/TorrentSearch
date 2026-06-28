@@ -86,7 +86,7 @@ private class NekoBTResultsPageParser(private val providerName: String) {
             providerName = providerName,
             uploadDate = uploadDate,
             category = Category.Anime,
-            descriptionPageUrl = detailsPageUrl ?: "",
+            descriptionPageUrl = detailsPageUrl,
             magnetUri = magnetUri,
             fileDownloadLink = fileDownloadLink,
         )

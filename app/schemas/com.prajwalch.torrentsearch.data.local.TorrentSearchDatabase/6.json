@@ -2,11 +2,11 @@
   "formatVersion": 1,
   "database": {
     "version": 6,
-    "identityHash": "5d9f80417713a1bc13d87504b157f947",
+    "identityHash": "dced08988e71ab71d55ec978c84e6d90",
     "entities": [
       {
         "tableName": "bookmarks",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `infoHash` TEXT NOT NULL, `name` TEXT NOT NULL, `size` TEXT DEFAULT NULL, `seeders` INTEGER DEFAULT NULL, `peers` INTEGER DEFAULT NULL, `providerName` TEXT NOT NULL, `uploadDate` INTEGER DEFAULT NULL, `category` TEXT NOT NULL, `descriptionPageUrl` TEXT NOT NULL, `magnetUri` TEXT DEFAULT NULL, `fileDownloadLink` TEXT DEFAULT NULL)",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `infoHash` TEXT NOT NULL, `name` TEXT NOT NULL, `size` TEXT DEFAULT NULL, `seeders` INTEGER DEFAULT NULL, `peers` INTEGER DEFAULT NULL, `providerName` TEXT NOT NULL, `uploadDate` INTEGER DEFAULT NULL, `category` TEXT NOT NULL, `descriptionPageUrl` TEXT DEFAULT NULL, `magnetUri` TEXT DEFAULT NULL, `fileDownloadLink` TEXT DEFAULT NULL)",
         "fields": [
           {
             "fieldPath": "id",
@@ -66,7 +66,7 @@
             "fieldPath": "descriptionPageUrl",
             "columnName": "descriptionPageUrl",
             "affinity": "TEXT",
-            "notNull": true
+            "defaultValue": "NULL"
           },
           {
             "fieldPath": "magnetUri",
@@ -203,7 +203,7 @@
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '5d9f80417713a1bc13d87504b157f947')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'dced08988e71ab71d55ec978c84e6d90')"
     ]
   }
 }

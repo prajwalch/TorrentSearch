@@ -107,7 +107,7 @@ private class DmhyResultsPageParser(private val providerName: String) {
             category = category,
             providerName = providerName,
             magnetUri = magnetUri,
-            descriptionPageUrl = detailsPageUrl ?: "",
+            descriptionPageUrl = detailsPageUrl,
         )
     }
 

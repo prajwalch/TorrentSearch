@@ -114,7 +114,9 @@ private class TdResultsPageParser(private val providerName: String) {
         val magnetUri = TorrentUtils.createMagnetUri(infoHash).let {
             "$it&tr=$TORRENT_DATABASE_TRACKER_URL"
         }
-        val descriptionPageUrl = listItem.selectFirst(DESCRIPTION_PAGE_URL)?.attr("abs:href")
+        val descriptionPageUrl = listItem.selectFirst(DESCRIPTION_PAGE_URL)
+            ?.attr("abs:href")
+            ?.takeIf { it.isNotBlank() }
         val category = listItem.selectFirst(CATEGORY)?.ownText()?.let(::categoryFromRawString)
         val size = listItem.selectFirst(SIZE)?.ownText()
         val uploadDate = listItem.selectFirst(UPLOAD_DATE)
@@ -132,7 +134,7 @@ private class TdResultsPageParser(private val providerName: String) {
             uploadDate = uploadDate,
             category = category,
             providerName = providerName,
-            descriptionPageUrl = descriptionPageUrl ?: "",
+            descriptionPageUrl = descriptionPageUrl,
             magnetUri = magnetUri,
         )
     }

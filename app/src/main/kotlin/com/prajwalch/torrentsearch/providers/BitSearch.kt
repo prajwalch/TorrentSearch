@@ -161,7 +161,7 @@ private class BitSearchResultsPageParser(private val providerName: String) {
             category = category,
             magnetUri = magnetUri,
             fileDownloadLink = fileDownloadLink,
-            descriptionPageUrl = detailsPageUrl ?: "",
+            descriptionPageUrl = detailsPageUrl,
         )
     }
 

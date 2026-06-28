@@ -80,7 +80,7 @@ private class LinuxTrackerResultsPageParser(private val providerName: String) {
             providerName = providerName,
             magnetUri = magnetUri,
             fileDownloadLink = fileDownloadLink,
-            descriptionPageUrl = detailsPageUrl ?: "",
+            descriptionPageUrl = detailsPageUrl,
         )
     }
 

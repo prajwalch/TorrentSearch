@@ -141,16 +141,24 @@ fun BookmarksScreen(
             },
             onShareMagnetLink = { onShareMagnetLink(bookmark.magnetUri()) },
             onOpenDescriptionPage = {
-                onOpenDescriptionPage(bookmark.descriptionPageUrl, bookmark.providerName)
-            },
-            onCopyDescriptionPageUrl = {
-                coroutineScope.launch {
-                    clipboard.copyText(text = bookmark.descriptionPageUrl)
-                    snackbarHostState.showSnackbar(message = urlCopiedMessage)
+                bookmark.descriptionPageUrl?.let {
+                    onOpenDescriptionPage(it, bookmark.providerName)
                 }
             },
-            onShareDescriptionPageUrl = { onShareDescriptionPageUrl(bookmark.descriptionPageUrl) },
-            enableDescriptionPageActions = bookmark.descriptionPageUrl.isNotEmpty(),
+            onCopyDescriptionPageUrl = {
+                bookmark.descriptionPageUrl?.let {
+                    coroutineScope.launch {
+                        clipboard.copyText(it)
+                        snackbarHostState.showSnackbar(urlCopiedMessage)
+                    }
+                }
+            },
+            onShareDescriptionPageUrl = {
+                bookmark.descriptionPageUrl?.let {
+                    onShareDescriptionPageUrl(it)
+                }
+            },
+            enableDescriptionPageActions = bookmark.descriptionPageUrl != null,
         )
     }
 
