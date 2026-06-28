@@ -97,9 +97,9 @@
     <string name="settings_show_search_history_summary">在搜索栏中显示搜索记录</string>
     <string name="settings_section_advanced">高级</string>
     <string name="settings_enable_share_integration">启用分享集成</string>
-    <string name="settings_enable_share_integration_summary">启用时，此应用将加入分享菜单。</string>
+    <string name="settings_enable_share_integration_summary">启用时，将本软件添加到分享菜单。</string>
     <string name="settings_enable_quick_search">启用快速搜索</string>
-    <string name="settings_enable_quick_search_summary">启用时，此应用将加入文本选择菜单（如复制或剪切）。</string>
+    <string name="settings_enable_quick_search_summary">启用时，将本软件添加到文本选择菜单（如复制或剪切）。</string>
     <string name="settings_dns_over_https">DNS over HTTPS（DoH）</string>
     <string name="settings_dns_over_https_provider_format">提供商：%1$s</string>
     <string name="settings_dns_over_https_summary">通过安全连接解析域名，而非使用网络默认 DNS</string>
@@ -177,8 +177,8 @@
     <string name="search_info_troubleshoot_help">为了帮助排查问题，请从设置界面导出日志，并附上日志在 GitHub 上创建一个 Issue。</string>
     <string name="torrent_details_label_category">类别</string>
     <string name="torrent_details_label_uploader">上传者</string>
-    <string name="torrent_details_label_last_checked">最后检查</string>
-    <string name="torrent_details_label_info_hash">信息哈希</string>
+    <string name="torrent_details_label_last_checked">最后活跃</string>
+    <string name="torrent_details_label_info_hash">哈希值</string>
     <string name="torrent_details_message_not_available">不可用</string>
     <string name="search_history_query_copied_message">查询已复制到剪贴板！</string>
     <string name="browse_screen_title">浏览</string>
