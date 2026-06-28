@@ -36,6 +36,7 @@ val BuiltinSearchProviders = listOf(
     XXXClub(),
     XXXTracker(),
     Yts(),
+    ZeroMagnet(),
 )
 
 val DefaultEnabledProviderIds = BuiltinSearchProviders
