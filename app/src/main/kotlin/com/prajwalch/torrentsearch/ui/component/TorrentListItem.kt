@@ -35,8 +35,8 @@ import java.time.Instant
 fun TorrentListItem(
     name: String,
     size: String?,
-    seeders: UInt,
-    peers: UInt,
+    seeders: UInt?,
+    peers: UInt?,
     uploadDate: Instant?,
     category: Category?,
     providerName: String,
@@ -89,8 +89,8 @@ fun TorrentListItem(
 @Composable
 private fun TorrentMetadata(
     size: String?,
-    seeders: UInt,
-    peers: UInt,
+    seeders: UInt?,
+    peers: UInt?,
     modifier: Modifier = Modifier,
 ) {
     Row(
@@ -98,26 +98,30 @@ private fun TorrentMetadata(
         horizontalArrangement = Arrangement.spacedBy(MaterialTheme.spaces.extraSmall),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        size?.let {
-            TorrentMetadataItem(text = { TorrentMetadataText(it) })
-            BulletPoint()
+        size?.let { TorrentMetadataItem(text = { TorrentMetadataText(it) }) }
+
+        seeders?.let {
+            if (size != null) BulletPoint()
+            TorrentMetadataItem(
+                icon = { TorrentMetadataIcon(R.drawable.ic_upload) },
+                text = {
+                    TorrentMetadataText(
+                        text = it.toString(),
+                        fontWeight = FontWeight.SemiBold,
+                    )
+                },
+                contentColor = MaterialTheme.colorScheme.secondary,
+            )
         }
-        TorrentMetadataItem(
-            icon = { TorrentMetadataIcon(R.drawable.ic_upload) },
-            text = {
-                TorrentMetadataText(
-                    text = seeders.toString(),
-                    fontWeight = FontWeight.SemiBold,
-                )
-            },
-            contentColor = MaterialTheme.colorScheme.secondary,
-        )
-        BulletPoint()
-        TorrentMetadataItem(
-            icon = { TorrentMetadataIcon(R.drawable.ic_download) },
-            text = { TorrentMetadataText(peers.toString()) },
-            contentColor = MaterialTheme.colorScheme.tertiary,
-        )
+
+        peers?.let {
+           if (size != null || seeders != null) BulletPoint()
+            TorrentMetadataItem(
+                icon = { TorrentMetadataIcon(R.drawable.ic_download) },
+                text = { TorrentMetadataText(it.toString()) },
+                contentColor = MaterialTheme.colorScheme.tertiary,
+            )
+        }
     }
 }
 

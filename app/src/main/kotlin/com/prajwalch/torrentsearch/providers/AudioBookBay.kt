@@ -75,8 +75,6 @@ private class AudioBookBayResultsPageParser(private val providerName: String) {
             infoHash = infoHash,
             name = torrentName,
             size = size,
-            seeders = 0U,
-            peers = 0U,
             uploadDate = uploadDate,
             category = Category.Books,
             providerName = providerName,

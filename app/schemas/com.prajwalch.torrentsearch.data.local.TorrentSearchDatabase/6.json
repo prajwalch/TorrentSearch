@@ -2,11 +2,11 @@
   "formatVersion": 1,
   "database": {
     "version": 6,
-    "identityHash": "db407ad2f4a8ac305bfd3a9c9f8a30df",
+    "identityHash": "5d9f80417713a1bc13d87504b157f947",
     "entities": [
       {
         "tableName": "bookmarks",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `infoHash` TEXT NOT NULL, `name` TEXT NOT NULL, `size` TEXT DEFAULT NULL, `seeders` INTEGER NOT NULL, `peers` INTEGER NOT NULL, `providerName` TEXT NOT NULL, `uploadDate` INTEGER DEFAULT NULL, `category` TEXT NOT NULL, `descriptionPageUrl` TEXT NOT NULL, `magnetUri` TEXT DEFAULT NULL, `fileDownloadLink` TEXT DEFAULT NULL)",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `infoHash` TEXT NOT NULL, `name` TEXT NOT NULL, `size` TEXT DEFAULT NULL, `seeders` INTEGER DEFAULT NULL, `peers` INTEGER DEFAULT NULL, `providerName` TEXT NOT NULL, `uploadDate` INTEGER DEFAULT NULL, `category` TEXT NOT NULL, `descriptionPageUrl` TEXT NOT NULL, `magnetUri` TEXT DEFAULT NULL, `fileDownloadLink` TEXT DEFAULT NULL)",
         "fields": [
           {
             "fieldPath": "id",
@@ -36,13 +36,13 @@
             "fieldPath": "seeders",
             "columnName": "seeders",
             "affinity": "INTEGER",
-            "notNull": true
+            "defaultValue": "NULL"
           },
           {
             "fieldPath": "peers",
             "columnName": "peers",
             "affinity": "INTEGER",
-            "notNull": true
+            "defaultValue": "NULL"
           },
           {
             "fieldPath": "providerName",
@@ -203,7 +203,7 @@
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'db407ad2f4a8ac305bfd3a9c9f8a30df')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '5d9f80417713a1bc13d87504b157f947')"
     ]
   }
 }

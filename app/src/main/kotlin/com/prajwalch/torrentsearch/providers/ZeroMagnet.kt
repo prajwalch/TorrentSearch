@@ -64,8 +64,6 @@ private class ZeroMagnetResultsPageParser(private val providerName: String) {
             infoHash = torrentDetails.infoHash,
             name = torrentDetails.name,
             size = torrentDetails.size,
-            seeders = 1U,
-            peers = 1U,
             uploadDate = torrentDetails.uploadDate,
             providerName = providerName,
             category = torrentDetails.category,

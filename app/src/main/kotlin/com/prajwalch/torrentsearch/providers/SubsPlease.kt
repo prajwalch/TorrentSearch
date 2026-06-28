@@ -111,8 +111,6 @@ private class SubsPleaseResultsJsonParser(
             infoHash = TorrentUtils.getInfoHashFromMagnetUri(magnetUri),
             name = finalTorrentName,
             size = size,
-            seeders = 0U,
-            peers = 0U,
             uploadDate = uploadDate,
             category = Category.Anime,
             descriptionPageUrl = detailsPageUrl ?: "",

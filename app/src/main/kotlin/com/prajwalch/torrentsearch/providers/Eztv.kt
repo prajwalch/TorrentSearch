@@ -64,7 +64,7 @@ private class EztvResultsPageParser(private val providerName: String) {
             infoHash = TorrentUtils.getInfoHashFromMagnetUri(magnetUri),
             name = torrentName,
             size = size,
-            seeders = seeders ?: 0U,
+            seeders = seeders,
             peers = 0u,
             category = Category.Series,
             providerName = providerName,

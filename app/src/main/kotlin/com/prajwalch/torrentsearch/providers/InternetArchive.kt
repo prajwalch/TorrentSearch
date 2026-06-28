@@ -112,8 +112,6 @@ private class IAResultsJsonParser(
             infoHash = infoHash,
             name = name,
             size = size,
-            seeders = 1U,
-            peers = 1U,
             uploadDate = uploadDate,
             category = category,
             providerName = providerName,

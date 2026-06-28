@@ -15,9 +15,9 @@ data class Torrent(
     /** Torrent size (in pretty format). */
     val size: String? = null,
     /** Number of seeders. */
-    val seeders: UInt,
+    val seeders: UInt? = null,
     /** Number of peers. */
-    val peers: UInt,
+    val peers: UInt? = null,
     /** Name of the search provider from where torrent is searched. */
     val providerName: String,
     /** Torrent upload date. */

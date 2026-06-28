@@ -239,6 +239,8 @@ private val MIGRATION_4_5 = object : Migration(4, 5) {
 /**
  * Migration from version 5 to 6:
  * - Changes `bookmarks.size` field from not nullable to nullable.
+ * - Changes `bookmarks.seeders` field from not nullable to nullable.
+ * - Changes `bookmarks.peers` field from not nullable to nullable.
  */
 private val MIGRATION_5_6 = object : Migration(5, 6) {
     override fun migrate(db: SupportSQLiteDatabase) {
@@ -254,8 +256,8 @@ private val MIGRATION_5_6 = object : Migration(5, 6) {
                 `infoHash` TEXT NOT NULL,
                 `name` TEXT NOT NULL,
                 `size` TEXT DEFAULT NULL,
-                `seeders` INTEGER NOT NULL,
-                `peers` INTEGER NOT NULL,
+                `seeders` INTEGER DEFAULT NULL,
+                `peers` INTEGER DEFAULT NULL,
                 `providerName` TEXT NOT NULL,
                 `uploadDate` INTEGER DEFAULT NULL,
                 `category` TEXT NOT NULL,
