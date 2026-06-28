@@ -147,9 +147,9 @@ private class YtsResultsJsonParser(private val providerName: String) {
         val codec = torrentObject.getString("video_codec") ?: "-"
         val name = "$movieTitle [$quality] [$type] [$codec]"
 
-        val size = torrentObject.getString("size") ?: return null
-        val seeders = torrentObject.getUInt("seeds") ?: return null
-        val peers = torrentObject.getUInt("peers") ?: return null
+        val size = torrentObject.getString("size")
+        val seeders = torrentObject.getUInt("seeds")
+        val peers = torrentObject.getUInt("peers")
         val uploadDate = torrentObject
             .getLong("date_uploaded_unix")
             ?.let(TorrentDateParser::epochSecondToInstant)
@@ -159,8 +159,8 @@ private class YtsResultsJsonParser(private val providerName: String) {
             infoHash = infoHash,
             name = name,
             size = size,
-            seeders = seeders,
-            peers = peers,
+            seeders = seeders ?: 0U,
+            peers = peers ?: 0U,
             providerName = providerName,
             uploadDate = uploadDate,
             category = Category.Movies,
