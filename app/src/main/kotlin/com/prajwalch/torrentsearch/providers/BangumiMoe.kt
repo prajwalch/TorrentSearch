@@ -18,7 +18,7 @@ import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.buildJsonObject
 
-class BangumiMoe : SearchProvider, TorrentDetailsProvider {
+class BangumiMoe : SearchProvider, LatestTorrentsProvider, TorrentDetailsProvider {
     override val id = "bangumimoe"
     override val name = "BangumiMoe"
     override val url = "https://bangumi.moe"
@@ -77,6 +77,12 @@ class BangumiMoe : SearchProvider, TorrentDetailsProvider {
         return parseDetailsJson(responseJson)
     }
 
+    override suspend fun getLastestTorrents(category: Category): List<Torrent> {
+        val requestUrl = "$url/api/torrent/latest"
+        val responseJson = HttpClient.getJson(requestUrl) ?: return emptyList()
+
+        return resultsJsonParser.parse(responseJson)
+    }
 }
 
 private class BangumiMoeResultsJsonParser(
