@@ -56,6 +56,7 @@
     <string name="search_providers_screen_title">搜索源</string>
     <string name="search_providers_action_enable_all">全部开启</string>
     <string name="search_providers_action_disable_all">全部关闭</string>
+    <string name="search_providers_action_update_protection_status">更新保护状态</string>
     <string name="search_providers_action_reset">设为默认</string>
     <string name="search_providers_list_action_edit">修改配置文件</string>
     <string name="search_providers_list_action_delete">删除</string>
@@ -99,6 +100,9 @@
     <string name="settings_enable_share_integration_summary">启用时，本软件将加入分享菜单。</string>
     <string name="settings_enable_quick_search">启用快速搜索</string>
     <string name="settings_enable_quick_search_summary">启用时，本软件将加入文本选择菜单（譬如复制和剪切）。</string>
+    <string name="settings_dns_over_https">DNS over HTTPS（DoH）</string>
+    <string name="settings_dns_over_https_provider_format">提供商：%1$s</string>
+    <string name="settings_dns_over_https_summary">通过安全连接解析域名，而非使用网络默认 DNS</string>
     <string name="settings_section_about">关于</string>
     <string name="settings_version">版本</string>
     <string name="settings_source_code">源代码</string>
@@ -189,6 +193,8 @@
     <string name="search_providers_state_challenge_solving_title">正在通过 Cloudflare 验证…</string>
     <string name="search_providers_state_challenge_solving_description">这可能需要一些时间。Cloudflare 验证有时需要手动操作（例如勾选确认框）。如果等待过久，请从顶部工具栏打开 WebView 手动完成验证。</string>
     <string name="search_providers_state_challenge_solved_title">验证已通过！</string>
+    <string name="search_providers_state_updating_protection_status">正在更新保护状态…</string>
+    <string name="search_providers_state_protection_status_update_complete">已解锁 %1$d 个，%2$d 个需要解锁</string>
     <string name="settings_clear_viewed_torrents_dialog_button_clear">清除</string>
     <string name="settings_clear_viewed_torrents">清除已浏览的种子</string>
     <string name="settings_clear_viewed_torrents_summary">清空你已经打开的种子列表</string>
