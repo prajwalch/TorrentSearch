@@ -102,7 +102,7 @@ private class TorrentDownloadResultsParser(private val providerName: String) {
         return Torrent(
             infoHash = infoHash,
             name = torrentName,
-            size = size ?: "0 KB",
+            size = size,
             seeders = seeders ?: 0U,
             peers = peers ?: 0U,
             uploadDate = uploadDate,

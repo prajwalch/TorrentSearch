@@ -58,7 +58,7 @@ private class MikanResultsPageParser(private val providerName: String) {
         return Torrent(
             infoHash = TorrentUtils.getInfoHashFromMagnetUri(magnetUri),
             name = torrentName,
-            size = size ?: "0 KB",
+            size = size,
             seeders = 0U,
             peers = 0U,
             uploadDate = uploadDate,

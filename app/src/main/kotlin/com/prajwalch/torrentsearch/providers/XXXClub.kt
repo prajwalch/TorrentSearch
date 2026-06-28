@@ -89,7 +89,7 @@ private class XXXClubResultsPageParser(private val providerName: String) {
         return Torrent(
             infoHash = torrentDetails.infoHash,
             name = name,
-            size = size ?: "0 KB",
+            size = size,
             seeders = seeders ?: 0u,
             peers = peers ?: 0u,
             providerName = providerName,

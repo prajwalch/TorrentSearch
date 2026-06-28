@@ -404,7 +404,7 @@ private class TorznabResponseXmlParser(
         val torrent = Torrent(
             infoHash = infoHash ?: magnetUri?.let(TorrentUtils::getInfoHashFromMagnetUri) ?: return,
             name = torrentName ?: return,
-            size = size ?: return,
+            size = size,
             seeders = seeders?.toUIntOrNull() ?: return,
             peers = peers?.toUIntOrNull() ?: return,
             providerName = providerName,

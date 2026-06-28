@@ -153,7 +153,7 @@ private class BitSearchResultsPageParser(private val providerName: String) {
         return Torrent(
             infoHash = TorrentUtils.getInfoHashFromMagnetUri(magnetUri),
             name = name,
-            size = size ?: "0 KB",
+            size = size,
             seeders = seeders?.toUIntOrNull() ?: 0U,
             peers = peers?.toUIntOrNull() ?: 0U,
             providerName = providerName,

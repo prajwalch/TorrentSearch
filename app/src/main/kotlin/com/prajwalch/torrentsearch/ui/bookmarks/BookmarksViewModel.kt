@@ -152,7 +152,7 @@ private fun createSortComparator(
         SortCriteria.Name -> compareBy { it.torrent.name }
         SortCriteria.Seeders -> compareBy { it.torrent.seeders }
         SortCriteria.Peers -> compareBy { it.torrent.peers }
-        SortCriteria.FileSize -> compareBy { FileSizeUtils.getBytes(it.torrent.size) }
+        SortCriteria.FileSize -> compareBy { it.torrent.size?.let(FileSizeUtils::getBytes) }
         SortCriteria.Date -> compareBy { it.torrent.uploadDate }
     }
 

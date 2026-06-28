@@ -106,7 +106,7 @@ private class ThirteenThirtySevenXResultsPageParser(private val providerName: St
         return Torrent(
             infoHash = torrentDetails.infoHash,
             name = torrentName,
-            size = size ?: "0 KB",
+            size = size,
             seeders = seeders ?: 0U,
             peers = peers ?: 0U,
             uploadDate = uploadDate,

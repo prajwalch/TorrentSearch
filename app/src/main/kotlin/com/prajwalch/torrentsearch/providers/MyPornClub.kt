@@ -90,7 +90,7 @@ private class MyPornClubResultsPageParser(private val providerName: String) {
         return Torrent(
             infoHash = torrentDetails.infoHash,
             name = name,
-            size = size ?: "0 KB",
+            size = size,
             seeders = seeders ?: 0U,
             peers = peers ?: 0U,
             providerName = providerName,

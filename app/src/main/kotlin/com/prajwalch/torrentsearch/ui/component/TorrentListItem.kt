@@ -34,7 +34,7 @@ import java.time.Instant
 @Composable
 fun TorrentListItem(
     name: String,
-    size: String,
+    size: String?,
     seeders: UInt,
     peers: UInt,
     uploadDate: Instant?,
@@ -88,7 +88,7 @@ fun TorrentListItem(
 
 @Composable
 private fun TorrentMetadata(
-    size: String,
+    size: String?,
     seeders: UInt,
     peers: UInt,
     modifier: Modifier = Modifier,
@@ -98,8 +98,10 @@ private fun TorrentMetadata(
         horizontalArrangement = Arrangement.spacedBy(MaterialTheme.spaces.extraSmall),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        TorrentMetadataItem(text = { TorrentMetadataText(size) })
-        BulletPoint()
+        size?.let {
+            TorrentMetadataItem(text = { TorrentMetadataText(it) })
+            BulletPoint()
+        }
         TorrentMetadataItem(
             icon = { TorrentMetadataIcon(R.drawable.ic_upload) },
             text = {
@@ -178,7 +180,7 @@ private fun TorrentListItemDarkPreview() {
     TorrentSearchTheme(darkTheme = true) {
         TorrentListItem(
             name = "Sinners.2025.1080p [Yts] [H.265] something",
-            size = "2.1 GB",
+            size = null,
             seeders = 200u,
             peers = 5000u,
             uploadDate = Instant.now(),

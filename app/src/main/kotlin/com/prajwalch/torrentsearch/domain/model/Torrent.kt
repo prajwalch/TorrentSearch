@@ -13,7 +13,7 @@ data class Torrent(
     /** Name of the torrent. */
     val name: String,
     /** Torrent size (in pretty format). */
-    val size: String,
+    val size: String? = null,
     /** Number of seeders. */
     val seeders: UInt,
     /** Number of peers. */

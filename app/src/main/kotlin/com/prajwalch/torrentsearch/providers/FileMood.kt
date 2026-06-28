@@ -65,7 +65,7 @@ private class FileMoodResultsPageParser(private val providerName: String) {
         return Torrent(
             infoHash = infoHash ?: return null,
             name = torrentName,
-            size = size ?: "0 KB",
+            size = size,
             seeders = seeders?.toUIntOrNull() ?: 0U,
             peers = peers?.toUIntOrNull() ?: 0U,
             category = Category.Other,

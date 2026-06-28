@@ -110,7 +110,7 @@ private class SubsPleaseResultsJsonParser(
         return Torrent(
             infoHash = TorrentUtils.getInfoHashFromMagnetUri(magnetUri),
             name = finalTorrentName,
-            size = size ?: "0 KB",
+            size = size,
             seeders = 0U,
             peers = 0U,
             uploadDate = uploadDate,

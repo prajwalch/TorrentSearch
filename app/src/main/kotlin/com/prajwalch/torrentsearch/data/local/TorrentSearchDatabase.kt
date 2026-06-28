@@ -36,7 +36,7 @@ import java.time.Instant
         TorznabConfigEntity::class,
         ViewedTorrentEntity::class,
     ],
-    version = 5,
+    version = 6,
     exportSchema = true,
     autoMigrations = [
         AutoMigration(from = 1, to = 2),
@@ -90,6 +90,7 @@ abstract class TorrentSearchDatabase : RoomDatabase() {
                     name = DB_NAME,
                 )
                 .addMigrations(MIGRATION_4_5)
+                .addMigrations(MIGRATION_5_6)
 
             return databaseBuilder.build().also { Instance = it }
         }
@@ -232,5 +233,49 @@ private val MIGRATION_4_5 = object : Migration(4, 5) {
         )
 
         else -> null
+    }
+}
+
+/**
+ * Migration from version 5 to 6:
+ * - Changes `bookmarks.size` field from not nullable to nullable.
+ */
+private val MIGRATION_5_6 = object : Migration(5, 6) {
+    override fun migrate(db: SupportSQLiteDatabase) {
+        // 1. Rename old bookmarks table
+        db.execSQL("ALTER TABLE bookmarks RENAME TO bookmarks_old")
+
+        // 2. Create new bookmarks table with the `size` field nullable
+        // language="RoomSql"
+        db.execSQL(
+            """
+            CREATE TABLE IF NOT EXISTS `bookmarks` (
+                `id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+                `infoHash` TEXT NOT NULL,
+                `name` TEXT NOT NULL,
+                `size` TEXT DEFAULT NULL,
+                `seeders` INTEGER NOT NULL,
+                `peers` INTEGER NOT NULL,
+                `providerName` TEXT NOT NULL,
+                `uploadDate` INTEGER DEFAULT NULL,
+                `category` TEXT NOT NULL,
+                `descriptionPageUrl` TEXT NOT NULL,
+                `magnetUri` TEXT DEFAULT NULL,
+                `fileDownloadLink` TEXT DEFAULT NULL
+            )
+            """.trimIndent()
+        )
+
+        // 3. Migrate bookmarks from old table to new one.
+        // language="RoomSql"
+        db.execSQL(
+            """
+            INSERT INTO bookmarks (id, infoHash, name, size, seeders, peers, providerName, uploadDate, category, descriptionPageUrl, magnetUri, fileDownloadLink)
+            SELECT id, infoHash, name, size, seeders, peers, providerName, uploadDate, category, descriptionPageUrl, magnetUri, fileDownloadLink FROM bookmarks_old
+        """.trimIndent()
+        )
+
+        // 4. Drop old bookmarks table.
+        db.execSQL("DROP TABLE bookmarks_old")
     }
 }

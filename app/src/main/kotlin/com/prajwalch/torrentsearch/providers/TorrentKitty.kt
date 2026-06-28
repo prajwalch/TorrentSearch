@@ -58,7 +58,7 @@ private class TorrentKittyResultsPageParser(private val providerName: String) {
         return Torrent(
             infoHash = TorrentUtils.getInfoHashFromMagnetUri(magnetUri),
             name = torrentName,
-            size = size ?: "0 KB",
+            size = size,
             seeders = 1U,
             peers = 1U,
             uploadDate = uploadDate,

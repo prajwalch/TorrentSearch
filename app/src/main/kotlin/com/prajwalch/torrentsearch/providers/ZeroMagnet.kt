@@ -63,7 +63,7 @@ private class ZeroMagnetResultsPageParser(private val providerName: String) {
         return Torrent(
             infoHash = torrentDetails.infoHash,
             name = torrentDetails.name,
-            size = torrentDetails.size ?: "0 KB",
+            size = torrentDetails.size,
             seeders = 1U,
             peers = 1U,
             uploadDate = torrentDetails.uploadDate,

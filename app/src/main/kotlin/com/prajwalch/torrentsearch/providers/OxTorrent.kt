@@ -95,7 +95,7 @@ private class OxTorrentResultsPageParser(private val providerName: String) {
         return Torrent(
             infoHash = torrentDetails.infoHash,
             name = torrentDetails.name,
-            size = torrentDetails.size ?: "0 KB",
+            size = torrentDetails.size,
             seeders = torrentDetails.seeders ?: 0U,
             peers = torrentDetails.peers ?: 0U,
             uploadDate = torrentDetails.uploadDate,

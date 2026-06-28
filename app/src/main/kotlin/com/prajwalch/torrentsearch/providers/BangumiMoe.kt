@@ -111,7 +111,7 @@ private class BangumiMoeResultsJsonParser(
             infoHash = infoHash,
             magnetUri = magnetUri,
             name = torrentName,
-            size = size ?: "0 KB",
+            size = size,
             seeders = seeders ?: 0U,
             peers = peers ?: 0U,
             uploadDate = uploadDate,
