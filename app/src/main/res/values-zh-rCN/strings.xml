@@ -143,8 +143,8 @@
     <string name="torrent_details_action_open_link">在浏览器中打开链接</string>
     <string name="torrent_details_action_copy_link">复制页面链接</string>
     <string name="torrent_details_action_share_link">分享页面链接</string>
-    <string name="torrent_details_label_seeders">做种者</string>
-    <string name="torrent_details_label_peers">下载者</string>
+    <string name="torrent_details_label_seeders">做种数</string>
+    <string name="torrent_details_label_peers">下载数</string>
     <string name="search_action_refresh">刷新</string>
     <string name="search_action_stop_search">停止搜索</string>
     <string name="crash_logs_export_success_message">导出日志到文件</string>
@@ -208,7 +208,7 @@
     <string name="therarbg_unsafe_reason">原始 RARBG 的克隆站，充斥大量虚假种子。请谨慎使用。</string>
     <string name="search_filter_chip_hide_viewed">隐藏已浏览</string>
     <string name="search_filter_chip_search_providers">搜索源</string>
-    <string name="search_state_results_not_found_description">在%2$s中，没有找到匹与“%1$s”匹配的种子。请尝试其他关键词，或检查搜索源是否已启用。</string>
+    <string name="search_state_results_not_found_description">在 %2$s 中，没有找到与“%1$s”匹配的种子。请尝试其他关键词，或检查搜索源是否已启用。</string>
     <string name="search_button_go_to_providers">前往搜索源设置</string>
     <string name="browse_button_go_to_providers">前往搜索源设置</string>
     <string name="limetorrents_unsafe_reason">技术上不算不安全，但它会无视分类筛选。请谨慎选择。</string>
