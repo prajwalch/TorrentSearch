@@ -87,11 +87,7 @@ private fun BookmarkedTorrentEntity.toDomain() =
             peers = this.peers?.toUInt(),
             providerName = this.providerName,
             uploadDate = this.uploadDate?.let(Instant::ofEpochMilli),
-            category = if (this.category.isNotEmpty()) {
-                Category.valueOf(this.category)
-            } else {
-                null
-            },
+            category = this.category?.let(Category::valueOf),
             descriptionPageUrl = this.descriptionPageUrl,
             magnetUri = this.magnetUri,
             fileDownloadLink = this.fileDownloadLink,
@@ -107,7 +103,7 @@ private fun Torrent.toEntity() =
         peers = this.peers?.toInt(),
         providerName = this.providerName,
         uploadDate = this.uploadDate?.toEpochMilli(),
-        category = this.category?.name ?: "",
+        category = this.category?.name,
         descriptionPageUrl = this.descriptionPageUrl,
         magnetUri = this.magnetUri,
         fileDownloadLink = this.fileDownloadLink,

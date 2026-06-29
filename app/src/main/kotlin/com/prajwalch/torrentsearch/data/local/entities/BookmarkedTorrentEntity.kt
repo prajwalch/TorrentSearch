@@ -22,7 +22,8 @@ data class BookmarkedTorrentEntity(
     val providerName: String,
     @ColumnInfo(defaultValue = "NULL")
     val uploadDate: Long? = null,
-    val category: String,
+    @ColumnInfo(defaultValue = "NULL")
+    val category: String? = null,
     @ColumnInfo(defaultValue = "NULL")
     val descriptionPageUrl: String? = null,
     @ColumnInfo(defaultValue = "NULL")
