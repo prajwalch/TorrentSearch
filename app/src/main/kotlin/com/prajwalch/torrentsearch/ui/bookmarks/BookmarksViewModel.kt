@@ -1,5 +1,6 @@
 package com.prajwalch.torrentsearch.ui.bookmarks
 
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 
@@ -14,7 +15,7 @@ import com.prajwalch.torrentsearch.util.FileSizeUtils
 
 import dagger.hilt.android.lifecycle.HiltViewModel
 
-import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.WhileSubscribed
 import kotlinx.coroutines.flow.combine
@@ -39,34 +40,30 @@ class BookmarksViewModel @Inject constructor(
     private val bookmarkRepository: BookmarkRepository,
     private val settingsRepository: SettingsRepository,
     private val torrentFileDownloader: TorrentFileDownloader,
+    private val savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
-    private val filterQuery = MutableStateFlow("")
+    private val bookmarks: Flow<List<BookmarkedTorrent>> =
+        combine(
+            bookmarkRepository.getAllBookmarks(),
+            settingsRepository.enableNSFWMode,
+            savedStateHandle.getStateFlow(KEY_FILTER_QUERY, initialValue = ""),
+        ) { bookmarks, nsfwModeEnabled, filterQuery ->
+            bookmarks
+                .filterIf(!nsfwModeEnabled) { !it.torrent.isNSFW }
+                .filterIf(filterQuery.isNotBlank()) {
+                    it.torrent.name.contains(filterQuery, ignoreCase = false)
+                }
+        }
 
-    val torrentFileDownloadState = torrentFileDownloader.state
-    val torrentFileDownloadEvents = torrentFileDownloader.events
     val uiState = combine(
-        filterQuery,
-        bookmarkRepository.getAllBookmarks(),
-        settingsRepository.enableNSFWMode,
+        bookmarks,
         settingsRepository.bookmarksSortOptions,
-    ) { filterQuery, bookmarks, nsfwModeEnabled, sortOptions ->
-        val bookmarks = bookmarks
-            .filter { nsfwModeEnabled || !it.torrent.isNSFW }
-            .filter {
-                filterQuery.isBlank() || it.torrent.name.contains(
-                    filterQuery,
-                    ignoreCase = true
-                )
-            }
-            .sortedWith(
-                createSortComparator(
-                    criteria = sortOptions.criteria,
-                    order = sortOptions.order,
-                )
-            )
-
+    ) { bookmarks, sortOptions ->
+        val sortedBookmarks = bookmarks.sortedWith(
+            createSortComparator(sortOptions.criteria, sortOptions.order)
+        )
         BookmarksUiState(
-            bookmarks = bookmarks,
+            bookmarks = sortedBookmarks,
             sortOptions = sortOptions,
         )
     }.stateIn(
@@ -74,6 +71,8 @@ class BookmarksViewModel @Inject constructor(
         started = SharingStarted.WhileSubscribed(5.seconds),
         initialValue = BookmarksUiState(),
     )
+    val torrentFileDownloadState = torrentFileDownloader.state
+    val torrentFileDownloadEvents = torrentFileDownloader.events
 
     /** Deletes bookmark associated with the given id. */
     fun deleteBookmarkById(id: Long) {
@@ -105,7 +104,7 @@ class BookmarksViewModel @Inject constructor(
 
     /** Filters the bookmarks using the given query. */
     fun filterBookmarks(query: String) {
-        filterQuery.value = query
+        savedStateHandle[KEY_FILTER_QUERY] = query
     }
 
     /** Attempts to import bookmarks from the given stream. */
@@ -142,6 +141,17 @@ class BookmarksViewModel @Inject constructor(
             torrentFileDownloader.writeFileContent(outputStream)
         }
     }
+
+    private companion object {
+        private const val KEY_FILTER_QUERY = "filter_query"
+    }
+}
+
+private fun List<BookmarkedTorrent>.filterIf(
+    condition: Boolean,
+    predicate: (BookmarkedTorrent) -> Boolean,
+): List<BookmarkedTorrent> {
+    return if (condition) this.filter(predicate) else this
 }
 
 private fun createSortComparator(
