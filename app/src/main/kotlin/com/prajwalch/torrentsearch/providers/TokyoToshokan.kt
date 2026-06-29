@@ -1,5 +1,6 @@
 package com.prajwalch.torrentsearch.providers
 
+import com.prajwalch.torrentsearch.constant.TorrentSearchConstants
 import com.prajwalch.torrentsearch.domain.model.Category
 import com.prajwalch.torrentsearch.domain.model.Torrent
 import com.prajwalch.torrentsearch.domain.model.TorrentDetails
@@ -157,11 +158,12 @@ private object TokyoToshokanDetailsPageParser {
 
             val nameAnchor = html.selectFirst(NAME) ?: return@withContext null
             val name = nameAnchor.text()
-            val fileDownloadLink = if (nameAnchor.attr("type") == "application/x-bittorrent") {
-                nameAnchor.attr("abs:href")
-            } else {
-                null
-            }
+            val fileDownloadLink =
+                if (nameAnchor.attr("type") == TorrentSearchConstants.MIME_TYPE_TORRENT) {
+                    nameAnchor.attr("abs:href")
+                } else {
+                    null
+                }
             val infoHash = html.selectFirst(INFO_HASH)?.ownText() ?: return@withContext null
             val magnetUri = html.selectFirst(MAGNET_URI)
                 ?.attr("href")

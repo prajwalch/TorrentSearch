@@ -4,6 +4,7 @@ package com.prajwalch.torrentsearch.providers
 import android.util.Log
 import android.util.Xml
 
+import com.prajwalch.torrentsearch.constant.TorrentSearchConstants
 import com.prajwalch.torrentsearch.domain.model.Category
 import com.prajwalch.torrentsearch.domain.model.Torrent
 import com.prajwalch.torrentsearch.domain.model.TorznabConfig
@@ -464,7 +465,7 @@ private class TorznabResponseXmlParser(
         parser.nextTag()
         parser.require(XmlPullParser.END_TAG, namespace, "enclosure")
 
-        return if (type == "application/x-bittorrent") url else null
+        return if (type == TorrentSearchConstants.MIME_TYPE_TORRENT) url else null
     }
 
     private fun readTorznabAttributeValue(): String {

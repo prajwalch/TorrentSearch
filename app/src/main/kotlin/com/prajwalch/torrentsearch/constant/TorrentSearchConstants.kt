@@ -30,4 +30,7 @@ object TorrentSearchConstants {
 
     /** Name of an application main logs file. */
     const val APP_LOGS_FILE_NAME = "torrentsearch_logs.txt"
+
+    /** MIME type of torrent file. */
+    const val MIME_TYPE_TORRENT = "application/x-bittorrent"
 }

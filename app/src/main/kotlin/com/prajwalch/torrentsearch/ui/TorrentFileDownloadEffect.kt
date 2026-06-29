@@ -10,13 +10,12 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 
 import com.prajwalch.torrentsearch.R
+import com.prajwalch.torrentsearch.constant.TorrentSearchConstants
 import com.prajwalch.torrentsearch.domain.TorrentFileDownloadEvent
 import com.prajwalch.torrentsearch.domain.TorrentFileDownloadState
 
 import kotlinx.coroutines.flow.Flow
 import java.io.OutputStream
-
-private const val TORRENT_FILE_MIME_TYPE = "application/x-bittorrent"
 
 @Composable
 fun TorrentFileDownloadEffect(
@@ -28,7 +27,7 @@ fun TorrentFileDownloadEffect(
     val contentResolver = LocalContext.current.contentResolver
 
     val createTorrentFileLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.CreateDocument(TORRENT_FILE_MIME_TYPE),
+        contract = ActivityResultContracts.CreateDocument(TorrentSearchConstants.MIME_TYPE_TORRENT),
     ) { fileUri ->
         fileUri?.let(contentResolver::openOutputStream)?.let(onWrite)
     }
