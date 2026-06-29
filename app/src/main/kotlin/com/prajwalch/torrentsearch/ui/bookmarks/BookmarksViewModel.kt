@@ -51,7 +51,7 @@ class BookmarksViewModel @Inject constructor(
             bookmarks
                 .filterIf(!nsfwModeEnabled) { !it.torrent.isNSFW }
                 .filterIf(filterQuery.isNotBlank()) {
-                    it.torrent.name.contains(filterQuery, ignoreCase = false)
+                    it.torrent.name.contains(filterQuery, ignoreCase = true)
                 }
         }
 
