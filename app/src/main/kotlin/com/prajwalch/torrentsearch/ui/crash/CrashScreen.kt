@@ -29,7 +29,7 @@ import com.prajwalch.torrentsearch.ui.theme.spaces
 
 @Composable
 fun CrashScreen(
-    stackTrace: String,
+    stackTrace: String?,
     onExportCrashLogsToFile: (Uri) -> Unit,
     onRestartApp: () -> Unit,
     modifier: Modifier = Modifier,
@@ -55,12 +55,14 @@ fun CrashScreen(
             )
             CrashScreenTitle()
             CrashScreenSubtitle()
-            StackTraceCard(
-                modifier = Modifier
-                    .weight(1f)
-                    .fillMaxWidth(),
-                stackTrace = stackTrace,
-            )
+            stackTrace?.let {
+                StackTraceCard(
+                    modifier = Modifier
+                        .weight(1f)
+                        .fillMaxWidth(),
+                    stackTrace = it,
+                )
+            }
             Column(verticalArrangement = Arrangement.spacedBy(MaterialTheme.spaces.small)) {
                 ExportCrashLogsButton(
                     modifier = Modifier.fillMaxWidth(),

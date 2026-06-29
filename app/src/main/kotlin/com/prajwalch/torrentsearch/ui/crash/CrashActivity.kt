@@ -22,14 +22,16 @@ class CrashActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val stackTrace = TorrentSearchExceptionHandler.getCrashStackTrace(intent = intent)
+        val stackTrace = TorrentSearchExceptionHandler.getCrashStackTrace(intent)
 
         enableEdgeToEdge()
         setContent {
             TorrentSearchTheme {
                 CrashScreen(
                     stackTrace = stackTrace,
-                    onExportCrashLogsToFile = { exportCrashLogsToFile(stackTrace, it) },
+                    onExportCrashLogsToFile = { fileUri ->
+                        stackTrace?.let { exportCrashLogsToFile(it, fileUri) }
+                    },
                     onRestartApp = ::restartApplication,
                 )
             }
