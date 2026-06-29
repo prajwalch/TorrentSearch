@@ -31,7 +31,7 @@ class TorrentSearchExceptionHandler(
 
     companion object {
         private const val TAG = "TorrentSearchExceptionHandler"
-        private const val EXTRA_CRASH_STACKTRACE = "${BuildConfig.VERSION_NAME}.CRASH_STACKTRACE"
+        private const val EXTRA_CRASH_STACKTRACE = "${BuildConfig.APPLICATION_ID}.CRASH_STACKTRACE"
 
         fun getCrashStackTrace(intent: Intent): String =
             intent.getStringExtra(EXTRA_CRASH_STACKTRACE)!!
