@@ -7,6 +7,7 @@ val BuiltinSearchProviders = listOf(
     AudioBookBay(),
     BangumiMoe(),
     BitSearch(),
+    BTDigg(),
     Dmhy(),
     Ext(),
     Eztv(),
