@@ -9,6 +9,7 @@ val BuiltinSearchProviders = listOf(
     BangumiMoe(),
     BitSearch(),
     BlueRoms(),
+    Bt4g(),
     Dmhy(),
     Ext(),
     Eztv(),
