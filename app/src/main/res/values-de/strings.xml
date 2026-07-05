@@ -78,8 +78,6 @@
     <string name="search_providers_label_url">URL</string>
     <string name="search_providers_url_validation_error">Keine gültige URL</string>
     <string name="search_providers_label_api_key">API Schlüssel</string>
-    <string name="search_providers_label_category">Kategorie</string>
-    <string name="search_providers_section_additional_options">Weitere Optionen</string>
     <string name="settings_screen_title">Einstellungen</string>
     <string name="settings_section_appearance">Darstellung</string>
     <string name="settings_enable_dynamic_theme">Dynamisches Design aktivieren</string>

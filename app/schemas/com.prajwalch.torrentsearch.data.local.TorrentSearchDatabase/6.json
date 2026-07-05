@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 6,
-    "identityHash": "6316174395097908419f36c20b80b72b",
+    "identityHash": "8b87e260533ba2ea199f8c62c657cbc6",
     "entities": [
       {
         "tableName": "bookmarks",
@@ -125,7 +125,7 @@
       },
       {
         "tableName": "torznab_configs",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `name` TEXT NOT NULL, `url` TEXT NOT NULL, `apiKey` TEXT NOT NULL, `category` TEXT NOT NULL, PRIMARY KEY(`id`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `name` TEXT NOT NULL, `url` TEXT NOT NULL, `apiKey` TEXT NOT NULL, `supported_categories` TEXT NOT NULL, PRIMARY KEY(`id`))",
         "fields": [
           {
             "fieldPath": "id",
@@ -152,8 +152,8 @@
             "notNull": true
           },
           {
-            "fieldPath": "category",
-            "columnName": "category",
+            "fieldPath": "supportedCategories",
+            "columnName": "supported_categories",
             "affinity": "TEXT",
             "notNull": true
           }
@@ -203,7 +203,7 @@
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '6316174395097908419f36c20b80b72b')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '8b87e260533ba2ea199f8c62c657cbc6')"
     ]
   }
 }

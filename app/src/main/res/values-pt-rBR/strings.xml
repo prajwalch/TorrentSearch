@@ -57,8 +57,6 @@
     <string name="search_providers_label_name">Nome</string>
     <string name="search_providers_url_validation_error">Não é uma URL válida</string>
     <string name="search_providers_label_api_key">Chave de API</string>
-    <string name="search_providers_label_category">Categoria</string>
-    <string name="search_providers_section_additional_options">Configurações adicionais</string>
     <string name="settings_section_sort_criteria">Critério de ordenação</string>
     <string name="button_cancel">Cancelar</string>
     <string name="nsfw">NSFW</string>

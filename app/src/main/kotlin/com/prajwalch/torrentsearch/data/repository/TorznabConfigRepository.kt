@@ -18,7 +18,7 @@ class TorznabConfigRepository @Inject constructor(
         searchProviderName: String,
         url: String,
         apiKey: String,
-        category: Category,
+        supportedCategories: Set<Category>,
     ) {
         val configId = UUID.randomUUID().toString()
         val configEntity = TorznabConfigEntity(
@@ -26,7 +26,7 @@ class TorznabConfigRepository @Inject constructor(
             searchProviderName = searchProviderName,
             url = url.trimEnd { it == '/' },
             apiKey = apiKey,
-            category = category.name,
+            supportedCategories = supportedCategories,
         )
         dao.insertConfig(entity = configEntity)
     }
@@ -52,14 +52,14 @@ class TorznabConfigRepository @Inject constructor(
         searchProviderName: String,
         url: String,
         apiKey: String,
-        category: Category,
+        supportedCategories: Set<Category>,
     ) {
         val configEntity = TorznabConfigEntity(
             id = id,
             searchProviderName = searchProviderName,
             url = url,
             apiKey = apiKey,
-            category = category.name,
+            supportedCategories = supportedCategories,
         )
         dao.updateConfig(entity = configEntity)
     }
@@ -75,7 +75,7 @@ private fun TorznabConfigEntity.toDomain() =
         searchProviderName = this.searchProviderName,
         url = this.url,
         apiKey = this.apiKey,
-        category = Category.valueOf(this.category),
+        supportedCategories = this.supportedCategories,
     )
 
 private fun List<TorznabConfigEntity>.toDomain() = this.map { it.toDomain() }

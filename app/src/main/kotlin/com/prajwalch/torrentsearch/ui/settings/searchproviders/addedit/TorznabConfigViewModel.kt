@@ -10,7 +10,7 @@ import com.prajwalch.torrentsearch.domain.SearchProvidersManager
 import com.prajwalch.torrentsearch.domain.model.Category
 import com.prajwalch.torrentsearch.domain.model.TorznabConnectionCheckResult
 import com.prajwalch.torrentsearch.providers.SearchProviderId
-import com.prajwalch.torrentsearch.providers.TorznabSearchProvider
+import com.prajwalch.torrentsearch.torznab.TorznabUtils
 
 import dagger.hilt.android.lifecycle.HiltViewModel
 
@@ -27,10 +27,11 @@ data class TorznabConfigUiState(
     val searchProviderName: String = "",
     val url: String = "",
     val apiKey: String = "",
-    val category: Category = Category.All,
+    val supportedCategories: Set<Category> = emptySet(),
     val isNewConfig: Boolean = true,
     val isUrlValid: Boolean = true,
-    val isConnectionCheckRunning: Boolean = false,
+    val isCheckingConnection: Boolean = false,
+    val isDetectingSupportedCategories: Boolean = false,
 ) {
     fun isConfigNotBlank() =
         searchProviderName.isNotBlank() && url.isNotBlank() && apiKey.isNotBlank()
@@ -56,9 +57,8 @@ class TorznabConfigViewModel @Inject constructor(
      */
     private val searchProviderId = savedStateHandle.get<String>("id")
 
-    private val _uiState = MutableStateFlow(
-        TorznabConfigUiState(isNewConfig = searchProviderId == null),
-    )
+    private val _uiState =
+        MutableStateFlow(TorznabConfigUiState(isNewConfig = searchProviderId == null))
     val uiState = _uiState.asStateFlow()
 
     private val _events = Channel<TorznabConfigEvent>(Channel.BUFFERED)
@@ -75,7 +75,7 @@ class TorznabConfigViewModel @Inject constructor(
             searchProviderName = config.searchProviderName,
             url = config.url,
             apiKey = config.apiKey,
-            category = config.category,
+            supportedCategories = config.supportedCategories,
             isNewConfig = false,
         )
     }
@@ -92,31 +92,63 @@ class TorznabConfigViewModel @Inject constructor(
         _uiState.update { it.copy(apiKey = apiKey) }
     }
 
-    fun setCategory(category: Category) {
-        _uiState.update { it.copy(category = category) }
+    fun toggleCategorySelection(category: Category) {
+        _uiState.update {
+            val supportedCategories = if (category in it.supportedCategories) {
+                it.supportedCategories - category
+            } else {
+                it.supportedCategories + category
+            }
+
+            it.copy(supportedCategories = supportedCategories)
+        }
+    }
+
+    fun detectSupportedCategories() {
+        if (!isUrlValid()) {
+            _uiState.update { it.copy(isUrlValid = false) }
+            return
+        } else {
+            _uiState.update { it.copy(isUrlValid = true) }
+        }
+
+        _uiState.update { it.copy(isDetectingSupportedCategories = true) }
+        viewModelScope.launch {
+            val apiUrl = _uiState.value.url
+            val apiKey = _uiState.value.apiKey
+
+            val connectionCheckResult = TorznabUtils.checkConnection(apiUrl, apiKey)
+            if (connectionCheckResult !is TorznabConnectionCheckResult.ConnectionEstablished) {
+                _uiState.update { it.copy(isDetectingSupportedCategories = false) }
+                _events.send(TorznabConfigEvent.ConnectionCheckCompleted(connectionCheckResult))
+
+                return@launch
+            }
+
+            val supportedCategories = TorznabUtils.getSupportedCategories(apiUrl, apiKey)
+            _uiState.update {
+                it.copy(
+                    supportedCategories = supportedCategories.orEmpty(),
+                    isDetectingSupportedCategories = false
+                )
+            }
+        }
     }
 
     fun checkConnection() {
-        _uiState.update { it.copy(isConnectionCheckRunning = false) }
-
         if (!isUrlValid()) {
             _uiState.update { it.copy(isUrlValid = false) }
             return
         }
 
-        _uiState.update {
-            it.copy(
-                isUrlValid = true,
-                isConnectionCheckRunning = true,
-            )
-        }
-
+        _uiState.update { it.copy(isUrlValid = true, isCheckingConnection = true) }
         viewModelScope.launch {
-            val connectionCheckResult = TorznabSearchProvider
-                .checkConnection(url = _uiState.value.url, apiKey = _uiState.value.apiKey)
+            val apiUrl = _uiState.value.url
+            val apiKey = _uiState.value.apiKey
+            val checkResult = TorznabUtils.checkConnection(apiUrl, apiKey)
 
-            _uiState.update { it.copy(isConnectionCheckRunning = false) }
-            _events.send(TorznabConfigEvent.ConnectionCheckCompleted(connectionCheckResult))
+            _uiState.update { it.copy(isCheckingConnection = false) }
+            _events.send(TorznabConfigEvent.ConnectionCheckCompleted(checkResult))
         }
     }
 
@@ -124,8 +156,9 @@ class TorznabConfigViewModel @Inject constructor(
         if (!isUrlValid()) {
             _uiState.update { it.copy(isUrlValid = false) }
             return
+        } else {
+            _uiState.update { it.copy(isUrlValid = true) }
         }
-        _uiState.update { it.copy(isUrlValid = true) }
 
         viewModelScope.launch {
             if (searchProviderId == null) {
@@ -144,7 +177,7 @@ class TorznabConfigViewModel @Inject constructor(
             searchProviderName = _uiState.value.searchProviderName,
             url = _uiState.value.url,
             apiKey = _uiState.value.apiKey,
-            category = _uiState.value.category,
+            supportedCategories = _uiState.value.supportedCategories,
         )
     }
 
@@ -154,7 +187,7 @@ class TorznabConfigViewModel @Inject constructor(
             searchProviderName = _uiState.value.searchProviderName,
             url = _uiState.value.url,
             apiKey = _uiState.value.apiKey,
-            category = _uiState.value.category,
+            supportedCategories = _uiState.value.supportedCategories,
         )
     }
 }

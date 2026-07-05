@@ -59,8 +59,6 @@
     <string name="search_providers_label_name">പേര്</string>
     <string name="search_providers_url_validation_error">സാധുവായ URL അല്ല</string>
     <string name="search_providers_label_api_key">API കീ</string>
-    <string name="search_providers_label_category">വിഭാഗം</string>
-    <string name="search_providers_section_additional_options">കൂടുതൽ ഓപ്ഷനുകൾ</string>
     <string name="settings_section_sort_criteria">സോർട്ട് ക്രൈറ്റീരിയ</string>
     <string name="settings_section_sort_order">സോർട്ട് ഓർഡർ</string>
     <string name="button_cancel">റദ്ദാക്കുക</string>

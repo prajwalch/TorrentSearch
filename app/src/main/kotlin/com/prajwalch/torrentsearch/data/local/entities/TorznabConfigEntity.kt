@@ -5,6 +5,8 @@ import androidx.room.Entity
 import androidx.room.Index
 import androidx.room.PrimaryKey
 
+import com.prajwalch.torrentsearch.domain.model.Category
+
 @Entity(
     tableName = "torznab_configs",
     indices = [Index("id", unique = true)],
@@ -23,6 +25,6 @@ data class TorznabConfigEntity(
     @ColumnInfo(name = "apiKey")
     val apiKey: String,
 
-    @ColumnInfo(name = "category")
-    val category: String,
+    @ColumnInfo(name = "supported_categories")
+    val supportedCategories: Set<Category>,
 )

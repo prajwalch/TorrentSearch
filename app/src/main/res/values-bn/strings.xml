@@ -78,8 +78,6 @@
     <string name="search_providers_label_url">লিংক</string>
     <string name="search_providers_url_validation_error">ভুল লিংক</string>
     <string name="search_providers_label_api_key">APi চাবি</string>
-    <string name="search_providers_label_category">বিভাগ</string>
-    <string name="search_providers_section_additional_options">অতিরিক্ত বিকল্প</string>
     <string name="settings_screen_title">সেটিংস</string>
     <string name="settings_section_appearance">চেহারা</string>
     <string name="settings_enable_dynamic_theme">ডায়নামিক থিম চালু করুন</string>

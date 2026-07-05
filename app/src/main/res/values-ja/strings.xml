@@ -46,7 +46,6 @@
     <string name="torrent_details_label_file_size">ファイルサイズ</string>
     <string name="torrent_details_label_upload_date">アップロード日</string>
     <string name="torrent_details_label_category">カテゴリ</string>
-    <string name="search_providers_label_category">カテゴリ</string>
     <string name="settings_section_search">検索</string>
     <string name="settings_clear_viewed_torrents_dialog_button_cancel">キャンセル</string>
     <string name="settings_clear_viewed_torrents_dialog_button_clear">削除</string>

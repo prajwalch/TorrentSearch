@@ -80,8 +80,6 @@
     <string name="search_providers_label_url">الرابط</string>
     <string name="search_providers_url_validation_error">عنوان URL ليس صالحًا</string>
     <string name="search_providers_label_api_key">مفتاح API</string>
-    <string name="search_providers_label_category">الفئة</string>
-    <string name="search_providers_section_additional_options">خيارات إضافية</string>
     <string name="settings_screen_title">إعدادات</string>
     <string name="settings_section_appearance">مظهر</string>
     <string name="settings_enable_dynamic_theme">تمكين السمة الديناميكية</string>

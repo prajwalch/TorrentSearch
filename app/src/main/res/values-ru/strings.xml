@@ -70,8 +70,6 @@
     <string name="search_providers_label_url">Ссылка</string>
     <string name="search_providers_url_validation_error">Неверная ссылка</string>
     <string name="search_providers_label_api_key">API ключ</string>
-    <string name="search_providers_label_category">Категория</string>
-    <string name="search_providers_section_additional_options">Дополнительные параметры</string>
     <string name="settings_screen_title">Настройки</string>
     <string name="settings_section_appearance">Внешний вид</string>
     <string name="settings_enable_dynamic_theme">Динамическая тема</string>

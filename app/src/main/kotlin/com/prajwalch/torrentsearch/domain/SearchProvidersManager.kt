@@ -336,13 +336,13 @@ class SearchProvidersManager @Inject constructor(
         searchProviderName: String,
         url: String,
         apiKey: String,
-        category: Category,
+        supportedCategories: Set<Category>,
     ) {
         torznabConfigRepository.createConfig(
             searchProviderName = searchProviderName,
             url = url,
             apiKey = apiKey,
-            category = category,
+            supportedCategories = supportedCategories,
         )
     }
 
@@ -362,14 +362,14 @@ class SearchProvidersManager @Inject constructor(
         searchProviderName: String,
         url: String,
         apiKey: String,
-        category: Category,
+        supportedCategories: Set<Category>,
     ) {
         torznabConfigRepository.updateConfig(
             id = id,
             searchProviderName = searchProviderName,
             url = url,
             apiKey = apiKey,
-            category = category,
+            supportedCategories = supportedCategories,
         )
     }
 
@@ -402,7 +402,7 @@ private fun TorznabConfig.getInfo(isEnabled: Boolean) =
         id = this.id,
         name = this.searchProviderName,
         url = this.url,
-        supportedCategories = setOf(this.category),
+        supportedCategories = this.supportedCategories,
         safetyStatus = SearchProviderSafetyStatus.Safe,
         type = SearchProviderType.Torznab,
         cloudflareProtectionStatus = CloudflareProtectionStatus.UnProtected,

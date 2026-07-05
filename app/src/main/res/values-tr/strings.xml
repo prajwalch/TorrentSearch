@@ -77,8 +77,6 @@
     <string name="search_providers_label_url">URL</string>
     <string name="search_providers_url_validation_error">Geçerli bir URL değil</string>
     <string name="search_providers_label_api_key">API anahtarı</string>
-    <string name="search_providers_label_category">Kategori</string>
-    <string name="search_providers_section_additional_options">Ek seçenekler</string>
     <string name="settings_screen_title">Ayarlar</string>
     <string name="settings_section_appearance">Görünüm</string>
     <string name="settings_enable_dynamic_theme">Dinamik temayı etkinleştir</string>

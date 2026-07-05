@@ -109,8 +109,6 @@
     <string name="search_providers_label_url">URL</string>
     <string name="search_providers_url_validation_error">URL non valido</string>
     <string name="search_providers_label_api_key">API key</string>
-    <string name="search_providers_label_category">Categoria</string>
-    <string name="search_providers_section_additional_options">Opzioni aggiuntive</string>
     <string name="search_providers_button_check_connection">Controlla la connessione</string>
     <string name="settings_screen_title">Impostazioni</string>
     <string name="settings_section_appearance">Aspetto</string>

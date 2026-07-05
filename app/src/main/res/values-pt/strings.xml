@@ -144,8 +144,6 @@
     <string name="search_providers_label_url">URL</string>
     <string name="search_providers_url_validation_error">Não é uma URL válida</string>
     <string name="search_providers_label_api_key">Chave de API</string>
-    <string name="search_providers_label_category">Categoria</string>
-    <string name="search_providers_section_additional_options">Configurações adicionais</string>
     <string name="search_providers_button_check_connection">Verifique a conexão</string>
     <string name="settings_screen_title">Configurações</string>
     <string name="settings_section_appearance">Aparência</string>

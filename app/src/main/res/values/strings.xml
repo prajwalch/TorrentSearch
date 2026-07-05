@@ -175,9 +175,12 @@
     <string name="search_providers_label_url">URL</string>
     <string name="search_providers_url_validation_error">Not a valid URL</string>
     <string name="search_providers_label_api_key">API key</string>
-    <string name="search_providers_label_category">Category</string>
-    <string name="search_providers_section_additional_options">Additional options</string>
+    <string name="search_providers_title_supported_categories">Supported categories</string>
+    <string name="search_providers_subtitle_supported_categories">Select one or more categories</string>
     <string name="search_providers_button_check_connection">Check connection</string>
+    <string name="search_providers_button_check_connection_checking">Checking connection…</string>
+    <string name="search_providers_button_auto_detect_categories">Auto-detect categories</string>
+    <string name="search_providers_button_auto_detect_categories_detecting">Detecting categories…</string>
     <string name="search_providers_state_challenge_solving_title">Solving Cloudflare challenge…</string>
     <string name="search_providers_state_challenge_solving_description">This may take a while. Cloudflare challenges sometimes require manual interaction like checking a box, so if it\'s taking too long, open the WebView from the top bar to complete it.</string>
     <string name="search_providers_state_challenge_solved_title">Challenge solved!</string>

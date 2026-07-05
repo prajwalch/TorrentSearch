@@ -75,8 +75,6 @@
     <string name="search_providers_label_url">لینک</string>
     <string name="search_providers_url_validation_error">لینک معتبر نیست</string>
     <string name="search_providers_label_api_key">کلید API</string>
-    <string name="search_providers_label_category">دسته بندی</string>
-    <string name="search_providers_section_additional_options">گزینه‌ های اضافی</string>
     <string name="settings_screen_title">تنظیمات</string>
     <string name="settings_section_appearance">رنگ زمینه</string>
     <string name="settings_enable_dynamic_theme">فعال کردن زمینه پویا</string>

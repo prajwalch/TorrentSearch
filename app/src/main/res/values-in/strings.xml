@@ -98,8 +98,6 @@
     <string name="search_providers_label_url">URL</string>
     <string name="search_providers_url_validation_error">URL tidak valid</string>
     <string name="search_providers_label_api_key">Kunci API</string>
-    <string name="search_providers_label_category">Kategori</string>
-    <string name="search_providers_section_additional_options">Opsi tambahan</string>
     <string name="search_providers_button_check_connection">Periksa koneksi</string>
     <string name="settings_screen_title">Pengaturan</string>
     <string name="settings_section_appearance">Tampilan</string>

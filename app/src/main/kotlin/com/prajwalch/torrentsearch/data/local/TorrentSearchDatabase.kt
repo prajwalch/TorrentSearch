@@ -10,6 +10,7 @@ import androidx.room.DeleteColumn
 import androidx.room.RenameTable
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import androidx.room.TypeConverters
 import androidx.room.migration.AutoMigrationSpec
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
@@ -22,6 +23,7 @@ import com.prajwalch.torrentsearch.data.local.entities.BookmarkedTorrentEntity
 import com.prajwalch.torrentsearch.data.local.entities.SearchHistoryEntity
 import com.prajwalch.torrentsearch.data.local.entities.TorznabConfigEntity
 import com.prajwalch.torrentsearch.data.local.entities.ViewedTorrentEntity
+import com.prajwalch.torrentsearch.domain.model.Category
 import com.prajwalch.torrentsearch.providers.XXXTracker
 import com.prajwalch.torrentsearch.util.TorrentDateParser
 import com.prajwalch.torrentsearch.util.TorrentUtils
@@ -48,6 +50,7 @@ import java.time.Instant
         AutoMigration(from = 3, to = 4),
     ],
 )
+@TypeConverters(Converters::class)
 abstract class TorrentSearchDatabase : RoomDatabase() {
     abstract fun bookmarkedTorrentDao(): BookmarkedTorrentDao
 
@@ -243,9 +246,15 @@ private val MIGRATION_4_5 = object : Migration(4, 5) {
  * - Changes `bookmarks.peers` column from not nullable to nullable.
  * - Changes `bookmarks.category` column from not nullable to nullable.
  * - Changes `bookmarks.descriptionPageUrl` column from not nullable to nullable.
+ * - Changes `torznab_configs.category` to `supported_categories`.
  */
 private val MIGRATION_5_6 = object : Migration(5, 6) {
     override fun migrate(db: SupportSQLiteDatabase) {
+        migrateBookmarks(db)
+        migrateTorznabConfigs(db)
+    }
+
+    private fun migrateBookmarks(db: SupportSQLiteDatabase) {
         // 1. Rename old bookmarks table
         db.execSQL("ALTER TABLE bookmarks RENAME TO bookmarks_old")
 
@@ -281,5 +290,49 @@ private val MIGRATION_5_6 = object : Migration(5, 6) {
 
         // 4. Drop old bookmarks table.
         db.execSQL("DROP TABLE bookmarks_old")
+    }
+
+    private fun migrateTorznabConfigs(db: SupportSQLiteDatabase) {
+        db.execSQL("ALTER TABLE torznab_configs RENAME TO torznab_configs_old")
+        // language="RoomSql"
+        db.execSQL(
+            """
+            CREATE TABLE IF NOT EXISTS `torznab_configs` (
+                `id` TEXT NOT NULL,
+                `name` TEXT NOT NULL,
+                `url` TEXT NOT NULL,
+                `apiKey` TEXT NOT NULL,
+                `supported_categories` TEXT NOT NULL,
+                PRIMARY KEY(`id`)
+            )
+            """.trimIndent()
+        )
+        db.query("SELECT * FROM torznab_configs_old").use { cursor ->
+            while (cursor.moveToNext()) {
+                val id = cursor.getString(cursor.getColumnIndexOrThrow("id"))
+                val name = cursor.getString(cursor.getColumnIndexOrThrow("name"))
+                val url = cursor.getString(cursor.getColumnIndexOrThrow("url"))
+                val apikey = cursor.getString(cursor.getColumnIndexOrThrow("apiKey"))
+                val category = cursor.getString(cursor.getColumnIndexOrThrow("category"))
+                    ?.let { runCatching { Category.valueOf(it) }.getOrNull() }
+                val supportedCategories = when (category) {
+                    null -> emptySet()
+                    Category.All -> Category.entries.filter { it != Category.All }.toSet()
+                    else -> setOf(category)
+                }
+
+                val columnValues = ContentValues().apply {
+                    put("id", id)
+                    put("name", name)
+                    put("url", url)
+                    put("apiKey", apikey)
+                    put("supported_categories", Converters.categorySetToString(supportedCategories))
+                }
+
+                db.insert("torznab_configs", SQLiteDatabase.CONFLICT_IGNORE, columnValues)
+            }
+        }
+        db.execSQL("DROP TABLE torznab_configs_old")
+        db.execSQL("CREATE UNIQUE INDEX IF NOT EXISTS `index_torznab_configs_id` ON `torznab_configs` (`id`)")
     }
 }
