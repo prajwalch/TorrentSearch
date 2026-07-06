@@ -214,4 +214,9 @@
     <string name="search_providers_action_update_protection_status">Оновити стан захисту</string>
     <string name="search_providers_state_updating_protection_status">Оновлення стану захисту…</string>
     <string name="search_providers_state_protection_status_update_complete">%1$d оновлено, %2$d на черзі</string>
+    <string name="search_providers_title_supported_categories">Підтримувані категорії</string>
+    <string name="search_providers_subtitle_supported_categories">Виберіть принаймні одну категорію</string>
+    <string name="search_providers_button_check_connection_checking">Перевірка з\'єднання…</string>
+    <string name="search_providers_button_auto_detect_categories">Автовиявлення категорій</string>
+    <string name="search_providers_button_auto_detect_categories_detecting">Виявлення категорій…</string>
 </resources>
