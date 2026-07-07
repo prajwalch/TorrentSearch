@@ -14,8 +14,9 @@ import com.prajwalch.torrentsearch.domain.TorrentFileDownloadState
 import com.prajwalch.torrentsearch.domain.TorrentFileDownloader
 import com.prajwalch.torrentsearch.domain.model.Category
 import com.prajwalch.torrentsearch.domain.model.Torrent
-import com.prajwalch.torrentsearch.domain.model.filter
+import com.prajwalch.torrentsearch.domain.model.filterIfAll
 import com.prajwalch.torrentsearch.domain.model.sortedWithComparator
+import com.prajwalch.torrentsearch.filter.TorrentFilters
 import com.prajwalch.torrentsearch.network.ConnectivityChecker
 
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -500,19 +501,17 @@ private class TorrentsProcessor(
             BrowseSort.Latest -> compareByDescending { torrent -> torrent.uploadDate }
             BrowseSort.Top -> compareByDescending { torrent -> torrent.seeders }
         }
-        val searchQueryWords = torrentFilter.searchQuery
-            .split(' ', ignoreCase = true)
-            .filter { it.isNotBlank() }
 
-        return torrents.filter {
-            add { it.providerName !in torrentFilter.excludedProviders }
-            if (!nsfwModeEnabled) add { !it.isNSFW }
-            if (!torrentFilter.deadTorrents) add { !it.isDead }
-            if (torrentFilter.hideViewed) add { it.infoHash !in viewedTorrentHashes }
-            if (torrentFilter.searchQuery.isNotBlank()) add {
-                searchQueryWords.any { word -> it.name.contains(word, ignoreCase = true) }
-            }
-            if (queryParams.category != Category.All) add { queryParams.category == it.category }
+        return torrents.filterIfAll {
+            add(TorrentFilters.notExcludedProvider(torrentFilter.excludedProviders))
+
+            if (!nsfwModeEnabled) add(TorrentFilters.isSfw())
+            if (!torrentFilter.deadTorrents) add(TorrentFilters.isAlive())
+            if (torrentFilter.hideViewed) add(TorrentFilters.notViewed(viewedTorrentHashes))
+            if (torrentFilter.searchQuery.isNotBlank())
+                add(TorrentFilters.matchesQuery(torrentFilter.searchQuery))
+            if (queryParams.category != Category.All)
+                add(TorrentFilters.matchesCategory(queryParams.category))
         }
             .sortedWithComparator(sortComparator)
             .toImmutableList()

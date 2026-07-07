@@ -61,7 +61,7 @@ import com.prajwalch.torrentsearch.ui.component.rememberCollapsibleSearchBarStat
 import com.prajwalch.torrentsearch.ui.extension.copyText
 import com.prajwalch.torrentsearch.ui.rememberTorrentListState
 import com.prajwalch.torrentsearch.ui.search.component.ResultsNotFoundState
-import com.prajwalch.torrentsearch.ui.search.component.SearchFailuresBottomSheet
+import com.prajwalch.torrentsearch.ui.search.component.SearchErrorsBottomSheet
 import com.prajwalch.torrentsearch.ui.search.component.SearchResults
 import com.prajwalch.torrentsearch.ui.search.component.TorrentFilter
 import com.prajwalch.torrentsearch.ui.theme.spaces
@@ -87,7 +87,7 @@ fun SearchScreen(
     val coroutineScope = rememberCoroutineScope()
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
     val torrentListState = rememberTorrentListState(
-        itemsCount = { uiState.searchResults.successes.size },
+        itemsCount = { uiState.searchResults.torrents.size },
     )
 
     // Torrent actions state.
@@ -160,11 +160,11 @@ fun SearchScreen(
         )
     }
 
-    var showSearchFailures by rememberSaveable { mutableStateOf(false) }
-    if (showSearchFailures) {
-        SearchFailuresBottomSheet(
-            onDismiss = { showSearchFailures = false },
-            failures = uiState.searchResults.failures,
+    var showSearchErrors by rememberSaveable { mutableStateOf(false) }
+    if (showSearchErrors) {
+        SearchErrorsBottomSheet(
+            onDismiss = { showSearchErrors = false },
+            errors = uiState.searchResults.errors,
         )
     }
 
@@ -189,11 +189,11 @@ fun SearchScreen(
                 onChangeSortOrder = viewModel::updateSortOrder,
                 onRefresh = viewModel::refreshSearchResults,
                 onStopSearch = viewModel::stopSearch,
-                onShowSearchFailures = { showSearchFailures = true },
+                onShowSearchErrors = { showSearchErrors = true },
                 onNavigateToSettings = onNavigateToSettings,
                 searchState = uiState.searchState,
                 enableSearchResultsAction = uiState.searchState is SearchState.ResultsAvailable,
-                enableSearchFailuresAction = uiState.searchResults.failures.isNotEmpty(),
+                enableSearchErrorsAction = uiState.searchResults.errors.isNotEmpty(),
                 scrollBehavior = scrollBehavior,
             )
         },
@@ -265,7 +265,7 @@ fun SearchScreen(
                             enableCategoryFilter = uiState.searchParams.category == Category.All,
                         )
                         SearchResults(
-                            searchResults = uiState.searchResults.successes,
+                            searchResults = uiState.searchResults.torrents,
                             onResultClick = {
                                 selectedResult = it
                                 viewModel.markAsViewed(it.infoHash)
@@ -301,12 +301,12 @@ private fun SearchScreenTopBar(
     onChangeSortOrder: (SortOrder) -> Unit,
     onRefresh: () -> Unit,
     onStopSearch: () -> Unit,
-    onShowSearchFailures: () -> Unit,
+    onShowSearchErrors: () -> Unit,
     onNavigateToSettings: () -> Unit,
     searchState: SearchState,
     modifier: Modifier = Modifier,
     enableSearchResultsAction: Boolean = true,
-    enableSearchFailuresAction: Boolean = true,
+    enableSearchErrorsAction: Boolean = true,
     scrollBehavior: TopAppBarScrollBehavior? = null,
 ) {
     val searchBarState = rememberCollapsibleSearchBarState(visibleOnInitial = false)
@@ -346,10 +346,10 @@ private fun SearchScreenTopBar(
                 onDismiss = { showMoreActions = false },
                 onRefresh = onRefresh,
                 onStopSearch = onStopSearch,
-                onShowSearchFailures = onShowSearchFailures,
+                onShowSearchErrors = onShowSearchErrors,
                 onNavigateToSettings = onNavigateToSettings,
                 searchState = searchState,
-                enableSearchFailuresAction = enableSearchFailuresAction,
+                enableSearchErrorsAction = enableSearchErrorsAction,
             )
         }
     }
@@ -379,11 +379,11 @@ private fun TopBarMoreMenu(
     onDismiss: () -> Unit,
     onRefresh: () -> Unit,
     onStopSearch: () -> Unit,
-    onShowSearchFailures: () -> Unit,
+    onShowSearchErrors: () -> Unit,
     onNavigateToSettings: () -> Unit,
     searchState: SearchState,
     modifier: Modifier = Modifier,
-    enableSearchFailuresAction: Boolean = true,
+    enableSearchErrorsAction: Boolean = true,
 ) {
     val refreshAction: @Composable (enable: Boolean) -> Unit = @Composable { enable ->
         DropdownMenuItem(
@@ -435,7 +435,7 @@ private fun TopBarMoreMenu(
         DropdownMenuItem(
             text = { Text(stringResource(R.string.search_action_view_errors)) },
             onClick = {
-                onShowSearchFailures()
+                onShowSearchErrors()
                 onDismiss()
             },
             leadingIcon = {
@@ -444,7 +444,7 @@ private fun TopBarMoreMenu(
                     contentDescription = null,
                 )
             },
-            enabled = enableSearchFailuresAction,
+            enabled = enableSearchErrorsAction,
         )
         DropdownMenuItem(
             text = { Text(stringResource(R.string.search_action_settings)) },

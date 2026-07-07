@@ -1,45 +1,38 @@
 package com.prajwalch.torrentsearch.domain.model
 
+import com.prajwalch.torrentsearch.filter.TorrentFilter
+
 import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.mutate
 import kotlinx.collections.immutable.persistentListOf
 
+typealias FiltersBuilder = MutableList<TorrentFilter>.() -> Unit
+
 data class SearchResults(
-    val successes: PersistentList<Torrent> = persistentListOf(),
-    val failures: PersistentList<SearchException> = persistentListOf(),
-)
+    val torrents: PersistentList<Torrent> = persistentListOf(),
+    val errors: PersistentList<SearchProviderError> = persistentListOf(),
+) {
+    fun filterTorrents(filtersBuilder: FiltersBuilder): SearchResults =
+        copy(torrents = torrents.filterIfAll(filtersBuilder))
 
-typealias PredicatesBuilder = PersistentList.Builder<(Torrent) -> Boolean>.() -> Unit
+    fun takeNTorrents(count: Int): SearchResults =
+        copy(torrents = torrents.takeN(count))
 
-fun SearchResults.filterSuccesses(
-    predicatesBuilder: PredicatesBuilder,
-): SearchResults = with(this) {
-    copy(successes = successes.filter(predicatesBuilder))
+    fun sortTorrentsWith(comparator: Comparator<Torrent>): SearchResults =
+        copy(torrents = torrents.sortedWithComparator(comparator))
+
+    fun addResult(result: SearchProviderResult<List<Torrent>>): SearchResults =
+        result.fold(onSuccess = { addTorrents(it) }, onError = { addError(it) })
+
+    private fun addTorrents(torrents: List<Torrent>): SearchResults =
+        copy(torrents = this.torrents.addingAll(torrents))
+
+    private fun addError(error: SearchProviderError): SearchResults =
+        copy(errors = errors.adding(error))
 }
 
-fun SearchResults.sortSuccessesWith(comparator: Comparator<Torrent>): SearchResults =
-    with(this) { copy(successes = successes.sortedWithComparator(comparator)) }
-
-fun SearchResults.addResult(result: Result<List<Torrent>>): SearchResults =
-    result.fold(
-        onSuccess = { this.addTorrents(it) },
-        onFailure = { this.addFailure(it as SearchException) },
-    )
-
-private fun SearchResults.addTorrents(torrents: List<Torrent>): SearchResults =
-    with(this) { copy(successes = successes.addingAll(torrents)) }
-
-private fun SearchResults.addFailure(failure: SearchException): SearchResults =
-    with(this) { copy(failures = failures.adding(failure)) }
-
-fun PersistentList<Torrent>.filter(
-    predicatesBuilder: PredicatesBuilder,
-): PersistentList<Torrent> {
-    val predicates = persistentListOf<(Torrent) -> Boolean>()
-        .builder()
-        .apply(predicatesBuilder)
-        .build()
-
+fun PersistentList<Torrent>.filterIfAll(filtersBuilder: FiltersBuilder): PersistentList<Torrent> {
+    val predicates = buildList(filtersBuilder)
     if (predicates.isEmpty()) return this
 
     return this.mutate { torrents ->
@@ -49,7 +42,9 @@ fun PersistentList<Torrent>.filter(
     }
 }
 
+fun PersistentList<Torrent>.takeN(count: Int): PersistentList<Torrent> =
+    this.mutate { torrents -> torrents.subList(count, torrents.size).clear() }
+
 fun PersistentList<Torrent>.sortedWithComparator(
     comparator: Comparator<Torrent>,
-): PersistentList<Torrent> =
-    this.mutate { it.sortWith(comparator) }
+): PersistentList<Torrent> = this.mutate { it.sortWith(comparator) }

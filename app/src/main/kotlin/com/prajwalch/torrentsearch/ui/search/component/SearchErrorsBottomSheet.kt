@@ -30,24 +30,21 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 
 import com.prajwalch.torrentsearch.R
-import com.prajwalch.torrentsearch.domain.model.SearchException
+import com.prajwalch.torrentsearch.domain.model.SearchProviderError
 import com.prajwalch.torrentsearch.ui.component.BottomInfo
 import com.prajwalch.torrentsearch.ui.component.StackTraceCard
-import com.prajwalch.torrentsearch.ui.theme.TorrentSearchTheme
 import com.prajwalch.torrentsearch.ui.theme.spaces
 
 import kotlinx.collections.immutable.ImmutableList
-import kotlinx.collections.immutable.persistentListOf
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SearchFailuresBottomSheet(
+fun SearchErrorsBottomSheet(
     onDismiss: () -> Unit,
-    failures: ImmutableList<SearchException>,
+    errors: ImmutableList<SearchProviderError>,
     modifier: Modifier = Modifier,
 ) {
     val bottomSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
@@ -65,9 +62,9 @@ fun SearchFailuresBottomSheet(
             )
             Spacer(modifier = Modifier.height(MaterialTheme.spaces.small))
             HorizontalDivider()
-            SearchExceptionList(
+            SearchProviderErrorList(
                 modifier = Modifier.weight(1f),
-                exceptions = failures,
+                errors = errors,
                 contentPadding = PaddingValues(MaterialTheme.spaces.large),
             )
             HorizontalDivider()
@@ -78,39 +75,43 @@ fun SearchFailuresBottomSheet(
     }
 }
 
-@Preview
-@Composable
-private fun SearchFailuresBottomSheetPreview() {
-    val failures = persistentListOf(
-        SearchException(
-            searchProviderName = "ThePirateBay",
-            searchProviderUrl = "https://example.com",
-        ),
-        SearchException(
-            searchProviderName = "TheRarBg",
-            searchProviderUrl = "https://example.com",
-        ),
-        SearchException(
-            searchProviderName = "TorrentDownloads",
-            searchProviderUrl = "https://example.com",
-        ),
-        SearchException(
-            searchProviderName = "TokyoToshokan",
-            searchProviderUrl = "https://example.com",
-        ),
-    )
+//@Preview
+//@Composable
+//private fun SearchErrorsBottomSheetPreview() {
+//    val failures = persistentListOf(
+//        SearchProviderError(
+//            providerName = "ThePirateBay",
+//            searchUrl = "https://example.com",
+//            null, null,
+//        ),
+//        SearchProviderError(
+//            providerName = "TheRarBg",
+//            searchUrl = "https://example.com",
+//            null, null,
+//        ),
+//        SearchProviderError(
+//            providerName = "TorrentDownloads",
+//            searchUrl = "https://example.com",
+//            null, null,
+//        ),
+//        SearchProviderError(
+//            providerName = "TokyoToshokan",
+//            searchUrl = "https://example.com",
+//            null, null,
+//        ),
+//    )
+//
+//    TorrentSearchTheme(darkTheme = true) {
+//        SearchErrorsBottomSheet(
+//            onDismiss = {},
+//            errors = failures,
+//        )
+//    }
+//}
 
-    TorrentSearchTheme(darkTheme = true) {
-        SearchFailuresBottomSheet(
-            onDismiss = {},
-            failures = failures,
-        )
-    }
-}
-
 @Composable
-private fun SearchExceptionList(
-    exceptions: ImmutableList<SearchException>,
+private fun SearchProviderErrorList(
+    errors: ImmutableList<SearchProviderError>,
     modifier: Modifier = Modifier,
     contentPadding: PaddingValues = PaddingValues(0.dp),
 ) {
@@ -121,18 +122,18 @@ private fun SearchExceptionList(
         ),
         contentPadding = contentPadding,
     ) {
-        items(items = exceptions, key = { it.searchProviderUrl }) {
-            SearchExceptionListItem(
+        items(items = errors) {
+            SearchProviderErrorListItem(
                 modifier = Modifier.animateItem(),
-                exception = it,
+                error = it,
             )
         }
     }
 }
 
 @Composable
-private fun SearchExceptionListItem(
-    exception: SearchException,
+private fun SearchProviderErrorListItem(
+    error: SearchProviderError,
     modifier: Modifier = Modifier,
 ) {
     Column(
@@ -141,7 +142,7 @@ private fun SearchExceptionListItem(
     ) {
         var showStackTrace by rememberSaveable { mutableStateOf(false) }
 
-        val exceptionMessage = exception.message ?: stringResource(R.string.search_unexpected_error)
+        val exceptionMessage = error.message ?: stringResource(R.string.search_unexpected_error)
         val listItemColors = ListItemDefaults.colors(
             containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
             supportingColor = MaterialTheme.colorScheme.error,
@@ -151,7 +152,7 @@ private fun SearchExceptionListItem(
             modifier = Modifier
                 .clip(shape = MaterialTheme.shapes.medium)
                 .clickable { showStackTrace = !showStackTrace },
-            headlineContent = { Text(text = exception.searchProviderName) },
+            headlineContent = { Text(text = error.providerName) },
             supportingContent = { Text(text = exceptionMessage) },
             trailingContent = {
                 AnimatedContent(targetState = showStackTrace) { stackTraceVisible ->
@@ -172,7 +173,7 @@ private fun SearchExceptionListItem(
         AnimatedVisibility(visible = showStackTrace) {
             StackTraceCard(
                 modifier = Modifier.height(360.dp),
-                stackTrace = exception.stackTraceToString(),
+                stackTrace = error.cause?.stackTraceToString() ?: "",
             )
         }
     }

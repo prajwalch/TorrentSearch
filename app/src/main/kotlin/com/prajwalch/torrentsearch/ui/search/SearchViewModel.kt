@@ -8,7 +8,7 @@ import com.prajwalch.torrentsearch.data.repository.BookmarkRepository
 import com.prajwalch.torrentsearch.data.repository.SearchHistoryRepository
 import com.prajwalch.torrentsearch.data.repository.SettingsRepository
 import com.prajwalch.torrentsearch.data.repository.ViewedTorrentRepository
-import com.prajwalch.torrentsearch.domain.SearchTorrentsUseCase
+import com.prajwalch.torrentsearch.domain.SearchProvidersGateway
 import com.prajwalch.torrentsearch.domain.TorrentFileDownloadEvent
 import com.prajwalch.torrentsearch.domain.TorrentFileDownloadState
 import com.prajwalch.torrentsearch.domain.TorrentFileDownloader
@@ -18,8 +18,7 @@ import com.prajwalch.torrentsearch.domain.model.SortCriteria
 import com.prajwalch.torrentsearch.domain.model.SortOptions
 import com.prajwalch.torrentsearch.domain.model.SortOrder
 import com.prajwalch.torrentsearch.domain.model.Torrent
-import com.prajwalch.torrentsearch.domain.model.filterSuccesses
-import com.prajwalch.torrentsearch.domain.model.sortSuccessesWith
+import com.prajwalch.torrentsearch.filter.TorrentFilters
 import com.prajwalch.torrentsearch.network.ConnectivityChecker
 import com.prajwalch.torrentsearch.util.createSortComparator
 
@@ -96,7 +95,7 @@ data class TorrentFilter(
  */
 @HiltViewModel
 class SearchViewModel @Inject constructor(
-    private val searchTorrentsUseCase: SearchTorrentsUseCase,
+    private val searchProvidersGateway: SearchProvidersGateway,
     private val bookmarkRepository: BookmarkRepository,
     private val searchHistoryRepository: SearchHistoryRepository,
     private val settingsRepository: SettingsRepository,
@@ -121,7 +120,7 @@ class SearchViewModel @Inject constructor(
      */
     private val resultsLoader = SearchResultsLoader(
         scope = viewModelScope,
-        searchTorrentsUseCase = searchTorrentsUseCase,
+        searchProvidersGateway = searchProvidersGateway,
         connectivityChecker = connectivityChecker,
     )
 
@@ -320,12 +319,12 @@ class SearchViewModel @Inject constructor(
  * it doesn't perform any pre-processing on the results.
  *
  * @param scope The [CoroutineScope] in which the search is performed.
- * @param searchTorrentsUseCase The use-case that performs the search.
+ * @param searchProvidersGateway The gateway that performs the search.
  * @param connectivityChecker The helper class for checking network connection.
  */
 private class SearchResultsLoader(
     private val scope: CoroutineScope,
-    private val searchTorrentsUseCase: SearchTorrentsUseCase,
+    private val searchProvidersGateway: SearchProvidersGateway,
     private val connectivityChecker: ConnectivityChecker,
 ) {
     /**
@@ -403,10 +402,10 @@ private class SearchResultsLoader(
      * Executes a new search for the given query and category.
      */
     private suspend fun executeSearch(query: String, category: Category) {
-        searchTorrentsUseCase(query = query, category = category)
+        searchProvidersGateway.searchTorrents(query = query, category = category)
             .conflate()
             .onCompletion {
-                _searchState.value = if (_searchResults.value.successes.isEmpty()) {
+                _searchState.value = if (_searchResults.value.torrents.isEmpty()) {
                     SearchState.ResultsNotFound
                 } else {
                     SearchState.ResultsAvailable.Complete
@@ -460,7 +459,7 @@ private class SearchResultsProcessor(
      */
     private val completedSearchProviders: Flow<Set<String>> =
         searchResults.map {
-            it.successes.map { torrent -> torrent.providerName }.toSet()
+            it.torrents.map { torrent -> torrent.providerName }.toSet()
         }
 
     /**
@@ -545,20 +544,18 @@ private class SearchResultsProcessor(
             criteria = sortOptions.criteria,
             order = sortOptions.order,
         )
-        val filterQueryWords = filterConfig.query
-            .split(' ', ignoreCase = true)
-            .filter { it.isNotBlank() }
 
-        return searchResults.filterSuccesses {
-            add { it.providerName !in filterConfig.excludedProviders }
-            if (!nsfwModeEnabled) add { !it.isNSFW }
-            if (!filterConfig.showDeadTorrents) add { !it.isDead }
-            if (filterConfig.hideViewed) add { it.infoHash !in viewedTorrentHashes }
-            if (filterConfig.query.isNotBlank()) add {
-                filterQueryWords.any { word -> it.name.contains(word, ignoreCase = true) }
-            }
-            if (filterConfig.category != Category.All) add { filterConfig.category == it.category }
-        }.sortSuccessesWith(sortComparator)
+        return searchResults.filterTorrents {
+            add(TorrentFilters.notExcludedProvider(filterConfig.excludedProviders))
+
+            if (!nsfwModeEnabled) add(TorrentFilters.isSfw())
+            if (!filterConfig.showDeadTorrents) add(TorrentFilters.isAlive())
+            if (filterConfig.hideViewed) add(TorrentFilters.notViewed(viewedTorrentHashes))
+            if (filterConfig.query.isNotBlank())
+                add(TorrentFilters.matchesQuery(filterConfig.query))
+            if (filterConfig.category != Category.All)
+                add(TorrentFilters.matchesCategory(filterConfig.category))
+        }.sortTorrentsWith(sortComparator)
     }
 
     /**
