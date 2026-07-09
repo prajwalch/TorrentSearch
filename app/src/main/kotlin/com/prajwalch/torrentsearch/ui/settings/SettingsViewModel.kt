@@ -239,7 +239,7 @@ private fun SettingsRepository.getSearchSettings(
     searchProvidersCount: Flow<Int>,
 ): Flow<SearchSettingsUiState> {
     val searchProvidersStat = combine(
-        this.enabledSearchProvidersId.map { it.size },
+        this.enabledSearchProviderIds.map { it.size },
         searchProvidersCount,
         SearchSettingsUiState::SearchProvidersStat,
     )

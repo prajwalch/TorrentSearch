@@ -67,7 +67,7 @@ class SearchProvidersViewModel @Inject constructor(
         protectionUpdateState,
         searchProviderInfos,
         searchProvidersManager.getProvidersCount(),
-        settingsRepository.enabledSearchProvidersId.map { it.size },
+        settingsRepository.enabledSearchProviderIds.map { it.size },
     ) {
             selectedCategory,
             protectionUpdateState,
