@@ -35,7 +35,11 @@ class TorznabConfigRepository @Inject constructor(
         return dao.getAllConfigs().map { it.toDomain() }
     }
 
-    suspend fun getAllConfigsId(): List<String> {
+    suspend fun getCurrentConfigsByIds(ids: Set<String>): List<TorznabConfig> {
+        return dao.getCurrentConfigsByIds(ids).map { it.toDomain() }
+    }
+
+    suspend fun getConfigIds(): List<String> {
         return dao.getConfigsId()
     }
 

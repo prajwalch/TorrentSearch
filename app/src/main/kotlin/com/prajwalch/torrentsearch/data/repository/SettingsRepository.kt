@@ -19,6 +19,7 @@ import com.prajwalch.torrentsearch.providers.SearchProviderId
 
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 
 import javax.inject.Inject
@@ -139,6 +140,9 @@ class SettingsRepository @Inject constructor(
         dataStore.setOrUpdate(key = BLUR_NSFW_IMAGES, value = enable)
     }
 
+    suspend fun currentEnabledProviderIds(): Set<SearchProviderId> =
+        enabledSearchProviderIds.first()
+
     suspend fun setEnabledSearchProviderIds(ids: Set<SearchProviderId>) {
         dataStore.setOrUpdate(key = ENABLED_SEARCH_PROVIDER_IDS, value = ids)
     }
@@ -150,10 +154,24 @@ class SettingsRepository @Inject constructor(
         }
     }
 
+    suspend fun addEnabledSearchProviderIds(ids: Set<SearchProviderId>) {
+        dataStore.edit {
+            val currentIds = it[ENABLED_SEARCH_PROVIDER_IDS] ?: defaultEnabledProviderIds
+            it[ENABLED_SEARCH_PROVIDER_IDS] = currentIds + ids
+        }
+    }
+
     suspend fun removeEnabledSearchProviderId(id: SearchProviderId) {
         dataStore.edit {
             val currentIds = it[ENABLED_SEARCH_PROVIDER_IDS] ?: defaultEnabledProviderIds
             it[ENABLED_SEARCH_PROVIDER_IDS] = currentIds - id
+        }
+    }
+
+    suspend fun removeEnabledSearchProviderIds(ids: Set<SearchProviderId>) {
+        dataStore.edit {
+            val currentIds = it[ENABLED_SEARCH_PROVIDER_IDS] ?: defaultEnabledProviderIds
+            it[ENABLED_SEARCH_PROVIDER_IDS] = currentIds - ids
         }
     }
 
@@ -204,6 +222,9 @@ class SettingsRepository @Inject constructor(
     suspend fun setBookmarksSortOrder(order: SortOrder) {
         dataStore.setOrUpdate(key = BOOKMARKS_SORT_ORDER, value = order.name)
     }
+
+    suspend fun currentProtectionUnlockedProviderIds(): Set<SearchProviderId> =
+        protectionUnlockedProviderIds.first()
 
     suspend fun addProtectionUnlockedProviderId(id: SearchProviderId) {
         dataStore.edit {

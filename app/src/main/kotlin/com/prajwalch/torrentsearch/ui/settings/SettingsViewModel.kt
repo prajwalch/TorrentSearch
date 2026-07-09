@@ -120,7 +120,7 @@ class SettingsViewModel @Inject constructor(
     fun enableNSFWMode(enable: Boolean) {
         viewModelScope.launch {
             settingsRepository.enableNSFWMode(enable = enable)
-            if (!enable) searchProvidersManager.disableRestrictedProviders()
+            if (!enable) searchProvidersManager.disableNsfwAndUnsafeProviders()
         }
     }
 
