@@ -149,17 +149,25 @@ class SearchProvidersManager @Inject constructor(
             torznabConfigRepository.getAllConfigs(),
             settingsRepository.enabledSearchProvidersId,
             settingsRepository.protectionUnlockedProviderIds,
-        ) { torznabConfigs, enabledProvidersId, protectionUnlockedProviderIds ->
+        ) {
+                torznabConfigs,
+                enabledProviderIds,
+                protectionUnlockedProviderIds,
+            ->
             val builtinProviderInfos = builtinProviders.map {
                 val cloudflareProtectionStatus = when {
                     !it.isCloudflareProtected -> CloudflareProtectionStatus.UnProtected
                     it.id in protectionUnlockedProviderIds -> CloudflareProtectionStatus.Unlocked
                     else -> CloudflareProtectionStatus.Locked
                 }
-                it.getInfo(isEnabled = it.id in enabledProvidersId, cloudflareProtectionStatus)
+                it.getInfo(
+                    isEnabled = it.id in enabledProviderIds,
+                    protectionStatus = cloudflareProtectionStatus,
+                )
             }
+
             val torznabProviderInfos = torznabConfigs.map {
-                it.getInfo(isEnabled = it.id in enabledProvidersId)
+                it.asSearchProviderInfo(isEnabled = it.id in enabledProviderIds)
             }
 
             builtinProviderInfos + torznabProviderInfos
@@ -397,7 +405,7 @@ private fun SearchProvider.getInfo(
     isEnabled = isEnabled,
 )
 
-private fun TorznabConfig.getInfo(isEnabled: Boolean) =
+private fun TorznabConfig.asSearchProviderInfo(isEnabled: Boolean) =
     SearchProviderInfo(
         id = this.id,
         name = this.searchProviderName,
