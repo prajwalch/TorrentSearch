@@ -1,5 +1,6 @@
 package com.prajwalch.torrentsearch.ui.component
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -21,6 +22,7 @@ fun LazyColumnWithScrollbar(
     modifier: Modifier = Modifier,
     state: LazyListState = rememberLazyListState(),
     contentPadding: PaddingValues = PaddingValues(0.dp),
+    verticalArrangement: Arrangement.Vertical = Arrangement.Top,
     content: LazyListScope.() -> Unit,
 ) {
     val scrollbarUnselectedColor = MaterialTheme.colorScheme.primary
@@ -41,6 +43,7 @@ fun LazyColumnWithScrollbar(
             modifier = modifier.imePadding(),
             state = state,
             contentPadding = contentPadding,
+            verticalArrangement = verticalArrangement,
             content = content,
         )
     }

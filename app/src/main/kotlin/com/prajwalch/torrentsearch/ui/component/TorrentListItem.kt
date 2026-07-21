@@ -7,6 +7,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
+import androidx.compose.material3.ListItemColors
+import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -14,7 +16,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -42,9 +46,15 @@ fun TorrentListItem(
     providerName: String,
     isNSFW: Boolean,
     modifier: Modifier = Modifier,
+    shape: Shape = MaterialTheme.shapes.large,
+    colors: ListItemColors = ListItemDefaults.colors(
+        containerColor = MaterialTheme.colorScheme.surfaceContainer,
+    ),
 ) {
     ListItem(
-        modifier = modifier,
+        modifier = Modifier
+            .clip(shape)
+            .then(modifier),
         leadingContent = {
             Icon(
                 painter = painterResource(category.iconResId()),
@@ -83,6 +93,7 @@ fun TorrentListItem(
                 peers = peers,
             )
         },
+        colors = colors,
     )
 }
 
@@ -115,7 +126,7 @@ private fun TorrentMetadata(
         }
 
         peers?.let {
-           if (size != null || seeders != null) BulletPoint()
+            if (size != null || seeders != null) BulletPoint()
             TorrentMetadataItem(
                 icon = { TorrentMetadataIcon(R.drawable.ic_download) },
                 text = { TorrentMetadataText(it.toString()) },

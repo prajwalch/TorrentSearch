@@ -1,11 +1,11 @@
 package com.prajwalch.torrentsearch.ui.search.component
 
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
@@ -41,13 +41,13 @@ fun SearchResults(
         isRefreshing = isRefreshing,
         onRefresh = onRefresh,
     ) {
-        LazyColumnWithScrollbar(state = lazyListState) {
+        LazyColumnWithScrollbar(
+            state = lazyListState,
+            contentPadding = PaddingValues(MaterialTheme.spaces.large),
+            verticalArrangement = Arrangement.spacedBy(MaterialTheme.spaces.small),
+        ) {
             item {
                 SearchResultsCount(
-                    modifier = Modifier.padding(
-                        horizontal = MaterialTheme.spaces.large,
-                        vertical = MaterialTheme.spaces.small,
-                    ),
                     searchResultsSize = searchResults.size,
                     searchQuery = searchQuery,
                     searchCategory = searchCategory,
@@ -72,7 +72,6 @@ fun SearchResults(
                     providerName = it.providerName,
                     isNSFW = it.isNSFW,
                 )
-                HorizontalDivider()
             }
         }
     }

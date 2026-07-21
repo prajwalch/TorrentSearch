@@ -2,6 +2,7 @@ package com.prajwalch.torrentsearch.ui.bookmarks.component
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -9,7 +10,6 @@ import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SwipeToDismissBox
@@ -44,6 +44,7 @@ fun BookmarkList(
         modifier = modifier,
         state = lazyListState,
         contentPadding = contentPadding,
+        verticalArrangement = Arrangement.spacedBy(MaterialTheme.spaces.small),
     ) {
         items(
             items = bookmarks,
@@ -56,7 +57,6 @@ fun BookmarkList(
                 onClick = { onBookmarkClick(it) },
                 onDelete = { onDeleteBookmark(it) },
             )
-            HorizontalDivider()
         }
     }
 }
@@ -78,7 +78,10 @@ private fun BookmarkListItem(
             Icon(
                 modifier = Modifier
                     .fillMaxSize()
-                    .background(color = MaterialTheme.colorScheme.errorContainer)
+                    .background(
+                        color = MaterialTheme.colorScheme.errorContainer,
+                        shape = MaterialTheme.shapes.large
+                    )
                     .wrapContentSize(align = Alignment.CenterEnd)
                     .padding(horizontal = MaterialTheme.spaces.large),
                 painter = painterResource(R.drawable.ic_delete),

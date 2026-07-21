@@ -1,11 +1,11 @@
 package com.prajwalch.torrentsearch.ui.browse.component
 
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.lazy.LazyListState
-import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
@@ -35,20 +35,16 @@ fun TorrentList(
         isRefreshing = isRefreshing,
         onRefresh = onRefresh,
     ) {
-        LazyColumnWithScrollbar(state = lazyListState) {
+        LazyColumnWithScrollbar(
+            contentPadding = PaddingValues(MaterialTheme.spaces.large),
+            verticalArrangement = Arrangement.spacedBy(MaterialTheme.spaces.small),
+            state = lazyListState,
+        ) {
             item {
-                TorrentsCount(
-                    modifier = Modifier.padding(
-                        horizontal = MaterialTheme.spaces.large,
-                        vertical = MaterialTheme.spaces.small,
-                    ),
-                    count = torrents.size,
-                )
+                TorrentsCount(torrents.size)
             }
-            itemsIndexed(
-                items = torrents,
-                contentType = { _, torrent -> torrent.category },
-            ) { index, torrent ->
+
+            items(items = torrents, contentType = { it.category }) { torrent ->
                 val isViewed = torrent.infoHash in viewedTorrentHashes
                 val listItemAlpha = if (isViewed) 0.6f else 1f
 
@@ -66,10 +62,6 @@ fun TorrentList(
                     providerName = torrent.providerName,
                     isNSFW = torrent.isNSFW,
                 )
-
-                if (index != torrents.lastIndex) {
-                    HorizontalDivider()
-                }
             }
         }
     }
