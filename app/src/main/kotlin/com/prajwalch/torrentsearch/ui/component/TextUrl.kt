@@ -45,7 +45,7 @@ fun TextUrl(
         )
         Icon(
             modifier = Modifier.size(12.dp),
-            painter = painterResource(R.drawable.ic_open_in_new),
+            painter = painterResource(R.drawable.ic_arrow_outward),
             contentDescription = null,
         )
     }
