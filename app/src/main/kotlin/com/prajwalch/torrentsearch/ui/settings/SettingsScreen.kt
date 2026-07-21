@@ -538,7 +538,7 @@ private fun About(modifier: Modifier = Modifier) {
             supportingContent = "${BuildConfig.VERSION_NAME} (${BuildConfig.VERSION_CODE})",
             trailingContent = {
                 Icon(
-                    painter = painterResource(R.drawable.ic_open_in_new),
+                    painter = painterResource(R.drawable.ic_arrow_outward),
                     contentDescription = null,
                 )
             },
@@ -550,7 +550,7 @@ private fun About(modifier: Modifier = Modifier) {
             supportingContent = TorrentSearchConstants.GITHUB_REPO_URL,
             trailingContent = {
                 Icon(
-                    painter = painterResource(R.drawable.ic_open_in_new),
+                    painter = painterResource(R.drawable.ic_arrow_outward),
                     contentDescription = null,
                 )
             },
