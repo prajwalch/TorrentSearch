@@ -1,5 +1,6 @@
 package com.prajwalch.torrentsearch.ui.bookmarks.component
 
+import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -16,6 +17,7 @@ import androidx.compose.material3.SwipeToDismissBox
 import androidx.compose.material3.SwipeToDismissBoxValue
 import androidx.compose.material3.rememberSwipeToDismissBoxState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -71,6 +73,22 @@ private fun BookmarkListItem(
     val swipeToDismissBoxState = rememberSwipeToDismissBoxState()
     val coroutineScope = rememberCoroutineScope()
 
+    val thresholdReached = swipeToDismissBoxState.targetValue != SwipeToDismissBoxValue.Settled
+    val backgroundContentColor by animateColorAsState(
+        if (thresholdReached) {
+            MaterialTheme.colorScheme.errorContainer
+        } else {
+            MaterialTheme.colorScheme.errorContainer.copy(alpha = 0.5f)
+        }
+    )
+    val deleteIconColor by animateColorAsState(
+        if (thresholdReached) {
+            MaterialTheme.colorScheme.onErrorContainer
+        } else {
+            MaterialTheme.colorScheme.onErrorContainer.copy(alpha = 0.5f)
+        }
+    )
+
     SwipeToDismissBox(
         modifier = modifier,
         state = swipeToDismissBoxState,
@@ -79,14 +97,14 @@ private fun BookmarkListItem(
                 modifier = Modifier
                     .fillMaxSize()
                     .background(
-                        color = MaterialTheme.colorScheme.errorContainer,
-                        shape = MaterialTheme.shapes.large
+                        color = backgroundContentColor,
+                        shape = MaterialTheme.shapes.large,
                     )
                     .wrapContentSize(align = Alignment.CenterEnd)
                     .padding(horizontal = MaterialTheme.spaces.large),
                 painter = painterResource(R.drawable.ic_delete),
                 contentDescription = null,
-                tint = MaterialTheme.colorScheme.onErrorContainer,
+                tint = deleteIconColor,
             )
         },
         enableDismissFromStartToEnd = false,
