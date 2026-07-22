@@ -211,4 +211,9 @@
     <string name="browse_button_go_to_providers">前往搜索源设置</string>
     <string name="limetorrents_unsafe_reason">技术上不算不安全，但它会无视分类筛选。请谨慎选择。</string>
     <string name="search_errors_bottom_sheet_title">出错的搜索源</string>
+    <string name="search_providers_title_supported_categories">支持的类别</string>
+    <string name="search_providers_subtitle_supported_categories">选择一个或多个类别</string>
+    <string name="search_providers_button_check_connection_checking">正在检查连接…</string>
+    <string name="search_providers_button_auto_detect_categories">自动检测类别</string>
+    <string name="search_providers_button_auto_detect_categories_detecting">正在检测类别…</string>
 </resources>
