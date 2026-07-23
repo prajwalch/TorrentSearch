@@ -107,7 +107,7 @@
     <string name="bookmarks_button_delete">删除</string>
     <string name="settings_pure_black_summary">启用 AMOLED 主题模式</string>
     <string name="settings_enable_dynamic_theme_summary">根据设备壁纸生成主题</string>
-    <string name="settings_section_sort_order">排序顺序</string>
+    <string name="settings_section_sort_order">排序</string>
     <string name="settings_save_search_history_summary">将最近搜索记录存储到本地，以便快速访问和提供搜索建议</string>
     <string name="search_history_dialog_message_clear_history">搜索历史记录将被永久删除</string>
     <string name="bookmarks_dialog_message_delete_all">书签将被永久删除</string>
