@@ -61,7 +61,7 @@ class ProviderTest {
         )
 
         assertTrue("Torrent name should not be blank", first.name.isNotBlank())
-        assertTrue("Torrent size should not be blank", first.size.isNotBlank())
+        assertTrue("Torrent size should not be blank", first.size?.isNotBlank() == true)
     }
 
     /**
