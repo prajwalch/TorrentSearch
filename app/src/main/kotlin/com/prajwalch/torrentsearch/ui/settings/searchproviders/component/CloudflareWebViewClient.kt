@@ -1,7 +1,7 @@
 package com.prajwalch.torrentsearch.ui.settings.searchproviders.component
 
 import android.util.Log
-
+import android.webkit.WebResourceError
 import android.webkit.WebResourceRequest
 import android.webkit.WebResourceResponse
 import android.webkit.WebView
@@ -9,17 +9,37 @@ import android.webkit.WebViewClient
 
 import com.prajwalch.torrentsearch.network.HttpClient
 
+sealed interface ChallengeSolveError {
+    data object BadUrl : ChallengeSolveError
+    data object ConnectFailed : ChallengeSolveError
+    data object HostLookupFailed : ChallengeSolveError
+    data object Timeout : ChallengeSolveError
+    data object TooManyRedirects : ChallengeSolveError
+    data object Unknown : ChallengeSolveError
+
+    data class ApplicationError(val errorCode: Int) : ChallengeSolveError
+}
+
 class CloudflareWebViewClient(
     private val onChallengeSolved: () -> Unit,
+    private val onError: (ChallengeSolveError) -> Unit,
 ) : WebViewClient() {
     private var challengeFound = false
+    private var solveError: ChallengeSolveError? = null
 
     override fun onPageFinished(view: WebView?, url: String) {
         super.onPageFinished(view, url)
         Log.i(TAG, "Finished loading $url")
 
+        val solveError = solveError
+        if (solveError != null) {
+            Log.e(TAG, "Error solving challenge $solveError")
+            onError(solveError)
+            return
+        }
+
         if (!challengeFound) {
-            Log.i(TAG, "Challenge not found; Aborting")
+            Log.i(TAG, "Challenge not found")
             onChallengeSolved()
             return
         }
@@ -32,6 +52,31 @@ class CloudflareWebViewClient(
             onChallengeSolved()
         } else {
             Log.w(TAG, "Cookie not found")
+        }
+    }
+
+    override fun onReceivedError(
+        view: WebView?,
+        request: WebResourceRequest?,
+        error: WebResourceError?,
+    ) {
+        super.onReceivedError(view, request, error)
+
+        if (request?.isForMainFrame == true) {
+            Log.e(TAG, "Received error")
+            solveError = errorCodeToChallengeSolveError(error?.errorCode)
+        }
+    }
+
+    private fun errorCodeToChallengeSolveError(errorCode: Int?): ChallengeSolveError {
+        return when (errorCode) {
+            null -> ChallengeSolveError.Unknown
+            ERROR_BAD_URL -> ChallengeSolveError.BadUrl
+            ERROR_CONNECT -> ChallengeSolveError.ConnectFailed
+            ERROR_HOST_LOOKUP -> ChallengeSolveError.HostLookupFailed
+            ERROR_REDIRECT_LOOP -> ChallengeSolveError.TooManyRedirects
+            ERROR_TIMEOUT -> ChallengeSolveError.Timeout
+            else -> ChallengeSolveError.ApplicationError(errorCode)
         }
     }
 

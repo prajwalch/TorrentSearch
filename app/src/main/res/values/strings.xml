@@ -181,9 +181,12 @@
     <string name="search_providers_button_check_connection_checking">Checking connection…</string>
     <string name="search_providers_button_auto_detect_categories">Auto-detect categories</string>
     <string name="search_providers_button_auto_detect_categories_detecting">Detecting categories…</string>
+    <string name="search_providers_button_try_again">Try again</string>
     <string name="search_providers_state_challenge_solving_title">Solving Cloudflare challenge…</string>
     <string name="search_providers_state_challenge_solving_description">This may take a while. Cloudflare challenges sometimes require manual interaction like checking a box, so if it\'s taking too long, open the WebView from the top bar to complete it.</string>
     <string name="search_providers_state_challenge_solved_title">Challenge solved!</string>
+    <string name="search_providers_state_challenge_solve_error_title">Unlock failed</string>
+    <string name="search_providers_state_challenge_solve_error_description">Couldn\'t solve the challenge. Make sure the internet connection is available and try again.</string>
     <string name="search_providers_state_updating_protection_status">Updating protection status…</string>
     <string name="search_providers_state_protection_status_update_complete">%1$d unlocked, %2$d need unlocking</string>
 

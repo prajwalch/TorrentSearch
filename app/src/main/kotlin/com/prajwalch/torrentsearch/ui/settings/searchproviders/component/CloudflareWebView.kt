@@ -30,6 +30,7 @@ import com.prajwalch.torrentsearch.network.HttpClient
 fun BoxedCloudflareWebView(
     url: String,
     onChallengeSolved: () -> Unit,
+    onError: (ChallengeSolveError) -> Unit,
     height: Dp,
     modifier: Modifier = Modifier,
 ) {
@@ -51,6 +52,7 @@ fun BoxedCloudflareWebView(
             modifier = Modifier.matchParentSize(),
             url = url,
             onChallengeSolved = onChallengeSolved,
+            onError = onError,
         )
     }
 }
@@ -59,6 +61,7 @@ fun BoxedCloudflareWebView(
 fun CloudflareWebView(
     url: String,
     onChallengeSolved: () -> Unit,
+    onError: (ChallengeSolveError) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     AndroidView(
@@ -67,6 +70,7 @@ fun CloudflareWebView(
             createCloudflareWebView(
                 context = context,
                 onChallengeSolved = onChallengeSolved,
+                onError = onError,
             ).apply { loadUrl(url) }
         },
         onRelease = {
@@ -80,6 +84,7 @@ fun CloudflareWebView(
 fun createCloudflareWebView(
     context: Context,
     onChallengeSolved: () -> Unit,
+    onError: (ChallengeSolveError) -> Unit,
 ): WebView = WebView(context).apply {
     layoutParams = ViewGroup.LayoutParams(
         ViewGroup.LayoutParams.MATCH_PARENT,
@@ -95,5 +100,8 @@ fun createCloudflareWebView(
 //        settings.isAlgorithmicDarkeningAllowed = true
 //    }
 
-    webViewClient = CloudflareWebViewClient(onChallengeSolved)
+    webViewClient = CloudflareWebViewClient(
+        onChallengeSolved = onChallengeSolved,
+        onError = onError,
+    )
 }

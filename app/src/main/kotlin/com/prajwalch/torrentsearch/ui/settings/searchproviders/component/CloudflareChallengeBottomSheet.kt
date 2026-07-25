@@ -3,8 +3,15 @@ package com.prajwalch.torrentsearch.ui.settings.searchproviders.component
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.scaleIn
+import androidx.compose.animation.scaleOut
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -16,10 +23,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -30,6 +39,12 @@ import com.prajwalch.torrentsearch.ui.theme.spaces
 import kotlinx.coroutines.delay
 import kotlin.time.Duration.Companion.seconds
 
+private sealed interface ChallengeSolveState {
+    data object Solving : ChallengeSolveState
+    data object Solved : ChallengeSolveState
+    data class Error(val error: ChallengeSolveError) : ChallengeSolveState
+}
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CloudflareChallengeBottomSheet(
@@ -39,12 +54,14 @@ fun CloudflareChallengeBottomSheet(
     modifier: Modifier = Modifier,
     webViewMaxHeight: Dp = 400.dp,
 ) {
-    val sheetState = rememberModalBottomSheetState()
-    var isChallengeSolved by rememberSaveable { mutableStateOf(false) }
-    var showWebView by rememberSaveable(isChallengeSolved) { mutableStateOf(false) }
+    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+    var challengeSolveState by remember {
+        mutableStateOf<ChallengeSolveState>(ChallengeSolveState.Solving)
+    }
+    var showWebView by rememberSaveable(challengeSolveState) { mutableStateOf(false) }
 
-    LaunchedEffect(isChallengeSolved) {
-        if (isChallengeSolved) {
+    LaunchedEffect(challengeSolveState) {
+        if (challengeSolveState == ChallengeSolveState.Solved) {
             delay(1.seconds)
             sheetState.hide()
             onChallengeSolved()
@@ -66,7 +83,7 @@ fun CloudflareChallengeBottomSheet(
             IconButton(
                 modifier = Modifier.align(Alignment.End),
                 onClick = { showWebView = !showWebView },
-                enabled = !isChallengeSolved,
+                enabled = challengeSolveState == ChallengeSolveState.Solving,
             ) {
                 val iconId = if (showWebView) {
                     R.drawable.ic_preview_off
@@ -79,23 +96,59 @@ fun CloudflareChallengeBottomSheet(
                 )
             }
 
-            AnimatedVisibility(!isChallengeSolved) {
-                BoxedCloudflareWebView(
-                    url = solverUrl,
-                    onChallengeSolved = { isChallengeSolved = true },
-                    height = if (showWebView) webViewMaxHeight else 0.dp,
-                )
-            }
+            Box(
+                modifier = Modifier.heightIn(min = webViewMaxHeight),
+                contentAlignment = Alignment.Center,
+            ) {
+                val webViewAlpha by animateFloatAsState(if (showWebView) 1f else 0f)
+                if (challengeSolveState == ChallengeSolveState.Solving) {
+                    BoxedCloudflareWebView(
+                        modifier = Modifier.alpha(webViewAlpha),
+                        url = solverUrl,
+                        onChallengeSolved = { challengeSolveState = ChallengeSolveState.Solved },
+                        onError = { challengeSolveState = ChallengeSolveState.Error(it) },
+                        height = webViewMaxHeight,
+                    )
+                }
 
-            AnimatedVisibility(!showWebView) {
-                AnimatedContent(isChallengeSolved) { challengeSolved ->
-                    if (challengeSolved) {
-                        ChallengeSolvedState(Modifier.fillMaxWidth())
-                    } else {
-                        ChallengeSolvingState(Modifier.fillMaxWidth())
+                this@Column.AnimatedVisibility(
+                    visible = !showWebView,
+                    enter = fadeIn() + scaleIn(),
+                    exit = fadeOut() + scaleOut(),
+                ) {
+                    AnimatedContent(targetState = challengeSolveState) { solveState ->
+                        when (solveState) {
+                            ChallengeSolveState.Solving -> {
+                                ChallengeSolvingState(Modifier.fillMaxWidth())
+                            }
+
+                            ChallengeSolveState.Solved -> {
+                                ChallengeSolvedState(Modifier.fillMaxWidth())
+                            }
+
+                            is ChallengeSolveState.Error -> {
+                                ChallengeSolveErrorState(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    error = solveState.error.displayName(),
+                                    onTryAgain = {
+                                        challengeSolveState = ChallengeSolveState.Solving
+                                    },
+                                )
+                            }
+                        }
                     }
                 }
             }
         }
     }
+}
+
+private fun ChallengeSolveError.displayName(): String = when (this) {
+    ChallengeSolveError.BadUrl -> "Bad URL"
+    ChallengeSolveError.ConnectFailed -> "Connect failed"
+    ChallengeSolveError.HostLookupFailed -> "Host lookup failed"
+    ChallengeSolveError.Timeout -> "Timeout"
+    ChallengeSolveError.TooManyRedirects -> "Too many redirects"
+    ChallengeSolveError.Unknown -> "Unknown error"
+    is ChallengeSolveError.ApplicationError -> "Application error (${this.errorCode})"
 }
