@@ -217,4 +217,7 @@
     <string name="limetorrents_unsafe_reason">Teknik olarak güvensiz değil, ancak kategori seçimini göz ardı eder. Dikkatli seçin.</string>
     <string name="tpb_unsafe_reason">Yetersiz denetim nedeniyle çok sayıda kötü amaçlı yazılım bildirimi.</string>
     <string name="therarbg_unsafe_reason">Birçok sahte torrent içeren orijinal RARBG sitesinin kopyasıdır. Çok dikkatli olun.</string>
+    <string name="search_providers_button_try_again">Tekrar dene</string>
+    <string name="search_providers_state_challenge_solve_error_title">Kilit açma başarısız</string>
+    <string name="search_providers_state_challenge_solve_error_description">Görev çözülemedi. İnternet bağlantınızın olduğundan emin olun ve tekrar deneyin.</string>
 </resources>
