@@ -216,4 +216,6 @@
     <string name="search_providers_button_check_connection_checking">正在检查连接…</string>
     <string name="search_providers_button_auto_detect_categories">自动检测类别</string>
     <string name="search_providers_button_auto_detect_categories_detecting">正在检测类别…</string>
+    <string name="search_providers_button_try_again">重试</string>
+    <string name="search_providers_state_challenge_solve_error_title">解锁失败</string>
 </resources>
