@@ -219,4 +219,7 @@
     <string name="search_providers_button_check_connection_checking">Перевірка з\'єднання…</string>
     <string name="search_providers_button_auto_detect_categories">Автовиявлення категорій</string>
     <string name="search_providers_button_auto_detect_categories_detecting">Виявлення категорій…</string>
+    <string name="search_providers_button_try_again">Повторити спробу</string>
+    <string name="search_providers_state_challenge_solve_error_title">Помилка розблокування</string>
+    <string name="search_providers_state_challenge_solve_error_description">Не вдалося пройти перевірку. Перевірте, чи працює інтернет, і повторіть спробу.</string>
 </resources>
