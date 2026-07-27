@@ -213,4 +213,15 @@
     <string name="settings_dns_over_https">DNS عبر بروتوكول HTTPS (DoH)</string>
     <string name="settings_dns_over_https_provider_format">المزوّد: %1$s</string>
     <string name="settings_dns_over_https_summary">يحل أسماء النطاقات من خلال اتصال آمن بدلاً من نظام أسماء النطاقات الافتراضي لشبكتك</string>
+    <string name="search_providers_action_update_protection_status">تحديث حاله حماية المزود</string>
+    <string name="search_providers_title_supported_categories">يدعم الكاتالوج</string>
+    <string name="search_providers_subtitle_supported_categories">اختر واحد أو أكثرمن التصنيفات</string>
+    <string name="search_providers_button_check_connection_checking">اختبار الشبكة…</string>
+    <string name="search_providers_button_auto_detect_categories">الكشف التلقائي عن الفئات</string>
+    <string name="search_providers_button_auto_detect_categories_detecting">جارٍ الكشف عن الفئات…</string>
+    <string name="search_providers_button_try_again">اعد المحاولة</string>
+    <string name="search_providers_state_challenge_solve_error_title">فتسح الفاشل</string>
+    <string name="search_providers_state_challenge_solve_error_description">لم أتمكن من حل التحدي. تأكد من توفر اتصال الإنترنت وحاول مرة أخرى.</string>
+    <string name="search_providers_state_updating_protection_status">جارٍ تحديث حالة الحماية…</string>
+    <string name="search_providers_state_protection_status_update_complete">تم فتح %1$d، و %2$d تحتاج للفتح</string>
 </resources>
