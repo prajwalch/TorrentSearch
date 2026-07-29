@@ -46,6 +46,7 @@ import com.prajwalch.torrentsearch.ui.component.ArrowBackIconButton
 import com.prajwalch.torrentsearch.ui.component.CategoryChipsRow
 import com.prajwalch.torrentsearch.ui.component.RoundedDropdownMenu
 import com.prajwalch.torrentsearch.ui.settings.searchproviders.component.CloudflareChallengeBottomSheet
+import com.prajwalch.torrentsearch.ui.settings.searchproviders.component.ResetToDefaultDialog
 import com.prajwalch.torrentsearch.ui.settings.searchproviders.component.SearchProviderList
 import com.prajwalch.torrentsearch.ui.theme.spaces
 
@@ -62,19 +63,6 @@ fun SearchProvidersScreen(
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
-
-    var protectedProvider by rememberSaveable { mutableStateOf<ProtectedProvider?>(null) }
-    protectedProvider?.let { (searchProviderId, solverUrl) ->
-        CloudflareChallengeBottomSheet(
-            onDismiss = { protectedProvider = null },
-            solverUrl = solverUrl,
-            onChallengeSolved = {
-                protectedProvider = null
-                viewModel.markProviderAsUnlocked(searchProviderId)
-            },
-            webViewMaxHeight = 500.dp,
-        )
-    }
 
     val localResources = LocalResources.current
     val snackbarHostState = remember { SnackbarHostState() }
@@ -109,6 +97,27 @@ fun SearchProvidersScreen(
         }
     }
 
+    var protectedProvider by rememberSaveable { mutableStateOf<ProtectedProvider?>(null) }
+    protectedProvider?.let { (searchProviderId, solverUrl) ->
+        CloudflareChallengeBottomSheet(
+            onDismiss = { protectedProvider = null },
+            solverUrl = solverUrl,
+            onChallengeSolved = {
+                protectedProvider = null
+                viewModel.markProviderAsUnlocked(searchProviderId)
+            },
+            webViewMaxHeight = 500.dp,
+        )
+    }
+
+    var showResetToDefaultDialog by rememberSaveable { mutableStateOf(false) }
+    if (showResetToDefaultDialog) {
+        ResetToDefaultDialog(
+            onDismiss = { showResetToDefaultDialog = false },
+            onReset = { viewModel.resetEnabledSearchProvidersToDefault() },
+        )
+    }
+
     Scaffold(
         modifier = Modifier
             .fillMaxSize()
@@ -120,7 +129,7 @@ fun SearchProvidersScreen(
                 onEnableAllSearchProviders = viewModel::enableAllSearchProviders,
                 onDisableAllSearchProviders = viewModel::disableAllSearchProviders,
                 onUpdateProtectionStatus = viewModel::updateProtectionStatus,
-                onResetToDefault = viewModel::resetEnabledSearchProvidersToDefault,
+                onResetToDefault = { showResetToDefaultDialog = true },
                 subtitle = {
                     val searchProvidersSummary = stringResource(
                         R.string.settings_search_providers_summary_format,

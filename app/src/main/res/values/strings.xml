@@ -165,6 +165,10 @@
     <string name="search_providers_action_disable_all">Disable all</string>
     <string name="search_providers_action_update_protection_status">Update protection status</string>
     <string name="search_providers_action_reset">Reset to default</string>
+    <string name="search_providers_reset_to_default_title">Reset to default?</string>
+    <string name="search_providers_reset_to_default_text">Enabled search providers will reset to the default set and cookies for protection-unlocked providers will be cleared.</string>
+    <string name="search_providers_reset_to_default_button_confirm">Reset</string>
+    <string name="search_providers_reset_to_default_button_dismiss">Cancel</string>
     <string name="search_providers_list_action_edit">Edit configuration</string>
     <string name="search_providers_list_action_delete">Delete</string>
     <string name="search_providers_add_screen_title">Add search provider</string>
