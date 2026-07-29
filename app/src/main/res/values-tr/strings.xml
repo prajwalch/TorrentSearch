@@ -220,4 +220,8 @@
     <string name="search_providers_button_try_again">Tekrar dene</string>
     <string name="search_providers_state_challenge_solve_error_title">Kilit açma başarısız</string>
     <string name="search_providers_state_challenge_solve_error_description">Görev çözülemedi. İnternet bağlantınızın olduğundan emin olun ve tekrar deneyin.</string>
+    <string name="search_providers_reset_to_default_title">Varsayılanlara sıfırlansın mı?</string>
+    <string name="search_providers_reset_to_default_text">Etkinleştirilen arama sağlayıcıları varsayılanlara sıfırlanacak ve koruma kilidi kaldırılan sağlayıcıların çerezleri silinecektir.</string>
+    <string name="search_providers_reset_to_default_button_confirm">Sıfırla</string>
+    <string name="search_providers_reset_to_default_button_dismiss">İptal</string>
 </resources>
