@@ -224,4 +224,5 @@
     <string name="search_providers_reset_to_default_text">Etkinleştirilen arama sağlayıcıları varsayılanlara sıfırlanacak ve koruma kilidi kaldırılan sağlayıcıların çerezleri silinecektir.</string>
     <string name="search_providers_reset_to_default_button_confirm">Sıfırla</string>
     <string name="search_providers_reset_to_default_button_dismiss">İptal</string>
+    <string name="bookmarks_swipe_delete_tip">Ayrıca, bir yer imini silmek için sola kaydırabilirsiniz.</string>
 </resources>
