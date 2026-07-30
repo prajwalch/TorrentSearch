@@ -117,6 +117,9 @@ class SettingsRepository @Inject constructor(
         ::SortOptions,
     )
 
+    val showBookmarkSwipeDeleteTip: Flow<Boolean> =
+        dataStore.getOrDefault(key = SHOW_BOOKMARK_SWIPE_DELETE_TIP, default = true)
+
     val protectionUnlockedProviderIds: Flow<Set<SearchProviderId>> =
         dataStore.getOrDefault(key = PROTECTION_UNLOCKED_PROVIDER_IDS, default = emptySet())
 
@@ -223,6 +226,10 @@ class SettingsRepository @Inject constructor(
         dataStore.setOrUpdate(key = BOOKMARKS_SORT_ORDER, value = order.name)
     }
 
+    suspend fun showBookmarkSwipeDeleteTip(show: Boolean) {
+        dataStore.setOrUpdate(key = SHOW_BOOKMARK_SWIPE_DELETE_TIP, value = show)
+    }
+
     suspend fun currentProtectionUnlockedProviderIds(): Set<SearchProviderId> =
         protectionUnlockedProviderIds.first()
 
@@ -276,6 +283,8 @@ class SettingsRepository @Inject constructor(
         // Bookmarks screen sort options.
         val BOOKMARKS_SORT_CRITERIA = stringPreferencesKey("bookmarks_sort_criteria")
         val BOOKMARKS_SORT_ORDER = stringPreferencesKey("bookmarks_sort_order")
+        val SHOW_BOOKMARK_SWIPE_DELETE_TIP =
+            booleanPreferencesKey("show_bookmark_swipe_delete_tip")
 
         val PROTECTION_UNLOCKED_PROVIDER_IDS =
             stringSetPreferencesKey("protection_unlocked_provider_ids")

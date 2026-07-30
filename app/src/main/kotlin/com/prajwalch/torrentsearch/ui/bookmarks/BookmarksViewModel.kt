@@ -32,6 +32,7 @@ import kotlin.time.Duration.Companion.seconds
 data class BookmarksUiState(
     val bookmarks: List<BookmarkedTorrent> = emptyList(),
     val sortOptions: SortOptions = SortOptions(),
+    val showSwipeDeleteTip: Boolean = true,
 )
 
 /** ViewModel that handles the business logic of Bookmarks screen. */
@@ -58,13 +59,15 @@ class BookmarksViewModel @Inject constructor(
     val uiState = combine(
         bookmarks,
         settingsRepository.bookmarksSortOptions,
-    ) { bookmarks, sortOptions ->
+        settingsRepository.showBookmarkSwipeDeleteTip,
+    ) { bookmarks, sortOptions, showSwipeDeleteTip ->
         val sortedBookmarks = bookmarks.sortedWith(
             createSortComparator(sortOptions.criteria, sortOptions.order)
         )
         BookmarksUiState(
             bookmarks = sortedBookmarks,
             sortOptions = sortOptions,
+            showSwipeDeleteTip = showSwipeDeleteTip,
         )
     }.stateIn(
         scope = viewModelScope,
@@ -73,6 +76,12 @@ class BookmarksViewModel @Inject constructor(
     )
     val torrentFileDownloadState = torrentFileDownloader.state
     val torrentFileDownloadEvents = torrentFileDownloader.events
+
+    fun hideSwipeToDeleteTip() {
+        viewModelScope.launch {
+            settingsRepository.showBookmarkSwipeDeleteTip(false)
+        }
+    }
 
     /** Deletes bookmark associated with the given id. */
     fun deleteBookmarkById(id: Long) {

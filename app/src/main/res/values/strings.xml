@@ -141,6 +141,7 @@
     <string name="bookmarks_dialog_message_delete_all">Bookmarks will be permanently removed</string>
     <string name="bookmarks_button_delete">Delete</string>
     <string name="bookmarks_empty_message">No bookmarks</string>
+    <string name="bookmarks_swipe_delete_tip">You can also swipe left on a bookmark to delete it.</string>
 
     <string name="browse_screen_title">Browse</string>
     <string name="browse_search_query_hint">Search torrents</string>

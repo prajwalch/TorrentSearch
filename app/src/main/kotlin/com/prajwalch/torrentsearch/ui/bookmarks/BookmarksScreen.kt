@@ -8,10 +8,8 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.RowScope
-import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.plus
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -56,6 +54,8 @@ import com.prajwalch.torrentsearch.ui.component.ArrowBackIconButton
 import com.prajwalch.torrentsearch.ui.component.CollapsibleSearchBar
 import com.prajwalch.torrentsearch.ui.component.ContentState
 import com.prajwalch.torrentsearch.ui.component.DeleteForeverIconButton
+import com.prajwalch.torrentsearch.ui.component.MessageCard
+import com.prajwalch.torrentsearch.ui.component.MessageType
 import com.prajwalch.torrentsearch.ui.component.RoundedDropdownMenu
 import com.prajwalch.torrentsearch.ui.component.SearchIconButton
 import com.prajwalch.torrentsearch.ui.component.SortDropdownMenu
@@ -229,16 +229,24 @@ fun BookmarksScreen(
                 title = { Text(stringResource(R.string.bookmarks_empty_message)) },
             )
         } else {
-            BookmarkList(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .consumeWindowInsets(innerPadding),
-                bookmarks = uiState.bookmarks,
-                onBookmarkClick = { selectedBookmark = it },
-                onDeleteBookmark = { viewModel.deleteBookmarkById(it.id) },
-                contentPadding = innerPadding + PaddingValues(MaterialTheme.spaces.large),
-                lazyListState = torrentListState.lazyListState,
-            )
+            Column(modifier = Modifier.padding(innerPadding)) {
+                AnimatedVisibility(uiState.showSwipeDeleteTip) {
+                    MessageCard(
+                        modifier = Modifier.padding(MaterialTheme.spaces.large),
+                        onClose = viewModel::hideSwipeToDeleteTip,
+                        messageType = MessageType.Tip,
+                        text = { Text(stringResource(R.string.bookmarks_swipe_delete_tip)) },
+                    )
+                }
+                BookmarkList(
+                    modifier = Modifier.fillMaxSize(),
+                    bookmarks = uiState.bookmarks,
+                    onBookmarkClick = { selectedBookmark = it },
+                    onDeleteBookmark = { viewModel.deleteBookmarkById(it.id) },
+                    contentPadding = PaddingValues(MaterialTheme.spaces.large),
+                    lazyListState = torrentListState.lazyListState,
+                )
+            }
         }
     }
 }
