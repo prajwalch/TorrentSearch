@@ -114,7 +114,10 @@ fun SearchProvidersScreen(
     if (showResetToDefaultDialog) {
         ResetToDefaultDialog(
             onDismiss = { showResetToDefaultDialog = false },
-            onReset = { viewModel.resetEnabledSearchProvidersToDefault() },
+            onReset = {
+                viewModel.resetEnabledSearchProvidersToDefault()
+                showResetToDefaultDialog = false
+            },
         )
     }
 
