@@ -33,6 +33,7 @@
 - [BlueRoms](https://blueroms.ws)
 - [BT4G](https://bt4gprx.com)
 - [Btsow](https://btsow.live)
+- [Torrentz](https://torrentz2.nz)
 
 ### What's changed
 

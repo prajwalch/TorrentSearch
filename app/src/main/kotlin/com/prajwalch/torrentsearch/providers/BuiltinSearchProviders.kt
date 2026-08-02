@@ -38,6 +38,7 @@ val BuiltinSearchProviders = listOf(
     TorrentDownloads(),
     TorrentKitty(),
     TorrentsCSV(),
+    Torrentz(),
     UIndex(),
     XXXClub(),
     XXXTracker(),
