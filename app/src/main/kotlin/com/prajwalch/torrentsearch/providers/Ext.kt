@@ -22,7 +22,7 @@ import org.jsoup.nodes.Element
 
 import java.security.MessageDigest
 
-class Ext : SearchProvider, TorrentDetailsProvider {
+class Ext : SearchProvider, LatestTorrentsProvider, TopTorrentsProvider, TorrentDetailsProvider {
     override val id = "extdotto"
     override val name = "Ext"
     override val url = "https://ext.to"
@@ -55,10 +55,7 @@ class Ext : SearchProvider, TorrentDetailsProvider {
     )
     private val resultsPageParser = ExtResultsPageParser(name)
 
-    override suspend fun search(
-        query: String,
-        context: SearchContext,
-    ): List<Torrent> {
+    override suspend fun search(query: String, context: SearchContext): List<Torrent> {
         val requestUrl = buildString {
             append(url)
             append("/browse/?")
@@ -76,6 +73,44 @@ class Ext : SearchProvider, TorrentDetailsProvider {
     override suspend fun getDetails(detailsPageUrl: String): TorrentDetails? {
         val responseHtml = HttpClient.get(detailsPageUrl)
         return ExtDetailsPageParser.parse(html = responseHtml, pageUrl = detailsPageUrl)
+    }
+
+    override suspend fun getLastestTorrents(category: Category): List<Torrent> {
+        val requestUrl = buildString {
+            append(url)
+            append("/browse/")
+            append("?sort=age")
+            append("&order=desc")
+            append("&age=4")
+
+            if (category != Category.All) {
+                categoryMap[category]?.let { categoryId ->
+                    append("&cat=$categoryId")
+                }
+            }
+        }
+        val responseHtml = HttpClient.get(requestUrl)
+
+        return resultsPageParser.parse(html = responseHtml, pageUrl = requestUrl)
+    }
+
+    override suspend fun getTopTorrents(category: Category): List<Torrent> {
+        val requestUrl = buildString {
+            append(url)
+            append("/browse/")
+            append("?sort=seeds")
+            append("&order=desc")
+            append("&age=4")
+
+            if (category != Category.All) {
+                categoryMap[category]?.let { categoryId ->
+                    append("&cat=$categoryId")
+                }
+            }
+        }
+        val responseHtml = HttpClient.get(requestUrl)
+
+        return resultsPageParser.parse(html = responseHtml, pageUrl = requestUrl)
     }
 }
 
