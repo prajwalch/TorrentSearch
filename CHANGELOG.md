@@ -1,8 +1,56 @@
 # Unreleased
 
-- Fixed `TorrentDatebase`, which was failing to handle upload and last checked date of torrent details
-- Fixed `TorrentDownload`, which was returning truncated torrent names
-- Fixed `UIndex` to correctly extract seeders and peers from details page (6dd36cb1)
+### What's new
+
+- Added support for using torrent providers that are protected by Cloudflare.
+- Added a new [DNS over HTTPS](https://en.wikipedia.org/wiki/DNS_over_HTTPS) setting.
+- Added an option to auto-detect supported categories when adding new Torznab provider.
+- Added pull-to-refresh support on the torrent details screen.
+- The swipe-to-delete icon on bookmarks now dims until you've swiped far enough to trigger the action,
+  so it's clearer when the delete will actually go through.
+- Resetting search providers to default now asks for confirmation first.
+- A one-time tip now shows up to let new users about the swipe-to-delete gesture on bookmarks.
+- `Eztv` now provides torrent details.
+- `TorrentDownloads` now provides torrent details and; latest and top torrents.
+- Added Portuguese language by [@SantosSi](https://github.com/SantosSi)
+
+#### New providers
+
+- [1337x](https://1337x.to) (Cloudflare-protected)
+- [Ext.to](https://ext.to) (Cloudflare-protected)
+- [Rutor](https://rutor.info)
+- [AudoBookBay](https://audiobookbay.lu)
+- [OxTorrent](https://oxtorrent.co)
+- [LinuxTracker](https://linuxtracker.org)
+- [Mikanani](https://mikanani.me)
+- [TorrentKitty](https://torrentkitty.tv)
+- [Torrent9](https://www6.torrent9.to)
+- [BangumiMoe](https://bangumi.moe)
+- [9Mag](https://9mag.net)
+- [AniLibria](https://www.anilibria.top)
+- [MegaPeer](https://megapeer.vip)
+- [Btdig](https://btdig.com)
+- [BlueRoms](https://blueroms.ws)
+- [BT4G](https://bt4gprx.com)
+
+### What's changed
+
+- Eztv is now marked as Cloudflare-protected.
+- TorrentDownloads is now marked as Cloudflare-protected.
+- TorrentDatabase is now marked as Cloudflare-protected.
+- UIndex is now marked as Cloudflare-protected.
+- Torrent size, seeders, and peers are now hidden instead of showing as `0` or `0 KB` when that information isn't available.
+- feat(SettingsScreen): changed the dialog based Item to Expandable Container for Theme
+
+### What's fixed
+
+- Fixed the TorrentDatebase provider failing to load a torrent's upload and last-checked dates on the details screen.
+- Fixed the TorrentDownload provider returning truncated torrent names.
+- Fixed the UIndex provider not correctly showing seeders and peers on the details screen.
+- Fixed an "Unexpected error" message that showed up when manually checking a Torznab connection.
+- Fixed an issue where Torznab search providers sometimes treated a magnet link as if it were a file download link.
+- Fixed search triggering with an empty query when the search bar was expanded on the home screen.
+- Fixed top bar action icons on the torrent details screen not rendering correctly over certain hero background images.
 
 # v0.5.0
 
