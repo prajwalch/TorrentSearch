@@ -32,6 +32,7 @@
 - [Btdig](https://btdig.com)
 - [BlueRoms](https://blueroms.ws)
 - [BT4G](https://bt4gprx.com)
+- [Btsow](https://btsow.live)
 
 ### What's changed
 

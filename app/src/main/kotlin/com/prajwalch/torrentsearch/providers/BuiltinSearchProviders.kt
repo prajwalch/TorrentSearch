@@ -10,6 +10,7 @@ val BuiltinSearchProviders = listOf(
     BitSearch(),
     BlueRoms(),
     Bt4g(),
+    Btsow(),
     Dmhy(),
     Ext(),
     Eztv(),
