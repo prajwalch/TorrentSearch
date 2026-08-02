@@ -210,7 +210,7 @@ private class ExtResultsPageParser(private val providerName: String) {
         private const val TORRENT_NAME = "td:nth-child(1) > div:nth-child(1) > a.torrent-title-link"
         private const val SIZE = "td:nth-child(2) > div > span:nth-child(2)"
         private const val SEEDERS = "td:nth-child(5) > div > span:nth-child(2)"
-        private const val PEERS = "td:nth-child(6) > div > span:nth-child(3)"
+        private const val PEERS = "td:nth-child(6) > div > span:nth-child(2)"
         private const val UPLOAD_DATE = "td:nth-child(4) > div > span:nth-child(2)"
         private const val CATEGORY =
             "td:nth-child(1) > div:nth-child(1) > div.related-posted > a:nth-child(2)"
