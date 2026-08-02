@@ -26,6 +26,7 @@ class Ext : SearchProvider, TorrentDetailsProvider {
     override val id = "extdotto"
     override val name = "Ext"
     override val url = "https://ext.to"
+    override val cloudflareSolverUrl = "$url/browse/?q=ubuntu"
     override val safetyStatus = SearchProviderSafetyStatus.Safe
     override val supportedCategories = setOf(
         Category.Anime,
