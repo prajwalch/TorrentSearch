@@ -10,10 +10,8 @@ import android.provider.Settings
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
-import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -22,6 +20,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Switch
@@ -35,7 +34,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalUriHandler
@@ -53,15 +51,15 @@ import com.prajwalch.torrentsearch.domain.model.MaxNumResults
 import com.prajwalch.torrentsearch.ui.categoryStringResource
 import com.prajwalch.torrentsearch.ui.component.ArrowBackIconButton
 import com.prajwalch.torrentsearch.ui.darkThemeStringResource
-import com.prajwalch.torrentsearch.ui.displayName
 import com.prajwalch.torrentsearch.ui.settings.component.ClearViewedTorrentsDialog
-import com.prajwalch.torrentsearch.ui.settings.component.DohProvidersDropdownMenu
+import com.prajwalch.torrentsearch.ui.settings.component.DohProvidersMenu
 import com.prajwalch.torrentsearch.ui.settings.component.ExpandableItem
 import com.prajwalch.torrentsearch.ui.settings.component.MaxNumResultsDialog
 import com.prajwalch.torrentsearch.ui.settings.component.SettingsListItem
 import com.prajwalch.torrentsearch.ui.settings.component.SettingsSectionTitle
 import com.prajwalch.torrentsearch.ui.sortCriteriaStringResource
 import com.prajwalch.torrentsearch.ui.sortOrderStringResource
+import com.prajwalch.torrentsearch.ui.theme.spaces
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -412,6 +410,7 @@ private fun SearchHistorySettings(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun AdvancedSettings(
     uiState: AdvancedSettingsUiState,
@@ -469,46 +468,28 @@ private fun AdvancedSettings(
             },
         )
 
-        Box {
-            var showDohProviders by rememberSaveable(uiState.dohProvider) { mutableStateOf(false) }
-            val trailingIconRotation by animateFloatAsState(if (showDohProviders) 180f else 0f)
+        var showDohProviders by rememberSaveable(uiState.dohProvider) { mutableStateOf(false) }
 
-            ListItem(
-                modifier = Modifier.clickable(onClick = { showDohProviders = true }),
-                leadingContent = {
-                    Icon(
-                        painter = painterResource(R.drawable.ic_dns),
-                        contentDescription = null,
+        ListItem(
+            leadingContent = {
+                Icon(
+                    painter = painterResource(R.drawable.ic_dns),
+                    contentDescription = null,
+                )
+            },
+            headlineContent = { Text(text = stringResource(R.string.settings_dns_over_https)) },
+            supportingContent = {
+                Column(verticalArrangement = Arrangement.spacedBy(MaterialTheme.spaces.medium)) {
+                    Text(stringResource(R.string.settings_dns_over_https_summary))
+                    DohProvidersMenu(
+                        expanded = showDohProviders,
+                        onExpandedChange = { showDohProviders = it },
+                        selectedDohProvider = uiState.dohProvider,
+                        onDohProviderSelect = onSetDohProvider,
                     )
-                },
-                headlineContent = { Text(text = stringResource(R.string.settings_dns_over_https)) },
-                trailingContent = {
-                    Icon(
-                        modifier = Modifier.rotate(trailingIconRotation),
-                        painter = painterResource(R.drawable.ic_keyboard_arrow_down),
-                        contentDescription = null,
-                    )
-                },
-                supportingContent = {
-                    Column(verticalArrangement = Arrangement.Center) {
-                        Text(
-                            stringResource(
-                                R.string.settings_dns_over_https_provider_format,
-                                uiState.dohProvider.displayName(),
-                            )
-                        )
-                        Text(stringResource(R.string.settings_dns_over_https_summary))
-                    }
-                },
-            )
-
-            DohProvidersDropdownMenu(
-                expanded = showDohProviders,
-                onDismiss = { showDohProviders = false },
-                selectedDohProvider = uiState.dohProvider,
-                onDohProviderSelect = onSetDohProvider,
-            )
-        }
+                }
+            },
+        )
 
         SettingsListItem(
             onClick = onExportLogsToFile,
