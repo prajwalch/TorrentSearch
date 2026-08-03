@@ -210,7 +210,7 @@
     <string name="settings_open_torrent_details_in_app">Torrent ayrıntılarını uygulamada aç</string>
     <string name="settings_open_torrent_details_in_app_summary">Torrent ayrıntılarını doğrudan uygulamanın kendi ekranında açar</string>
     <string name="settings_dns_over_https">HTTPS üzerinden DNS (DoH)</string>
-    <string name="settings_dns_over_https_label_provider">Sağlayıcı: %1$s</string>
+    <string name="settings_dns_over_https_label_provider">Sağlayıcı</string>
     <string name="settings_dns_over_https_summary">Ağınızın varsayılan DNS\'i yerine güvenli bir bağlantı üzerinden alan adlarını çözümler</string>
     <string name="settings_export_logs_to_file">Günlükleri dosyaya aktar</string>
     <string name="settings_export_logs_to_file_summary">Sorunların giderilmesine yardımcı olabilecek uygulama etkinliklerini içeren bir dosya oluşturur</string>
@@ -225,4 +225,7 @@
     <string name="search_providers_reset_to_default_button_confirm">Sıfırla</string>
     <string name="search_providers_reset_to_default_button_dismiss">İptal</string>
     <string name="bookmarks_swipe_delete_tip">Ayrıca, bir yer imini silmek için sola kaydırabilirsiniz.</string>
+    <string name="home_search_providers_not_enabled_msg">Henüz herhangi bir arama sağlayıcısı etkinleştirilmedi. Tavsiye edilenleri etkinleştirmek ister misiniz?</string>
+    <string name="home_button_enable_recommended">Tavsiye edilenleri etkinleştir</string>
+    <string name="home_button_i_will_choose_myself">Kendim seçeceğim</string>
 </resources>
