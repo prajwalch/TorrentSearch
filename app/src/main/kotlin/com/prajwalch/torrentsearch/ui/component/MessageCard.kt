@@ -3,6 +3,7 @@ package com.prajwalch.torrentsearch.ui.component
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Card
@@ -35,6 +36,8 @@ fun MessageCard(
     messageType: MessageType,
     text: @Composable () -> Unit,
     modifier: Modifier = Modifier,
+    confirmButton: (@Composable () -> Unit)? = null,
+    dismissButton: (@Composable () -> Unit)? = null,
 ) {
     Card(
         modifier = modifier,
@@ -44,25 +47,40 @@ fun MessageCard(
             contentColor = messageType.contentColor(),
         ),
     ) {
-        Row(
+        Column(
             modifier = Modifier.padding(MaterialTheme.spaces.large),
-            horizontalArrangement = Arrangement.spacedBy(MaterialTheme.spaces.medium),
-            verticalAlignment = Alignment.CenterVertically,
+            verticalArrangement = Arrangement.spacedBy(MaterialTheme.spaces.medium),
         ) {
-            Icon(
-                painter = painterResource(messageType.iconRes()),
-                contentDescription = null,
-            )
-            CompositionLocalProvider(LocalTextStyle provides MaterialTheme.typography.bodyLarge) {
-                Box(modifier = Modifier.weight(1f)) {
-                    text()
-                }
-            }
-            IconButton(onClick = onClose) {
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(MaterialTheme.spaces.medium),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
                 Icon(
-                    painter = painterResource(R.drawable.ic_close),
+                    painter = painterResource(messageType.iconRes()),
                     contentDescription = null,
                 )
+                CompositionLocalProvider(
+                    LocalTextStyle provides MaterialTheme.typography.bodyLarge
+                ) {
+                    Box(modifier = Modifier.weight(1f)) {
+                        text()
+                    }
+                }
+                IconButton(onClick = onClose) {
+                    Icon(
+                        painter = painterResource(R.drawable.ic_close),
+                        contentDescription = null,
+                    )
+                }
+            }
+
+            Row(
+                modifier = Modifier.align(Alignment.End),
+                horizontalArrangement = Arrangement.spacedBy(MaterialTheme.spaces.small),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                dismissButton?.invoke()
+                confirmButton?.invoke()
             }
         }
     }
