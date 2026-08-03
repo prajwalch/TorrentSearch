@@ -211,6 +211,26 @@ class SearchProvidersManager @Inject constructor(
     }
 
     /**
+     * Enables the default set of search providers.
+     */
+    suspend fun enableDefaultSearchProviders() {
+        val defaultProviderIds = builtinProviders
+            .filter { it.enabledByDefault && !it.isCloudflareProtected }
+            .map { it.id }
+            .toSet()
+
+        settingsRepository.setEnabledSearchProviderIds(defaultProviderIds)
+        settingsRepository.setSearchProvidersInitialized(true)
+    }
+
+    /**
+     * Skips enabling the default set of search providers.
+     */
+    suspend fun skipDefaultSearchProviders() {
+        settingsRepository.setSearchProvidersInitialized(true)
+    }
+
+    /**
      * Disables the provider associated with the given ID.
      */
     suspend fun disableProvider(id: SearchProviderId) {

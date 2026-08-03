@@ -109,6 +109,7 @@ fun TorrentSearchApp(
                 onNavigateToSettings = { navController.navigateToSettings() },
                 onSearch = { query, category -> navController.navigate(Search(query, category)) },
                 onBrowse = { category -> navController.navigate(Browse(category)) },
+                onNavigateToSearchProviders = { navController.navigateToSearchProviders() },
             )
         }
 

@@ -78,6 +78,9 @@
     <string name="home_search_query_hint">Search…</string>
     <string name="home_button_search">Search</string>
     <string name="home_button_browse">Browse</string>
+    <string name="home_search_providers_not_enabled_msg">No search providers are enabled yet. Want to turn on the recommended ones?</string>
+    <string name="home_button_enable_recommended">Enable recommended</string>
+    <string name="home_button_i_will_choose_myself">I\'ll choose myself</string>
 
     <string name="search_screen_title">Search</string>
     <string name="search_action_refresh">Refresh</string>

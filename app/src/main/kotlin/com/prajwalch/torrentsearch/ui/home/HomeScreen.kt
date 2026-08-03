@@ -1,6 +1,8 @@
 package com.prajwalch.torrentsearch.ui.home
 
 import android.content.res.Configuration
+
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -28,6 +30,7 @@ import com.prajwalch.torrentsearch.R
 import com.prajwalch.torrentsearch.domain.model.Category
 import com.prajwalch.torrentsearch.ui.home.component.AppBranding
 import com.prajwalch.torrentsearch.ui.home.component.SearchBox
+import com.prajwalch.torrentsearch.ui.home.component.SearchProvidersNotEnabledMessage
 import com.prajwalch.torrentsearch.ui.theme.spaces
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -38,6 +41,7 @@ fun HomeScreen(
     onBrowse: (Category) -> Unit,
     onNavigateToSettings: () -> Unit,
     onSearch: (String, Category) -> Unit,
+    onNavigateToSearchProviders: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: HomeViewModel = hiltViewModel(),
 ) {
@@ -64,6 +68,18 @@ fun HomeScreen(
                 .verticalScroll(rememberScrollState()),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
+            AnimatedVisibility(!uiState.searchProvidersInitialized) {
+                SearchProvidersNotEnabledMessage(
+                    modifier = Modifier.padding(MaterialTheme.spaces.large),
+                    onEnableRecommended = { viewModel.enableDefaultSearchProviders() },
+                    onSkip = {
+                        viewModel.skipDefaultSearchProviders()
+                        onNavigateToSearchProviders()
+                    },
+                    onClose = { viewModel.skipDefaultSearchProviders() },
+                )
+            }
+
             // TODO: Use WindowSizeClass for better responsive layout.
             val configuration = LocalConfiguration.current
             val isPortraitMode = configuration.orientation == Configuration.ORIENTATION_PORTRAIT

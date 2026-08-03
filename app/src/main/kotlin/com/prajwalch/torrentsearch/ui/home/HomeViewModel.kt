@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 
 import com.prajwalch.torrentsearch.data.repository.SearchHistoryRepository
 import com.prajwalch.torrentsearch.data.repository.SettingsRepository
+import com.prajwalch.torrentsearch.domain.SearchProvidersManager
 import com.prajwalch.torrentsearch.domain.model.Category
 import com.prajwalch.torrentsearch.domain.model.SearchHistory
 
@@ -31,6 +32,7 @@ data class HomeUiState(
     val categories: List<Category> = Category.entries,
     val selectedCategory: Category = Category.All,
     val searchHistoryEnabled: Boolean = true,
+    val searchProvidersInitialized: Boolean = false,
 )
 
 /**
@@ -40,6 +42,7 @@ data class HomeUiState(
 class HomeViewModel @Inject constructor(
     searchHistoryRepository: SearchHistoryRepository,
     private val settingsRepository: SettingsRepository,
+    private val searchProvidersManager: SearchProvidersManager,
 ) : ViewModel() {
     /**
      * The internal source for the current search query used only for
@@ -90,7 +93,14 @@ class HomeViewModel @Inject constructor(
         selectableCategories,
         selectedCategory,
         settingsRepository.saveSearchHistory,
-    ) { histories, selectableCategories, selectedCategory, searchHistoryEnabled ->
+        settingsRepository.searchProvidersInitialized,
+    ) {
+            histories,
+            selectableCategories,
+            selectedCategory,
+            searchHistoryEnabled,
+            searchProvidersInitialized,
+        ->
         val selectedCategory = when {
             selectedCategory in selectableCategories -> selectedCategory
             else -> Category.All
@@ -101,6 +111,7 @@ class HomeViewModel @Inject constructor(
             categories = selectableCategories,
             selectedCategory = selectedCategory,
             searchHistoryEnabled = searchHistoryEnabled,
+            searchProvidersInitialized = searchProvidersInitialized,
         )
     }.stateIn(
         scope = viewModelScope,
@@ -135,5 +146,17 @@ class HomeViewModel @Inject constructor(
      */
     fun filterSearchHistories(query: String) {
         searchQuery.value = query
+    }
+
+    fun enableDefaultSearchProviders() {
+        viewModelScope.launch {
+            searchProvidersManager.enableDefaultSearchProviders()
+        }
+    }
+
+    fun skipDefaultSearchProviders() {
+        viewModelScope.launch {
+            searchProvidersManager.skipDefaultSearchProviders()
+        }
     }
 }
