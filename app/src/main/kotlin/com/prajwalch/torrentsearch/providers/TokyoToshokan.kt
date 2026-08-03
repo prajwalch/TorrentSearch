@@ -4,7 +4,7 @@ import com.prajwalch.torrentsearch.constant.TorrentSearchConstants
 import com.prajwalch.torrentsearch.domain.model.Category
 import com.prajwalch.torrentsearch.domain.model.Torrent
 import com.prajwalch.torrentsearch.domain.model.TorrentDetails
-import com.prajwalch.torrentsearch.network.HttpClient
+import com.prajwalch.torrentsearch.network.NetworkClient
 import com.prajwalch.torrentsearch.util.FileSizeUtils
 import com.prajwalch.torrentsearch.util.TorrentDateParser
 import com.prajwalch.torrentsearch.util.TorrentUtils
@@ -15,7 +15,8 @@ import kotlinx.coroutines.withContext
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Element
 
-class TokyoToshokan : SearchProvider, TorrentDetailsProvider, LatestTorrentsProvider,
+class TokyoToshokan(private val networkClient: NetworkClient) : SearchProvider,
+    TorrentDetailsProvider, LatestTorrentsProvider,
     TopTorrentsProvider {
     override val id = "tokyotoshokan"
     override val name = "TokyoToshokan"
@@ -40,24 +41,24 @@ class TokyoToshokan : SearchProvider, TorrentDetailsProvider, LatestTorrentsProv
     )
     private val resultsPageParser = TokyoToshokanResultsPageParser(providerName = name)
 
-    override suspend fun search(query: String, context: SearchContext): List<Torrent> {
+    override suspend fun search(query: String, category: Category): List<Torrent> {
         val requestUrl = buildString {
             append(url)
             append("/search.php")
             append("?terms=$query")
             // Type = Anime (1)
-            val categoryId = categoryMap[context.category] ?: categoryMap[Category.All]!!
+            val categoryId = categoryMap[category] ?: categoryMap[Category.All]!!
             append("&type=$categoryId")
             // Match query with torrent name.
             append("&searchName=true")
         }
 
-        val responseHtml = context.httpClient.get(url = requestUrl)
+        val responseHtml = networkClient.getText(url = requestUrl)
         return resultsPageParser.parse(html = responseHtml, pageUrl = requestUrl)
     }
 
     override suspend fun getDetails(detailsPageUrl: String): TorrentDetails? {
-        val responseHtml = HttpClient.get(detailsPageUrl)
+        val responseHtml = networkClient.getText(detailsPageUrl)
         return TokyoToshokanDetailsPageParser.parse(html = responseHtml, pageUrl = detailsPageUrl)
     }
 
@@ -70,7 +71,7 @@ class TokyoToshokan : SearchProvider, TorrentDetailsProvider, LatestTorrentsProv
                 categoryMap[category]?.let { append("?cat=$it") }
             }
         }
-        val responseHtml = HttpClient.get(requestUrl)
+        val responseHtml = networkClient.getText(requestUrl)
 
         return resultsPageParser.parse(html = responseHtml, pageUrl = requestUrl)
     }

@@ -8,7 +8,7 @@ import com.prajwalch.torrentsearch.domain.model.Category
 import com.prajwalch.torrentsearch.domain.model.CloudflareProtectionStatus
 import com.prajwalch.torrentsearch.domain.model.SearchProviderInfo
 import com.prajwalch.torrentsearch.domain.model.TorznabConfig
-import com.prajwalch.torrentsearch.network.HttpClient
+import com.prajwalch.torrentsearch.network.NetworkClient
 import com.prajwalch.torrentsearch.providers.LatestTorrentsProvider
 import com.prajwalch.torrentsearch.providers.SearchProvider
 import com.prajwalch.torrentsearch.providers.SearchProviderId
@@ -44,9 +44,9 @@ data class ProtectionStatusUpdateResult(
  */
 class SearchProvidersManager @Inject constructor(
     private val builtinProviders: List<@JvmSuppressWildcards SearchProvider>,
-    private val defaultEnabledProviderIds: Set<String>,
     private val torznabConfigRepository: TorznabConfigRepository,
     private val settingsRepository: SettingsRepository,
+    private val networkClient: NetworkClient,
 ) {
     /**
      * Returns instances of enabled providers, filtering them by their
@@ -80,7 +80,7 @@ class SearchProvidersManager @Inject constructor(
         enabledProviderIds: Set<SearchProviderId>,
     ): List<TorznabSearchProvider> =
         torznabConfigRepository.getCurrentConfigsByIds(enabledProviderIds)
-            .map(::TorznabSearchProvider)
+            .map { config -> TorznabSearchProvider(config, networkClient) }
 
     /**
      * Finds a torrent details provider associated with the given name.
@@ -264,7 +264,7 @@ class SearchProvidersManager @Inject constructor(
         settingsRepository.removeProtectionUnlockedProviderId(id)
         builtinProviders.find { it.id == id }?.let {
             withContext(Dispatchers.IO) {
-                HttpClient.removeCookie(it.cloudflareSolverUrl ?: it.url)
+                NetworkClient.removeCookie(it.cloudflareSolverUrl ?: it.url)
             }
         }
         disableProvider(id)
@@ -281,9 +281,9 @@ class SearchProvidersManager @Inject constructor(
 
                 launch {
                     try {
-                        if (HttpClient.isUrlChallenged(cloudflareSolverUrl)) {
+                        if (networkClient.isUrlChallenged(cloudflareSolverUrl)) {
                             settingsRepository.removeProtectionUnlockedProviderId(provider.id)
-                            HttpClient.removeCookie(cloudflareSolverUrl)
+                            NetworkClient.removeCookie(cloudflareSolverUrl)
 
                             numLockedProviders.incrementAndFetch()
                         }
@@ -312,9 +312,9 @@ class SearchProvidersManager @Inject constructor(
      * Resets current providers setting to default.
      */
     suspend fun resetToDefault() {
-        settingsRepository.setEnabledSearchProviderIds(defaultEnabledProviderIds)
+        settingsRepository.setEnabledSearchProviderIds(emptySet())
         settingsRepository.setProtectionUnlockedProviderIds(emptySet())
-        HttpClient.removeAllCookies()
+        NetworkClient.removeAllCookies()
     }
 
     /**

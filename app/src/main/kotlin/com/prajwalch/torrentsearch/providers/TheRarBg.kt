@@ -4,7 +4,7 @@ import com.prajwalch.torrentsearch.R
 import com.prajwalch.torrentsearch.domain.model.Category
 import com.prajwalch.torrentsearch.domain.model.Torrent
 import com.prajwalch.torrentsearch.domain.model.TorrentDetails
-import com.prajwalch.torrentsearch.network.HttpClient
+import com.prajwalch.torrentsearch.network.NetworkClient
 import com.prajwalch.torrentsearch.util.FileSizeUtils
 import com.prajwalch.torrentsearch.util.TorrentDateParser
 import com.prajwalch.torrentsearch.util.TorrentUtils
@@ -17,7 +17,7 @@ import kotlinx.coroutines.withContext
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Element
 
-class TheRarBg :
+class TheRarBg(private val networkClient: NetworkClient) :
     SearchProvider,
     TorrentDetailsProvider,
     LatestTorrentsProvider,
@@ -41,26 +41,26 @@ class TheRarBg :
     )
     override val enabledByDefault = false
 
-    private val resultsPageParser = TheRarBgResultsPageParser(providerName = name)
+    private val resultsPageParser = TheRarBgResultsPageParser(name, networkClient)
 
-    override suspend fun search(query: String, context: SearchContext): List<Torrent> {
+    override suspend fun search(query: String, category: Category): List<Torrent> {
         val requestUrl = buildString {
             append(url)
             append("/get-posts")
             append("/keywords:$query")
 
-            if (context.category != Category.All) {
-                val category = categoryName(raw = context.category)
+            if (category != Category.All) {
+                val category = categoryName(raw = category)
                 append(":category:$category")
             }
         }
-        val resultPageHtml = context.httpClient.get(requestUrl)
+        val resultPageHtml = networkClient.getText(requestUrl)
 
         return resultsPageParser.parse(html = resultPageHtml, pageUrl = requestUrl)
     }
 
     override suspend fun getDetails(detailsPageUrl: String): TorrentDetails? {
-        val responseHtml = HttpClient.get(detailsPageUrl)
+        val responseHtml = networkClient.getText(detailsPageUrl)
         return TheRarBgDetailsPageParser.parse(responseHtml)
     }
 
@@ -75,7 +75,7 @@ class TheRarBg :
                 append(":category:$categoryName")
             }
         }
-        val responseHtml = HttpClient.get(requestUrl)
+        val responseHtml = networkClient.getText(requestUrl)
 
         return resultsPageParser.parse(html = responseHtml, pageUrl = requestUrl)
     }
@@ -91,7 +91,7 @@ class TheRarBg :
                 append(":category:$categoryName")
             }
         }
-        val responseHtml = HttpClient.get(requestUrl)
+        val responseHtml = networkClient.getText(requestUrl)
 
         return resultsPageParser.parse(html = responseHtml, pageUrl = requestUrl)
     }
@@ -111,7 +111,10 @@ class TheRarBg :
     }
 }
 
-private class TheRarBgResultsPageParser(private val providerName: String) {
+private class TheRarBgResultsPageParser(
+    private val providerName: String,
+    private val networkClient: NetworkClient,
+) {
     suspend fun parse(html: String, pageUrl: String): List<Torrent> =
         withContext(Dispatchers.Default) {
             Jsoup.parse(html, pageUrl)
@@ -125,7 +128,7 @@ private class TheRarBgResultsPageParser(private val providerName: String) {
         val detailsPageUrl = listItem.selectFirst(DETAILS_PAGE_URL)
             ?.attr("abs:href")
             ?: return null
-        val detailsPageHtml = HttpClient.get(detailsPageUrl)
+        val detailsPageHtml = networkClient.getText(detailsPageUrl)
         val torrentDetails = TheRarBgDetailsPageParser.parse(detailsPageHtml) ?: return null
         val infoHash = TorrentUtils.getInfoHashFromMagnetUri(torrentDetails.magnetUri)
 

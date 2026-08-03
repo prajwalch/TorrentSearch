@@ -3,7 +3,7 @@ package com.prajwalch.torrentsearch.providers
 import com.prajwalch.torrentsearch.domain.model.Category
 import com.prajwalch.torrentsearch.domain.model.Torrent
 import com.prajwalch.torrentsearch.domain.model.TorrentDetails
-import com.prajwalch.torrentsearch.network.HttpClient
+import com.prajwalch.torrentsearch.network.NetworkClient
 import com.prajwalch.torrentsearch.util.FileSizeUtils
 import com.prajwalch.torrentsearch.util.TorrentDateParser
 import com.prajwalch.torrentsearch.util.TorrentUtils
@@ -14,7 +14,7 @@ import kotlinx.coroutines.withContext
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Element
 
-class TorrentDatabase : SearchProvider,
+class TorrentDatabase(private val networkClient: NetworkClient) : SearchProvider,
     TorrentDetailsProvider,
     LatestTorrentsProvider,
     TopTorrentsProvider {
@@ -46,23 +46,23 @@ class TorrentDatabase : SearchProvider,
 
     private val resultsPageParser = TdResultsPageParser(providerName = name)
 
-    override suspend fun search(query: String, context: SearchContext): List<Torrent> {
+    override suspend fun search(query: String, category: Category): List<Torrent> {
         val requestUrl = buildString {
             append(url)
             append("/newest")
             append("?q=$query")
 
-            categoryMap[context.category]?.let {
+            categoryMap[category]?.let {
                 append("&category=$it")
             }
         }
 
-        val responseHtml = context.httpClient.get(url = requestUrl)
+        val responseHtml = networkClient.getText(url = requestUrl)
         return resultsPageParser.parse(html = responseHtml, pageUrl = requestUrl)
     }
 
     override suspend fun getDetails(detailsPageUrl: String): TorrentDetails? {
-        val responseHtml = HttpClient.get(detailsPageUrl)
+        val responseHtml = networkClient.getText(detailsPageUrl)
         return TdDetailsPageParser.parse(responseHtml)
     }
 
@@ -77,7 +77,7 @@ class TorrentDatabase : SearchProvider,
                     ?.let { append("_$it") }
             }
         }
-        val responseHtml = HttpClient.get(requestUrl)
+        val responseHtml = networkClient.getText(requestUrl)
 
         return resultsPageParser.parse(html = responseHtml, pageUrl = requestUrl)
     }
@@ -90,7 +90,7 @@ class TorrentDatabase : SearchProvider,
         } ?: return emptyList()
 
         val requestUrl = "$url/top_seeded_$categoryString"
-        val responseHtml = HttpClient.get(requestUrl)
+        val responseHtml = networkClient.getText(requestUrl)
 
         return resultsPageParser.parse(html = responseHtml, pageUrl = requestUrl)
     }

@@ -3,7 +3,7 @@ package com.prajwalch.torrentsearch.providers
 import com.prajwalch.torrentsearch.domain.model.Category
 import com.prajwalch.torrentsearch.domain.model.Torrent
 import com.prajwalch.torrentsearch.domain.model.TorrentDetails
-import com.prajwalch.torrentsearch.network.HttpClient
+import com.prajwalch.torrentsearch.network.NetworkClient
 import com.prajwalch.torrentsearch.util.TorrentDateParser
 import com.prajwalch.torrentsearch.util.TorrentUtils
 
@@ -16,7 +16,8 @@ import org.jsoup.nodes.TextNode
 
 import java.time.Instant
 
-class AnimeTosho : SearchProvider, TorrentDetailsProvider {
+class AnimeTosho(private val networkClient: NetworkClient) : SearchProvider,
+    TorrentDetailsProvider {
     override val id = "animetosho"
     override val name = "AnimeTosho"
     override val url = "https://animetosho.org"
@@ -26,15 +27,15 @@ class AnimeTosho : SearchProvider, TorrentDetailsProvider {
 
     private val resultsPageParser = AnimeToshoResultsPageParser(name)
 
-    override suspend fun search(query: String, context: SearchContext): List<Torrent> {
+    override suspend fun search(query: String, category: Category): List<Torrent> {
         val requestUrl = "$url/search?q=$query"
-        val responseHtml = context.httpClient.get(url = requestUrl)
+        val responseHtml = networkClient.getText(requestUrl)
 
         return resultsPageParser.parse(responseHtml)
     }
 
     override suspend fun getDetails(detailsPageUrl: String): TorrentDetails? {
-        val responseHtml = HttpClient.get(detailsPageUrl)
+        val responseHtml = networkClient.getText(detailsPageUrl)
         return AnimeToshoDetailsPageParser.parse(html = responseHtml, baseUrl = detailsPageUrl)
     }
 }

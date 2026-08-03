@@ -3,7 +3,7 @@ package com.prajwalch.torrentsearch.providers
 import com.prajwalch.torrentsearch.domain.model.Category
 import com.prajwalch.torrentsearch.domain.model.Torrent
 import com.prajwalch.torrentsearch.domain.model.TorrentDetails
-import com.prajwalch.torrentsearch.network.HttpClient
+import com.prajwalch.torrentsearch.network.NetworkClient
 import com.prajwalch.torrentsearch.util.TorrentDateParser
 import com.prajwalch.torrentsearch.util.TorrentUtils
 
@@ -18,7 +18,7 @@ import org.jsoup.nodes.Element
 
 import java.time.format.DateTimeParseException
 
-class BitSearch :
+class BitSearch(private val networkClient: NetworkClient) :
     SearchProvider,
     TorrentDetailsProvider,
     LatestTorrentsProvider,
@@ -43,29 +43,19 @@ class BitSearch :
 
     private val resultsPageParser = BitSearchResultsPageParser(name)
 
-    override suspend fun search(query: String, context: SearchContext): List<Torrent> =
+    override suspend fun search(query: String, category: Category): List<Torrent> =
         coroutineScope {
-            val categoryId = getCategoryId(category = context.category)
+            val categoryId = getCategoryId(category = category)
             val searches = (1..5).map { page ->
                 async(Dispatchers.IO) {
-                    search(
-                        query = query,
-                        categoryId = categoryId,
-                        httpClient = context.httpClient,
-                        page = page,
-                    )
+                    search(query = query, categoryId = categoryId, page = page)
                 }
             }
 
             searches.awaitAll().flatten()
         }
 
-    private suspend fun search(
-        query: String,
-        categoryId: Int?,
-        httpClient: HttpClient,
-        page: Int,
-    ): List<Torrent> {
+    private suspend fun search(query: String, categoryId: Int?, page: Int): List<Torrent> {
         val requestUrl = buildString {
             append(url)
             append("/search")
@@ -79,7 +69,7 @@ class BitSearch :
             }
         }
 
-        val responseHtml = httpClient.get(url = requestUrl)
+        val responseHtml = networkClient.getText(requestUrl)
         return resultsPageParser.parse(html = responseHtml, pageUrl = requestUrl)
     }
 
@@ -97,7 +87,7 @@ class BitSearch :
     }
 
     override suspend fun getDetails(detailsPageUrl: String): TorrentDetails? {
-        val responseHtml = HttpClient.get(detailsPageUrl)
+        val responseHtml = networkClient.getText(detailsPageUrl)
         return BitSearchDetailsPageParser.parse(html = responseHtml, pageUrl = detailsPageUrl)
     }
 
@@ -107,7 +97,7 @@ class BitSearch :
             append("/latest")
             getCategoryId(category)?.let { append("?category=$it") }
         }
-        val responseHtml = HttpClient.get(requestUrl)
+        val responseHtml = networkClient.getText(requestUrl)
 
         return resultsPageParser.parse(html = responseHtml, pageUrl = requestUrl)
     }
@@ -118,7 +108,7 @@ class BitSearch :
             append("/trending")
             getCategoryId(category)?.let { append("?category=$it") }
         }
-        val responseHtml = HttpClient.get(requestUrl)
+        val responseHtml = networkClient.getText(requestUrl)
 
         return resultsPageParser.parse(html = responseHtml, pageUrl = requestUrl)
     }

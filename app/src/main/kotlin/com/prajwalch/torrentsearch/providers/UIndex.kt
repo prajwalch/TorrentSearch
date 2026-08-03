@@ -3,7 +3,7 @@ package com.prajwalch.torrentsearch.providers
 import com.prajwalch.torrentsearch.domain.model.Category
 import com.prajwalch.torrentsearch.domain.model.Torrent
 import com.prajwalch.torrentsearch.domain.model.TorrentDetails
-import com.prajwalch.torrentsearch.network.HttpClient
+import com.prajwalch.torrentsearch.network.NetworkClient
 import com.prajwalch.torrentsearch.util.TorrentDateParser
 import com.prajwalch.torrentsearch.util.TorrentUtils
 
@@ -15,7 +15,8 @@ import org.jsoup.nodes.Element
 
 import java.time.Instant
 
-class UIndex : SearchProvider, TorrentDetailsProvider, LatestTorrentsProvider, TopTorrentsProvider {
+class UIndex(private val networkClient: NetworkClient) : SearchProvider, TorrentDetailsProvider,
+    LatestTorrentsProvider, TopTorrentsProvider {
     override val id = "uindex"
     override val name = "UIndex"
     override val url = "https://uindex.org"
@@ -51,20 +52,20 @@ class UIndex : SearchProvider, TorrentDetailsProvider, LatestTorrentsProvider, T
         providerName = name,
     )
 
-    override suspend fun search(query: String, context: SearchContext): List<Torrent> {
+    override suspend fun search(query: String, category: Category): List<Torrent> {
         val requestUrl = buildString {
             append(url)
             append("/search.php")
             append("?search=$query")
-            append("&c=${categoryMap[context.category]}")
+            append("&c=${categoryMap[category]}")
         }
-        val responseHtml = context.httpClient.get(url = requestUrl)
+        val responseHtml = networkClient.getText(url = requestUrl)
 
         return resultsPageParser.parse(html = responseHtml, pageUrl = requestUrl)
     }
 
     override suspend fun getDetails(detailsPageUrl: String): TorrentDetails? {
-        val responseHtml = HttpClient.get(detailsPageUrl)
+        val responseHtml = networkClient.getText(detailsPageUrl)
         return UIndexDetailsPageParser.parse(responseHtml, detailsPageUrl)
     }
 
@@ -75,7 +76,7 @@ class UIndex : SearchProvider, TorrentDetailsProvider, LatestTorrentsProvider, T
             val categoryId = categoryMap[category] ?: categoryMap[Category.All]!!
             append("?c=$categoryId")
         }
-        val responseHtml = HttpClient.get(requestUrl)
+        val responseHtml = networkClient.getText(requestUrl)
 
         return resultsPageParser.parse(html = responseHtml, pageUrl = requestUrl)
     }
@@ -88,7 +89,7 @@ class UIndex : SearchProvider, TorrentDetailsProvider, LatestTorrentsProvider, T
             val categoryId = categoryMap[category] ?: categoryMap[Category.All]!!
             append("&c=$categoryId")
         }
-        val responseHtml = HttpClient.get(requestUrl)
+        val responseHtml = networkClient.getText(requestUrl)
 
         return resultsPageParser.parse(html = responseHtml, pageUrl = requestUrl)
     }

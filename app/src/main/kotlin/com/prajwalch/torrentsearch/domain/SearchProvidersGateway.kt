@@ -12,8 +12,6 @@ import com.prajwalch.torrentsearch.domain.model.SearchProviderResult
 import com.prajwalch.torrentsearch.domain.model.SearchResults
 import com.prajwalch.torrentsearch.domain.model.Torrent
 import com.prajwalch.torrentsearch.network.CloudflareChallengeException
-import com.prajwalch.torrentsearch.network.HttpClient
-import com.prajwalch.torrentsearch.providers.SearchContext
 import com.prajwalch.torrentsearch.providers.SearchProvider
 
 import kotlinx.collections.immutable.PersistentList
@@ -37,7 +35,6 @@ import javax.inject.Inject
  * A primary class for interacting with different search providers.
  */
 class SearchProvidersGateway @Inject constructor(
-    private val httpClient: HttpClient,
     private val searchProvidersManager: SearchProvidersManager,
     private val settingsRepository: SettingsRepository,
 ) {
@@ -59,11 +56,9 @@ class SearchProvidersGateway @Inject constructor(
         if (enabledProviders.isEmpty()) return@channelFlow
 
         val encodedQuery = Uri.encode(query)!!
-        val searchContext = SearchContext(category = category, httpClient = httpClient)
-
         enabledProviders.forEach {
             launch {
-                val result = runCatchingProvider(it) { search(encodedQuery, searchContext) }
+                val result = runCatchingProvider(it) { search(encodedQuery, category) }
                 send(result)
             }
         }

@@ -8,7 +8,7 @@ import com.prajwalch.torrentsearch.extension.getArray
 import com.prajwalch.torrentsearch.extension.getLong
 import com.prajwalch.torrentsearch.extension.getObject
 import com.prajwalch.torrentsearch.extension.getString
-import com.prajwalch.torrentsearch.network.HttpClient
+import com.prajwalch.torrentsearch.network.NetworkClient
 import com.prajwalch.torrentsearch.util.FileSizeUtils
 import com.prajwalch.torrentsearch.util.TorrentDateParser
 import com.prajwalch.torrentsearch.util.TorrentUtils
@@ -20,7 +20,7 @@ import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.addJsonObject
 import kotlinx.serialization.json.buildJsonArray
 
-class Btsow : SearchProvider, TorrentDetailsProvider {
+class Btsow(private val networkClient: NetworkClient) : SearchProvider, TorrentDetailsProvider {
     override val id = "btsow"
     override val name = "Btsow"
     override val url = "https://btsow.live"
@@ -30,7 +30,7 @@ class Btsow : SearchProvider, TorrentDetailsProvider {
 
     private val resultsJsonParser = BtsowResultsJsonParser(name, url)
 
-    override suspend fun search(query: String, context: SearchContext): List<Torrent> {
+    override suspend fun search(query: String, category: Category): List<Torrent> {
         // [{"search":"one"},30,3]
         val requestPayload = buildJsonArray {
             addJsonObject {
@@ -42,7 +42,7 @@ class Btsow : SearchProvider, TorrentDetailsProvider {
             add(JsonPrimitive(1))
         }
         val requestUrl = "$API_BASE_URL/search"
-        val responseJson = context.httpClient.postJson(url = requestUrl, payload = requestPayload)
+        val responseJson = networkClient.postJson(url = requestUrl, payload = requestPayload)
             ?: return emptyList()
 
         return resultsJsonParser.parse(responseJson)
@@ -52,7 +52,7 @@ class Btsow : SearchProvider, TorrentDetailsProvider {
         val infoHash = detailsPageUrl.takeLastWhile { it != '/' }
         val requestPayload = buildJsonArray { add(JsonPrimitive(infoHash)) }
         val requestUrl = "$API_BASE_URL/magnet"
-        val responseJson = HttpClient.postJson(url = requestUrl, payload = requestPayload)
+        val responseJson = networkClient.postJson(url = requestUrl, payload = requestPayload)
             ?: return null
 
         return BtsowDetailsJsonParser.parse(responseJson)

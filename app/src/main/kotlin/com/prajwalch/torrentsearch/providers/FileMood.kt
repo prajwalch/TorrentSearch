@@ -3,7 +3,7 @@ package com.prajwalch.torrentsearch.providers
 import com.prajwalch.torrentsearch.domain.model.Category
 import com.prajwalch.torrentsearch.domain.model.Torrent
 import com.prajwalch.torrentsearch.domain.model.TorrentDetails
-import com.prajwalch.torrentsearch.network.HttpClient
+import com.prajwalch.torrentsearch.network.NetworkClient
 import com.prajwalch.torrentsearch.util.TorrentDateParser
 import com.prajwalch.torrentsearch.util.TorrentUtils
 
@@ -13,7 +13,7 @@ import kotlinx.coroutines.withContext
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Element
 
-class FileMood : SearchProvider, TorrentDetailsProvider {
+class FileMood(private val networkClient: NetworkClient) : SearchProvider, TorrentDetailsProvider {
     override val id = "filemood"
     override val name = "FileMood"
     override val url = "https://filemood.com"
@@ -23,19 +23,19 @@ class FileMood : SearchProvider, TorrentDetailsProvider {
 
     private val resultsPageParser = FileMoodResultsPageParser(name)
 
-    override suspend fun search(query: String, context: SearchContext): List<Torrent> {
+    override suspend fun search(query: String, category: Category): List<Torrent> {
         val requestUrl = buildString {
             append(url)
             append("/result")
             append("?q=$query")
             append("+in%3Atitle")
         }
-        val responseHtml = context.httpClient.get(url = requestUrl)
+        val responseHtml = networkClient.getText(url = requestUrl)
         return resultsPageParser.parse(html = responseHtml, pageUrl = requestUrl)
     }
 
     override suspend fun getDetails(detailsPageUrl: String): TorrentDetails? {
-        val responseHtml = HttpClient.get(detailsPageUrl)
+        val responseHtml = networkClient.getText(detailsPageUrl)
         return FileMoodDetailsPageParser.parse(responseHtml)
     }
 }

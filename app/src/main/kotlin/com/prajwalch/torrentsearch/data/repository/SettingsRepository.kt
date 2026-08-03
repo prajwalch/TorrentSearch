@@ -24,10 +24,7 @@ import kotlinx.coroutines.flow.map
 
 import javax.inject.Inject
 
-class SettingsRepository @Inject constructor(
-    private val dataStore: DataStore<Preferences>,
-    private val defaultEnabledProviderIds: Set<SearchProviderId>,
-) {
+class SettingsRepository @Inject constructor(private val dataStore: DataStore<Preferences>) {
     val enableDynamicTheme: Flow<Boolean> = dataStore
         .getOrDefault(key = ENABLE_DYNAMIC_THEME, default = true)
 
@@ -48,10 +45,7 @@ class SettingsRepository @Inject constructor(
         .getOrDefault(key = BLUR_NSFW_IMAGES, default = true)
 
     val enabledSearchProviderIds: Flow<Set<SearchProviderId>> = dataStore
-        .getOrDefault(
-            key = ENABLED_SEARCH_PROVIDER_IDS,
-            default = defaultEnabledProviderIds,
-        )
+        .getOrDefault(key = ENABLED_SEARCH_PROVIDER_IDS, default = emptySet())
 
     val defaultCategory: Flow<Category> = dataStore
         .getMapOrDefault(
@@ -152,28 +146,28 @@ class SettingsRepository @Inject constructor(
 
     suspend fun addEnabledSearchProviderId(id: SearchProviderId) {
         dataStore.edit {
-            val currentIds = it[ENABLED_SEARCH_PROVIDER_IDS] ?: defaultEnabledProviderIds
+            val currentIds = it[ENABLED_SEARCH_PROVIDER_IDS] ?: emptySet()
             it[ENABLED_SEARCH_PROVIDER_IDS] = currentIds + id
         }
     }
 
     suspend fun addEnabledSearchProviderIds(ids: Set<SearchProviderId>) {
         dataStore.edit {
-            val currentIds = it[ENABLED_SEARCH_PROVIDER_IDS] ?: defaultEnabledProviderIds
+            val currentIds = it[ENABLED_SEARCH_PROVIDER_IDS] ?: emptySet()
             it[ENABLED_SEARCH_PROVIDER_IDS] = currentIds + ids
         }
     }
 
     suspend fun removeEnabledSearchProviderId(id: SearchProviderId) {
         dataStore.edit {
-            val currentIds = it[ENABLED_SEARCH_PROVIDER_IDS] ?: defaultEnabledProviderIds
+            val currentIds = it[ENABLED_SEARCH_PROVIDER_IDS] ?: emptySet()
             it[ENABLED_SEARCH_PROVIDER_IDS] = currentIds - id
         }
     }
 
     suspend fun removeEnabledSearchProviderIds(ids: Set<SearchProviderId>) {
         dataStore.edit {
-            val currentIds = it[ENABLED_SEARCH_PROVIDER_IDS] ?: defaultEnabledProviderIds
+            val currentIds = it[ENABLED_SEARCH_PROVIDER_IDS] ?: emptySet()
             it[ENABLED_SEARCH_PROVIDER_IDS] = currentIds - ids
         }
     }

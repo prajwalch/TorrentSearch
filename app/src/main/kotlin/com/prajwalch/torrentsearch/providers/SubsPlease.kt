@@ -10,7 +10,7 @@ import com.prajwalch.torrentsearch.extension.asObject
 import com.prajwalch.torrentsearch.extension.getArray
 import com.prajwalch.torrentsearch.extension.getObject
 import com.prajwalch.torrentsearch.extension.getString
-import com.prajwalch.torrentsearch.network.HttpClient
+import com.prajwalch.torrentsearch.network.NetworkClient
 import com.prajwalch.torrentsearch.util.FileSizeUtils
 import com.prajwalch.torrentsearch.util.TorrentDateParser
 import com.prajwalch.torrentsearch.util.TorrentUtils
@@ -23,7 +23,8 @@ import kotlinx.serialization.json.JsonObject
 import org.jsoup.Jsoup
 import java.time.Instant
 
-class SubsPlease : SearchProvider, LatestTorrentsProvider, TorrentDetailsProvider {
+class SubsPlease(private val networkClient: NetworkClient) : SearchProvider, LatestTorrentsProvider,
+    TorrentDetailsProvider {
     override val id = "subsplease"
     override val name = "SubsPlease"
     override val url = "https://subsplease.org"
@@ -33,8 +34,9 @@ class SubsPlease : SearchProvider, LatestTorrentsProvider, TorrentDetailsProvide
 
     private val resultsJsonParser =
         SubsPleaseResultsJsonParser(providerName = name, providerUrl = url)
+    private val detailsPageParser = SubsPleaseDetailsPageParser(networkClient)
 
-    override suspend fun search(query: String, context: SearchContext): List<Torrent> {
+    override suspend fun search(query: String, category: Category): List<Torrent> {
         val requestUrl = buildString {
             append(url)
             append("/api")
@@ -42,21 +44,21 @@ class SubsPlease : SearchProvider, LatestTorrentsProvider, TorrentDetailsProvide
             append("&tz=$")
             append("&s=$query")
         }
-        val responseJson = context.httpClient.getJson(url = requestUrl) ?: return emptyList()
+        val responseJson = networkClient.getJson(url = requestUrl) ?: return emptyList()
 
         return resultsJsonParser.parse(responseJson)
     }
 
     override suspend fun getLastestTorrents(category: Category): List<Torrent> {
         val requestUrl = "$url/api/?f=latest&tz=$"
-        val responseJson = HttpClient.getJson(requestUrl) ?: return emptyList()
+        val responseJson = networkClient.getJson(requestUrl) ?: return emptyList()
 
         return resultsJsonParser.parse(responseJson)
     }
 
     override suspend fun getDetails(detailsPageUrl: String): TorrentDetails? {
-        val responseHtml = HttpClient.get(detailsPageUrl)
-        return SubsPleaseDetailsPageParser.parse(html = responseHtml, pageUrl = detailsPageUrl)
+        val responseHtml = networkClient.getText(detailsPageUrl)
+        return detailsPageParser.parse(html = responseHtml, pageUrl = detailsPageUrl)
     }
 }
 
@@ -120,7 +122,7 @@ private class SubsPleaseResultsJsonParser(
     }
 }
 
-private object SubsPleaseDetailsPageParser {
+private class SubsPleaseDetailsPageParser(private val networkClient: NetworkClient) {
     suspend fun parse(html: String, pageUrl: String): TorrentDetails? =
         withContext(Dispatchers.Default) {
             val html = Jsoup.parse(html, pageUrl)
@@ -175,7 +177,7 @@ private object SubsPleaseDetailsPageParser {
         torrentResolution: String,
     ): Pair<JsonObject, JsonObject>? = withContext(Dispatchers.IO) {
         val requestUrl = "https://subsplease.org/api/?f=show&tz=$&sid=$showId"
-        val responseJson = HttpClient.getJson(requestUrl) ?: return@withContext null
+        val responseJson = networkClient.getJson(requestUrl) ?: return@withContext null
 
         val episodeObject = responseJson.asObject()
             .getObject("episode")

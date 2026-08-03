@@ -3,7 +3,7 @@ package com.prajwalch.torrentsearch.providers
 import com.prajwalch.torrentsearch.domain.model.Category
 import com.prajwalch.torrentsearch.domain.model.Torrent
 import com.prajwalch.torrentsearch.domain.model.TorrentDetails
-import com.prajwalch.torrentsearch.network.HttpClient
+import com.prajwalch.torrentsearch.network.NetworkClient
 import com.prajwalch.torrentsearch.util.TorrentDateParser
 import com.prajwalch.torrentsearch.util.TorrentUtils
 
@@ -15,7 +15,8 @@ import kotlinx.coroutines.withContext
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Element
 
-class OxTorrent : SearchProvider, LatestTorrentsProvider, TopTorrentsProvider,
+class OxTorrent(private val networkClient: NetworkClient) : SearchProvider, LatestTorrentsProvider,
+    TopTorrentsProvider,
     TorrentDetailsProvider {
     override val id = "oxtorrent"
     override val name = "OxTorrent"
@@ -39,42 +40,45 @@ class OxTorrent : SearchProvider, LatestTorrentsProvider, TopTorrentsProvider,
         Category.Music to "musique",
         Category.Series to "series",
     )
-    private val resultsPageParser = OxTorrentResultsPageParser(name)
+    private val resultsPageParser = OxTorrentResultsPageParser(name, networkClient)
 
-    override suspend fun search(query: String, context: SearchContext): List<Torrent> {
+    override suspend fun search(query: String, category: Category): List<Torrent> {
         val requestUrl = buildString {
             append(url)
             append("/recherche")
-            categoryMap[context.category]?.let { append("/$it") }
+            categoryMap[category]?.let { append("/$it") }
             append("/$query")
         }
-        val responseHtml = context.httpClient.get(requestUrl)
+        val responseHtml = networkClient.getText(requestUrl)
 
         return resultsPageParser.parse(html = responseHtml, pageUrl = requestUrl)
     }
 
     override suspend fun getDetails(detailsPageUrl: String): TorrentDetails? {
-        val responseHtml = HttpClient.get(detailsPageUrl)
+        val responseHtml = networkClient.getText(detailsPageUrl)
         return OxTorrentDetailsPageParser.parse(html = responseHtml, pageUrl = detailsPageUrl)
     }
 
     override suspend fun getLastestTorrents(category: Category): List<Torrent> {
         val categorySlug = categoryMap[category] ?: return emptyList()
         val requestUrl = "$url/torrents/$categorySlug"
-        val responseHtml = HttpClient.get(requestUrl)
+        val responseHtml = networkClient.getText(requestUrl)
 
         return resultsPageParser.parse(html = responseHtml, pageUrl = requestUrl)
     }
 
     override suspend fun getTopTorrents(category: Category): List<Torrent> {
         val requestUrl = "$url/top"
-        val responseHtml = HttpClient.get(requestUrl)
+        val responseHtml = networkClient.getText(requestUrl)
 
         return resultsPageParser.parse(html = responseHtml, pageUrl = requestUrl)
     }
 }
 
-private class OxTorrentResultsPageParser(private val providerName: String) {
+private class OxTorrentResultsPageParser(
+    private val providerName: String,
+    private val networkClient: NetworkClient,
+) {
     suspend fun parse(html: String, pageUrl: String): List<Torrent> =
         withContext(Dispatchers.Default) {
             Jsoup.parse(html, pageUrl)
@@ -86,7 +90,7 @@ private class OxTorrentResultsPageParser(private val providerName: String) {
 
     private suspend fun parseListItem(listItem: Element): Torrent? {
         val detailsPageUrl = listItem.selectFirst(DETAILS_PAGE_URL)?.attr("abs:href") ?: return null
-        val detailsPageHtml = HttpClient.get(detailsPageUrl)
+        val detailsPageHtml = networkClient.getText(detailsPageUrl)
         val torrentDetails = OxTorrentDetailsPageParser.parse(
             html = detailsPageHtml,
             pageUrl = detailsPageUrl,

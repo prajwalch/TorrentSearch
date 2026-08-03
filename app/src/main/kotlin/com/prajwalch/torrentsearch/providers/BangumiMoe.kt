@@ -7,7 +7,7 @@ import com.prajwalch.torrentsearch.extension.asObject
 import com.prajwalch.torrentsearch.extension.getArray
 import com.prajwalch.torrentsearch.extension.getString
 import com.prajwalch.torrentsearch.extension.getUInt
-import com.prajwalch.torrentsearch.network.HttpClient
+import com.prajwalch.torrentsearch.network.NetworkClient
 import com.prajwalch.torrentsearch.util.TorrentDateParser
 import com.prajwalch.torrentsearch.util.TorrentUtils
 
@@ -18,7 +18,8 @@ import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.buildJsonObject
 
-class BangumiMoe : SearchProvider, LatestTorrentsProvider, TorrentDetailsProvider {
+class BangumiMoe(private val networkClient: NetworkClient) : SearchProvider, LatestTorrentsProvider,
+    TorrentDetailsProvider {
     override val id = "bangumimoe"
     override val name = "BangumiMoe"
     override val url = "https://bangumi.moe"
@@ -32,11 +33,11 @@ class BangumiMoe : SearchProvider, LatestTorrentsProvider, TorrentDetailsProvide
             providerUrl = url,
         )
 
-    override suspend fun search(query: String, context: SearchContext): List<Torrent> {
+    override suspend fun search(query: String, category: Category): List<Torrent> {
         val requestUrl = "$url/api/v2/torrent/search"
-        val responseJson = context.httpClient.postJson(
+        val responseJson = networkClient.postJson(
             url = requestUrl,
-            buildJsonObject { put("query", JsonPrimitive(query)) },
+            payload = buildJsonObject { put("query", JsonPrimitive(query)) },
         ) ?: return emptyList()
 
         return resultsJsonParser.parse(responseJson)
@@ -69,7 +70,7 @@ class BangumiMoe : SearchProvider, LatestTorrentsProvider, TorrentDetailsProvide
     override suspend fun getDetails(detailsPageUrl: String): TorrentDetails? {
         val torrentId = detailsPageUrl.takeLastWhile { it != '/' }
         val requestUrl = "https://bangumi.moe/api/torrent/fetch"
-        val responseJson = HttpClient.postJson(
+        val responseJson = networkClient.postJson(
             url = requestUrl,
             payload = buildJsonObject { put("_id", JsonPrimitive(torrentId)) }
         ) ?: return null
@@ -79,7 +80,7 @@ class BangumiMoe : SearchProvider, LatestTorrentsProvider, TorrentDetailsProvide
 
     override suspend fun getLastestTorrents(category: Category): List<Torrent> {
         val requestUrl = "$url/api/torrent/latest"
-        val responseJson = HttpClient.getJson(requestUrl) ?: return emptyList()
+        val responseJson = networkClient.getJson(requestUrl) ?: return emptyList()
 
         return resultsJsonParser.parse(responseJson)
     }

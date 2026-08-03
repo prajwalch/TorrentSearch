@@ -1,6 +1,6 @@
 package com.prajwalch.torrentsearch.domain
 
-import com.prajwalch.torrentsearch.network.HttpClient
+import com.prajwalch.torrentsearch.network.NetworkClient
 import dagger.hilt.android.scopes.ViewModelScoped
 
 import io.ktor.client.statement.bodyAsChannel
@@ -86,7 +86,7 @@ sealed interface TorrentFileDownloadEvent {
  * Manages and handles torrent file downloading related task.
  */
 @ViewModelScoped
-class TorrentFileDownloader @Inject constructor(private val httpClient: HttpClient) {
+class TorrentFileDownloader @Inject constructor(private val networkClient: NetworkClient) {
     /**
      * An in-memory cache for saving downloaded torrent files.
      */
@@ -153,7 +153,7 @@ class TorrentFileDownloader @Inject constructor(private val httpClient: HttpClie
         val id = UUID.nameUUIDFromBytes(url.toByteArray())
         if (contentCache.containsKey(id)) return@withContext id
 
-        val response = httpClient.getResponse(url = url)
+        val response = networkClient.get(url)
         if (!response.status.isSuccess()) return@withContext null
 
         val fileContent = response.bodyAsChannel().readRemaining().readByteArray()

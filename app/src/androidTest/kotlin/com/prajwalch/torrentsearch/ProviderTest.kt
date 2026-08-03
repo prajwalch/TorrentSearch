@@ -1,13 +1,20 @@
 package com.prajwalch.torrentsearch
 
+import android.content.Context
+import androidx.datastore.preferences.core.PreferenceDataStoreFactory
+import androidx.datastore.preferences.preferencesDataStoreFile
+import androidx.test.core.app.ApplicationProvider
+
+import com.prajwalch.torrentsearch.data.repository.SettingsRepository
 import com.prajwalch.torrentsearch.domain.model.Category
 import com.prajwalch.torrentsearch.domain.model.Torrent
-import com.prajwalch.torrentsearch.network.HttpClient
+import com.prajwalch.torrentsearch.network.NetworkClient
 import com.prajwalch.torrentsearch.providers.Knaben
-import com.prajwalch.torrentsearch.providers.SearchContext
 import com.prajwalch.torrentsearch.providers.SearchProvider
 
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.TestScope
 
 import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertTrue
@@ -20,9 +27,14 @@ import org.junit.Test
  * meaningful search results across a variety of queries and categories.
  */
 class ProviderTest {
+    private val testContext = ApplicationProvider.getApplicationContext<Context>()
+    private val testDataStore = PreferenceDataStoreFactory.create(
+        scope = TestScope(Dispatchers.IO),
+        produceFile = { testContext.preferencesDataStoreFile("test_settings") },
+    )
 
     // Change this to test any specific provider implementation
-    private val provider = Knaben()
+    private val provider = Knaben(NetworkClient(SettingsRepository(testDataStore)))
 
     /**
      * 🔎 Basic Search Test
@@ -33,13 +45,7 @@ class ProviderTest {
     @Test
     fun searchReturnsRealTorrentsFromProvider() = runBlocking {
         val searchQuery = "One Piece"
-
-        val context = SearchContext(
-            category = Category.Books,
-            httpClient = HttpClient
-        )
-
-        val results: List<Torrent> = provider.search(searchQuery, context)
+        val results: List<Torrent> = provider.search(searchQuery, Category.Books)
 
         assertNotNull("Expected non-null result", results)
         assertTrue("Expected non-empty result list", results.isNotEmpty())
@@ -81,12 +87,7 @@ class ProviderTest {
         )
 
         testCases.forEach { (query, category) ->
-            val context = SearchContext(
-                category = category,
-                httpClient = HttpClient
-            )
-
-            val results = provider.search(query, context)
+            val results = provider.search(query, category)
 
             println("\n🔎 Testing query: \"$query\" in category: ${category.name}")
             assertNotNull("Expected non-null results for query: $query", results)

@@ -3,7 +3,7 @@ package com.prajwalch.torrentsearch.providers
 import com.prajwalch.torrentsearch.domain.model.Category
 import com.prajwalch.torrentsearch.domain.model.Torrent
 import com.prajwalch.torrentsearch.domain.model.TorrentDetails
-import com.prajwalch.torrentsearch.network.HttpClient
+import com.prajwalch.torrentsearch.network.NetworkClient
 import com.prajwalch.torrentsearch.util.FileSizeUtils
 import com.prajwalch.torrentsearch.util.TorrentDateParser
 import com.prajwalch.torrentsearch.util.TorrentUtils
@@ -14,7 +14,8 @@ import kotlinx.coroutines.withContext
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Element
 
-class Dmhy : SearchProvider, TorrentDetailsProvider, LatestTorrentsProvider, TopTorrentsProvider {
+class Dmhy(private val networkClient: NetworkClient) : SearchProvider, TorrentDetailsProvider,
+    LatestTorrentsProvider, TopTorrentsProvider {
     override val id = "dmhy"
     override val name = "Dmhy"
     override val url = "https://share.dmhy.org"
@@ -40,32 +41,32 @@ class Dmhy : SearchProvider, TorrentDetailsProvider, LatestTorrentsProvider, Top
         Category.Other to 1,
     )
 
-    override suspend fun search(query: String, context: SearchContext): List<Torrent> {
+    override suspend fun search(query: String, category: Category): List<Torrent> {
         val requestUrl = buildString {
             append(url)
             append("/topics")
             append("/list")
 
-            val categoryId = categoryMap[context.category] ?: categoryMap[Category.All]!!
+            val categoryId = categoryMap[category] ?: categoryMap[Category.All]!!
             append("?keyword=$query")
             append("&sort_id=$categoryId")
             append("&team_id=0")
             append("&order=date-desc")
         }
-        val responseHtml = context.httpClient.get(url = requestUrl)
+        val responseHtml = networkClient.getText(requestUrl)
 
         return resultsPageParser.parse(html = responseHtml, pageUrl = requestUrl)
     }
 
     override suspend fun getDetails(detailsPageUrl: String): TorrentDetails? {
-        val responseHtml = HttpClient.get(detailsPageUrl)
+        val responseHtml = networkClient.getText(detailsPageUrl)
         return DmhyDetailsPageParser.parse(responseHtml)
     }
 
     override suspend fun getLastestTorrents(category: Category): List<Torrent> {
         val categoryId = categoryMap[category] ?: categoryMap[Category.All]!!
         val requestUrl = "$url/topics/list/sort_id/$categoryId"
-        val responseHtml = HttpClient.get(requestUrl)
+        val responseHtml = networkClient.getText(requestUrl)
 
         return resultsPageParser.parse(html = responseHtml, pageUrl = requestUrl)
     }

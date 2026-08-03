@@ -3,7 +3,7 @@ package com.prajwalch.torrentsearch.providers
 import com.prajwalch.torrentsearch.domain.model.Category
 import com.prajwalch.torrentsearch.domain.model.Torrent
 import com.prajwalch.torrentsearch.domain.model.TorrentDetails
-import com.prajwalch.torrentsearch.network.HttpClient
+import com.prajwalch.torrentsearch.network.NetworkClient
 import com.prajwalch.torrentsearch.util.TorrentDateParser
 import com.prajwalch.torrentsearch.util.TorrentUtils
 
@@ -15,7 +15,8 @@ import kotlinx.coroutines.withContext
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Element
 
-class TorrentDownloads : SearchProvider, LatestTorrentsProvider, TopTorrentsProvider,
+class TorrentDownloads(private val networkClient: NetworkClient) : SearchProvider,
+    LatestTorrentsProvider, TopTorrentsProvider,
     TorrentDetailsProvider {
     override val id = "torrentdownloads"
     override val name = "TorrentDownloads"
@@ -35,18 +36,18 @@ class TorrentDownloads : SearchProvider, LatestTorrentsProvider, TopTorrentsProv
     override val isCloudflareProtected = true
     override val enabledByDefault = true
 
-    private val resultsPageParser = TorrentDownloadsResultsPageParser(name)
+    private val resultsPageParser = TorrentDownloadsResultsPageParser(name, networkClient)
 
-    override suspend fun search(query: String, context: SearchContext): List<Torrent> {
+    override suspend fun search(query: String, category: Category): List<Torrent> {
         val requestUrl = buildString {
             append(url)
             append("/search")
 
-            val categoryId = getCategoryId(category = context.category)
+            val categoryId = getCategoryId(category = category)
             append("/?s_cat=$categoryId")
             append("&search=$query")
         }
-        val responseHtml = context.httpClient.get(url = requestUrl)
+        val responseHtml = networkClient.getText(url = requestUrl)
 
         return resultsPageParser.parse(html = responseHtml, pageUrl = requestUrl)
     }
@@ -75,7 +76,7 @@ class TorrentDownloads : SearchProvider, LatestTorrentsProvider, TopTorrentsProv
             Category.Other -> "$url/view/today/Other.html"
             else -> "$url/most-active"
         }
-        val responseHtml = HttpClient.get(requestUrl)
+        val responseHtml = networkClient.getText(requestUrl)
 
         return resultsPageParser.parse(html = responseHtml, pageUrl = requestUrl)
     }
@@ -92,13 +93,13 @@ class TorrentDownloads : SearchProvider, LatestTorrentsProvider, TopTorrentsProv
             Category.Other -> "$url/view/popular/Other.html"
             else -> "$url/most-seeded"
         }
-        val responseHtml = HttpClient.get(requestUrl)
+        val responseHtml = networkClient.getText(requestUrl)
 
         return resultsPageParser.parse(html = responseHtml, pageUrl = requestUrl)
     }
 
     override suspend fun getDetails(detailsPageUrl: String): TorrentDetails? {
-        val responseHtml = HttpClient.get(detailsPageUrl)
+        val responseHtml = networkClient.getText(detailsPageUrl)
         return TorrentDownloadsDetailsPageParser.parse(
             html = responseHtml,
             pageUrl = detailsPageUrl,
@@ -106,7 +107,10 @@ class TorrentDownloads : SearchProvider, LatestTorrentsProvider, TopTorrentsProv
     }
 }
 
-private class TorrentDownloadsResultsPageParser(private val providerName: String) {
+private class TorrentDownloadsResultsPageParser(
+    private val providerName: String,
+    private val networkClient: NetworkClient,
+) {
     private companion object {
         private const val LIST_ITEM_CONTAINER = "div.inner_container"
         private const val LIST_ITEM = "div.grey_bar3"
@@ -135,7 +139,7 @@ private class TorrentDownloadsResultsPageParser(private val providerName: String
         val detailsPageUrl = listItem.selectFirst(DETAILS_PAGE_URL)
             ?.attr("abs:href")
             ?: return null
-        val detailsPageHtml = HttpClient.get(detailsPageUrl)
+        val detailsPageHtml = networkClient.getText(detailsPageUrl)
         val torrentDetails = TorrentDownloadsDetailsPageParser.parse(
             html = detailsPageHtml,
             pageUrl = detailsPageUrl,

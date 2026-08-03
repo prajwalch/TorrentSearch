@@ -3,7 +3,7 @@ package com.prajwalch.torrentsearch.providers
 import com.prajwalch.torrentsearch.domain.model.Category
 import com.prajwalch.torrentsearch.domain.model.Torrent
 import com.prajwalch.torrentsearch.domain.model.TorrentDetails
-import com.prajwalch.torrentsearch.network.HttpClient
+import com.prajwalch.torrentsearch.network.NetworkClient
 import com.prajwalch.torrentsearch.util.FileSizeUtils
 import com.prajwalch.torrentsearch.util.TorrentDateParser
 import com.prajwalch.torrentsearch.util.TorrentUtils
@@ -17,7 +17,8 @@ import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import org.jsoup.nodes.Element
 
-class Bt4g : SearchProvider, LatestTorrentsProvider, TopTorrentsProvider, TorrentDetailsProvider {
+class Bt4g(private val networkClient: NetworkClient) : SearchProvider, LatestTorrentsProvider,
+    TopTorrentsProvider, TorrentDetailsProvider {
     override val id = "bt4g"
     override val name = "BT4G"
     override val url = "https://bt4gprx.com"
@@ -41,37 +42,41 @@ class Bt4g : SearchProvider, LatestTorrentsProvider, TopTorrentsProvider, Torren
         Category.Music to "audio",
         Category.Other to "other",
     )
-    private val resultsPageParser = Bt4gResultsPageParser(name)
+    private val detailsPageParser = Bt4gDetailsPageParser(networkClient)
+    private val resultsPageParser = Bt4gResultsPageParser(name, detailsPageParser)
 
-    override suspend fun search(query: String, context: SearchContext): List<Torrent> {
-        val categoryName = categoryMap[context.category] ?: categoryMap[Category.All]!!
+    override suspend fun search(query: String, category: Category): List<Torrent> {
+        val categoryName = categoryMap[category] ?: categoryMap[Category.All]!!
         val requestUrl = "$url/search?q=$query&category=$categoryName&orderby=seeders&p=1"
-        val responseHtml = context.httpClient.get(requestUrl)
+        val responseHtml = networkClient.getText(requestUrl)
 
         return resultsPageParser.parse(html = responseHtml, pageUrl = requestUrl)
     }
 
     override suspend fun getDetails(detailsPageUrl: String): TorrentDetails? {
-        val responseHtml = HttpClient.get(detailsPageUrl)
-        return Bt4gDetailsPageParser.parse(responseHtml)
+        val responseHtml = networkClient.getText(detailsPageUrl)
+        return detailsPageParser.parse(responseHtml)
     }
 
     override suspend fun getLastestTorrents(category: Category): List<Torrent> {
         val requestUrl = "$url/new"
-        val responseHtml = HttpClient.get(requestUrl)
+        val responseHtml = networkClient.getText(requestUrl)
 
         return resultsPageParser.parse(html = responseHtml, pageUrl = requestUrl)
     }
 
     override suspend fun getTopTorrents(category: Category): List<Torrent> {
         val requestUrl = "$url/week"
-        val responseHtml = HttpClient.get(requestUrl)
+        val responseHtml = networkClient.getText(requestUrl)
 
         return resultsPageParser.parse(html = responseHtml, pageUrl = requestUrl)
     }
 }
 
-private class Bt4gResultsPageParser(private val providerName: String) {
+private class Bt4gResultsPageParser(
+    private val providerName: String,
+    private val detailsPageParser: Bt4gDetailsPageParser,
+) {
     suspend fun parse(html: String, pageUrl: String): List<Torrent> =
         withContext(Dispatchers.Default) {
             Jsoup.parse(html, pageUrl)
@@ -83,7 +88,7 @@ private class Bt4gResultsPageParser(private val providerName: String) {
 
     suspend fun parseListItem(listItem: Element): Torrent? {
         val detailsPageUrl = listItem.selectFirst(DETAILS_PAGE_URL)?.attr("abs:href") ?: return null
-        val infoHash = Bt4gDetailsPageParser.getInfoHash(detailsPageUrl) ?: return null
+        val infoHash = detailsPageParser.getInfoHash(detailsPageUrl) ?: return null
 
         val torrentName = listItem.selectFirst(TORRENT_NAME)?.text() ?: return null
         val size = listItem.selectFirst(SIZE)?.ownText()?.let(FileSizeUtils::normalizeSize)
@@ -127,15 +132,17 @@ private class Bt4gResultsPageParser(private val providerName: String) {
     }
 }
 
-private object Bt4gDetailsPageParser {
-    private const val TORRENT_NAME = "h1.notion-detail-title"
-    private const val SIZE = "span.notion-property-label:containsOwn(File Size)"
-    private const val SEEDERS = "span#seeders"
-    private const val PEERS = "span#leechers"
-    private const val UPLOAD_DATE = "span.notion-property-label:containsOwn(Creation Time)"
-    private const val CATEGORY = "span.notion-property-label:containsOwn(File Type)"
-    private const val LAST_CHECKED = "span.notion-property-label:containsOwn(Updated)"
-    private const val MAGNET_LINK_BTN = """a[href^="//downloadtorrentfile.com/hash/"]"""
+private class Bt4gDetailsPageParser(private val networkClient: NetworkClient) {
+    private companion object {
+        private const val TORRENT_NAME = "h1.notion-detail-title"
+        private const val SIZE = "span.notion-property-label:containsOwn(File Size)"
+        private const val SEEDERS = "span#seeders"
+        private const val PEERS = "span#leechers"
+        private const val UPLOAD_DATE = "span.notion-property-label:containsOwn(Creation Time)"
+        private const val CATEGORY = "span.notion-property-label:containsOwn(File Type)"
+        private const val LAST_CHECKED = "span.notion-property-label:containsOwn(Updated)"
+        private const val MAGNET_LINK_BTN = """a[href^="//downloadtorrentfile.com/hash/"]"""
+    }
 
     suspend fun parse(html: String): TorrentDetails? = withContext(Dispatchers.Default) {
         val html = Jsoup.parse(html)
@@ -178,7 +185,7 @@ private object Bt4gDetailsPageParser {
 
     suspend fun getInfoHash(detailsPageUrl: String): String? {
         val detailsPageHtml = withContext(Dispatchers.Default) {
-            HttpClient.get(detailsPageUrl)
+            networkClient.getText(detailsPageUrl)
         }
 
         return withContext(Dispatchers.Default) {

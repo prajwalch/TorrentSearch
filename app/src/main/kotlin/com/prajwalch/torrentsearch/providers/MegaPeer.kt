@@ -3,7 +3,7 @@ package com.prajwalch.torrentsearch.providers
 import com.prajwalch.torrentsearch.domain.model.Category
 import com.prajwalch.torrentsearch.domain.model.Torrent
 import com.prajwalch.torrentsearch.domain.model.TorrentDetails
-import com.prajwalch.torrentsearch.network.HttpClient
+import com.prajwalch.torrentsearch.network.NetworkClient
 import com.prajwalch.torrentsearch.util.TorrentDateParser
 import com.prajwalch.torrentsearch.util.TorrentUtils
 
@@ -15,7 +15,7 @@ import kotlinx.coroutines.withContext
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Element
 
-class MegaPeer : SearchProvider, TorrentDetailsProvider {
+class MegaPeer(private val networkClient: NetworkClient) : SearchProvider, TorrentDetailsProvider {
     override val id = "megapeer"
     override val name = "MegaPeer"
     override val url = "https://megapeer.vip"
@@ -41,24 +41,28 @@ class MegaPeer : SearchProvider, TorrentDetailsProvider {
         Category.Other to 59,
         Category.Series to 6,
     )
-    private val resultsPageParser = MegaPeerResultsPageParser(name)
+    private val detailsPageParser = MegaPeersDetailsPageParser(networkClient)
+    private val resultsPageParser = MegaPeerResultsPageParser(name, detailsPageParser)
 
-    override suspend fun search(query: String, context: SearchContext): List<Torrent> {
-        val categoryId = categoryMap[context.category] ?: 0
+    override suspend fun search(query: String, category: Category): List<Torrent> {
+        val categoryId = categoryMap[category] ?: 0
         val requestUrl =
             "$url/browse.php?search=$query&age=&cat=$categoryId&stype=0&sort=0&ascdesc=0"
-        val responseHtml = context.httpClient.get(requestUrl)
+        val responseHtml = networkClient.getText(requestUrl)
 
         return resultsPageParser.parse(html = responseHtml, pageUrl = requestUrl)
     }
 
     override suspend fun getDetails(detailsPageUrl: String): TorrentDetails? {
-        val responseHtml = HttpClient.get(detailsPageUrl)
-        return MegaPeersDetailsPageParser.parse(html = responseHtml, pageUrl = detailsPageUrl)
+        val responseHtml = networkClient.getText(detailsPageUrl)
+        return detailsPageParser.parse(html = responseHtml, pageUrl = detailsPageUrl)
     }
 }
 
-private class MegaPeerResultsPageParser(private val providerName: String) {
+private class MegaPeerResultsPageParser(
+    private val providerName: String,
+    private val detailsPageParser: MegaPeersDetailsPageParser,
+) {
     private companion object {
         private const val LIST_ITEM = "div#index > table > tbody > tr.table_fon"
         private const val TORRENT_NAME = "td:nth-child(2) > a:nth-child(2)"
@@ -81,7 +85,7 @@ private class MegaPeerResultsPageParser(private val providerName: String) {
 
     private suspend fun parseListItem(listItem: Element): Torrent? {
         val detailsPageUrl = listItem.selectFirst(DETAILS_PAGE_URL)?.attr("abs:href") ?: return null
-        val magnetUri = MegaPeersDetailsPageParser.getMagnetUri(detailsPageUrl) ?: return null
+        val magnetUri = detailsPageParser.getMagnetUri(detailsPageUrl) ?: return null
 
         val torrentName = listItem.selectFirst(TORRENT_NAME)?.ownText() ?: return null
         val size = listItem.selectFirst(SIZE)?.ownText()
@@ -109,18 +113,21 @@ private class MegaPeerResultsPageParser(private val providerName: String) {
     }
 }
 
-private object MegaPeersDetailsPageParser {
-    private const val TORRENT_NAME = "h1"
-    private const val SIZE = "td:containsOwn(Размер)"
-    private const val SEEDERS = "td:containsOwn(Раздают)"
-    private const val PEERS = "td:containsOwn(Качают)"
-    private const val CATEGORY = "td:containsOwn(Категория)"
-    private const val MAGNET_URI = """a[href^="magnet:?xt="]"""
-    private const val FILE_DOWNLOAD_LINK = """a[href^="/download/"]"""
-    private const val DESCRIPTION = "table#details > tbody > tr:nth-child(1) > td:nth-child(2)"
-    private const val POSTER_URL = "table#details > tbody > tr:nth-child(1) > td:nth-child(2) > img"
-    //    private const val UPLOAD_DATE = "td:containsOwn(Добавлен)"
-    //    private const val LAST_CHECKED = "td:containsOwn(Сид был)"
+private class MegaPeersDetailsPageParser(private val networkClient: NetworkClient) {
+    private companion object {
+        private const val TORRENT_NAME = "h1"
+        private const val SIZE = "td:containsOwn(Размер)"
+        private const val SEEDERS = "td:containsOwn(Раздают)"
+        private const val PEERS = "td:containsOwn(Качают)"
+        private const val CATEGORY = "td:containsOwn(Категория)"
+        private const val MAGNET_URI = """a[href^="magnet:?xt="]"""
+        private const val FILE_DOWNLOAD_LINK = """a[href^="/download/"]"""
+        private const val DESCRIPTION = "table#details > tbody > tr:nth-child(1) > td:nth-child(2)"
+        private const val POSTER_URL =
+            "table#details > tbody > tr:nth-child(1) > td:nth-child(2) > img"
+        //    private const val UPLOAD_DATE = "td:containsOwn(Добавлен)"
+        //    private const val LAST_CHECKED = "td:containsOwn(Сид был)"
+    }
 
     suspend fun parse(html: String, pageUrl: String): TorrentDetails? =
         withContext(Dispatchers.Default) {
@@ -210,7 +217,7 @@ private object MegaPeersDetailsPageParser {
     }
 
     suspend fun getMagnetUri(detailsPageUrl: String): String? {
-        val detailsPageHtml = withContext(Dispatchers.IO) { HttpClient.get(detailsPageUrl) }
+        val detailsPageHtml = withContext(Dispatchers.IO) { networkClient.getText(detailsPageUrl) }
         return withContext(Dispatchers.Default) {
             Jsoup.parse(detailsPageHtml).selectFirst(MAGNET_URI)?.attr("href")
         }

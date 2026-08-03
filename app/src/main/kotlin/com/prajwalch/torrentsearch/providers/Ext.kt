@@ -5,7 +5,7 @@ import com.prajwalch.torrentsearch.domain.model.Torrent
 import com.prajwalch.torrentsearch.domain.model.TorrentDetails
 import com.prajwalch.torrentsearch.extension.asObject
 import com.prajwalch.torrentsearch.extension.getString
-import com.prajwalch.torrentsearch.network.HttpClient
+import com.prajwalch.torrentsearch.network.NetworkClient
 import com.prajwalch.torrentsearch.providers.ExtUtils.getCategoryFromRaw
 import com.prajwalch.torrentsearch.util.TorrentDateParser
 import com.prajwalch.torrentsearch.util.TorrentUtils
@@ -22,7 +22,8 @@ import org.jsoup.nodes.Element
 
 import java.security.MessageDigest
 
-class Ext : SearchProvider, LatestTorrentsProvider, TopTorrentsProvider, TorrentDetailsProvider {
+class Ext(private val networkClient: NetworkClient) : SearchProvider, LatestTorrentsProvider,
+    TopTorrentsProvider, TorrentDetailsProvider {
     override val id = "extdotto"
     override val name = "Ext"
     override val url = "https://ext.to"
@@ -53,26 +54,27 @@ class Ext : SearchProvider, LatestTorrentsProvider, TopTorrentsProvider, Torrent
         Category.Porn to 10,
         Category.Series to 2,
     )
-    private val resultsPageParser = ExtResultsPageParser(name)
+    private val resultsPageParser = ExtResultsPageParser(name, networkClient)
+    private val detailsPageParser = ExtDetailsPageParser(networkClient)
 
-    override suspend fun search(query: String, context: SearchContext): List<Torrent> {
+    override suspend fun search(query: String, category: Category): List<Torrent> {
         val requestUrl = buildString {
             append(url)
             append("/browse/?")
 
-            categoryMap[context.category]?.let {
+            categoryMap[category]?.let {
                 append("cat=$it&")
             }
             append("q=$query")
         }
-        val responseHtml = context.httpClient.get(requestUrl)
+        val responseHtml = networkClient.getText(requestUrl)
 
         return resultsPageParser.parse(html = responseHtml, pageUrl = requestUrl)
     }
 
     override suspend fun getDetails(detailsPageUrl: String): TorrentDetails? {
-        val responseHtml = HttpClient.get(detailsPageUrl)
-        return ExtDetailsPageParser.parse(html = responseHtml, pageUrl = detailsPageUrl)
+        val responseHtml = networkClient.getText(detailsPageUrl)
+        return detailsPageParser.parse(html = responseHtml, pageUrl = detailsPageUrl)
     }
 
     override suspend fun getLastestTorrents(category: Category): List<Torrent> {
@@ -89,7 +91,7 @@ class Ext : SearchProvider, LatestTorrentsProvider, TopTorrentsProvider, Torrent
                 }
             }
         }
-        val responseHtml = HttpClient.get(requestUrl)
+        val responseHtml = networkClient.getText(requestUrl)
 
         return resultsPageParser.parse(html = responseHtml, pageUrl = requestUrl)
     }
@@ -108,13 +110,16 @@ class Ext : SearchProvider, LatestTorrentsProvider, TopTorrentsProvider, Torrent
                 }
             }
         }
-        val responseHtml = HttpClient.get(requestUrl)
+        val responseHtml = networkClient.getText(requestUrl)
 
         return resultsPageParser.parse(html = responseHtml, pageUrl = requestUrl)
     }
 }
 
-private class ExtResultsPageParser(private val providerName: String) {
+private class ExtResultsPageParser(
+    private val providerName: String,
+    private val networkClient: NetworkClient,
+) {
     suspend fun parse(html: String, pageUrl: String): List<Torrent> =
         withContext(Dispatchers.Default) {
             val html = Jsoup.parse(html, pageUrl)
@@ -188,7 +193,7 @@ private class ExtResultsPageParser(private val providerName: String) {
 
         val timestamp = System.currentTimeMillis() / 1000
         val hmacToken = ExtUtils.computeHMAC(torrentId, timestamp, pageToken)
-        return HttpClient.submitForm(
+        return networkClient.submitForm(
             url = "https://ext.to/ajax/getSearchMagnet.php",
             formData = mapOf(
                 "torrent_id" to torrentId,
@@ -199,9 +204,9 @@ private class ExtResultsPageParser(private val providerName: String) {
                 "sessid" to sessionId,
             ),
         )
-            ?.let(Json::parseToJsonElement)
-            ?.asObject()
-            ?.getString("url")
+            .let(Json::parseToJsonElement)
+            .asObject()
+            .getString("url")
     }
 
     private companion object {
@@ -219,26 +224,28 @@ private class ExtResultsPageParser(private val providerName: String) {
     }
 }
 
-private object ExtDetailsPageParser {
-    private const val SESSION_ID = """meta[name="csrf-token"]"""
-    private const val TORRENT_ID = "a.detail-magnet-link.download-btn-magnet"
-    private const val DETAILS_PAGE_CARD = "div.detal-page-left-block > div.card > div.card-body"
-    private const val TORRENT_NAME = "$DETAILS_PAGE_CARD .card-title"
-    private const val SIZE = "$DETAILS_PAGE_CARD .content-size"
-    private const val SEEDERS = "$DETAILS_PAGE_CARD #seed-counter"
-    private const val PEERS = "$DETAILS_PAGE_CARD #leech-counter"
-    private const val UPLOAD_DATE =
-        "$DETAILS_PAGE_CARD div.detail-torrent-poster-info > span:nth-child(1)"
-    private const val CATEGORY =
-        "$DETAILS_PAGE_CARD div.detail-torrent-poster-info > a:nth-child(3)"
-    private const val UPLOADER =
-        "$DETAILS_PAGE_CARD div.detail-torrent-poster-info span.external-user"
-    private const val LAST_CHECKED = "$DETAILS_PAGE_CARD span.detail-update-date > strong"
-    private const val TORRENT_SLUG = "$DETAILS_PAGE_CARD a.js-dscr"
-    private const val MOVIE_PLOT = "$DETAILS_PAGE_CARD div.movie-info > div.plot-block"
-    private const val SERIES_PLOT = "$DETAILS_PAGE_CARD div.plot-info > div.block-plot-tv"
-    private const val POSTER_URL = "$DETAILS_PAGE_CARD div.poster-block > a > img"
-    private const val POSTER_URL_1 = "$DETAILS_PAGE_CARD img.detail-torrent-image"
+private class ExtDetailsPageParser(private val networkClient: NetworkClient) {
+    private companion object {
+        private const val SESSION_ID = """meta[name="csrf-token"]"""
+        private const val TORRENT_ID = "a.detail-magnet-link.download-btn-magnet"
+        private const val DETAILS_PAGE_CARD = "div.detal-page-left-block > div.card > div.card-body"
+        private const val TORRENT_NAME = "$DETAILS_PAGE_CARD .card-title"
+        private const val SIZE = "$DETAILS_PAGE_CARD .content-size"
+        private const val SEEDERS = "$DETAILS_PAGE_CARD #seed-counter"
+        private const val PEERS = "$DETAILS_PAGE_CARD #leech-counter"
+        private const val UPLOAD_DATE =
+            "$DETAILS_PAGE_CARD div.detail-torrent-poster-info > span:nth-child(1)"
+        private const val CATEGORY =
+            "$DETAILS_PAGE_CARD div.detail-torrent-poster-info > a:nth-child(3)"
+        private const val UPLOADER =
+            "$DETAILS_PAGE_CARD div.detail-torrent-poster-info span.external-user"
+        private const val LAST_CHECKED = "$DETAILS_PAGE_CARD span.detail-update-date > strong"
+        private const val TORRENT_SLUG = "$DETAILS_PAGE_CARD a.js-dscr"
+        private const val MOVIE_PLOT = "$DETAILS_PAGE_CARD div.movie-info > div.plot-block"
+        private const val SERIES_PLOT = "$DETAILS_PAGE_CARD div.plot-info > div.block-plot-tv"
+        private const val POSTER_URL = "$DETAILS_PAGE_CARD div.poster-block > a > img"
+        private const val POSTER_URL_1 = "$DETAILS_PAGE_CARD img.detail-torrent-image"
+    }
 
     suspend fun parse(html: String, pageUrl: String): TorrentDetails? =
         withContext(Dispatchers.Default) {
@@ -314,7 +321,7 @@ private object ExtDetailsPageParser {
         val timestamp = System.currentTimeMillis() / 1000
         val hmacToken = ExtUtils.computeHMAC(torrentId, timestamp, pageToken)
 
-        return HttpClient.submitForm(
+        return networkClient.submitForm(
             url = "https://ext.to/ajax/getTorrentMagnet.php",
             formData = mapOf(
                 "torrent_id" to torrentId,
@@ -330,7 +337,7 @@ private object ExtDetailsPageParser {
     }
 
     private suspend fun getDescription(torrentId: String, torrentSlug: String): String? {
-        return HttpClient.getJson(
+        return networkClient.getJson(
             url = "https://ext.to/ajax/torrentDescription.php?id=$torrentId&code=$torrentSlug",
             headers = mapOf("x-requested-with" to "XMLHttpRequest"),
         )

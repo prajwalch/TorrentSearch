@@ -7,6 +7,7 @@ import com.prajwalch.torrentsearch.extension.getArray
 import com.prajwalch.torrentsearch.extension.getLong
 import com.prajwalch.torrentsearch.extension.getString
 import com.prajwalch.torrentsearch.extension.getUInt
+import com.prajwalch.torrentsearch.network.NetworkClient
 import com.prajwalch.torrentsearch.util.FileSizeUtils
 import com.prajwalch.torrentsearch.util.TorrentDateParser
 
@@ -14,7 +15,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.JsonObject
 
-class TorrentsCSV : SearchProvider {
+class TorrentsCSV(private val networkClient: NetworkClient) : SearchProvider {
     override val id = "torrentscsv"
     override val name = "TorrentsCSV"
     override val url = "https://torrents-csv.com"
@@ -22,7 +23,7 @@ class TorrentsCSV : SearchProvider {
     override val safetyStatus = SearchProviderSafetyStatus.Safe
     override val enabledByDefault = true
 
-    override suspend fun search(query: String, context: SearchContext): List<Torrent> {
+    override suspend fun search(query: String, category: Category): List<Torrent> {
         val requestUrl = buildString {
             append(url)
             append("/service")
@@ -30,7 +31,7 @@ class TorrentsCSV : SearchProvider {
             append("?q=$query")
         }
 
-        val responseJson = context.httpClient.getJson(url = requestUrl) ?: return emptyList()
+        val responseJson = networkClient.getJson(url = requestUrl) ?: return emptyList()
 
         val torrents = withContext(Dispatchers.Default) {
             responseJson

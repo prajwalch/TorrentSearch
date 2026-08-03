@@ -3,7 +3,7 @@ package com.prajwalch.torrentsearch.providers
 import com.prajwalch.torrentsearch.domain.model.Category
 import com.prajwalch.torrentsearch.domain.model.Torrent
 import com.prajwalch.torrentsearch.domain.model.TorrentDetails
-import com.prajwalch.torrentsearch.network.HttpClient
+import com.prajwalch.torrentsearch.network.NetworkClient
 import com.prajwalch.torrentsearch.util.TorrentDateParser
 import com.prajwalch.torrentsearch.util.TorrentUtils
 
@@ -15,7 +15,8 @@ import kotlinx.coroutines.withContext
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Element
 
-class AudioBookBay : SearchProvider, LatestTorrentsProvider, TorrentDetailsProvider {
+class AudioBookBay(private val networkClient: NetworkClient) : SearchProvider,
+    LatestTorrentsProvider, TorrentDetailsProvider {
     override val id = "audiobookbay"
     override val name = "AudioBookBay"
     override val url = "https://audiobookbay.lu"
@@ -23,27 +24,30 @@ class AudioBookBay : SearchProvider, LatestTorrentsProvider, TorrentDetailsProvi
     override val safetyStatus = SearchProviderSafetyStatus.Safe
     override val enabledByDefault = false
 
-    private val resultsPageParser = AudioBookBayResultsPageParser(name)
+    private val resultsPageParser = AudioBookBayResultsPageParser(name, networkClient)
 
-    override suspend fun search(query: String, context: SearchContext): List<Torrent> {
+    override suspend fun search(query: String, category: Category): List<Torrent> {
         val requestUrl = "$url/?s=$query"
-        val responseHtml = context.httpClient.get(requestUrl)
+        val responseHtml = networkClient.getText(requestUrl)
 
         return resultsPageParser.parse(html = responseHtml, pageUrl = requestUrl)
     }
 
     override suspend fun getLastestTorrents(category: Category): List<Torrent> {
-        val responseHtml = HttpClient.get(url)
+        val responseHtml = networkClient.getText(url)
         return resultsPageParser.parse(html = responseHtml, pageUrl = url)
     }
 
     override suspend fun getDetails(detailsPageUrl: String): TorrentDetails? {
-        val responseHtml = HttpClient.get(detailsPageUrl)
+        val responseHtml = networkClient.getText(detailsPageUrl)
         return AudioBookBayDetailsPageParser.parse(responseHtml)
     }
 }
 
-private class AudioBookBayResultsPageParser(private val providerName: String) {
+private class AudioBookBayResultsPageParser(
+    private val providerName: String,
+    private val networkClient: NetworkClient,
+) {
     suspend fun parse(html: String, pageUrl: String): List<Torrent> =
         withContext(Dispatchers.Default) {
             Jsoup.parse(html, pageUrl)
@@ -83,7 +87,7 @@ private class AudioBookBayResultsPageParser(private val providerName: String) {
     }
 
     private suspend fun getInfoHash(detailsPageUrl: String): String? {
-        return HttpClient.get(detailsPageUrl)
+        return networkClient.getText(detailsPageUrl)
             .let(Jsoup::parse)
             .selectFirst("td:containsOwn(Info Hash:)")
             ?.nextElementSibling()

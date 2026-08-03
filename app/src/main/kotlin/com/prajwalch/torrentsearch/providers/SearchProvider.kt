@@ -5,7 +5,6 @@ import androidx.annotation.StringRes
 import com.prajwalch.torrentsearch.domain.model.Category
 import com.prajwalch.torrentsearch.domain.model.Torrent
 import com.prajwalch.torrentsearch.domain.model.TorrentDetails
-import com.prajwalch.torrentsearch.network.HttpClient
 
 /** Unique identifier of the provider. */
 typealias SearchProviderId = String
@@ -53,7 +52,7 @@ interface SearchProvider {
     val isCloudflareProtected: Boolean get() = false
 
     /** Performs a search and returns the results. */
-    suspend fun search(query: String, context: SearchContext): List<Torrent>
+    suspend fun search(query: String, category: Category): List<Torrent>
 }
 
 /**
@@ -109,9 +108,3 @@ enum class SearchProviderType {
      */
     Torznab
 }
-
-/** The search context. */
-data class SearchContext(
-    val category: Category,
-    val httpClient: HttpClient,
-)

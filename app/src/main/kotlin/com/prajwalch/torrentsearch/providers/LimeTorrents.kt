@@ -4,7 +4,7 @@ import com.prajwalch.torrentsearch.R
 import com.prajwalch.torrentsearch.domain.model.Category
 import com.prajwalch.torrentsearch.domain.model.Torrent
 import com.prajwalch.torrentsearch.domain.model.TorrentDetails
-import com.prajwalch.torrentsearch.network.HttpClient
+import com.prajwalch.torrentsearch.network.NetworkClient
 import com.prajwalch.torrentsearch.util.TorrentDateParser
 
 import kotlinx.coroutines.Dispatchers
@@ -19,7 +19,8 @@ import org.jsoup.nodes.Element
  * Extracts torrent results from the HTML search page.
  * This provider uses InfoHash, not Magnet URIs.
  */
-class LimeTorrents : SearchProvider, TorrentDetailsProvider, LatestTorrentsProvider,
+class LimeTorrents(private val networkClient: NetworkClient) : SearchProvider,
+    TorrentDetailsProvider, LatestTorrentsProvider,
     TopTorrentsProvider {
     override val id = "limetorrents"
     override val name = "LimeTorrents"
@@ -40,16 +41,16 @@ class LimeTorrents : SearchProvider, TorrentDetailsProvider, LatestTorrentsProvi
 
     private val resultsPageParser = LimeTorrentsResultsPageParser(name)
 
-    override suspend fun search(query: String, context: SearchContext): List<Torrent> {
-        val categoryString = getCategorySearchString(context.category)
+    override suspend fun search(query: String, category: Category): List<Torrent> {
+        val categoryString = getCategorySearchString(category)
         val requestUrl = "$url/search/$categoryString/$query/date/1/"
 
-        val responseHtml = context.httpClient.get(url = requestUrl)
+        val responseHtml = networkClient.getText(url = requestUrl)
         return resultsPageParser.parse(html = responseHtml, pageUrl = requestUrl)
     }
 
     override suspend fun getDetails(detailsPageUrl: String): TorrentDetails? {
-        val responseHtml = HttpClient.get(detailsPageUrl)
+        val responseHtml = networkClient.getText(detailsPageUrl)
         return LimeTorrentsDetailsPageParser.parse(responseHtml)
     }
 
@@ -58,7 +59,7 @@ class LimeTorrents : SearchProvider, TorrentDetailsProvider, LatestTorrentsProvi
 
         val categoryString = getCategoryBrowseString(category)
         val requestUrl = "$url/browse-torrents/$categoryString/"
-        val responseHtml = HttpClient.get(requestUrl)
+        val responseHtml = networkClient.getText(requestUrl)
 
         return resultsPageParser.parse(
             html = responseHtml,
@@ -72,7 +73,7 @@ class LimeTorrents : SearchProvider, TorrentDetailsProvider, LatestTorrentsProvi
 
         val categoryString = getCategoryBrowseString(category)
         val requestUrl = "$url/cat_top/16/$categoryString/"
-        val responseHtml = HttpClient.get(requestUrl)
+        val responseHtml = networkClient.getText(requestUrl)
 
         return resultsPageParser.parse(
             html = responseHtml,

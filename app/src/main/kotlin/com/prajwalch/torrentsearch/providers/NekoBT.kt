@@ -3,7 +3,7 @@ package com.prajwalch.torrentsearch.providers
 import com.prajwalch.torrentsearch.domain.model.Category
 import com.prajwalch.torrentsearch.domain.model.Torrent
 import com.prajwalch.torrentsearch.domain.model.TorrentDetails
-import com.prajwalch.torrentsearch.network.HttpClient
+import com.prajwalch.torrentsearch.network.NetworkClient
 import com.prajwalch.torrentsearch.util.TorrentDateParser
 import com.prajwalch.torrentsearch.util.TorrentUtils
 
@@ -17,7 +17,8 @@ import org.jsoup.nodes.Element
 //       https://nekobt.to/search?query=one
 //       https://nekobt.to/api/v1/torrents/search?sort_by=seeders (top)
 //       https://nekobt.to/api/v1/torrents/search?sort_by=rss (latest)
-class NekoBT : SearchProvider, LatestTorrentsProvider, TopTorrentsProvider, TorrentDetailsProvider {
+class NekoBT(private val networkClient: NetworkClient) : SearchProvider, LatestTorrentsProvider,
+    TopTorrentsProvider, TorrentDetailsProvider {
     override val id = "nekobt"
     override val name = "NekoBT"
     override val url = "https://nekobt.to"
@@ -27,29 +28,29 @@ class NekoBT : SearchProvider, LatestTorrentsProvider, TopTorrentsProvider, Torr
 
     private val resultsPageParser = NekoBTResultsPageParser(providerName = name)
 
-    override suspend fun search(query: String, context: SearchContext): List<Torrent> {
+    override suspend fun search(query: String, category: Category): List<Torrent> {
         val requestUrl = "$url/search?query=$query"
-        val responseHtml = context.httpClient.get(requestUrl)
+        val responseHtml = networkClient.getText(requestUrl)
 
         return resultsPageParser.parse(html = responseHtml, pageUrl = requestUrl)
     }
 
     override suspend fun getLastestTorrents(category: Category): List<Torrent> {
         val requestUrl = "$url/search?sort-by=latest"
-        val responseHtml = HttpClient.get(requestUrl)
+        val responseHtml = networkClient.getText(requestUrl)
 
         return resultsPageParser.parse(html = responseHtml, pageUrl = requestUrl)
     }
 
     override suspend fun getTopTorrents(category: Category): List<Torrent> {
         val requestUrl = "$url/search?sort-by=seeders"
-        val responseHtml = HttpClient.get(requestUrl)
+        val responseHtml = networkClient.getText(requestUrl)
 
         return resultsPageParser.parse(html = responseHtml, pageUrl = requestUrl)
     }
 
     override suspend fun getDetails(detailsPageUrl: String): TorrentDetails? {
-        val responseHtml = HttpClient.get(detailsPageUrl)
+        val responseHtml = networkClient.getText(detailsPageUrl)
         return NekoBTDetailsPageParser.parse(html = responseHtml, pageUrl = detailsPageUrl)
     }
 }

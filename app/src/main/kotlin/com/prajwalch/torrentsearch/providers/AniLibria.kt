@@ -8,6 +8,7 @@ import com.prajwalch.torrentsearch.extension.getLong
 import com.prajwalch.torrentsearch.extension.getObject
 import com.prajwalch.torrentsearch.extension.getString
 import com.prajwalch.torrentsearch.extension.getUInt
+import com.prajwalch.torrentsearch.network.NetworkClient
 import com.prajwalch.torrentsearch.util.FileSizeUtils
 import com.prajwalch.torrentsearch.util.TorrentDateParser
 
@@ -24,7 +25,7 @@ import kotlinx.serialization.json.JsonObject
  * The search endpoint returns matching releases. The torrents for each release
  * are fetched from a separate endpoint, then mapped to magnet-based [Torrent]s.
  */
-class AniLibria : SearchProvider {
+class AniLibria(private val networkClient: NetworkClient) : SearchProvider {
     override val id = "anilibria"
     override val name = "AniLibria"
     override val url = "https://www.anilibria.top"
@@ -32,13 +33,13 @@ class AniLibria : SearchProvider {
     override val safetyStatus = SearchProviderSafetyStatus.Safe
     override val enabledByDefault = false
 
-    override suspend fun search(query: String, context: SearchContext): List<Torrent> {
+    override suspend fun search(query: String, category: Category): List<Torrent> {
         val searchUrl = buildString {
             append(API_URL)
             append("/app/search/releases")
             append("?query=$query")
         }
-        val responseJson = context.httpClient.getJson(url = searchUrl) ?: return emptyList()
+        val responseJson = networkClient.getJson(url = searchUrl) ?: return emptyList()
 
         val releaseIds = withContext(Dispatchers.Default) {
             responseJson
@@ -50,19 +51,16 @@ class AniLibria : SearchProvider {
 
         return coroutineScope {
             releaseIds
-                .map { releaseId -> async { fetchReleaseTorrents(context, releaseId) } }
+                .map { releaseId -> async { fetchReleaseTorrents(releaseId) } }
                 .awaitAll()
                 .flatten()
         }
     }
 
     /** Fetches and parses the torrents that belong to a single release. */
-    private suspend fun fetchReleaseTorrents(
-        context: SearchContext,
-        releaseId: Long,
-    ): List<Torrent> {
+    private suspend fun fetchReleaseTorrents(releaseId: Long): List<Torrent> {
         val torrentsUrl = "$API_URL/anime/torrents/release/$releaseId"
-        val responseJson = context.httpClient.getJson(url = torrentsUrl) ?: return emptyList()
+        val responseJson = networkClient.getJson(url = torrentsUrl) ?: return emptyList()
 
         return withContext(Dispatchers.Default) {
             responseJson

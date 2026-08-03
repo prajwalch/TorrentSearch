@@ -8,7 +8,7 @@ import com.prajwalch.torrentsearch.extension.asArray
 import com.prajwalch.torrentsearch.extension.asObject
 import com.prajwalch.torrentsearch.extension.getLong
 import com.prajwalch.torrentsearch.extension.getString
-import com.prajwalch.torrentsearch.network.HttpClient
+import com.prajwalch.torrentsearch.network.NetworkClient
 import com.prajwalch.torrentsearch.util.FileSizeUtils
 import com.prajwalch.torrentsearch.util.TorrentDateParser
 import com.prajwalch.torrentsearch.util.TorrentUtils
@@ -18,7 +18,7 @@ import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonObject
 
-class ThePirateBay :
+class ThePirateBay(private val networkClient: NetworkClient) :
     SearchProvider,
     TorrentDetailsProvider,
     LatestTorrentsProvider,
@@ -47,17 +47,17 @@ class ThePirateBay :
         providerUrl = url,
     )
 
-    override suspend fun search(query: String, context: SearchContext): List<Torrent> {
+    override suspend fun search(query: String, category: Category): List<Torrent> {
         val requestUrl = buildString {
             append(API_URL)
             append("/q.php")
             append("?q=$query")
 
-            val categoryIndex = categoryId(context.category)
+            val categoryIndex = categoryId(category)
             append("&cat=$categoryIndex")
         }
 
-        val responseJson = context.httpClient.getJson(requestUrl) ?: return emptyList()
+        val responseJson = networkClient.getJson(requestUrl) ?: return emptyList()
         return resultsJsonParser.parse(responseJson)
     }
 
@@ -65,7 +65,7 @@ class ThePirateBay :
         val id = detailsPageUrl.takeLastWhile { it != '=' }
         val requestUrl = "$API_URL/t.php?id=$id"
 
-        return HttpClient.getJson(requestUrl)?.let { TBPDetailsJsonParser.parse(it) }
+        return networkClient.getJson(requestUrl)?.let { TBPDetailsJsonParser.parse(it) }
     }
 
     override suspend fun getLastestTorrents(category: Category): List<Torrent> {
@@ -75,7 +75,7 @@ class ThePirateBay :
             val categoryId = categoryId(category)
             "$API_URL/q.php?q=category%3A$categoryId"
         }
-        val responseJson = HttpClient.getJson(requestUrl) ?: return emptyList()
+        val responseJson = networkClient.getJson(requestUrl) ?: return emptyList()
 
         return resultsJsonParser.parse(responseJson)
     }
@@ -92,7 +92,7 @@ class ThePirateBay :
                 append("/data_top100_48h_$categoryId.json")
             }
         }
-        val responseJson = HttpClient.getJson(requestUrl) ?: return emptyList()
+        val responseJson = networkClient.getJson(requestUrl) ?: return emptyList()
 
         return resultsJsonParser.parse(responseJson)
     }

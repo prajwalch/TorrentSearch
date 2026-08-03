@@ -3,7 +3,7 @@ package com.prajwalch.torrentsearch.providers
 import com.prajwalch.torrentsearch.domain.model.Category
 import com.prajwalch.torrentsearch.domain.model.Torrent
 import com.prajwalch.torrentsearch.domain.model.TorrentDetails
-import com.prajwalch.torrentsearch.network.HttpClient
+import com.prajwalch.torrentsearch.network.NetworkClient
 import com.prajwalch.torrentsearch.util.TorrentDateParser
 import com.prajwalch.torrentsearch.util.TorrentUtils
 
@@ -17,7 +17,8 @@ import org.jsoup.nodes.Element
 
 import java.time.Instant
 
-class ThirteenThirtySevenX : SearchProvider, TopTorrentsProvider, TorrentDetailsProvider {
+class ThirteenThirtySevenX(private val networkClient: NetworkClient) : SearchProvider,
+    TopTorrentsProvider, TorrentDetailsProvider {
     override val id = "1337x"
     override val name = "1337x"
     override val url = "https://1337x.to"
@@ -45,29 +46,29 @@ class ThirteenThirtySevenX : SearchProvider, TopTorrentsProvider, TorrentDetails
         Category.Porn to "XXX",
         Category.Series to "TV",
     )
-    private val resultsPageParser = ThirteenThirtySevenXResultsPageParser(providerName = name)
+    private val resultsPageParser = ThirteenThirtySevenXResultsPageParser(name, networkClient)
 
-    override suspend fun search(query: String, context: SearchContext): List<Torrent> {
-        val requestUrl = if (context.category == Category.All) {
+    override suspend fun search(query: String, category: Category): List<Torrent> {
+        val requestUrl = if (category == Category.All) {
             "$url/search/$query/1/"
         } else {
-            val categoryString = categoryMap[context.category]!!
+            val categoryString = categoryMap[category]!!
             "$url/category-search/$query/$categoryString/1/"
         }
-        val responseHtml = context.httpClient.get(requestUrl)
+        val responseHtml = networkClient.getText(requestUrl)
 
         return resultsPageParser.parse(html = responseHtml, pageUrl = requestUrl)
     }
 
     override suspend fun getTopTorrents(category: Category): List<Torrent> {
         val requestUrl = "$url/top-100"
-        val responseHtml = HttpClient.get(requestUrl)
+        val responseHtml = networkClient.getText(requestUrl)
 
         return resultsPageParser.parse(html = responseHtml, pageUrl = requestUrl)
     }
 
     override suspend fun getDetails(detailsPageUrl: String): TorrentDetails? {
-        val response = HttpClient.get(detailsPageUrl)
+        val response = networkClient.getText(detailsPageUrl)
         return ThirteenThirtySevenXDetailsPageParser.parse(
             html = response,
             pageUrl = detailsPageUrl,
@@ -75,7 +76,10 @@ class ThirteenThirtySevenX : SearchProvider, TopTorrentsProvider, TorrentDetails
     }
 }
 
-private class ThirteenThirtySevenXResultsPageParser(private val providerName: String) {
+private class ThirteenThirtySevenXResultsPageParser(
+    private val providerName: String,
+    private val networkClient: NetworkClient,
+) {
     suspend fun parse(html: String, pageUrl: String): List<Torrent> =
         withContext(Dispatchers.Default.limitedParallelism(3)) {
             Jsoup.parse(html, pageUrl)
@@ -87,7 +91,7 @@ private class ThirteenThirtySevenXResultsPageParser(private val providerName: St
 
     private suspend fun parseListItem(listItem: Element): Torrent? {
         val detailsPageUrl = listItem.selectFirst(DETAILS_PAGE_URL)?.attr("abs:href") ?: return null
-        val detailsPageHtml = HttpClient.get(detailsPageUrl)
+        val detailsPageHtml = networkClient.getText(detailsPageUrl)
         val torrentDetails = ThirteenThirtySevenXDetailsPageParser.parse(
             html = detailsPageHtml,
             pageUrl = detailsPageUrl,

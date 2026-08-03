@@ -7,7 +7,7 @@ import android.webkit.WebResourceResponse
 import android.webkit.WebView
 import android.webkit.WebViewClient
 
-import com.prajwalch.torrentsearch.network.HttpClient
+import com.prajwalch.torrentsearch.network.NetworkClient
 
 sealed interface ChallengeSolveError {
     data object BadUrl : ChallengeSolveError
@@ -44,7 +44,7 @@ class CloudflareWebViewClient(
             return
         }
 
-        val challengeSolved = HttpClient.getCookie(url).let {
+        val challengeSolved = NetworkClient.getCookie(url).let {
             it != null && it.contains("cf_clearance")
         }
         if (challengeSolved) {

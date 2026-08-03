@@ -3,7 +3,7 @@ package com.prajwalch.torrentsearch.providers
 import com.prajwalch.torrentsearch.domain.model.Category
 import com.prajwalch.torrentsearch.domain.model.Torrent
 import com.prajwalch.torrentsearch.domain.model.TorrentDetails
-import com.prajwalch.torrentsearch.network.HttpClient
+import com.prajwalch.torrentsearch.network.NetworkClient
 import com.prajwalch.torrentsearch.util.TorrentDateParser
 import com.prajwalch.torrentsearch.util.TorrentUtils
 
@@ -15,7 +15,7 @@ import kotlinx.coroutines.withContext
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Element
 
-class MyPornClub :
+class MyPornClub(private val networkClient: NetworkClient) :
     SearchProvider,
     TorrentDetailsProvider,
     LatestTorrentsProvider,
@@ -27,38 +27,41 @@ class MyPornClub :
     override val safetyStatus = SearchProviderSafetyStatus.Safe
     override val enabledByDefault = false
 
-    private val resultsPageParser = MyPornClubResultsPageParser(providerName = name)
+    private val resultsPageParser = MyPornClubResultsPageParser(name, networkClient)
 
-    override suspend fun search(query: String, context: SearchContext): List<Torrent> {
+    override suspend fun search(query: String, category: Category): List<Torrent> {
         val formattedQuery = query.trim().replace("%20", "-")
         // TODO: Suffix can be used for sorting: /seeders, /latest, /hits, /views
         val url = "$url/s/$formattedQuery/seeders"
-        val responseHtml = context.httpClient.get(url)
+        val responseHtml = networkClient.getText(url)
 
         return resultsPageParser.parse(html = responseHtml, pageUrl = url)
     }
 
     override suspend fun getDetails(detailsPageUrl: String): TorrentDetails? {
-        val responseHtml = HttpClient.get(detailsPageUrl)
+        val responseHtml = networkClient.getText(detailsPageUrl)
         return MyPornClubDetailsPageParser.parse(html = responseHtml, pageUrl = detailsPageUrl)
     }
 
     override suspend fun getLastestTorrents(category: Category): List<Torrent> {
         val requestUrl = "$url/ts/latest/alltime"
-        val responseHtml = HttpClient.get(requestUrl)
+        val responseHtml = networkClient.getText(requestUrl)
 
         return resultsPageParser.parse(html = responseHtml, pageUrl = requestUrl)
     }
 
     override suspend fun getTopTorrents(category: Category): List<Torrent> {
         val requestUrl = "$url/ts/hits/alltime"
-        val responseHtml = HttpClient.get(requestUrl)
+        val responseHtml = networkClient.getText(requestUrl)
 
         return resultsPageParser.parse(html = responseHtml, pageUrl = requestUrl)
     }
 }
 
-private class MyPornClubResultsPageParser(private val providerName: String) {
+private class MyPornClubResultsPageParser(
+    private val providerName: String,
+    private val networkClient: NetworkClient,
+) {
     suspend fun parse(html: String, pageUrl: String): List<Torrent> =
         withContext(Dispatchers.Default) {
             Jsoup
@@ -74,7 +77,7 @@ private class MyPornClubResultsPageParser(private val providerName: String) {
     private suspend fun parseListItem(listItem: Element): Torrent? {
         val detailsPageUrl = listItem.selectFirst(DETAILS_PAGE_URL)?.attr("abs:href")
             ?: return null
-        val detailsPageHtml = HttpClient.get(detailsPageUrl)
+        val detailsPageHtml = networkClient.getText(detailsPageUrl)
         val torrentDetails = MyPornClubDetailsPageParser.parse(
             html = detailsPageHtml,
             pageUrl = detailsPageUrl,

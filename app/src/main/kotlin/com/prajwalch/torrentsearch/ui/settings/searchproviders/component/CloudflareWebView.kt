@@ -24,7 +24,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 
-import com.prajwalch.torrentsearch.network.HttpClient
+import com.prajwalch.torrentsearch.network.NetworkClient
 
 @Composable
 fun BoxedCloudflareWebView(
@@ -93,7 +93,7 @@ fun createCloudflareWebView(
 
     settings.javaScriptEnabled = true
     settings.domStorageEnabled = true
-    settings.userAgentString = HttpClient.USER_AGENT
+    settings.userAgentString = NetworkClient.USER_AGENT
 
     // Pair with theme.
 //    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {

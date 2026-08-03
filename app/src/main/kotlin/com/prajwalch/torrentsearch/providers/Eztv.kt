@@ -3,7 +3,7 @@ package com.prajwalch.torrentsearch.providers
 import com.prajwalch.torrentsearch.domain.model.Category
 import com.prajwalch.torrentsearch.domain.model.Torrent
 import com.prajwalch.torrentsearch.domain.model.TorrentDetails
-import com.prajwalch.torrentsearch.network.HttpClient
+import com.prajwalch.torrentsearch.network.NetworkClient
 import com.prajwalch.torrentsearch.util.TorrentDateParser
 import com.prajwalch.torrentsearch.util.TorrentUtils
 
@@ -14,7 +14,7 @@ import org.jsoup.Jsoup
 import org.jsoup.nodes.Element
 import org.jsoup.nodes.TextNode
 
-class Eztv : SearchProvider, TorrentDetailsProvider {
+class Eztv(private val networkClient: NetworkClient) : SearchProvider, TorrentDetailsProvider {
     override val id = "eztvx"
     override val name = "Eztv"
     override val url = "https://eztvx.to"
@@ -26,10 +26,10 @@ class Eztv : SearchProvider, TorrentDetailsProvider {
 
     private val resultsPageParser = EztvResultsPageParser(name)
 
-    override suspend fun search(query: String, context: SearchContext): List<Torrent> {
+    override suspend fun search(query: String, category: Category): List<Torrent> {
         val requestUrl = "$url/search/$query"
         // Without setting that cookie, it returns results without magnet links.
-        val responseHtml = context.httpClient.get(
+        val responseHtml = networkClient.getText(
             url = requestUrl,
             headers = mapOf("Cookie" to "layout=def_wlinks"),
         )
@@ -38,7 +38,7 @@ class Eztv : SearchProvider, TorrentDetailsProvider {
     }
 
     override suspend fun getDetails(detailsPageUrl: String): TorrentDetails? {
-        val responseHtml = HttpClient.get(detailsPageUrl)
+        val responseHtml = networkClient.getText(detailsPageUrl)
         return EztvDetailsPageParser.parse(html = responseHtml, pageUrl = detailsPageUrl)
     }
 }

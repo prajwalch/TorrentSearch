@@ -7,7 +7,7 @@ import com.prajwalch.torrentsearch.extension.getArray
 import com.prajwalch.torrentsearch.extension.getLong
 import com.prajwalch.torrentsearch.extension.getString
 import com.prajwalch.torrentsearch.extension.getUInt
-import com.prajwalch.torrentsearch.network.HttpClient
+import com.prajwalch.torrentsearch.network.NetworkClient
 import com.prajwalch.torrentsearch.util.FileSizeUtils
 import com.prajwalch.torrentsearch.util.TorrentDateParser
 import com.prajwalch.torrentsearch.util.TorrentUtils
@@ -24,7 +24,8 @@ import kotlinx.serialization.json.putJsonArray
  * Provider implementation using the official [Knaben API](https://knaben.org/api/v1).
  * Returns magnet-based torrents.
  */
-class Knaben : SearchProvider, LatestTorrentsProvider, TopTorrentsProvider {
+class Knaben(private val networkClient: NetworkClient) : SearchProvider, LatestTorrentsProvider,
+    TopTorrentsProvider {
     override val id = "knaben"
     override val name = "Knaben"
     override val url = "https://knaben.org"
@@ -44,13 +45,13 @@ class Knaben : SearchProvider, LatestTorrentsProvider, TopTorrentsProvider {
 
     private val resultsJsonParser = KnabenResultsJsonParser(providerName = name)
 
-    override suspend fun search(query: String, context: SearchContext): List<Torrent> {
+    override suspend fun search(query: String, category: Category): List<Torrent> {
         val requestBody = buildRequestJson(
             query = query,
-            category = context.category,
+            category = category,
             orderBy = "seeders",
         )
-        val responseJson = context.httpClient.postJson(
+        val responseJson = networkClient.postJson(
             url = "$API_URL/v1",
             payload = requestBody,
         ) ?: return emptyList()
@@ -60,7 +61,7 @@ class Knaben : SearchProvider, LatestTorrentsProvider, TopTorrentsProvider {
 
     override suspend fun getLastestTorrents(category: Category): List<Torrent> {
         val requestBody = buildRequestJson(query = null, category = category, orderBy = "date")
-        val responseJson = HttpClient.postJson(url = "$API_URL/v1", payload = requestBody)
+        val responseJson = networkClient.postJson(url = "$API_URL/v1", payload = requestBody)
             ?: return emptyList()
 
         return resultsJsonParser.parse(responseJson)
@@ -68,7 +69,7 @@ class Knaben : SearchProvider, LatestTorrentsProvider, TopTorrentsProvider {
 
     override suspend fun getTopTorrents(category: Category): List<Torrent> {
         val requestBody = buildRequestJson(query = null, category = category, orderBy = "seeders")
-        val responseJson = HttpClient.postJson(url = "$API_URL/v1", payload = requestBody)
+        val responseJson = networkClient.postJson(url = "$API_URL/v1", payload = requestBody)
             ?: return emptyList()
 
         return resultsJsonParser.parse(responseJson)

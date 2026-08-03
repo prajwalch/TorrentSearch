@@ -9,6 +9,7 @@ import androidx.lifecycle.viewModelScope
 import com.prajwalch.torrentsearch.domain.SearchProvidersManager
 import com.prajwalch.torrentsearch.domain.model.Category
 import com.prajwalch.torrentsearch.domain.model.TorznabConnectionCheckResult
+import com.prajwalch.torrentsearch.network.NetworkClient
 import com.prajwalch.torrentsearch.providers.SearchProviderId
 import com.prajwalch.torrentsearch.torznab.TorznabUtils
 
@@ -48,6 +49,7 @@ sealed interface TorznabConfigEvent {
 @HiltViewModel
 class TorznabConfigViewModel @Inject constructor(
     private val searchProvidersManager: SearchProvidersManager,
+    private val networkClient: NetworkClient,
     savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
     /**
@@ -117,7 +119,7 @@ class TorznabConfigViewModel @Inject constructor(
             val apiUrl = _uiState.value.url
             val apiKey = _uiState.value.apiKey
 
-            val connectionCheckResult = TorznabUtils.checkConnection(apiUrl, apiKey)
+            val connectionCheckResult = TorznabUtils.checkConnection(apiUrl, apiKey, networkClient)
             if (connectionCheckResult !is TorznabConnectionCheckResult.ConnectionEstablished) {
                 _uiState.update { it.copy(isDetectingSupportedCategories = false) }
                 _events.send(TorznabConfigEvent.ConnectionCheckCompleted(connectionCheckResult))
@@ -125,7 +127,8 @@ class TorznabConfigViewModel @Inject constructor(
                 return@launch
             }
 
-            val supportedCategories = TorznabUtils.getSupportedCategories(apiUrl, apiKey)
+            val supportedCategories =
+                TorznabUtils.getSupportedCategories(apiUrl, apiKey, networkClient)
             _uiState.update {
                 it.copy(
                     supportedCategories = supportedCategories.orEmpty(),
@@ -145,7 +148,7 @@ class TorznabConfigViewModel @Inject constructor(
         viewModelScope.launch {
             val apiUrl = _uiState.value.url
             val apiKey = _uiState.value.apiKey
-            val checkResult = TorznabUtils.checkConnection(apiUrl, apiKey)
+            val checkResult = TorznabUtils.checkConnection(apiUrl, apiKey, networkClient)
 
             _uiState.update { it.copy(isCheckingConnection = false) }
             _events.send(TorznabConfigEvent.ConnectionCheckCompleted(checkResult))

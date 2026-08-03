@@ -9,7 +9,7 @@ import com.prajwalch.torrentsearch.extension.getLong
 import com.prajwalch.torrentsearch.extension.getObject
 import com.prajwalch.torrentsearch.extension.getString
 import com.prajwalch.torrentsearch.extension.getUInt
-import com.prajwalch.torrentsearch.network.HttpClient
+import com.prajwalch.torrentsearch.network.NetworkClient
 import com.prajwalch.torrentsearch.util.FileSizeUtils
 import com.prajwalch.torrentsearch.util.TorrentDateParser
 import com.prajwalch.torrentsearch.util.TorrentUtils
@@ -19,7 +19,8 @@ import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonObject
 
-class Yts : SearchProvider, LatestTorrentsProvider, TopTorrentsProvider, TorrentDetailsProvider {
+class Yts(private val networkClient: NetworkClient) : SearchProvider, LatestTorrentsProvider,
+    TopTorrentsProvider, TorrentDetailsProvider {
     override val id = "ytsmx"
     override val name = "Yts"
     override val url = "https://yts.bz"
@@ -29,21 +30,21 @@ class Yts : SearchProvider, LatestTorrentsProvider, TopTorrentsProvider, Torrent
 
     private val resultsJsonParser = YtsResultsJsonParser(providerName = name)
 
-    override suspend fun search(query: String, context: SearchContext): List<Torrent> {
+    override suspend fun search(query: String, category: Category): List<Torrent> {
         val requestUrl = buildString {
             append(API_BASE_URL)
             append("/list_movies.json")
             append("?query_term=$query")
             append("&limit=50")
         }
-        val responseJson = context.httpClient.getJson(url = requestUrl) ?: return emptyList()
+        val responseJson = networkClient.getJson(url = requestUrl) ?: return emptyList()
 
         return resultsJsonParser.parse(responseJson)
     }
 
     override suspend fun getLastestTorrents(category: Category): List<Torrent> {
         val requestUrl = "$API_BASE_URL/list_movies.json"
-        val responseJson = HttpClient.getJson(requestUrl) ?: return emptyList()
+        val responseJson = networkClient.getJson(requestUrl) ?: return emptyList()
 
         return resultsJsonParser.parse(responseJson)
     }
@@ -65,7 +66,7 @@ class Yts : SearchProvider, LatestTorrentsProvider, TopTorrentsProvider, Torrent
                 )
             }
         val requestUrl = "$API_BASE_URL/movie_details.json?movie_id=$movieId&with_images=true"
-        val responseJson = HttpClient.getJson(requestUrl) ?: return null
+        val responseJson = networkClient.getJson(requestUrl) ?: return null
 
         return YtsDetailsJsonParser.parse(json = responseJson, torrentInfoHash = infoHash)
     }

@@ -3,7 +3,7 @@ package com.prajwalch.torrentsearch.providers
 import com.prajwalch.torrentsearch.domain.model.Category
 import com.prajwalch.torrentsearch.domain.model.Torrent
 import com.prajwalch.torrentsearch.domain.model.TorrentDetails
-import com.prajwalch.torrentsearch.network.HttpClient
+import com.prajwalch.torrentsearch.network.NetworkClient
 import com.prajwalch.torrentsearch.util.TorrentDateParser
 import com.prajwalch.torrentsearch.util.TorrentUtils
 
@@ -13,7 +13,8 @@ import kotlinx.coroutines.withContext
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Element
 
-class Rutor : SearchProvider, LatestTorrentsProvider, TopTorrentsProvider, TorrentDetailsProvider {
+class Rutor(private val networkClient: NetworkClient) : SearchProvider, LatestTorrentsProvider,
+    TopTorrentsProvider, TorrentDetailsProvider {
     override val id = "rutorinfo"
     override val name = "Rutor"
     override val url = "https://rutor.info"
@@ -43,18 +44,18 @@ class Rutor : SearchProvider, LatestTorrentsProvider, TopTorrentsProvider, Torre
     )
     private val resultsPageParser = RutorResultsPageParser(providerName = name)
 
-    override suspend fun search(query: String, context: SearchContext): List<Torrent> {
+    override suspend fun search(query: String, category: Category): List<Torrent> {
         // https://rutor.info/search/<page>/<category>/<match type>/<sort>/sinners
         // match type = 010 (full phrase)
         // sort = 2 (by seeders)
-        val categoryId = categoryMap[context.category] ?: categoryMap[Category.All]!!
+        val categoryId = categoryMap[category] ?: categoryMap[Category.All]!!
         val requestUrl = "$url/search/0/$categoryId/010/2/$query"
-        val responseHtml = context.httpClient.get(requestUrl)
+        val responseHtml = networkClient.getText(requestUrl)
 
         return resultsPageParser.parse(
             html = responseHtml,
             pageUrl = requestUrl,
-            searchCategory = context.category,
+            searchCategory = category,
         )
     }
 
@@ -63,7 +64,7 @@ class Rutor : SearchProvider, LatestTorrentsProvider, TopTorrentsProvider, Torre
         // https://rutor.info/browse/<page>/<category>/0/<sort>
         val categoryId = categoryMap[category] ?: categoryMap[Category.All]!!
         val requestUrl = "$url/browse/0/$categoryId/0/0"
-        val responseHtml = HttpClient.get(requestUrl)
+        val responseHtml = networkClient.getText(requestUrl)
 
         return resultsPageParser.parse(
             html = responseHtml,
@@ -74,7 +75,7 @@ class Rutor : SearchProvider, LatestTorrentsProvider, TopTorrentsProvider, Torre
 
     override suspend fun getTopTorrents(category: Category): List<Torrent> {
         val requestUrl = "$url/top"
-        val responseHtml = HttpClient.get(requestUrl)
+        val responseHtml = networkClient.getText(requestUrl)
 
         return resultsPageParser.parse(
             html = responseHtml,
@@ -84,7 +85,7 @@ class Rutor : SearchProvider, LatestTorrentsProvider, TopTorrentsProvider, Torre
     }
 
     override suspend fun getDetails(detailsPageUrl: String): TorrentDetails? {
-        val responseHtml = HttpClient.get(detailsPageUrl)
+        val responseHtml = networkClient.getText(detailsPageUrl)
         return RutorDetailsPageParser.parse(html = responseHtml, pageUrl = detailsPageUrl)
     }
 }

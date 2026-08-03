@@ -1,19 +1,18 @@
 package com.prajwalch.torrentsearch.network
 
-import com.prajwalch.torrentsearch.data.repository.SettingsRepository
 import com.prajwalch.torrentsearch.domain.model.DohProvider
 
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.runBlocking
 
 import okhttp3.Dns
 import okhttp3.OkHttpClient
-
 import java.net.InetAddress
 
-class DynamicDns(private val settingsRepository: SettingsRepository) : Dns {
+class DynamicDns(private val dohProvider: Flow<DohProvider>) : Dns {
     override fun lookup(hostname: String): List<InetAddress> {
-        val dohProvider = runBlocking { settingsRepository.dohProvider.firstOrNull() }
+        val dohProvider = runBlocking { dohProvider.firstOrNull() }
         return createDns(dohProvider).lookup(hostname)
     }
 

@@ -5,6 +5,7 @@ import android.util.Log
 import com.prajwalch.torrentsearch.domain.model.Category
 import com.prajwalch.torrentsearch.domain.model.Torrent
 import com.prajwalch.torrentsearch.domain.model.TorznabConfig
+import com.prajwalch.torrentsearch.network.NetworkClient
 import com.prajwalch.torrentsearch.torznab.TorznabCategoryMapper
 import com.prajwalch.torrentsearch.torznab.TorznabFunctions
 import com.prajwalch.torrentsearch.torznab.TorznabResultsXmlParser
@@ -14,7 +15,10 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
 /** A search provider which is based on Torznab specification. */
-class TorznabSearchProvider(private val config: TorznabConfig) : SearchProvider {
+class TorznabSearchProvider(
+    private val config: TorznabConfig,
+    private val networkClient: NetworkClient,
+) : SearchProvider {
     override val id = config.id
     override val name = config.searchProviderName
     override val url = config.url
@@ -29,7 +33,7 @@ class TorznabSearchProvider(private val config: TorznabConfig) : SearchProvider 
     /** The XML parser for the response. */
     private val resultsXmlParser = TorznabResultsXmlParser(providerName = name)
 
-    override suspend fun search(query: String, context: SearchContext): List<Torrent> {
+    override suspend fun search(query: String, category: Category): List<Torrent> {
         Log.d(tag, "search")
 
         val apiUrl = TorznabUtils.normalizeApiUrl(config.url)
@@ -41,13 +45,13 @@ class TorznabSearchProvider(private val config: TorznabConfig) : SearchProvider 
             append("&t=${TorznabFunctions.SEARCH}")
             append("&q=$query")
 
-            if (context.category != Category.All) {
-                val categoriesId = getCategoriesId(category = context.category)
+            if (category != Category.All) {
+                val categoriesId = getCategoriesId(category = category)
                 append("&cat=$categoriesId")
             }
         }
 
-        val responseXml = context.httpClient.get(url = requestUrl)
+        val responseXml = networkClient.getText(url = requestUrl)
         Log.d(tag, "Received response of length ${responseXml.length}")
 
         return withContext(Dispatchers.Default) {

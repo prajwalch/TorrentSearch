@@ -14,7 +14,6 @@ import coil3.request.allowHardware
 import coil3.request.crossfade
 
 import com.prajwalch.torrentsearch.data.repository.SettingsRepository
-import com.prajwalch.torrentsearch.network.HttpClient
 import com.prajwalch.torrentsearch.ui.crash.CrashActivity
 import com.prajwalch.torrentsearch.util.TorrentSearchExceptionHandler
 
@@ -50,13 +49,6 @@ class TorrentSearchApplication : Application(), SingletonImageLoader.Factory {
                 activityToLaunch = CrashActivity::class.java,
             ),
         )
-
-        HttpClient.init(settingsRepository)
-    }
-
-    override fun onTerminate() {
-        super.onTerminate()
-        HttpClient.close()
     }
 
     override fun newImageLoader(context: PlatformContext): ImageLoader {

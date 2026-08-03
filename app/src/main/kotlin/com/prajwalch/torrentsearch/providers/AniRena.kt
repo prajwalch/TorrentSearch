@@ -3,7 +3,7 @@ package com.prajwalch.torrentsearch.providers
 import com.prajwalch.torrentsearch.domain.model.Category
 import com.prajwalch.torrentsearch.domain.model.Torrent
 import com.prajwalch.torrentsearch.domain.model.TorrentDetails
-import com.prajwalch.torrentsearch.network.HttpClient
+import com.prajwalch.torrentsearch.network.NetworkClient
 import com.prajwalch.torrentsearch.util.TorrentDateParser
 import com.prajwalch.torrentsearch.util.TorrentUtils
 
@@ -13,7 +13,7 @@ import kotlinx.coroutines.withContext
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Element
 
-class AniRena : SearchProvider,
+class AniRena(private val networkClient: NetworkClient) : SearchProvider,
     LatestTorrentsProvider,
     TopTorrentsProvider,
     TorrentDetailsProvider {
@@ -41,25 +41,29 @@ class AniRena : SearchProvider,
         Category.Series to "live",
         Category.Other to "other"
     )
-    private val resultsPageParser = AniRenaResultsPageParser(providerName = name)
+    private val resultsPageParser = AniRenaResultsPageParser(
+        providerName = name,
+        networkClient = networkClient,
+    )
+    private val detailsPageParser = AniRenaDetailsPageParser(networkClient)
 
-    override suspend fun search(query: String, context: SearchContext): List<Torrent> {
+    override suspend fun search(query: String, category: Category): List<Torrent> {
         val requestUrl = buildString {
             append(url)
             append("?q=$query")
             append("&page=1")
 
-            if (context.category != Category.All) {
-                categoryMap[context.category]?.let { append("&cat=$it") }
+            if (category != Category.All) {
+                categoryMap[category]?.let { append("&cat=$it") }
             }
         }
-        val responseHtml = context.httpClient.get(url = requestUrl)
+        val responseHtml = networkClient.getText(requestUrl)
 
         return resultsPageParser.parse(html = responseHtml, pageUrl = requestUrl)
     }
 
     override suspend fun getLastestTorrents(category: Category): List<Torrent> {
-        val responseHtml = HttpClient.get(url)
+        val responseHtml = networkClient.getText(url)
         return resultsPageParser.parse(html = responseHtml, pageUrl = url)
     }
 
@@ -68,12 +72,15 @@ class AniRena : SearchProvider,
     }
 
     override suspend fun getDetails(detailsPageUrl: String): TorrentDetails? {
-        val responseHtml = HttpClient.get(detailsPageUrl)
-        return AniRenaDetailsPageParser.parse(html = responseHtml, pageUrl = detailsPageUrl)
+        val responseHtml = networkClient.getText(detailsPageUrl)
+        return detailsPageParser.parse(html = responseHtml, pageUrl = detailsPageUrl)
     }
 }
 
-private class AniRenaResultsPageParser(private val providerName: String) {
+private class AniRenaResultsPageParser(
+    private val providerName: String,
+    private val networkClient: NetworkClient,
+) {
     suspend fun parse(html: String, pageUrl: String): List<Torrent> =
         withContext(Dispatchers.Default) {
             Jsoup.parse(html, pageUrl)
@@ -83,7 +90,7 @@ private class AniRenaResultsPageParser(private val providerName: String) {
 
     private suspend fun parseListItem(listItem: Element): Torrent? {
         val magnetUriSourceLink = listItem.selectFirst(MAGNET_URI)?.attr("abs:href") ?: return null
-        val magnetUri = getMagnetUri(magnetUriSourceLink) ?: return null
+        val magnetUri = getMagnetUri(magnetUriSourceLink, networkClient) ?: return null
 
         val torrentName = listItem.selectFirst(TORRENT_NAME)?.ownText() ?: return null
         val size = listItem.selectFirst(SIZE)?.ownText()
@@ -130,19 +137,22 @@ private class AniRenaResultsPageParser(private val providerName: String) {
     }
 }
 
-private object AniRenaDetailsPageParser {
-    private const val INFO_HASH = "code.td-ov-stat-hash"
-    private const val TORRENT_NAME = "h1.td-title"
-    private const val SIZE = "div.td-ov-stats > div.td-ov-stat:nth-child(4) > div.td-ov-stat-num"
-    private const val SEEDERS = "div.td-ov-stats > div.td-ov-stat--se > div.td-ov-stat-num"
-    private const val PEERS = "div.td-ov-stats > div.td-ov-stat--le > div.td-ov-stat-num"
-    private const val UPLOAD_DATE = "div.td-ov-meta > div.td-ov-meta-val:nth-child(6) > span"
-    private const val CATEGORY = "div.td-ov-meta-val:nth-child(2) a.td-cat-name.td-cat-link"
-    private const val UPLOADER = "div.td-ov-meta > div.td-ov-meta-val:nth-child(4)"
-    private const val MAGNET_URI = "div.td-actions > a:nth-child(1)"
-    private const val FILE_DOWNLOAD_LINK = "div.td-actions > a:nth-child(2)"
-    private const val DESCRIPTION = "script#td-description-raw"
-    private const val POSTER_URL = "div.td-anime-poster > img"
+private class AniRenaDetailsPageParser(private val networkClient: NetworkClient) {
+    private companion object {
+        private const val INFO_HASH = "code.td-ov-stat-hash"
+        private const val TORRENT_NAME = "h1.td-title"
+        private const val SIZE =
+            "div.td-ov-stats > div.td-ov-stat:nth-child(4) > div.td-ov-stat-num"
+        private const val SEEDERS = "div.td-ov-stats > div.td-ov-stat--se > div.td-ov-stat-num"
+        private const val PEERS = "div.td-ov-stats > div.td-ov-stat--le > div.td-ov-stat-num"
+        private const val UPLOAD_DATE = "div.td-ov-meta > div.td-ov-meta-val:nth-child(6) > span"
+        private const val CATEGORY = "div.td-ov-meta-val:nth-child(2) a.td-cat-name.td-cat-link"
+        private const val UPLOADER = "div.td-ov-meta > div.td-ov-meta-val:nth-child(4)"
+        private const val MAGNET_URI = "div.td-actions > a:nth-child(1)"
+        private const val FILE_DOWNLOAD_LINK = "div.td-actions > a:nth-child(2)"
+        private const val DESCRIPTION = "script#td-description-raw"
+        private const val POSTER_URL = "div.td-anime-poster > img"
+    }
 
     suspend fun parse(html: String, pageUrl: String): TorrentDetails? =
         withContext(Dispatchers.Default) {
@@ -165,7 +175,7 @@ private object AniRenaDetailsPageParser {
             val uploader = html.selectFirst(UPLOADER)?.ownText()
             val magnetUri = html.selectFirst(MAGNET_URI)
                 ?.attr("abs:href")
-                ?.let { getMagnetUri(it) }
+                ?.let { getMagnetUri(it, networkClient) }
                 ?: TorrentUtils.createMagnetUri(infoHash)
             val fileDownloadLink = html.selectFirst(FILE_DOWNLOAD_LINK)?.attr("abs:href")
             val description = html.selectFirst(DESCRIPTION)?.data()?.removeSurrounding("\"")
@@ -188,8 +198,8 @@ private object AniRenaDetailsPageParser {
         }
 }
 
-private suspend fun getMagnetUri(sourceUrl: String): String? {
-    return HttpClient.getResponse(sourceUrl).let { it.headers["Location"] }
+private suspend fun getMagnetUri(sourceUrl: String, networkClient: NetworkClient): String? {
+    return networkClient.get(sourceUrl).let { it.headers["Location"] }
 }
 
 private fun getCategoryFromRawString(raw: String) = when (raw) {

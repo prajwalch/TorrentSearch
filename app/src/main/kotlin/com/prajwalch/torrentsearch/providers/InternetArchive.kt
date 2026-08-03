@@ -8,7 +8,7 @@ import com.prajwalch.torrentsearch.extension.getArray
 import com.prajwalch.torrentsearch.extension.getLong
 import com.prajwalch.torrentsearch.extension.getObject
 import com.prajwalch.torrentsearch.extension.getString
-import com.prajwalch.torrentsearch.network.HttpClient
+import com.prajwalch.torrentsearch.network.NetworkClient
 import com.prajwalch.torrentsearch.util.FileSizeUtils
 import com.prajwalch.torrentsearch.util.TorrentDateParser
 import com.prajwalch.torrentsearch.util.TorrentUtils
@@ -17,7 +17,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.JsonObject
 
-class InternetArchive : SearchProvider, TorrentDetailsProvider {
+class InternetArchive(private val networkClient: NetworkClient) : SearchProvider,
+    TorrentDetailsProvider {
     override val id = "internetarchive"
     override val name = "InternetArchive"
     override val url = "https://archive.org"
@@ -35,19 +36,19 @@ class InternetArchive : SearchProvider, TorrentDetailsProvider {
         providerUrl = url,
     )
 
-    override suspend fun search(query: String, context: SearchContext): List<Torrent> {
+    override suspend fun search(query: String, category: Category): List<Torrent> {
         val requestUrl = buildString {
             append(url)
             append("/advancedsearch.php")
             append("?q=title:$query")
-            appendCategory(category = context.category)
+            appendCategory(category = category)
             append("&fl[]=title,item_size,publicdate,mediatype,identifier,btih")
             append("&rows=100")
             append("&page=1")
             append("&output=json")
         }
 
-        val responseJson = context.httpClient.getJson(url = requestUrl) ?: return emptyList()
+        val responseJson = networkClient.getJson(requestUrl) ?: return emptyList()
         return resultsJsonParser.parse(responseJson.asObject()).orEmpty()
     }
 
@@ -55,7 +56,7 @@ class InternetArchive : SearchProvider, TorrentDetailsProvider {
         val jsonMetadataPageUrl = detailsPageUrl.takeLastWhile { it != '/' }
             .let { "https://archive.org/metadata/$it" }
 
-        return HttpClient.getJson(jsonMetadataPageUrl)
+        return networkClient.getJson(jsonMetadataPageUrl)
             ?.asObject()
             ?.let { IAMetadataJsonParser.parse(it) }
     }
