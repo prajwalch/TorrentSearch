@@ -209,7 +209,7 @@
     <string name="search_providers_state_challenge_solving_description">Може бути доволі повільно. Зачекайте.</string>
     <string name="search_providers_state_challenge_solved_title">Перевірку пройдено!</string>
     <string name="settings_dns_over_https">DNS через HTTPS (DoH)</string>
-    <string name="settings_dns_over_https_label_provider">Система: %1$s</string>
+    <string name="settings_dns_over_https_label_provider">Система</string>
     <string name="settings_dns_over_https_summary">Знаходить сервери, відповідні доменам, через захищене з\'єднання, а не типові DNS вашої мережі</string>
     <string name="search_providers_action_update_protection_status">Оновити стан захисту</string>
     <string name="search_providers_state_updating_protection_status">Оновлення стану захисту…</string>
@@ -222,4 +222,12 @@
     <string name="search_providers_button_try_again">Повторити спробу</string>
     <string name="search_providers_state_challenge_solve_error_title">Помилка розблокування</string>
     <string name="search_providers_state_challenge_solve_error_description">Не вдалося пройти перевірку. Перевірте, чи працює інтернет, і повторіть спробу.</string>
+    <string name="home_search_providers_not_enabled_msg">Пошукових систем ще не ввімкнено. Увімкнути рекомендовані?</string>
+    <string name="home_button_enable_recommended">Увімкнути рекомендовані</string>
+    <string name="home_button_i_will_choose_myself">Оберу самостійно</string>
+    <string name="bookmarks_swipe_delete_tip">Щоб видалити закладку, посуньте її ліворуч.</string>
+    <string name="search_providers_reset_to_default_title">Відновити типові?</string>
+    <string name="search_providers_reset_to_default_text">Замість увімкнених пошукових систем буде відновлено типовий набір. Кукі для систем із розблокованим захистом буде видалено.</string>
+    <string name="search_providers_reset_to_default_button_confirm">Відновити</string>
+    <string name="search_providers_reset_to_default_button_dismiss">Скасувати</string>
 </resources>
