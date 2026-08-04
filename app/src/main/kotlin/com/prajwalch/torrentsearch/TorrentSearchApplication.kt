@@ -15,7 +15,6 @@ import coil3.request.CachePolicy
 import coil3.request.allowHardware
 import coil3.request.crossfade
 
-import com.prajwalch.torrentsearch.data.repository.SettingsRepository
 import com.prajwalch.torrentsearch.network.NetworkClient
 import com.prajwalch.torrentsearch.ui.crash.CrashActivity
 import com.prajwalch.torrentsearch.util.TorrentSearchExceptionHandler
@@ -26,7 +25,7 @@ import javax.inject.Inject
 @HiltAndroidApp
 class TorrentSearchApplication : Application(), SingletonImageLoader.Factory {
     @Inject
-    lateinit var settingsRepository: SettingsRepository
+    lateinit var networkClient: NetworkClient
 
     override fun onCreate() {
         super.onCreate()
@@ -58,11 +57,7 @@ class TorrentSearchApplication : Application(), SingletonImageLoader.Factory {
     override fun newImageLoader(context: PlatformContext): ImageLoader {
         return ImageLoader.Builder(context)
             .components {
-                add(
-                    KtorNetworkFetcherFactory(
-                        NetworkClient.createKtorClientForCoil(settingsRepository)
-                    ),
-                )
+                add(KtorNetworkFetcherFactory(networkClient.coilKtorClient))
             }
             .crossfade(true)
             .allowHardware(true)

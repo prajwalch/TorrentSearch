@@ -76,15 +76,6 @@ class NetworkClient @Inject constructor(
         const val USER_AGENT = "Mozilla/5.0 (Linux; Android 10; K) " +
                 "AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Mobile Safari/537.36"
 
-        fun createKtorClientForCoil(settingsRepository: SettingsRepository) =
-            HttpClient(OkHttp) {
-                engine {
-                    dns = DynamicDns(settingsRepository.dohProvider)
-                }
-                install(UserAgent) { agent = USER_AGENT }
-                install(HttpCookies) { storage = PersistentCookieStorage() }
-            }
-
         fun getCookie(url: String): String? {
             return CookieManager.getInstance().getCookie(url)
         }
@@ -130,12 +121,13 @@ class NetworkClient @Inject constructor(
         }
     }
 
-    private val ktorClient = HttpClient(OkHttp) {
-        engine {
-            dns = DynamicDns(settingsRepository.dohProvider)
-        }
+    private val baseKtorClient = HttpClient(OkHttp) {
+        engine { dns = DynamicDns(settingsRepository.dohProvider) }
         install(UserAgent) { agent = USER_AGENT }
         install(HttpCookies) { storage = PersistentCookieStorage() }
+    }
+
+    private val ktorClient = baseKtorClient.config {
         install(HttpCache)
         install(HttpRequestRetry) {
             retryOnServerErrors(maxRetries = MAX_RETRIES)
@@ -150,6 +142,18 @@ class NetworkClient @Inject constructor(
             connectTimeoutMillis = CONNECT_TIMEOUT_MS
             socketTimeoutMillis = SOCKET_TIMEOUT_MS
         }
+    }
+
+    val coilKtorClient = baseKtorClient.config {
+        install(HttpRequestRetry) {
+            retryOnServerErrors(maxRetries = 2)
+            retryOnException(
+                maxRetries = 2,
+                retryOnTimeout = true
+            )
+            exponentialDelay()
+        }
+        install(HttpTimeout)
     }
 
     /**
