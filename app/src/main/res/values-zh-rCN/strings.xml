@@ -99,7 +99,7 @@
     <string name="settings_enable_quick_search">启用快速搜索</string>
     <string name="settings_enable_quick_search_summary">启用时，将本软件添加到文本选择菜单（如复制或剪切）。</string>
     <string name="settings_dns_over_https">DNS over HTTPS（DoH）</string>
-    <string name="settings_dns_over_https_label_provider">提供商：%1$s</string>
+    <string name="settings_dns_over_https_label_provider">提供商</string>
     <string name="settings_dns_over_https_summary">通过安全连接解析域名，而非使用网络默认 DNS</string>
     <string name="settings_section_about">关于</string>
     <string name="settings_version">版本</string>
