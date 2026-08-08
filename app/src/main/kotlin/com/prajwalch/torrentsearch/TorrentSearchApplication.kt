@@ -25,7 +25,7 @@ import org.koin.android.ext.koin.androidContext
 import org.koin.core.context.startKoin
 
 class TorrentSearchApplication : Application(), SingletonImageLoader.Factory {
-    private val networkClient: NetworkClient by lazy { get() }
+    private lateinit var networkClient: NetworkClient
 
     override fun onCreate() {
         super.onCreate()
@@ -34,6 +34,7 @@ class TorrentSearchApplication : Application(), SingletonImageLoader.Factory {
             androidContext(this@TorrentSearchApplication)
             modules(appModules)
         }
+        networkClient = get()
 
         if (BuildConfig.DEBUG) {
             StrictMode.setThreadPolicy(
