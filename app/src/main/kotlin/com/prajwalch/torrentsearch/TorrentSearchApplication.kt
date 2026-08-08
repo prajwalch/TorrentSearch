@@ -15,20 +15,25 @@ import coil3.request.CachePolicy
 import coil3.request.allowHardware
 import coil3.request.crossfade
 
+import com.prajwalch.torrentsearch.di.appModules
 import com.prajwalch.torrentsearch.network.NetworkClient
 import com.prajwalch.torrentsearch.ui.crash.CrashActivity
 import com.prajwalch.torrentsearch.util.TorrentSearchExceptionHandler
 
-import dagger.hilt.android.HiltAndroidApp
-import javax.inject.Inject
+import org.koin.android.ext.android.get
+import org.koin.android.ext.koin.androidContext
+import org.koin.core.context.startKoin
 
-@HiltAndroidApp
 class TorrentSearchApplication : Application(), SingletonImageLoader.Factory {
-    @Inject
-    lateinit var networkClient: NetworkClient
+    private val networkClient: NetworkClient by lazy { get() }
 
     override fun onCreate() {
         super.onCreate()
+
+        startKoin {
+            androidContext(this@TorrentSearchApplication)
+            modules(appModules)
+        }
 
         if (BuildConfig.DEBUG) {
             StrictMode.setThreadPolicy(

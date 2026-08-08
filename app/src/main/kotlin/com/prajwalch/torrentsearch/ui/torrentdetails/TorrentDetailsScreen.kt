@@ -43,7 +43,6 @@ import androidx.compose.ui.platform.LocalClipboard
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 
 import com.prajwalch.torrentsearch.R
@@ -70,6 +69,8 @@ import com.prajwalch.torrentsearch.ui.torrentdetails.component.UnsupportedTorren
 
 import kotlinx.coroutines.launch
 
+import org.koin.androidx.compose.koinViewModel
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TorrentDetailsScreen(
@@ -77,7 +78,7 @@ fun TorrentDetailsScreen(
     onOpenMagnetLink: (MagnetUri) -> Unit,
     onShareDetailsPageLink: (url: String) -> Unit,
     modifier: Modifier = Modifier,
-    viewModel: TorrentDetailsViewModel = hiltViewModel(),
+    viewModel: TorrentDetailsViewModel = koinViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val torrentFileDownloadState by viewModel.torrentFileDownloadState.collectAsStateWithLifecycle()

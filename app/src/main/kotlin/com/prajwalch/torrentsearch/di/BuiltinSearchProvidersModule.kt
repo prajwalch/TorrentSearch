@@ -46,59 +46,55 @@ import com.prajwalch.torrentsearch.providers.XXXTracker
 import com.prajwalch.torrentsearch.providers.Yts
 import com.prajwalch.torrentsearch.providers.ZeroMagnet
 
-import dagger.Module
-import dagger.Provides
-import dagger.hilt.InstallIn
-import dagger.hilt.components.SingletonComponent
+import org.koin.dsl.module
 
-@Module
-@InstallIn(SingletonComponent::class)
-object BuiltinSearchProvidersModule {
-    @Provides
-    fun provideBuiltinSearchProviders(networkClient: NetworkClient): List<SearchProvider> =
-        listOf(
-            AniLibria(networkClient),
-            AniRena(networkClient),
-            AnimeTosho(networkClient),
-            AudioBookBay(networkClient),
-            BTDigg(networkClient),
-            BangumiMoe(networkClient),
-            BitSearch(networkClient),
-            BlueRoms(networkClient),
-            Bt4g(networkClient),
-            Btsow(networkClient),
-            Dmhy(networkClient),
-            Ext(networkClient),
-            Eztv(networkClient),
-            FileMood(networkClient),
-            InternetArchive(networkClient),
-            Knaben(networkClient),
-            LimeTorrents(networkClient),
-            LinuxTracker(networkClient),
-            MegaPeer(networkClient),
-            Mikan(networkClient),
-            MyPornClub(networkClient),
-            NekoBT(networkClient),
-            Nyaa(networkClient),
-            OxTorrent(networkClient),
-            Rutor(networkClient),
-            SubsPlease(networkClient),
-            Sukebei(networkClient),
-            ThePirateBay(networkClient),
-            TheRarBg(networkClient),
-            ThirteenThirtySevenX(networkClient),
-            TokyoToshokan(networkClient),
-            Torrent9(networkClient),
-            TorrentDatabase(networkClient),
-            TorrentDownload(networkClient),
-            TorrentDownloads(networkClient),
-            TorrentKitty(networkClient),
-            TorrentsCSV(networkClient),
-            Torrentz(networkClient),
-            UIndex(networkClient),
-            XXXClub(networkClient),
-            XXXTracker(networkClient),
-            Yts(networkClient),
-            ZeroMagnet(networkClient),
-        )
+private fun provideBuiltinSearchProviders(networkClient: NetworkClient): List<SearchProvider> =
+    listOf(
+        AniLibria(networkClient),
+        AniRena(networkClient),
+        AnimeTosho(networkClient),
+        AudioBookBay(networkClient),
+        BTDigg(networkClient),
+        BangumiMoe(networkClient),
+        BitSearch(networkClient),
+        BlueRoms(networkClient),
+        Bt4g(networkClient),
+        Btsow(networkClient),
+        Dmhy(networkClient),
+        Ext(networkClient),
+        Eztv(networkClient),
+        FileMood(networkClient),
+        InternetArchive(networkClient),
+        Knaben(networkClient),
+        LimeTorrents(networkClient),
+        LinuxTracker(networkClient),
+        MegaPeer(networkClient),
+        Mikan(networkClient),
+        MyPornClub(networkClient),
+        NekoBT(networkClient),
+        Nyaa(networkClient),
+        OxTorrent(networkClient),
+        Rutor(networkClient),
+        SubsPlease(networkClient),
+        Sukebei(networkClient),
+        ThePirateBay(networkClient),
+        TheRarBg(networkClient),
+        ThirteenThirtySevenX(networkClient),
+        TokyoToshokan(networkClient),
+        Torrent9(networkClient),
+        TorrentDatabase(networkClient),
+        TorrentDownload(networkClient),
+        TorrentDownloads(networkClient),
+        TorrentKitty(networkClient),
+        TorrentsCSV(networkClient),
+        Torrentz(networkClient),
+        UIndex(networkClient),
+        XXXClub(networkClient),
+        XXXTracker(networkClient),
+        Yts(networkClient),
+        ZeroMagnet(networkClient),
+    )
+
+val builtinSearchProvidersModule = module {
+    single<List<SearchProvider>> { provideBuiltinSearchProviders(networkClient = get()) }
 }

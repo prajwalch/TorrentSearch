@@ -9,9 +9,7 @@ import com.prajwalch.torrentsearch.domain.model.SearchHistoryId
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
-import javax.inject.Inject
-
-class SearchHistoryRepository @Inject constructor(private val dao: SearchHistoryDao) {
+class SearchHistoryRepository(private val dao: SearchHistoryDao) {
     /** Returns all the saved search history. */
     fun getAllSearchHistories(): Flow<List<SearchHistory>> {
         return dao.getAllSearchHistories().map { it.toDomain() }

@@ -22,9 +22,7 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 
-import javax.inject.Inject
-
-class SettingsRepository @Inject constructor(private val dataStore: DataStore<Preferences>) {
+class SettingsRepository(private val dataStore: DataStore<Preferences>) {
     val enableDynamicTheme: Flow<Boolean> = dataStore
         .getOrDefault(key = ENABLE_DYNAMIC_THEME, default = true)
 

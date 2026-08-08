@@ -8,13 +8,11 @@ import com.prajwalch.torrentsearch.data.local.entities.ViewedTorrentEntity
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
-import javax.inject.Inject
-
 /**
  * Repository for managing viewed torrents.
  * Provides methods to mark torrents as viewed and retrieve viewed torrent IDs.
  */
-class ViewedTorrentRepository @Inject constructor(
+class ViewedTorrentRepository(
     private val dao: ViewedTorrentDao,
 ) {
     /**

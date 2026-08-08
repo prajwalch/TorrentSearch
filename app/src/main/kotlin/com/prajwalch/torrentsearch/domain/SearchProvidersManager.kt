@@ -27,8 +27,6 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.supervisorScope
 import kotlinx.coroutines.withContext
 
-import javax.inject.Inject
-
 import kotlin.concurrent.atomics.AtomicInt
 import kotlin.concurrent.atomics.ExperimentalAtomicApi
 import kotlin.concurrent.atomics.incrementAndFetch
@@ -42,7 +40,7 @@ data class ProtectionStatusUpdateResult(
  * A search providers manager which is responsible for managing and handling
  * all providers specific task and responsibility.
  */
-class SearchProvidersManager @Inject constructor(
+class SearchProvidersManager(
     private val builtinProviders: List<@JvmSuppressWildcards SearchProvider>,
     private val torznabConfigRepository: TorznabConfigRepository,
     private val settingsRepository: SettingsRepository,

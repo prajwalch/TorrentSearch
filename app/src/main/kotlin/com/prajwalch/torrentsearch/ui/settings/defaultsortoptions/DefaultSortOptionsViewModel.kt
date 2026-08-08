@@ -8,18 +8,14 @@ import com.prajwalch.torrentsearch.domain.model.SortCriteria
 import com.prajwalch.torrentsearch.domain.model.SortOptions
 import com.prajwalch.torrentsearch.domain.model.SortOrder
 
-import dagger.hilt.android.lifecycle.HiltViewModel
-
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.WhileSubscribed
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
-import javax.inject.Inject
 import kotlin.time.Duration.Companion.seconds
 
-@HiltViewModel
-class DefaultSortOptionsViewModel @Inject constructor(
+class DefaultSortOptionsViewModel(
     private val settingsRepository: SettingsRepository,
 ) : ViewModel() {
     val uiState = settingsRepository

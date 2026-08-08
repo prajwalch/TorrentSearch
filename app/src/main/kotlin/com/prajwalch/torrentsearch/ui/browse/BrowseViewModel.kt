@@ -19,8 +19,6 @@ import com.prajwalch.torrentsearch.domain.model.sortedWithComparator
 import com.prajwalch.torrentsearch.filter.TorrentFilters
 import com.prajwalch.torrentsearch.network.ConnectivityChecker
 
-import dagger.hilt.android.lifecycle.HiltViewModel
-
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.persistentListOf
@@ -45,7 +43,6 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 import java.io.OutputStream
-import javax.inject.Inject
 
 import kotlin.time.Duration.Companion.seconds
 
@@ -94,8 +91,7 @@ enum class BrowseSort {
 /**
  * A ViewModel that handles the business logic of browse screen.
  */
-@HiltViewModel
-class BrowseViewModel @Inject constructor(
+class BrowseViewModel(
     searchProvidersGateway: SearchProvidersGateway,
     connectivityChecker: ConnectivityChecker,
     settingsRepository: SettingsRepository,

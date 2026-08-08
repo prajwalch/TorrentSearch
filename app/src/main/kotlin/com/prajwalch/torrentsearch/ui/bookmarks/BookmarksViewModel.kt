@@ -13,8 +13,6 @@ import com.prajwalch.torrentsearch.domain.model.SortOptions
 import com.prajwalch.torrentsearch.domain.model.SortOrder
 import com.prajwalch.torrentsearch.util.FileSizeUtils
 
-import dagger.hilt.android.lifecycle.HiltViewModel
-
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.WhileSubscribed
@@ -24,7 +22,6 @@ import kotlinx.coroutines.launch
 
 import java.io.InputStream
 import java.io.OutputStream
-import javax.inject.Inject
 
 import kotlin.time.Duration.Companion.seconds
 
@@ -36,8 +33,7 @@ data class BookmarksUiState(
 )
 
 /** ViewModel that handles the business logic of Bookmarks screen. */
-@HiltViewModel
-class BookmarksViewModel @Inject constructor(
+class BookmarksViewModel(
     private val bookmarkRepository: BookmarkRepository,
     private val settingsRepository: SettingsRepository,
     private val torrentFileDownloader: TorrentFileDownloader,

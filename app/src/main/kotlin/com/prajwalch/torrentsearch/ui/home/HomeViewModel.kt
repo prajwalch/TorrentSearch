@@ -9,8 +9,6 @@ import com.prajwalch.torrentsearch.domain.SearchProvidersManager
 import com.prajwalch.torrentsearch.domain.model.Category
 import com.prajwalch.torrentsearch.domain.model.SearchHistory
 
-import dagger.hilt.android.lifecycle.HiltViewModel
-
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -24,7 +22,6 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
-import javax.inject.Inject
 import kotlin.time.Duration.Companion.seconds
 
 data class HomeUiState(
@@ -38,8 +35,7 @@ data class HomeUiState(
 /**
  * The ViewModel which handles the business logic of home screen.
  */
-@HiltViewModel
-class HomeViewModel @Inject constructor(
+class HomeViewModel(
     searchHistoryRepository: SearchHistoryRepository,
     private val settingsRepository: SettingsRepository,
     private val searchProvidersManager: SearchProvidersManager,

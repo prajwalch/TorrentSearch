@@ -22,8 +22,6 @@ import com.prajwalch.torrentsearch.filter.TorrentFilters
 import com.prajwalch.torrentsearch.network.ConnectivityChecker
 import com.prajwalch.torrentsearch.util.createSortComparator
 
-import dagger.hilt.android.lifecycle.HiltViewModel
-
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toImmutableList
@@ -48,7 +46,6 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 import java.io.OutputStream
-import javax.inject.Inject
 
 import kotlin.time.Duration.Companion.seconds
 
@@ -93,8 +90,7 @@ data class TorrentFilter(
 /**
  * A ViewModel that handles the business logic of search screen.
  */
-@HiltViewModel
-class SearchViewModel @Inject constructor(
+class SearchViewModel(
     private val searchProvidersGateway: SearchProvidersGateway,
     private val bookmarkRepository: BookmarkRepository,
     private val searchHistoryRepository: SearchHistoryRepository,

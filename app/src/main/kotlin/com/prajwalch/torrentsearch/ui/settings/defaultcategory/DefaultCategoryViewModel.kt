@@ -6,18 +6,14 @@ import androidx.lifecycle.viewModelScope
 import com.prajwalch.torrentsearch.data.repository.SettingsRepository
 import com.prajwalch.torrentsearch.domain.model.Category
 
-import dagger.hilt.android.lifecycle.HiltViewModel
-
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.WhileSubscribed
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
-import javax.inject.Inject
 import kotlin.time.Duration.Companion.seconds
 
-@HiltViewModel
-class DefaultCategoryViewModel @Inject constructor(
+class DefaultCategoryViewModel(
     private val settingsRepository: SettingsRepository,
 ) : ViewModel() {
     val uiState = settingsRepository

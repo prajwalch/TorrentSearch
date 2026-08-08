@@ -9,8 +9,6 @@ import com.prajwalch.torrentsearch.domain.model.Category
 import com.prajwalch.torrentsearch.domain.model.SearchProviderInfo
 import com.prajwalch.torrentsearch.providers.SearchProviderId
 
-import dagger.hilt.android.lifecycle.HiltViewModel
-
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.WhileSubscribed
@@ -19,7 +17,6 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
-import javax.inject.Inject
 import kotlin.time.Duration.Companion.seconds
 
 data class SearchProvidersUiState(
@@ -40,8 +37,7 @@ sealed interface ProtectionUpdateState {
 }
 
 /** ViewModel which handles the business logic of Search providers screen. */
-@HiltViewModel
-class SearchProvidersViewModel @Inject constructor(
+class SearchProvidersViewModel(
     private val searchProvidersManager: SearchProvidersManager,
     settingsRepository: SettingsRepository,
 ) : ViewModel() {
