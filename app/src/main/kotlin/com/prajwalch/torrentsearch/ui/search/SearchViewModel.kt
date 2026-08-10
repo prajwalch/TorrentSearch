@@ -48,6 +48,7 @@ import kotlinx.coroutines.launch
 import java.io.OutputStream
 
 import kotlin.time.Duration.Companion.seconds
+import org.koin.android.annotation.KoinViewModel
 
 data class SearchUiState(
     val searchParams: SearchParams = SearchParams(),
@@ -90,7 +91,7 @@ data class TorrentFilter(
 /**
  * A ViewModel that handles the business logic of search screen.
  */
-@org.koin.android.annotation.KoinViewModel
+@KoinViewModel
 class SearchViewModel(
     private val searchProvidersGateway: SearchProvidersGateway,
     private val bookmarkRepository: BookmarkRepository,

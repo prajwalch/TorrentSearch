@@ -28,6 +28,7 @@ import kotlinx.coroutines.launch
 import java.io.OutputStream
 
 import kotlin.time.Duration.Companion.seconds
+import org.koin.android.annotation.KoinViewModel
 
 data class SettingsUiState(
     val appearanceSettings: AppearanceSettingsUiState = AppearanceSettingsUiState(),
@@ -73,7 +74,7 @@ data class AdvancedSettingsUiState(
 )
 
 /** ViewModel that handles the business logic of Settings screen. */
-@org.koin.android.annotation.KoinViewModel
+@KoinViewModel
 class SettingsViewModel(
     private val settingsRepository: SettingsRepository,
     private val searchProvidersManager: SearchProvidersManager,

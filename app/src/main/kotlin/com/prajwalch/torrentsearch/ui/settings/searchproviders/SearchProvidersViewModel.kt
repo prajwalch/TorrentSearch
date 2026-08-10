@@ -18,6 +18,7 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 import kotlin.time.Duration.Companion.seconds
+import org.koin.android.annotation.KoinViewModel
 
 data class SearchProvidersUiState(
     val selectedCategory: Category? = null,
@@ -37,7 +38,7 @@ sealed interface ProtectionUpdateState {
 }
 
 /** ViewModel which handles the business logic of Search providers screen. */
-@org.koin.android.annotation.KoinViewModel
+@KoinViewModel
 class SearchProvidersViewModel(
     private val searchProvidersManager: SearchProvidersManager,
     settingsRepository: SettingsRepository,

@@ -19,6 +19,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import org.koin.android.annotation.KoinViewModel
 
 data class TorznabConfigUiState(
     val searchProviderName: String = "",
@@ -42,7 +43,7 @@ sealed interface TorznabConfigEvent {
     ) : TorznabConfigEvent
 }
 
-@org.koin.android.annotation.KoinViewModel
+@KoinViewModel
 class TorznabConfigViewModel(
     private val searchProvidersManager: SearchProvidersManager,
     private val networkClient: NetworkClient,

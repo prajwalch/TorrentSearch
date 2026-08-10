@@ -22,6 +22,7 @@ import kotlinx.coroutines.launch
 
 import java.io.IOException
 import java.io.OutputStream
+import org.koin.android.annotation.KoinViewModel
 
 data class TorrentDetailsUiState(
     val state: TorrentDetailsState = TorrentDetailsState.Loading,
@@ -39,7 +40,7 @@ sealed interface TorrentDetailsState {
     data class Available(val details: TorrentDetails) : TorrentDetailsState
 }
 
-@org.koin.android.annotation.KoinViewModel
+@KoinViewModel
 class TorrentDetailsViewModel(
     private val searchProvidersGateway: SearchProvidersGateway,
     private val torrentFileDownloader: TorrentFileDownloader,

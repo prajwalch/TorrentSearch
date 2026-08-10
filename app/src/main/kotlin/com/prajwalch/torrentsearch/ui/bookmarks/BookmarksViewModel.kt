@@ -24,6 +24,7 @@ import java.io.InputStream
 import java.io.OutputStream
 
 import kotlin.time.Duration.Companion.seconds
+import org.koin.android.annotation.KoinViewModel
 
 /** UI state for the Bookmarks screen. */
 data class BookmarksUiState(
@@ -33,7 +34,7 @@ data class BookmarksUiState(
 )
 
 /** ViewModel that handles the business logic of Bookmarks screen. */
-@org.koin.android.annotation.KoinViewModel
+@KoinViewModel
 class BookmarksViewModel(
     private val bookmarkRepository: BookmarkRepository,
     private val settingsRepository: SettingsRepository,

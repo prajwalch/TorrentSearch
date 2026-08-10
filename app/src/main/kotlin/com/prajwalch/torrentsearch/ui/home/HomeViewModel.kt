@@ -23,6 +23,7 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 import kotlin.time.Duration.Companion.seconds
+import org.koin.android.annotation.KoinViewModel
 
 data class HomeUiState(
     val histories: List<SearchHistory> = emptyList(),
@@ -35,7 +36,7 @@ data class HomeUiState(
 /**
  * The ViewModel which handles the business logic of home screen.
  */
-@org.koin.android.annotation.KoinViewModel
+@KoinViewModel
 class HomeViewModel(
     searchHistoryRepository: SearchHistoryRepository,
     private val settingsRepository: SettingsRepository,

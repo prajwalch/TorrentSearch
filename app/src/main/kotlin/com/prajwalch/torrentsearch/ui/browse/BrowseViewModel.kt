@@ -45,6 +45,7 @@ import kotlinx.coroutines.launch
 import java.io.OutputStream
 
 import kotlin.time.Duration.Companion.seconds
+import org.koin.android.annotation.KoinViewModel
 
 data class BrowseUiState(
     val contentState: BrowseContentState = BrowseContentState.Loading,
@@ -91,7 +92,7 @@ enum class BrowseSort {
 /**
  * A ViewModel that handles the business logic of browse screen.
  */
-@org.koin.android.annotation.KoinViewModel
+@KoinViewModel
 class BrowseViewModel(
     searchProvidersGateway: SearchProvidersGateway,
     connectivityChecker: ConnectivityChecker,
