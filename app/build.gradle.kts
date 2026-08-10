@@ -92,6 +92,7 @@ dependencies {
     implementation(libs.jsoup)
     implementation(libs.koin.android)
     implementation(libs.koin.androidx.compose)
+    implementation(libs.koin.annotations)
     implementation(libs.koin.core)
     implementation(libs.kotlinx.collections.immutable)
     implementation(libs.kotlinx.coroutines.android)
@@ -104,6 +105,7 @@ dependencies {
     implementation(platform(libs.androidx.compose.bom))
 
     ksp(libs.androidx.room.compiler)
+    ksp(libs.koin.ksp.compiler)
 
     testImplementation(libs.junit)
 

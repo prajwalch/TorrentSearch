@@ -20,6 +20,7 @@ data class MainUiState(
     val openTorrentDetailsInApp: Boolean = false,
 )
 
+@org.koin.android.annotation.KoinViewModel
 class MainViewModel(
     settingsRepository: SettingsRepository,
 ) : ViewModel() {

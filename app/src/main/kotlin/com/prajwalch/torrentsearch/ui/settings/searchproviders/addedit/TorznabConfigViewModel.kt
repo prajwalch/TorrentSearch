@@ -42,6 +42,7 @@ sealed interface TorznabConfigEvent {
     ) : TorznabConfigEvent
 }
 
+@org.koin.android.annotation.KoinViewModel
 class TorznabConfigViewModel(
     private val searchProvidersManager: SearchProvidersManager,
     private val networkClient: NetworkClient,

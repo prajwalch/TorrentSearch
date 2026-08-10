@@ -39,6 +39,7 @@ sealed interface TorrentDetailsState {
     data class Available(val details: TorrentDetails) : TorrentDetailsState
 }
 
+@org.koin.android.annotation.KoinViewModel
 class TorrentDetailsViewModel(
     private val searchProvidersGateway: SearchProvidersGateway,
     private val torrentFileDownloader: TorrentFileDownloader,

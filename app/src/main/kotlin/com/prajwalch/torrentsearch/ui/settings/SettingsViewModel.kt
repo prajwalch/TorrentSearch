@@ -73,6 +73,7 @@ data class AdvancedSettingsUiState(
 )
 
 /** ViewModel that handles the business logic of Settings screen. */
+@org.koin.android.annotation.KoinViewModel
 class SettingsViewModel(
     private val settingsRepository: SettingsRepository,
     private val searchProvidersManager: SearchProvidersManager,

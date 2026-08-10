@@ -35,6 +35,7 @@ data class HomeUiState(
 /**
  * The ViewModel which handles the business logic of home screen.
  */
+@org.koin.android.annotation.KoinViewModel
 class HomeViewModel(
     searchHistoryRepository: SearchHistoryRepository,
     private val settingsRepository: SettingsRepository,

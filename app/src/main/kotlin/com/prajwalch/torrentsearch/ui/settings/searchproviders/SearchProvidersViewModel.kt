@@ -37,6 +37,7 @@ sealed interface ProtectionUpdateState {
 }
 
 /** ViewModel which handles the business logic of Search providers screen. */
+@org.koin.android.annotation.KoinViewModel
 class SearchProvidersViewModel(
     private val searchProvidersManager: SearchProvidersManager,
     settingsRepository: SettingsRepository,

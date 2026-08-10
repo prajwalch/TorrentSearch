@@ -33,6 +33,7 @@ data class BookmarksUiState(
 )
 
 /** ViewModel that handles the business logic of Bookmarks screen. */
+@org.koin.android.annotation.KoinViewModel
 class BookmarksViewModel(
     private val bookmarkRepository: BookmarkRepository,
     private val settingsRepository: SettingsRepository,

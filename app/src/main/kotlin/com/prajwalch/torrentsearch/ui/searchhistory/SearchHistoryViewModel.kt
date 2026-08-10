@@ -14,6 +14,7 @@ import kotlinx.coroutines.launch
 import kotlin.time.Duration.Companion.seconds
 
 /** ViewModel which handles the business logic of Search history screen. */
+@org.koin.android.annotation.KoinViewModel
 class SearchHistoryViewModel(
     private val searchHistoryRepository: SearchHistoryRepository,
 ) : ViewModel() {

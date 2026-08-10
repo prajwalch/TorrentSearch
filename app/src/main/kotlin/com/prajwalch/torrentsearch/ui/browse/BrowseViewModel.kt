@@ -91,6 +91,7 @@ enum class BrowseSort {
 /**
  * A ViewModel that handles the business logic of browse screen.
  */
+@org.koin.android.annotation.KoinViewModel
 class BrowseViewModel(
     searchProvidersGateway: SearchProvidersGateway,
     connectivityChecker: ConnectivityChecker,

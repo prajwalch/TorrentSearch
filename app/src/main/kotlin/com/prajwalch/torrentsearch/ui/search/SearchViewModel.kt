@@ -90,6 +90,7 @@ data class TorrentFilter(
 /**
  * A ViewModel that handles the business logic of search screen.
  */
+@org.koin.android.annotation.KoinViewModel
 class SearchViewModel(
     private val searchProvidersGateway: SearchProvidersGateway,
     private val bookmarkRepository: BookmarkRepository,
