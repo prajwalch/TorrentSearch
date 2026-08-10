@@ -173,7 +173,6 @@
     <string name="torrent_details_label_category">Categoría</string>
     <string name="torrent_details_label_uploader">Cargador</string>
     <string name="torrent_details_label_last_checked">Última comprobación</string>
-    <string name="torrent_details_message_not_available">No disponible</string>
     <string name="torrent_details_message_link_copied">¡Enlace copiado al portapapeles!</string>
     <string name="torrent_details_button_open_magnet_link">Descargar torrent</string>
     <string name="torrent_details_button_download_torrent_file">Descargar archivo torrent</string>

@@ -165,7 +165,6 @@
     <string name="torrent_details_label_uploader">Pengunggah</string>
     <string name="torrent_details_label_last_checked">Terakhir diperiksa</string>
     <string name="torrent_details_label_info_hash">Hash info</string>
-    <string name="torrent_details_message_not_available">Tidak tersedia</string>
     <string name="torrent_details_message_link_copied">Tautan disalin ke papan klip!</string>
     <string name="torrent_details_button_open_magnet_link">Unduh torrent</string>
     <string name="torrent_details_button_download_torrent_file">Unduh file torrent</string>

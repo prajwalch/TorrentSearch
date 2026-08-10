@@ -176,7 +176,6 @@
     <string name="torrent_details_label_uploader">Вивантажувач</string>
     <string name="torrent_details_label_last_checked">Остання перевірка</string>
     <string name="torrent_details_label_info_hash">Інфо-хеш</string>
-    <string name="torrent_details_message_not_available">Недоступно</string>
     <string name="torrent_details_message_link_copied">Посилання скопійовано до буфера!</string>
     <string name="torrent_details_button_open_magnet_link">Завантажити торент</string>
     <string name="torrent_details_button_download_torrent_file">Завантажити торент-файл</string>

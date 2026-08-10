@@ -168,7 +168,6 @@
     <string name="torrent_details_label_category">Categoria</string>
     <string name="torrent_details_label_last_checked">Última vez verificado</string>
     <string name="torrent_details_label_info_hash">Informação do hash</string>
-    <string name="torrent_details_message_not_available">Indisponível</string>
     <string name="torrent_details_message_link_copied">Link copiado para a área de transferência!</string>
     <string name="torrent_details_button_open_magnet_link">Abrir link magnético</string>
     <string name="torrent_details_button_download_torrent_file">Baixar arquivo torrent</string>
