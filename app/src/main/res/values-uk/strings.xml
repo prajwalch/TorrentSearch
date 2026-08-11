@@ -229,4 +229,8 @@
     <string name="search_providers_reset_to_default_text">Замість увімкнених пошукових систем буде відновлено типовий набір. Кукі для систем із розблокованим захистом буде видалено.</string>
     <string name="search_providers_reset_to_default_button_confirm">Відновити</string>
     <string name="search_providers_reset_to_default_button_dismiss">Скасувати</string>
+    <string name="torrent_details_label_provider">Система</string>
+    <string name="torrent_details_message_description_hidden">Опис сховано</string>
+    <string name="torrent_details_error_image_load_failed">Не вдалося завантажити</string>
+    <string name="torrent_details_message_info_hash_copied">Інфо-хеш скопійовано до буфера обміну</string>
 </resources>
