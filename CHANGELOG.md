@@ -9,7 +9,12 @@
 - The swipe-to-delete icon on bookmarks now dims until you've swiped far enough to trigger the action,
   so it's clearer when the delete will actually go through.
 - Resetting search providers to default now asks for confirmation first.
+- After a fresh install (or clearing app data), you'll now see a one-time prompt offering to enable recommended torrent providers, instead of them being enabled automatically.
 - A one-time tip now shows up to let new users about the swipe-to-delete gesture on bookmarks.
+- Revamped details screen UI with some new features:
+  - Poster and screenshot images now show a proper loading indicator and error message while loading.
+  - Torrent descriptions are now automatically hidden for NSFW torrent details, with a button to show or hide them.
+  - Added an inline button to copy the torrent's info hash.
 - `Eztv` now provides torrent details.
 - `TorrentDownloads` now provides torrent details and; latest and top torrents.
 - Added Portuguese language by [@SantosSi](https://github.com/SantosSi)
@@ -49,6 +54,7 @@
 - Fixed the TorrentDatebase provider failing to load a torrent's upload and last-checked dates on the details screen.
 - Fixed the TorrentDownload provider returning truncated torrent names.
 - Fixed the UIndex provider not correctly showing seeders and peers on the details screen.
+- Fixed the SubsPlease provider failing to handle torrent's upload date on the details screen.
 - Fixed an "Unexpected error" message that showed up when manually checking a Torznab connection.
 - Fixed an issue where Torznab search providers sometimes treated a magnet link as if it were a file download link.
 - Fixed search triggering with an empty query when the search bar was expanded on the home screen.
