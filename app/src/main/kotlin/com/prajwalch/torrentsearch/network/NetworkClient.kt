@@ -39,9 +39,7 @@ import kotlinx.serialization.json.JsonElement
 class CloudflareChallengeException(url: String) :
     Exception("Cloudflare challenge encountered [url=$url]")
 
-class NetworkClient(
-    private val settingsRepository: SettingsRepository,
-) {
+class NetworkClient(private val settingsRepository: SettingsRepository) {
     companion object {
         private const val LOG_TAG = "NetworkClient"
 
