@@ -2,7 +2,6 @@ package com.prajwalch.torrentsearch.ui.torrentdetails.component
 
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.basicMarquee
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
@@ -228,9 +227,9 @@ private fun InfoHash(
                 style = MaterialTheme.typography.labelMedium,
             )
             Text(
-                modifier = Modifier.basicMarquee(),
                 text = hash,
                 maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
                 color = MaterialTheme.colorScheme.onSurface,
                 style = MaterialTheme.typography.bodyMedium,
             )
