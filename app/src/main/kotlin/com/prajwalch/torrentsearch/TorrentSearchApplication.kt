@@ -21,13 +21,13 @@ import com.prajwalch.torrentsearch.network.NetworkClient
 import com.prajwalch.torrentsearch.ui.crash.CrashActivity
 import com.prajwalch.torrentsearch.util.TorrentSearchExceptionHandler
 
-import org.koin.android.ext.android.get
+import org.koin.android.ext.android.inject
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.context.startKoin
 import org.koin.plugin.module.dsl.module
 
 class TorrentSearchApplication : Application(), SingletonImageLoader.Factory {
-    private lateinit var networkClient: NetworkClient
+    private val networkClient: NetworkClient by inject()
 
     override fun onCreate() {
         super.onCreate()
@@ -37,7 +37,6 @@ class TorrentSearchApplication : Application(), SingletonImageLoader.Factory {
             modules(appModules)
             module<ViewModelModule>()
         }
-        networkClient = get()
 
         if (BuildConfig.DEBUG) {
             StrictMode.setThreadPolicy(
