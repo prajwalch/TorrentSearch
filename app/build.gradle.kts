@@ -104,6 +104,7 @@ dependencies {
     implementation(libs.lazycolumnscrollbar)
     implementation(libs.okhttp.dnsoverhttps)
     implementation(platform(libs.androidx.compose.bom))
+    implementation(project(":shared"))
 
     ksp(libs.androidx.room.compiler)
 
