@@ -1,8 +1,6 @@
 package com.prajwalch.torrentsearch.di
 
-import org.koin.ksp.generated.module
-
-/** All the Koin modules used across the application. */
+/** All the classic Koin DSL modules used across the application. */
 val appModules = listOf(
     networkModule,
     dataStoreModule,
@@ -10,5 +8,4 @@ val appModules = listOf(
     builtinSearchProvidersModule,
     repositoryModule,
     domainModule,
-    ViewModelAnnotationsModule().module,
 )

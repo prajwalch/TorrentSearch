@@ -15,6 +15,7 @@ import coil3.request.CachePolicy
 import coil3.request.allowHardware
 import coil3.request.crossfade
 
+import com.prajwalch.torrentsearch.di.ViewModelModule
 import com.prajwalch.torrentsearch.di.appModules
 import com.prajwalch.torrentsearch.network.NetworkClient
 import com.prajwalch.torrentsearch.ui.crash.CrashActivity
@@ -23,6 +24,7 @@ import com.prajwalch.torrentsearch.util.TorrentSearchExceptionHandler
 import org.koin.android.ext.android.get
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.context.startKoin
+import org.koin.plugin.module.dsl.module
 
 class TorrentSearchApplication : Application(), SingletonImageLoader.Factory {
     private lateinit var networkClient: NetworkClient
@@ -33,6 +35,7 @@ class TorrentSearchApplication : Application(), SingletonImageLoader.Factory {
         startKoin {
             androidContext(this@TorrentSearchApplication)
             modules(appModules)
+            module<ViewModelModule>()
         }
         networkClient = get()
 
