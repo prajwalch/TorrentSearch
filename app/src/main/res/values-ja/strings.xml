@@ -64,7 +64,6 @@
     <string name="bookmarks_button_delete">削除</string>
     <string name="search_providers_list_action_delete">削除</string>
     <string name="bookmarks_empty_message">ブックマークなし</string>
-    <string name="torrent_details_message_not_available">利用不可</string>
     <string name="bookmarks_action_settings">設定</string>
     <string name="browse_sort_top">トップ</string>
     <string name="browse_button_try_again">再試行</string>

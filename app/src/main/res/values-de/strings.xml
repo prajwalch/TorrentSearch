@@ -170,7 +170,6 @@
     <string name="torrent_details_label_category">Kategorie</string>
     <string name="torrent_details_label_uploader">Hochgeladen von</string>
     <string name="torrent_details_label_last_checked">Zuletzt überprüft</string>
-    <string name="torrent_details_message_not_available">Nicht verfügbar</string>
     <string name="torrent_details_message_link_copied">Link in die Zwischenablage kopiert!</string>
     <string name="torrent_details_button_open_magnet_link">Magnet-Link öffnen</string>
     <string name="torrent_details_button_download_torrent_file">Torrent-Datei herunterladen</string>

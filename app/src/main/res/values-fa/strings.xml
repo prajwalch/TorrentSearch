@@ -177,7 +177,6 @@
     <string name="torrent_details_label_uploader">آپلود کننده</string>
     <string name="torrent_details_label_last_checked">آخرین بررسی</string>
     <string name="torrent_details_label_info_hash">هش اطلاعات</string>
-    <string name="torrent_details_message_not_available">موجود نیست</string>
     <string name="torrent_details_message_link_copied">لینک در کلیپ بورد کپی شد</string>
     <string name="torrent_details_button_open_magnet_link">باز کردن لینک مگنت</string>
     <string name="torrent_details_button_download_torrent_file">دانلود فایل تورنت</string>

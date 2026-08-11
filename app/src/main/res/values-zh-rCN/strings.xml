@@ -177,7 +177,6 @@
     <string name="torrent_details_label_uploader">上传者</string>
     <string name="torrent_details_label_last_checked">最后活跃</string>
     <string name="torrent_details_label_info_hash">哈希值</string>
-    <string name="torrent_details_message_not_available">不可用</string>
     <string name="search_history_query_copied_message">查询已复制到剪贴板！</string>
     <string name="browse_screen_title">浏览</string>
     <string name="browse_search_query_hint">搜索种子</string>

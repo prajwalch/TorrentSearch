@@ -120,12 +120,15 @@
     <string name="torrent_details_label_seeders">Seeders</string>
     <string name="torrent_details_label_peers">Peers</string>
     <string name="torrent_details_label_upload_date">Upload date</string>
+    <string name="torrent_details_label_provider">Provider</string>
     <string name="torrent_details_label_category">Category</string>
     <string name="torrent_details_label_uploader">Uploader</string>
     <string name="torrent_details_label_last_checked">Last checked</string>
     <string name="torrent_details_label_info_hash">Info hash</string>
-    <string name="torrent_details_message_not_available">Not available</string>
     <string name="torrent_details_message_link_copied">Link copied to clipboard!</string>
+    <string name="torrent_details_message_info_hash_copied">Info hash copied to clipboard</string>
+    <string name="torrent_details_message_description_hidden">Description hidden</string>
+    <string name="torrent_details_error_image_load_failed">Failed to load</string>
     <string name="torrent_details_button_open_magnet_link">Open magnet link</string>
     <string name="torrent_details_button_download_torrent_file">Download torrent file</string>
     <string name="torrent_details_button_open_in_browser">Open in browser</string>

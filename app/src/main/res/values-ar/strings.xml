@@ -178,7 +178,6 @@
     <string name="torrent_details_label_uploader">رافع الملف</string>
     <string name="torrent_details_label_last_checked">آخر فحص</string>
     <string name="torrent_details_label_info_hash">تجزئة المعلومات</string>
-    <string name="torrent_details_message_not_available">غير متوفر</string>
     <string name="torrent_details_message_link_copied">تم نسخ الرابط إلى الحافظة!</string>
     <string name="torrent_details_button_open_magnet_link">تنزيل التورنت</string>
     <string name="torrent_details_button_download_torrent_file">قم بتنزيل ملف التورنت</string>

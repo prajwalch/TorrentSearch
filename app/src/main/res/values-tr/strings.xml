@@ -173,7 +173,6 @@
     <string name="torrent_details_label_uploader">Yükleyen</string>
     <string name="torrent_details_label_last_checked">Son denetleme</string>
     <string name="torrent_details_label_info_hash">Bilgi sağlama toplamı</string>
-    <string name="torrent_details_message_not_available">Yok</string>
     <string name="torrent_details_message_link_copied">Bağlantı panoya kopyalandı!</string>
     <string name="torrent_details_button_open_magnet_link">Magnet bağlantısını aç</string>
     <string name="torrent_details_button_download_torrent_file">Torrent dosyasını indir</string>
