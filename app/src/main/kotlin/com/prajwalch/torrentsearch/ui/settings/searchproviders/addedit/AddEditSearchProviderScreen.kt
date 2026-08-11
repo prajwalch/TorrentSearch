@@ -28,7 +28,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.res.stringResource
-import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 
 import com.prajwalch.torrentsearch.R
@@ -43,11 +42,13 @@ import com.prajwalch.torrentsearch.ui.settings.searchproviders.addedit.component
 import com.prajwalch.torrentsearch.ui.settings.searchproviders.addedit.component.SupportedCategories
 import com.prajwalch.torrentsearch.ui.theme.spaces
 
+import org.koin.androidx.compose.koinViewModel
+
 @Composable
 fun AddEditSearchProviderScreen(
     onNavigateBack: () -> Unit,
     modifier: Modifier = Modifier,
-    viewModel: TorznabConfigViewModel = hiltViewModel(),
+    viewModel: TorznabConfigViewModel = koinViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val topBarTitleId = if (uiState.isNewConfig) {

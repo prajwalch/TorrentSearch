@@ -4,7 +4,7 @@ plugins {
     alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.ksp)
     alias(libs.plugins.androidx.room)
-    alias(libs.plugins.hilt)
+    alias(libs.plugins.koin.compiler)
 }
 
 android {
@@ -79,7 +79,6 @@ dependencies {
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.core.splashscreen)
     implementation(libs.androidx.datastore.preferences)
-    implementation(libs.androidx.hilt.navigation.compose)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.material3)
     implementation(libs.androidx.navigation.compose)
@@ -91,8 +90,11 @@ dependencies {
     implementation(libs.coil.compose)
     implementation(libs.coil.network.ktor)
     implementation(libs.compose.markdown)
-    implementation(libs.hilt.android)
     implementation(libs.jsoup)
+    implementation(libs.koin.android)
+    implementation(libs.koin.androidx.compose)
+    implementation(libs.koin.annotations)
+    implementation(libs.koin.core)
     implementation(libs.kotlinx.collections.immutable)
     implementation(libs.kotlinx.coroutines.android)
     implementation(libs.kotlinx.coroutines.core)
@@ -104,7 +106,6 @@ dependencies {
     implementation(platform(libs.androidx.compose.bom))
 
     ksp(libs.androidx.room.compiler)
-    ksp(libs.hilt.android.compiler)
 
     testImplementation(libs.junit)
 

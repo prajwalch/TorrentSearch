@@ -36,7 +36,6 @@ import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 
 import com.prajwalch.torrentsearch.R
@@ -50,6 +49,8 @@ import com.prajwalch.torrentsearch.ui.settings.searchproviders.component.ResetTo
 import com.prajwalch.torrentsearch.ui.settings.searchproviders.component.SearchProviderList
 import com.prajwalch.torrentsearch.ui.theme.spaces
 
+import org.koin.androidx.compose.koinViewModel
+
 private typealias ProtectedProvider = Pair<SearchProviderId, String>
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -59,7 +60,7 @@ fun SearchProvidersScreen(
     onNavigateToAddSearchProvider: () -> Unit,
     onNavigateToEditSearchProvider: (SearchProviderId) -> Unit,
     modifier: Modifier = Modifier,
-    viewModel: SearchProvidersViewModel = hiltViewModel(),
+    viewModel: SearchProvidersViewModel = koinViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()

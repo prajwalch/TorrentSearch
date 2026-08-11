@@ -1,7 +1,6 @@
 package com.prajwalch.torrentsearch.domain
 
 import com.prajwalch.torrentsearch.network.NetworkClient
-import dagger.hilt.android.scopes.ViewModelScoped
 
 import io.ktor.client.statement.bodyAsChannel
 import io.ktor.http.isSuccess
@@ -19,8 +18,6 @@ import kotlinx.io.readByteArray
 import java.io.IOException
 import java.io.OutputStream
 import java.util.UUID
-
-import javax.inject.Inject
 
 private typealias TorrentFileId = UUID
 
@@ -85,8 +82,7 @@ sealed interface TorrentFileDownloadEvent {
 /**
  * Manages and handles torrent file downloading related task.
  */
-@ViewModelScoped
-class TorrentFileDownloader @Inject constructor(private val networkClient: NetworkClient) {
+class TorrentFileDownloader(private val networkClient: NetworkClient) {
     /**
      * An in-memory cache for saving downloaded torrent files.
      */

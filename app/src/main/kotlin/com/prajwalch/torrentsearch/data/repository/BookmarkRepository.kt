@@ -22,9 +22,8 @@ import java.io.IOException
 import java.io.InputStream
 import java.io.OutputStream
 import java.time.Instant
-import javax.inject.Inject
 
-class BookmarkRepository @Inject constructor(private val dao: BookmarkedTorrentDao) {
+class BookmarkRepository(private val dao: BookmarkedTorrentDao) {
     fun getAllBookmarks(): Flow<List<BookmarkedTorrent>> {
         return dao.getAllBookmarks().map { it.toDomain() }
     }

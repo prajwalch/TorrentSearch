@@ -1,28 +1,19 @@
 package com.prajwalch.torrentsearch.di
 
-import android.content.Context
 import android.net.ConnectivityManager
+
 import androidx.core.content.getSystemService
 
 import com.prajwalch.torrentsearch.network.ConnectivityChecker
+import com.prajwalch.torrentsearch.network.NetworkClient
 
-import dagger.Module
-import dagger.Provides
-import dagger.hilt.InstallIn
-import dagger.hilt.android.qualifiers.ApplicationContext
-import dagger.hilt.components.SingletonComponent
+import org.koin.android.ext.koin.androidContext
+import org.koin.dsl.module
 
-@Module
-@InstallIn(SingletonComponent::class)
-object NetworkModule {
-    @Provides
-    fun provideConnectivityManager(@ApplicationContext context: Context): ConnectivityManager =
-        context.getSystemService<ConnectivityManager>()!!
-
-    @Provides
-    fun provideConnectivityChecker(
-        connectivityManager: ConnectivityManager,
-    ): ConnectivityChecker = ConnectivityChecker(
-        connectivityManager = connectivityManager
-    )
+val networkModule = module {
+    single<ConnectivityManager> {
+        androidContext().getSystemService<ConnectivityManager>()!!
+    }
+    single { ConnectivityChecker(connectivityManager = get()) }
+    single { NetworkClient(settingsRepository = get()) }
 }

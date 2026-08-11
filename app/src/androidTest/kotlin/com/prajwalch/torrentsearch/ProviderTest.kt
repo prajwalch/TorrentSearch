@@ -12,9 +12,9 @@ import com.prajwalch.torrentsearch.network.NetworkClient
 import com.prajwalch.torrentsearch.providers.Knaben
 import com.prajwalch.torrentsearch.providers.SearchProvider
 
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.test.TestScope
 
 import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertTrue
@@ -29,7 +29,7 @@ import org.junit.Test
 class ProviderTest {
     private val testContext = ApplicationProvider.getApplicationContext<Context>()
     private val testDataStore = PreferenceDataStoreFactory.create(
-        scope = TestScope(Dispatchers.IO),
+        scope = CoroutineScope(Dispatchers.IO),
         produceFile = { testContext.preferencesDataStoreFile("test_settings") },
     )
 

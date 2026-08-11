@@ -1,42 +1,19 @@
 package com.prajwalch.torrentsearch.di
 
-import android.content.Context
-
 import com.prajwalch.torrentsearch.data.local.TorrentSearchDatabase
 import com.prajwalch.torrentsearch.data.local.dao.BookmarkedTorrentDao
 import com.prajwalch.torrentsearch.data.local.dao.SearchHistoryDao
 import com.prajwalch.torrentsearch.data.local.dao.TorznabConfigDao
 import com.prajwalch.torrentsearch.data.local.dao.ViewedTorrentDao
 
-import dagger.Module
-import dagger.Provides
-import dagger.hilt.InstallIn
-import dagger.hilt.android.qualifiers.ApplicationContext
-import dagger.hilt.components.SingletonComponent
+import org.koin.android.ext.koin.androidContext
+import org.koin.dsl.module
 
-import javax.inject.Singleton
+val databaseModule = module {
+    single<TorrentSearchDatabase> { TorrentSearchDatabase.getInstance(androidContext()) }
 
-@Module
-@InstallIn(SingletonComponent::class)
-object DatabaseModule {
-    @Provides
-    @Singleton
-    fun provideDatabase(@ApplicationContext context: Context): TorrentSearchDatabase =
-        TorrentSearchDatabase.getInstance(context)
-
-    @Provides
-    fun provideBookmarkedTorrentDao(database: TorrentSearchDatabase): BookmarkedTorrentDao =
-        database.bookmarkedTorrentDao()
-
-    @Provides
-    fun provideSearchHistoryDao(database: TorrentSearchDatabase): SearchHistoryDao =
-        database.searchHistoryDao()
-
-    @Provides
-    fun provideTorznabConfigDao(database: TorrentSearchDatabase): TorznabConfigDao =
-        database.torznabConfigDao()
-
-    @Provides
-    fun provideViewedTorrentDao(database: TorrentSearchDatabase): ViewedTorrentDao =
-        database.viewedTorrentDao()
+    single<BookmarkedTorrentDao> { get<TorrentSearchDatabase>().bookmarkedTorrentDao() }
+    single<SearchHistoryDao> { get<TorrentSearchDatabase>().searchHistoryDao() }
+    single<TorznabConfigDao> { get<TorrentSearchDatabase>().torznabConfigDao() }
+    single<ViewedTorrentDao> { get<TorrentSearchDatabase>().viewedTorrentDao() }
 }

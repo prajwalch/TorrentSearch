@@ -23,7 +23,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 
 import com.prajwalch.torrentsearch.R
@@ -32,6 +31,8 @@ import com.prajwalch.torrentsearch.ui.home.component.AppBranding
 import com.prajwalch.torrentsearch.ui.home.component.SearchBox
 import com.prajwalch.torrentsearch.ui.home.component.SearchProvidersNotEnabledMessage
 import com.prajwalch.torrentsearch.ui.theme.spaces
+
+import org.koin.androidx.compose.koinViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -43,7 +44,7 @@ fun HomeScreen(
     onSearch: (String, Category) -> Unit,
     onNavigateToSearchProviders: () -> Unit,
     modifier: Modifier = Modifier,
-    viewModel: HomeViewModel = hiltViewModel(),
+    viewModel: HomeViewModel = koinViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 

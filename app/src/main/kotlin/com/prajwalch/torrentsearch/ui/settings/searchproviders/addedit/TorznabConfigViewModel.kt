@@ -13,16 +13,13 @@ import com.prajwalch.torrentsearch.network.NetworkClient
 import com.prajwalch.torrentsearch.providers.SearchProviderId
 import com.prajwalch.torrentsearch.torznab.TorznabUtils
 
-import dagger.hilt.android.lifecycle.HiltViewModel
-
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-
-import javax.inject.Inject
+import org.koin.core.annotation.KoinViewModel
 
 data class TorznabConfigUiState(
     val searchProviderName: String = "",
@@ -46,8 +43,8 @@ sealed interface TorznabConfigEvent {
     ) : TorznabConfigEvent
 }
 
-@HiltViewModel
-class TorznabConfigViewModel @Inject constructor(
+@KoinViewModel
+class TorznabConfigViewModel(
     private val searchProvidersManager: SearchProvidersManager,
     private val networkClient: NetworkClient,
     savedStateHandle: SavedStateHandle,

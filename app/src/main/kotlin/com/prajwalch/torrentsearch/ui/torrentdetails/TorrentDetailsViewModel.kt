@@ -13,8 +13,6 @@ import com.prajwalch.torrentsearch.domain.model.GetTorrentDetailsResponse
 import com.prajwalch.torrentsearch.domain.model.TorrentDetails
 import com.prajwalch.torrentsearch.network.ConnectivityChecker
 
-import dagger.hilt.android.lifecycle.HiltViewModel
-
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -24,7 +22,7 @@ import kotlinx.coroutines.launch
 
 import java.io.IOException
 import java.io.OutputStream
-import javax.inject.Inject
+import org.koin.core.annotation.KoinViewModel
 
 data class TorrentDetailsUiState(
     val state: TorrentDetailsState = TorrentDetailsState.Loading,
@@ -42,8 +40,8 @@ sealed interface TorrentDetailsState {
     data class Available(val details: TorrentDetails) : TorrentDetailsState
 }
 
-@HiltViewModel
-class TorrentDetailsViewModel @Inject constructor(
+@KoinViewModel
+class TorrentDetailsViewModel(
     private val searchProvidersGateway: SearchProvidersGateway,
     private val torrentFileDownloader: TorrentFileDownloader,
     private val connectivityChecker: ConnectivityChecker,

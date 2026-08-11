@@ -9,9 +9,8 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
 import java.util.UUID
-import javax.inject.Inject
 
-class TorznabConfigRepository @Inject constructor(
+class TorznabConfigRepository(
     private val dao: TorznabConfigDao,
 ) {
     suspend fun createConfig(

@@ -17,8 +17,6 @@ import com.prajwalch.torrentsearch.domain.model.MaxNumResults
 import com.prajwalch.torrentsearch.domain.model.SortOptions
 import com.prajwalch.torrentsearch.util.LogsUtils
 
-import dagger.hilt.android.lifecycle.HiltViewModel
-
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.WhileSubscribed
@@ -28,9 +26,9 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 import java.io.OutputStream
-import javax.inject.Inject
 
 import kotlin.time.Duration.Companion.seconds
+import org.koin.core.annotation.KoinViewModel
 
 data class SettingsUiState(
     val appearanceSettings: AppearanceSettingsUiState = AppearanceSettingsUiState(),
@@ -76,8 +74,8 @@ data class AdvancedSettingsUiState(
 )
 
 /** ViewModel that handles the business logic of Settings screen. */
-@HiltViewModel
-class SettingsViewModel @Inject constructor(
+@KoinViewModel
+class SettingsViewModel(
     private val settingsRepository: SettingsRepository,
     private val searchProvidersManager: SearchProvidersManager,
     private val viewedTorrentRepository: ViewedTorrentRepository,

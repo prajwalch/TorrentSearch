@@ -34,7 +34,6 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalClipboard
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 
 import com.prajwalch.torrentsearch.R
@@ -56,6 +55,8 @@ import com.prajwalch.torrentsearch.ui.theme.spaces
 
 import kotlinx.coroutines.launch
 
+import org.koin.androidx.compose.koinViewModel
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun BrowseScreen(
@@ -67,7 +68,7 @@ fun BrowseScreen(
     onOpenDescriptionPage: (url: String, providerName: String) -> Unit,
     onShareDescriptionPageUrl: (String) -> Unit,
     modifier: Modifier = Modifier,
-    viewModel: BrowseViewModel = hiltViewModel(),
+    viewModel: BrowseViewModel = koinViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val torrentFileDownloadState by viewModel.torrentFileDownloadState.collectAsStateWithLifecycle()

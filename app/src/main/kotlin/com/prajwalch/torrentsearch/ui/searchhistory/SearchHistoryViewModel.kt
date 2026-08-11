@@ -6,19 +6,17 @@ import androidx.lifecycle.viewModelScope
 import com.prajwalch.torrentsearch.data.repository.SearchHistoryRepository
 import com.prajwalch.torrentsearch.domain.model.SearchHistoryId
 
-import dagger.hilt.android.lifecycle.HiltViewModel
-
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.WhileSubscribed
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
-import javax.inject.Inject
 import kotlin.time.Duration.Companion.seconds
+import org.koin.core.annotation.KoinViewModel
 
 /** ViewModel which handles the business logic of Search history screen. */
-@HiltViewModel
-class SearchHistoryViewModel @Inject constructor(
+@KoinViewModel
+class SearchHistoryViewModel(
     private val searchHistoryRepository: SearchHistoryRepository,
 ) : ViewModel() {
     val uiState = searchHistoryRepository

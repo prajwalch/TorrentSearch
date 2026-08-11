@@ -36,14 +36,10 @@ import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonElement
 
-import javax.inject.Inject
-import javax.inject.Singleton
-
 class CloudflareChallengeException(url: String) :
     Exception("Cloudflare challenge encountered [url=$url]")
 
-@Singleton
-class NetworkClient @Inject constructor(
+class NetworkClient(
     private val settingsRepository: SettingsRepository,
 ) {
     companion object {

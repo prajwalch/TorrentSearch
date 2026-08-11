@@ -21,7 +21,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalClipboard
 import androidx.compose.ui.res.stringResource
-import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 
 import com.prajwalch.torrentsearch.R
@@ -34,13 +33,15 @@ import com.prajwalch.torrentsearch.ui.searchhistory.component.SearchHistoryList
 
 import kotlinx.coroutines.launch
 
+import org.koin.androidx.compose.koinViewModel
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SearchHistoryScreen(
     onNavigateBack: () -> Unit,
     onPerformSearch: (String) -> Unit,
     modifier: Modifier = Modifier,
-    viewModel: SearchHistoryViewModel = hiltViewModel(),
+    viewModel: SearchHistoryViewModel = koinViewModel(),
 ) {
     val searchHistoryList by viewModel.uiState.collectAsStateWithLifecycle()
 

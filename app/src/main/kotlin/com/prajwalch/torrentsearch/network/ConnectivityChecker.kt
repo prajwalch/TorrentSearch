@@ -6,10 +6,8 @@ import android.net.NetworkCapabilities
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
-import javax.inject.Inject
-
 /** Provides internet connection status. */
-class ConnectivityChecker @Inject constructor(
+class ConnectivityChecker(
     private val connectivityManager: ConnectivityManager,
 ) {
     suspend fun isInternetAvailable(): Boolean = withContext(Dispatchers.IO) {

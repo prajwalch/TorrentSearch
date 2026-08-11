@@ -29,12 +29,10 @@ import kotlinx.coroutines.flow.runningFold
 import kotlinx.coroutines.flow.transformWhile
 import kotlinx.coroutines.launch
 
-import javax.inject.Inject
-
 /**
  * A primary class for interacting with different search providers.
  */
-class SearchProvidersGateway @Inject constructor(
+class SearchProvidersGateway(
     private val searchProvidersManager: SearchProvidersManager,
     private val settingsRepository: SettingsRepository,
 ) {
