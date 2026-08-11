@@ -28,7 +28,7 @@ import kotlinx.coroutines.launch
 import java.io.OutputStream
 
 import kotlin.time.Duration.Companion.seconds
-import org.koin.android.annotation.KoinViewModel
+import org.koin.core.annotation.KoinViewModel
 
 data class SettingsUiState(
     val appearanceSettings: AppearanceSettingsUiState = AppearanceSettingsUiState(),
