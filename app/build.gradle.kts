@@ -4,6 +4,7 @@ plugins {
     alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.ksp)
     alias(libs.plugins.androidx.room)
+    alias(libs.plugins.koin.compiler)
 }
 
 android {
@@ -105,7 +106,6 @@ dependencies {
     implementation(platform(libs.androidx.compose.bom))
 
     ksp(libs.androidx.room.compiler)
-    ksp(libs.koin.ksp.compiler)
 
     testImplementation(libs.junit)
 
