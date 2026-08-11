@@ -331,9 +331,9 @@ private class ExtDetailsPageParser(private val networkClient: NetworkClient) {
                 "sessid" to sessionId,
             ),
         )
-            ?.let(Json::parseToJsonElement)
-            ?.asObject()
-            ?.getString("url")
+            .let(Json::parseToJsonElement)
+            .asObject()
+            .getString("url")
     }
 
     private suspend fun getDescription(torrentId: String, torrentSlug: String): String? {
