@@ -153,9 +153,13 @@ private class SubsPleaseDetailsPageParser(private val networkClient: NetworkClie
             val magnetUri = downloadObject.getString("magnet") ?: return@withContext null
             val infoHash = TorrentUtils.getInfoHashFromMagnetUri(magnetUri)
             val size = SubsPleaseUtils.parseSizeFromMagnetUri(magnetUri)
-            val uploadDate = episodeObject.getString("time")?.let {
-                TorrentDateParser.parse(date = it, format = "MM/dd/yy")
-            }
+            val uploadDate = episodeObject.getString("release_date")
+                ?.dropWhile { !it.isWhitespace() }
+                ?.dropLastWhile { !it.isWhitespace() }
+                ?.dropLast(1)
+                ?.dropLastWhile { !it.isWhitespace() }
+                ?.trim()
+                ?.let { TorrentDateParser.parse(date = it, format = "dd MMM yyyy") }
             val fileDownloadLink = downloadObject.getString("torrent")
 
             TorrentDetails(
