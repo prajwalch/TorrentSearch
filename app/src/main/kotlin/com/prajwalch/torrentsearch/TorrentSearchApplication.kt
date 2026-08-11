@@ -16,7 +16,12 @@ import coil3.request.allowHardware
 import coil3.request.crossfade
 
 import com.prajwalch.torrentsearch.di.ViewModelModule
-import com.prajwalch.torrentsearch.di.appModules
+import com.prajwalch.torrentsearch.di.builtinSearchProvidersModule
+import com.prajwalch.torrentsearch.di.dataStoreModule
+import com.prajwalch.torrentsearch.di.databaseModule
+import com.prajwalch.torrentsearch.di.domainModule
+import com.prajwalch.torrentsearch.di.networkModule
+import com.prajwalch.torrentsearch.di.repositoryModule
 import com.prajwalch.torrentsearch.network.NetworkClient
 import com.prajwalch.torrentsearch.ui.crash.CrashActivity
 import com.prajwalch.torrentsearch.util.TorrentSearchExceptionHandler
@@ -34,7 +39,14 @@ class TorrentSearchApplication : Application(), SingletonImageLoader.Factory {
 
         startKoin {
             androidContext(this@TorrentSearchApplication)
-            modules(appModules)
+            modules(
+                builtinSearchProvidersModule,
+                dataStoreModule,
+                databaseModule,
+                domainModule,
+                networkModule,
+                repositoryModule,
+            )
             module<ViewModelModule>()
         }
 
