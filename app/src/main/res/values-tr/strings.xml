@@ -231,4 +231,9 @@
     <string name="torrent_details_message_info_hash_copied">Bilgi sağlama toplamı panoya kopyalandı</string>
     <string name="torrent_details_message_description_hidden">Açıklama gizlendi</string>
     <string name="torrent_details_error_image_load_failed">Yüklenemedi</string>
+    <string name="search_providers_chip_category">Kategori</string>
+    <string name="search_providers_chip_protection">Koruma</string>
+    <string name="search_providers_protection_protected">Korumalı</string>
+    <string name="search_providers_protection_locked">Kilitli</string>
+    <string name="search_providers_protection_unlocked">Kilidi açıldı</string>
 </resources>
