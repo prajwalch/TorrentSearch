@@ -39,13 +39,12 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 
 import com.prajwalch.torrentsearch.R
-import com.prajwalch.torrentsearch.domain.model.Category
 import com.prajwalch.torrentsearch.providers.SearchProviderId
 import com.prajwalch.torrentsearch.ui.component.ArrowBackIconButton
-import com.prajwalch.torrentsearch.ui.component.CategoryChipsRow
 import com.prajwalch.torrentsearch.ui.component.RoundedDropdownMenu
 import com.prajwalch.torrentsearch.ui.settings.searchproviders.component.CloudflareChallengeBottomSheet
 import com.prajwalch.torrentsearch.ui.settings.searchproviders.component.ResetToDefaultDialog
+import com.prajwalch.torrentsearch.ui.settings.searchproviders.component.SearchProviderFilterRow
 import com.prajwalch.torrentsearch.ui.settings.searchproviders.component.SearchProviderList
 import com.prajwalch.torrentsearch.ui.theme.spaces
 
@@ -156,10 +155,11 @@ fun SearchProvidersScreen(
         },
     ) { innerPadding ->
         Column(modifier = Modifier.padding(innerPadding)) {
-            CategoryChipsRow(
-                categories = Category.entries,
-                selectedCategory = uiState.selectedCategory,
-                onCategoryClick = viewModel::toggleCategory,
+            SearchProviderFilterRow(
+                category = uiState.filter.category,
+                onCategorySelect = viewModel::toggleCategory,
+                protection = uiState.filter.protection,
+                onProtectionSelect = viewModel::toggleProviderProtection,
                 contentPadding = PaddingValues(horizontal = MaterialTheme.spaces.large),
             )
             SearchProviderList(
