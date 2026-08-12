@@ -1,5 +1,6 @@
 plugins {
-    alias(libs.plugins.android.application)
+    alias(libs.plugins.kotlin.multiplatform)
+    alias(libs.plugins.android.kotlin.multiplatform.library)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.ksp)
@@ -7,64 +8,86 @@ plugins {
     alias(libs.plugins.koin.compiler)
 }
 
-android {
-    namespace = "com.prajwalch.torrentsearch"
+kotlin {
+    android {
+        namespace = "com.prajwalch.torrentsearch"
 
-    compileSdk {
-        version = release(37)
-    }
-
-    defaultConfig {
-        applicationId = "com.prajwalch.torrentsearch"
+        compileSdk = 37
         minSdk = 25
-        targetSdk = 36
-        versionCode = 17
-        versionName = "0.5.0"
 
-        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-    }
-
-    buildTypes {
-        release {
-            isMinifyEnabled = true
-            isShrinkResources = true
-
-            proguardFiles(
-                getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro"
-            )
+        androidResources {
+            enable = true
         }
-        debug {
-            applicationIdSuffix = ".debug"
-            isDebuggable = true
-            signingConfig = signingConfigs.getByName("debug")
+
+        compilerOptions {
+            jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_17)
+        }
+
+        withDeviceTest {
+            instrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         }
     }
 
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_17
-        targetCompatibility = JavaVersion.VERSION_17
-        isCoreLibraryDesugaringEnabled = true
-    }
+    // Non-Android JVM target so portable commonMain code can be exercised later
+    // without an Android runtime.
+    jvm()
 
-    buildFeatures {
-        compose = true
-        buildConfig = true
-    }
+    sourceSets {
+        commonMain.dependencies {
+            implementation(libs.kotlinx.coroutines.core)
+            implementation(libs.kotlinx.serialization.json)
+            implementation(libs.ktor.client.core)
+        }
 
-    dependenciesInfo {
-        // Disables dependency metadata when building APKs (for IzzyOnDroid/F-Droid).
-        includeInApk = false
-        // Disables dependency metadata when building Android App Bundles (for Google Play).
-        includeInBundle = false
-    }
+        commonTest.dependencies {
+            implementation(kotlin("test"))
+        }
 
-    androidResources {
-        generateLocaleConfig = true
-    }
+        androidMain.dependencies {
+            api(libs.androidx.activity.compose)
+            api(libs.androidx.core.ktx)
+            api(libs.androidx.core.splashscreen)
+            api(libs.androidx.lifecycle.runtime.ktx)
+            api(libs.androidx.material3)
+            api(libs.androidx.ui)
+            api(libs.androidx.ui.graphics)
+            api(libs.koin.android)
+            api(libs.koin.androidx.compose)
+            api(platform(libs.androidx.compose.bom))
 
-    packaging {
-        resources.excludes += "DebugProbesKt.bin"
+            implementation(libs.androidx.datastore.preferences)
+            implementation(libs.androidx.navigation.compose)
+            implementation(libs.androidx.room.ktx)
+            implementation(libs.androidx.room.runtime)
+            implementation(libs.androidx.ui.tooling.preview)
+            implementation(libs.coil.compose)
+            implementation(libs.coil.network.ktor)
+            implementation(libs.compose.markdown)
+            implementation(libs.jsoup)
+            implementation(libs.koin.annotations)
+            implementation(libs.koin.core)
+            implementation(libs.kotlinx.collections.immutable)
+            implementation(libs.kotlinx.coroutines.android)
+            implementation(libs.kotlinx.serialization.json)
+            implementation(libs.ktor.client.core)
+            implementation(libs.ktor.client.okhttp)
+            implementation(libs.lazycolumnscrollbar)
+            implementation(libs.okhttp.dnsoverhttps)
+        }
+
+        androidDeviceTest.dependencies {
+            implementation(libs.androidx.espresso.core)
+            implementation(libs.androidx.junit)
+            implementation(libs.androidx.ui.test.junit4)
+            implementation(platform(libs.androidx.compose.bom))
+        }
+    }
+}
+
+// Keep existing sources under src/main/kotlin without a mass rename.
+androidComponents {
+    onVariants { variant ->
+        variant.sources.kotlin?.addStaticSourceDirectory("src/main/kotlin")
     }
 }
 
@@ -73,48 +96,8 @@ room {
 }
 
 dependencies {
-    coreLibraryDesugaring(libs.desugar.jdk.libs)
+    "androidRuntimeClasspath"(libs.androidx.ui.tooling)
+    "androidRuntimeClasspath"(libs.androidx.ui.test.manifest)
 
-    implementation(libs.androidx.activity.compose)
-    implementation(libs.androidx.core.ktx)
-    implementation(libs.androidx.core.splashscreen)
-    implementation(libs.androidx.datastore.preferences)
-    implementation(libs.androidx.lifecycle.runtime.ktx)
-    implementation(libs.androidx.material3)
-    implementation(libs.androidx.navigation.compose)
-    implementation(libs.androidx.room.ktx)
-    implementation(libs.androidx.room.runtime)
-    implementation(libs.androidx.ui)
-    implementation(libs.androidx.ui.graphics)
-    implementation(libs.androidx.ui.tooling.preview)
-    implementation(libs.coil.compose)
-    implementation(libs.coil.network.ktor)
-    implementation(libs.compose.markdown)
-    implementation(libs.jsoup)
-    implementation(libs.koin.android)
-    implementation(libs.koin.androidx.compose)
-    implementation(libs.koin.annotations)
-    implementation(libs.koin.core)
-    implementation(libs.kotlinx.collections.immutable)
-    implementation(libs.kotlinx.coroutines.android)
-    implementation(libs.kotlinx.coroutines.core)
-    implementation(libs.kotlinx.serialization.json)
-    implementation(libs.ktor.client.core)
-    implementation(libs.ktor.client.okhttp)
-    implementation(libs.lazycolumnscrollbar)
-    implementation(libs.okhttp.dnsoverhttps)
-    implementation(platform(libs.androidx.compose.bom))
-    implementation(project(":shared"))
-
-    ksp(libs.androidx.room.compiler)
-
-    testImplementation(libs.junit)
-
-    androidTestImplementation(libs.androidx.espresso.core)
-    androidTestImplementation(libs.androidx.junit)
-    androidTestImplementation(libs.androidx.ui.test.junit4)
-    androidTestImplementation(platform(libs.androidx.compose.bom))
-
-    debugImplementation(libs.androidx.ui.test.manifest)
-    debugImplementation(libs.androidx.ui.tooling)
+    add("kspAndroid", libs.androidx.room.compiler)
 }
