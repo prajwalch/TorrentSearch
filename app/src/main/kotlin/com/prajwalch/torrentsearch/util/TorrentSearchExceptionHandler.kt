@@ -4,8 +4,6 @@ import android.content.Context
 import android.content.Intent
 import android.util.Log
 
-import com.prajwalch.torrentsearch.BuildConfig
-
 class TorrentSearchExceptionHandler(
     private val context: Context,
     private val activityToLaunch: Class<*>,
@@ -31,7 +29,8 @@ class TorrentSearchExceptionHandler(
 
     companion object {
         private const val TAG = "TorrentSearchExceptionHandler"
-        private const val EXTRA_CRASH_STACKTRACE = "${BuildConfig.APPLICATION_ID}.CRASH_STACKTRACE"
+        private const val EXTRA_CRASH_STACKTRACE =
+            "com.prajwalch.torrentsearch.CRASH_STACKTRACE"
 
         fun getCrashStackTrace(intent: Intent): String? =
             intent.getStringExtra(EXTRA_CRASH_STACKTRACE)

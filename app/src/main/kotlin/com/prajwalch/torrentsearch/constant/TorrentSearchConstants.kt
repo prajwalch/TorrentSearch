@@ -1,13 +1,8 @@
 package com.prajwalch.torrentsearch.constant
 
-import com.prajwalch.torrentsearch.BuildConfig
-
 object TorrentSearchConstants {
     /** GitHub repository URL. */
     const val GITHUB_REPO_URL = "https://github.com/prajwalch/TorrentSearch"
-
-    /** GitHub latest release page URL. */
-    const val GITHUB_RELEASE_URL = "$GITHUB_REPO_URL/releases/tag/v${BuildConfig.VERSION_NAME}"
 
     /** GitHub wiki URL.*/
     const val GITHUB_WIKI_URL = "$GITHUB_REPO_URL/wiki"

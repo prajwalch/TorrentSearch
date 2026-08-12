@@ -2,7 +2,7 @@ package com.prajwalch.torrentsearch.util
 
 import android.os.Build
 
-import com.prajwalch.torrentsearch.BuildConfig
+import com.prajwalch.torrentsearch.AppInfo
 
 import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.withContext
@@ -64,8 +64,8 @@ object LogsUtils {
 
     /** Returns the information of TorrentSearch and current device. */
     private fun getAppAndDeviceInfo() = """
-        App ID              : ${BuildConfig.APPLICATION_ID}
-        App version         : ${BuildConfig.VERSION_NAME} (${BuildConfig.VERSION_CODE}) 
+        App ID              : ${AppInfo.packageName}
+        App version         : ${AppInfo.versionName} (${AppInfo.versionCode}) 
         Device manufacturer : ${Build.MANUFACTURER}
         Device brand        : ${Build.BRAND}
         Device name         : ${Build.DEVICE} (${Build.PRODUCT})

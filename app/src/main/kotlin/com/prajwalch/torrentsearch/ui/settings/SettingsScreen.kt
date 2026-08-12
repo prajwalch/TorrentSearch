@@ -41,7 +41,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 
-import com.prajwalch.torrentsearch.BuildConfig
+import com.prajwalch.torrentsearch.AppInfo
 import com.prajwalch.torrentsearch.R
 import com.prajwalch.torrentsearch.constant.TorrentSearchConstants
 import com.prajwalch.torrentsearch.domain.model.DarkTheme
@@ -129,8 +129,12 @@ fun SettingsScreen(
             AdvancedSettings(
                 uiState = uiState.advancedSettings,
                 onEnableOpenTorrentDetailsInApp = viewModel::enableOpenTorrentDetailsInApp,
-                onEnableShareIntegration = viewModel::enableShareIntegration,
-                onEnableQuickSearch = viewModel::enableQuickSearch,
+                onEnableShareIntegration = { enable, packageManager, packageName ->
+                    viewModel.enableShareIntegration(enable, packageManager, packageName)
+                },
+                onEnableQuickSearch = { enable, packageManager, packageName ->
+                    viewModel.enableQuickSearch(enable, packageManager, packageName)
+                },
                 onSetDohProvider = viewModel::setDohProvider,
                 onExportLogsToFile = {
                     logsExportLocationChooser.launch(TorrentSearchConstants.APP_LOGS_FILE_NAME)
@@ -416,14 +420,15 @@ private fun SearchHistorySettings(
 private fun AdvancedSettings(
     uiState: AdvancedSettingsUiState,
     onEnableOpenTorrentDetailsInApp: (Boolean) -> Unit,
-    onEnableShareIntegration: (Boolean, PackageManager) -> Unit,
-    onEnableQuickSearch: (Boolean, PackageManager) -> Unit,
+    onEnableShareIntegration: (Boolean, PackageManager, String) -> Unit,
+    onEnableQuickSearch: (Boolean, PackageManager, String) -> Unit,
     onSetDohProvider: (DohProvider) -> Unit,
     onExportLogsToFile: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val context = LocalContext.current
     val packageManager = context.packageManager
+    val packageName = context.packageName
 
     Column(modifier = modifier) {
         SettingsSectionTitle(R.string.settings_section_advanced)
@@ -441,7 +446,13 @@ private fun AdvancedSettings(
             }
         )
         SettingsListItem(
-            onClick = { onEnableShareIntegration(!uiState.enableShareIntegration, packageManager) },
+            onClick = {
+                onEnableShareIntegration(
+                    !uiState.enableShareIntegration,
+                    packageManager,
+                    packageName,
+                )
+            },
             icon = R.drawable.ic_share,
             headline = R.string.settings_enable_share_integration,
             supportingContent = stringResource(
@@ -450,12 +461,20 @@ private fun AdvancedSettings(
             trailingContent = {
                 Switch(
                     checked = uiState.enableShareIntegration,
-                    onCheckedChange = { onEnableShareIntegration(it, packageManager) },
+                    onCheckedChange = {
+                        onEnableShareIntegration(it, packageManager, packageName)
+                    },
                 )
             },
         )
         SettingsListItem(
-            onClick = { onEnableQuickSearch(!uiState.enableQuickSearch, packageManager) },
+            onClick = {
+                onEnableQuickSearch(
+                    !uiState.enableQuickSearch,
+                    packageManager,
+                    packageName,
+                )
+            },
             icon = R.drawable.ic_search,
             headline = R.string.settings_enable_quick_search,
             supportingContent = stringResource(
@@ -464,7 +483,9 @@ private fun AdvancedSettings(
             trailingContent = {
                 Switch(
                     checked = uiState.enableQuickSearch,
-                    onCheckedChange = { onEnableQuickSearch(it, packageManager) },
+                    onCheckedChange = {
+                        onEnableQuickSearch(it, packageManager, packageName)
+                    },
                 )
             },
         )
@@ -514,10 +535,10 @@ private fun About(modifier: Modifier = Modifier) {
     Column(modifier = modifier) {
         SettingsSectionTitle(title = R.string.settings_section_about)
         SettingsListItem(
-            onClick = { uriHandler.openUri(uri = TorrentSearchConstants.GITHUB_RELEASE_URL) },
+            onClick = { uriHandler.openUri(uri = AppInfo.githubReleaseUrl) },
             icon = R.drawable.ic_info,
             headline = R.string.settings_version,
-            supportingContent = "${BuildConfig.VERSION_NAME} (${BuildConfig.VERSION_CODE})",
+            supportingContent = "${AppInfo.versionName} (${AppInfo.versionCode})",
             trailingContent = {
                 Icon(
                     painter = painterResource(R.drawable.ic_arrow_outward),
