@@ -37,6 +37,8 @@ class TorrentSearchApplication : Application(), SingletonImageLoader.Factory {
     override fun onCreate() {
         super.onCreate()
 
+        AppInfo.init(this)
+
         startKoin {
             androidContext(this@TorrentSearchApplication)
             modules(
@@ -50,7 +52,7 @@ class TorrentSearchApplication : Application(), SingletonImageLoader.Factory {
             module<ViewModelModule>()
         }
 
-        if (BuildConfig.DEBUG) {
+        if (com.prajwalch.torrentsearch.android.BuildConfig.DEBUG) {
             StrictMode.setThreadPolicy(
                 StrictMode.ThreadPolicy.Builder()
                     .detectAll()

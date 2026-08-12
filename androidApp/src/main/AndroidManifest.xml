@@ -6,7 +6,7 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
     <application
-        android:name=".TorrentSearchApplication"
+        android:name="com.prajwalch.torrentsearch.TorrentSearchApplication"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:enableOnBackInvokedCallback="true"
@@ -19,7 +19,7 @@
         android:usesCleartextTraffic="true"
         tools:targetApi="36">
         <activity
-            android:name=".ui.main.MainActivity"
+            android:name="com.prajwalch.torrentsearch.ui.main.MainActivity"
             android:exported="true"
             android:theme="@style/Theme.TorrentSearch">
             <intent-filter>
@@ -39,7 +39,7 @@
         <activity-alias
             android:name="${applicationId}.SendAlias"
             android:exported="true"
-            android:targetActivity=".ui.main.MainActivity">
+            android:targetActivity="com.prajwalch.torrentsearch.ui.main.MainActivity">
 
             <intent-filter>
                 <action android:name="android.intent.action.SEND" />
@@ -52,7 +52,7 @@
         <activity-alias
             android:name="${applicationId}.ProcessTextAlias"
             android:exported="true"
-            android:targetActivity=".ui.main.MainActivity">
+            android:targetActivity="com.prajwalch.torrentsearch.ui.main.MainActivity">
 
             <intent-filter>
                 <action android:name="android.intent.action.PROCESS_TEXT" />
@@ -63,7 +63,7 @@
         </activity-alias>
 
         <activity
-            android:name=".ui.crash.CrashActivity"
+            android:name="com.prajwalch.torrentsearch.ui.crash.CrashActivity"
             android:exported="false"
             android:theme="@android:style/Theme.Material.Light.NoActionBar" />
     </application>
