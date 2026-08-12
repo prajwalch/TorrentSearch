@@ -154,10 +154,10 @@ it handles all setup and lets you run the app in a single click.
 ```sh
 git clone https://github.com/prajwalch/TorrentSearch.git
 cd TorrentSearch
-./gradlew assembleDebug
+./gradlew androidApp:assembleDebug
 ```
 
-Output: `app/build/outputs/apk/debug/`
+Output: `androidApp/build/outputs/apk/debug/`
 
 ## Contributing
 
