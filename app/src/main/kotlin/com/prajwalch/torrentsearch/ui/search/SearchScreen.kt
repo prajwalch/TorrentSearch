@@ -33,6 +33,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalClipboard
 import androidx.compose.ui.res.painterResource
@@ -66,7 +67,6 @@ import com.prajwalch.torrentsearch.ui.search.component.TorrentFilter
 import com.prajwalch.torrentsearch.ui.theme.spaces
 
 import kotlinx.coroutines.launch
-
 import org.koin.androidx.compose.koinViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -266,6 +266,9 @@ fun SearchScreen(
                             enableCategoryFilter = uiState.searchParams.category == Category.All,
                         )
                         SearchResults(
+                            modifier = Modifier
+                                .weight(1f)
+                                .clipToBounds(),
                             searchResults = uiState.searchResults.torrents,
                             onResultClick = {
                                 selectedResult = it
