@@ -233,4 +233,9 @@
     <string name="torrent_details_message_description_hidden">Опис сховано</string>
     <string name="torrent_details_error_image_load_failed">Не вдалося завантажити</string>
     <string name="torrent_details_message_info_hash_copied">Інфо-хеш скопійовано до буфера обміну</string>
+    <string name="search_providers_chip_category">Категорія</string>
+    <string name="search_providers_chip_protection">Захист</string>
+    <string name="search_providers_protection_protected">Захищено</string>
+    <string name="search_providers_protection_locked">Замкнено</string>
+    <string name="search_providers_protection_unlocked">Розімкнено</string>
 </resources>
