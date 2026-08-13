@@ -188,7 +188,7 @@ no local setup needed, contribute directly from your browser.
 - **Storage:** [Room](https://developer.android.com/training/data-storage/room), [Jetpack DataStore](https://developer.android.com/topic/libraries/architecture/datastore)
 - **Dependency injection:** [Hilt](https://developer.android.com/training/dependency-injection/hilt-android)
 - **Image loading:** [Coil](https://coil-kt.github.io/coil/)
-- **HTML parsing**: [Jsoup](https://github.com/jhy/jsoup)
+- **HTML parsing**: [Ksoup](https://github.com/fleeksoft/ksoup)
 - **Immutable collections**: [Kotlinx immutable collections](https://github.com/Kotlin/kotlinx.collections.immutable)
 - **Markdown rendering**: [ComposeMarkdown](https://github.com/jeziellago/compose-markdown)
 - **Scrollbar**: [LazyColumnScrollbar](https://github.com/nanihadesuka/LazyColumnScrollbar)
