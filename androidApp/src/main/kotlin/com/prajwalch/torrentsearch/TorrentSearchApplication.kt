@@ -50,7 +50,7 @@ class TorrentSearchApplication : Application(), SingletonImageLoader.Factory {
             module<ViewModelModule>()
         }
 
-        if (BuildConfig.DEBUG) {
+        if (com.prajwalch.torrentsearch.android.BuildConfig.DEBUG) {
             StrictMode.setThreadPolicy(
                 StrictMode.ThreadPolicy.Builder()
                     .detectAll()

@@ -25,3 +25,4 @@ dependencyResolutionManagement {
 
 rootProject.name = "Torrent Search"
 include(":app")
+include(":androidApp")
