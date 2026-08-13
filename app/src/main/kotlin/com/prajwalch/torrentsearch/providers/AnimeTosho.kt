@@ -10,9 +10,9 @@ import com.prajwalch.torrentsearch.util.TorrentUtils
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
-import org.jsoup.Jsoup
-import org.jsoup.nodes.Element
-import org.jsoup.nodes.TextNode
+import com.fleeksoft.ksoup.Ksoup
+import com.fleeksoft.ksoup.nodes.Element
+import com.fleeksoft.ksoup.nodes.TextNode
 
 import java.time.Instant
 
@@ -42,7 +42,7 @@ class AnimeTosho(private val networkClient: NetworkClient) : SearchProvider,
 
 private class AnimeToshoResultsPageParser(private val providerName: String) {
     suspend fun parse(html: String): List<Torrent> = withContext(Dispatchers.Default) {
-        Jsoup
+        Ksoup
             .parse(html)
             .select("div.home_list_entry")
             .mapNotNull { parseEntryDiv(it) }
@@ -134,7 +134,7 @@ private object AnimeToshoDetailsPageParser {
 
     suspend fun parse(html: String, baseUrl: String): TorrentDetails? =
         withContext(Dispatchers.Default) {
-            val html = Jsoup.parse(html, baseUrl)
+            val html = Ksoup.parse(html, baseUrl)
 
             val name = html.selectFirst(TORRENT_NAME)?.ownText() ?: return@withContext null
             val magnetUriElem = html.selectFirst(MAGNET_URI) ?: return@withContext null
@@ -143,7 +143,7 @@ private object AnimeToshoDetailsPageParser {
             val infoHash = TorrentUtils.getInfoHashFromMagnetUri(magnetUri)
 
             val unprocessedSize = html.selectFirst(SIZE)?.ownText()
-                ?: magnetUriElem.nextSibling()?.takeIf { it is TextNode }?.nodeValue()
+                ?: (magnetUriElem.nextSibling() as? TextNode)?.text()
             val size = unprocessedSize
                 ?.trim()
                 ?.filterNot { it in setOf('(', ')', '|') }

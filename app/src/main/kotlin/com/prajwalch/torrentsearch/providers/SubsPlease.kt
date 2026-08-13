@@ -20,7 +20,7 @@ import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonObject
 
-import org.jsoup.Jsoup
+import com.fleeksoft.ksoup.Ksoup
 import java.time.Instant
 
 class SubsPlease(private val networkClient: NetworkClient) : SearchProvider, LatestTorrentsProvider,
@@ -125,7 +125,7 @@ private class SubsPleaseResultsJsonParser(
 private class SubsPleaseDetailsPageParser(private val networkClient: NetworkClient) {
     suspend fun parse(html: String, pageUrl: String): TorrentDetails? =
         withContext(Dispatchers.Default) {
-            val html = Jsoup.parse(html, pageUrl)
+            val html = Ksoup.parse(html, pageUrl)
 
             val showId = html.selectFirst("table#show-release-table")
                 ?.attr("sid")

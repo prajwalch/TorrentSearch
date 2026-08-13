@@ -12,8 +12,8 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.withContext
 
-import org.jsoup.Jsoup
-import org.jsoup.nodes.Element
+import com.fleeksoft.ksoup.Ksoup
+import com.fleeksoft.ksoup.nodes.Element
 
 class ZeroMagnet(private val networkClient: NetworkClient) : SearchProvider,
     TorrentDetailsProvider {
@@ -51,7 +51,7 @@ private class ZeroMagnetResultsPageParser(
 
     suspend fun parse(html: String, pageUrl: String): List<Torrent> =
         withContext(Dispatchers.Default) {
-            Jsoup.parse(html, pageUrl)
+            Ksoup.parse(html, pageUrl)
                 .select(LIST_ITEM)
                 .map { async { parseListItem(it) } }
                 .awaitAll()
@@ -83,7 +83,7 @@ private object ZeroMagnetDetailsPageParser {
     private const val MAGNET_URI = "input#input-magnet"
 
     suspend fun parse(html: String): TorrentDetails? = withContext(Dispatchers.Default) {
-        val html = Jsoup.parse(html)
+        val html = Ksoup.parse(html)
         val torrentName = html.selectFirst(TORRENT_NAME)?.ownText() ?: return@withContext null
         val magnetUri = html.selectFirst(MAGNET_URI)?.attr("value") ?: return@withContext null
         val size = html.selectFirst(SIZE)?.ownText()
