@@ -33,6 +33,12 @@ kotlin {
     jvm()
 
     sourceSets {
+        // Keep sources in src/main/kotlin; register them on androidMain so KSP/Room
+        // (and Kotlin compile) see them without a mass rename.
+        androidMain {
+            kotlin.srcDir("src/main/kotlin")
+        }
+
         commonMain.dependencies {
             implementation(libs.kotlinx.coroutines.core)
             implementation(libs.kotlinx.serialization.json)
@@ -53,7 +59,7 @@ kotlin {
             api(libs.androidx.ui.graphics)
             api(libs.koin.android)
             api(libs.koin.androidx.compose)
-            api(platform(libs.androidx.compose.bom))
+            api(project.dependencies.platform(libs.androidx.compose.bom))
 
             implementation(libs.androidx.datastore.preferences)
             implementation(libs.androidx.navigation.compose)
@@ -75,19 +81,12 @@ kotlin {
             implementation(libs.okhttp.dnsoverhttps)
         }
 
-        androidDeviceTest.dependencies {
+        getByName("androidDeviceTest").dependencies {
             implementation(libs.androidx.espresso.core)
             implementation(libs.androidx.junit)
             implementation(libs.androidx.ui.test.junit4)
-            implementation(platform(libs.androidx.compose.bom))
+            implementation(project.dependencies.platform(libs.androidx.compose.bom))
         }
-    }
-}
-
-// Keep existing sources under src/main/kotlin without a mass rename.
-androidComponents {
-    onVariants { variant ->
-        variant.sources.kotlin?.addStaticSourceDirectory("src/main/kotlin")
     }
 }
 

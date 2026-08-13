@@ -1,6 +1,7 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.compose)
+    alias(libs.plugins.koin.compiler)
 }
 
 android {
@@ -59,10 +60,6 @@ android {
         resources.excludes += "DebugProbesKt.bin"
     }
 
-    androidResources {
-        generateLocaleConfig = true
-    }
-
     lint {
         lintConfig = file("src/lint.xml")
     }
@@ -74,6 +71,8 @@ dependencies {
     implementation(project(":app"))
 
     implementation(libs.coil.compose)
+    implementation(libs.coil.network.ktor)
+    implementation(libs.ktor.client.core)
 
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
