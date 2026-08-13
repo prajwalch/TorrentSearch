@@ -14,7 +14,6 @@ import com.prajwalch.torrentsearch.R
 import com.prajwalch.torrentsearch.ui.main.MainActivity
 import com.prajwalch.torrentsearch.ui.theme.TorrentSearchTheme
 import com.prajwalch.torrentsearch.util.LogsUtils
-import com.prajwalch.torrentsearch.util.TorrentSearchExceptionHandler
 
 import kotlinx.coroutines.launch
 
@@ -22,7 +21,7 @@ class CrashActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val stackTrace = TorrentSearchExceptionHandler.getCrashStackTrace(intent)
+        val stackTrace = intent.getStringExtra(EXTRA_STACK_TRACE)
 
         enableEdgeToEdge()
         setContent {
@@ -56,5 +55,9 @@ class CrashActivity : ComponentActivity() {
 
         val mainActivityIntent = Intent(this, MainActivity::class.java)
         startActivity(mainActivityIntent)
+    }
+
+    companion object {
+        const val EXTRA_STACK_TRACE = "stack_trace"
     }
 }

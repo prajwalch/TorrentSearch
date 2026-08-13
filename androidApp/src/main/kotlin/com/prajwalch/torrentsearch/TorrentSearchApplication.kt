@@ -52,7 +52,7 @@ class TorrentSearchApplication : Application(), SingletonImageLoader.Factory {
             module<ViewModelModule>()
         }
 
-        if (com.prajwalch.torrentsearch.android.BuildConfig.DEBUG) {
+        if (AppInfo.isDebuggable) {
             StrictMode.setThreadPolicy(
                 StrictMode.ThreadPolicy.Builder()
                     .detectAll()
@@ -71,6 +71,7 @@ class TorrentSearchApplication : Application(), SingletonImageLoader.Factory {
             TorrentSearchExceptionHandler(
                 context = this,
                 activityToLaunch = CrashActivity::class.java,
+                stackTraceExtraKey = CrashActivity.EXTRA_STACK_TRACE,
             ),
         )
     }

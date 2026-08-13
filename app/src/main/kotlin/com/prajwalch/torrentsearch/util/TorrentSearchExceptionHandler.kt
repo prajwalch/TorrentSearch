@@ -7,6 +7,7 @@ import android.util.Log
 class TorrentSearchExceptionHandler(
     private val context: Context,
     private val activityToLaunch: Class<*>,
+    private val stackTraceExtraKey: String,
 ) : Thread.UncaughtExceptionHandler {
     private val defaultHandler = Thread.getDefaultUncaughtExceptionHandler()
 
@@ -20,7 +21,7 @@ class TorrentSearchExceptionHandler(
     private fun startGivenActivity(exception: Throwable) {
         val crashIntent = Intent(context, activityToLaunch).apply {
             addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK)
-            putExtra(EXTRA_CRASH_STACKTRACE, exception.stackTraceToString())
+            putExtra(stackTraceExtraKey, exception.stackTraceToString())
         }
         context.startActivity(crashIntent)
 
@@ -29,10 +30,5 @@ class TorrentSearchExceptionHandler(
 
     companion object {
         private const val TAG = "TorrentSearchExceptionHandler"
-        private const val EXTRA_CRASH_STACKTRACE =
-            "com.prajwalch.torrentsearch.CRASH_STACKTRACE"
-
-        fun getCrashStackTrace(intent: Intent): String? =
-            intent.getStringExtra(EXTRA_CRASH_STACKTRACE)
     }
 }
