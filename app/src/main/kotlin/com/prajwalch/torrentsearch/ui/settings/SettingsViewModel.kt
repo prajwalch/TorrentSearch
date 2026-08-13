@@ -6,7 +6,6 @@ import android.content.pm.PackageManager
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 
-import com.prajwalch.torrentsearch.BuildConfig
 import com.prajwalch.torrentsearch.data.repository.SettingsRepository
 import com.prajwalch.torrentsearch.data.repository.ViewedTorrentRepository
 import com.prajwalch.torrentsearch.domain.SearchProvidersManager
@@ -162,22 +161,32 @@ class SettingsViewModel(
         }
     }
 
-    fun enableShareIntegration(enable: Boolean, packageManager: PackageManager) {
+    fun enableShareIntegration(
+        enable: Boolean,
+        packageManager: PackageManager,
+        packageName: String,
+    ) {
         viewModelScope.launch {
             enableIntentIntegration(
                 enable = enable,
                 packageManager = packageManager,
+                packageName = packageName,
                 activityAliasName = ".SendAlias",
             )
             settingsRepository.enableShareIntegration(enable = enable)
         }
     }
 
-    fun enableQuickSearch(enable: Boolean, packageManager: PackageManager) {
+    fun enableQuickSearch(
+        enable: Boolean,
+        packageManager: PackageManager,
+        packageName: String,
+    ) {
         viewModelScope.launch {
             enableIntentIntegration(
                 enable = enable,
                 packageManager = packageManager,
+                packageName = packageName,
                 activityAliasName = ".ProcessTextAlias",
             )
             settingsRepository.enableQuickSearch(enable = enable)
@@ -187,9 +196,9 @@ class SettingsViewModel(
     private fun enableIntentIntegration(
         enable: Boolean,
         packageManager: PackageManager,
+        packageName: String,
         activityAliasName: String,
     ) {
-        val packageName = BuildConfig.APPLICATION_ID
         val componentName = ComponentName(packageName, "$packageName$activityAliasName")
 
         val componentEnabledState = if (enable) {
