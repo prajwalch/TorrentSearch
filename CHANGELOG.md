@@ -6,6 +6,7 @@
 - Added a new [DNS over HTTPS](https://en.wikipedia.org/wiki/DNS_over_HTTPS) setting.
 - Added an option to auto-detect supported categories when adding new Torznab provider.
 - Added pull-to-refresh support on the torrent details screen.
+- Added a search bar to find providers more easily on the search providers screen.
 - The swipe-to-delete icon on bookmarks now dims until you've swiped far enough to trigger the action,
   so it's clearer when the delete will actually go through.
 - Resetting search providers to default now asks for confirmation first.
@@ -58,7 +59,8 @@
 - Fixed an "Unexpected error" message that showed up when manually checking a Torznab connection.
 - Fixed an issue where Torznab search providers sometimes treated a magnet link as if it were a file download link.
 - Fixed search triggering with an empty query when the search bar was expanded on the home screen.
-- Fixed top bar action icons on the torrent details screen not rendering correctly over certain hero background images.
+- Fixed top bar action icons on the torrent details screen not rendering correctly over certain cover background images.
+- Fixed a flashing/flickering issue on the search, browse, and search providers screen when applying a filter.
 
 # v0.5.0
 
