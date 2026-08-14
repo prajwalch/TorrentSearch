@@ -3,7 +3,7 @@ package com.prajwalch.torrentsearch.ui
 import androidx.compose.animation.AnimatedContentTransitionScope.SlideDirection
 import androidx.compose.animation.fadeIn
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -84,8 +84,8 @@ fun TorrentSearchApp(
         )
     }
 
-    LaunchedEffect(initialSearchQuery) {
-        if (initialSearchQuery == null) return@LaunchedEffect
+    SideEffect(initialSearchQuery) {
+        if (initialSearchQuery == null) return@SideEffect
 
         val searchRoute = Search(query = initialSearchQuery)
         navController.navigate(searchRoute) {
