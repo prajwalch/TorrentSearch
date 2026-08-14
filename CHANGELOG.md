@@ -50,6 +50,7 @@
 
 ### What's changed
 
+- In-app torrent Details screen is now enabled by default.
 - Eztv is now marked as Cloudflare-protected.
 - TorrentDownloads is now marked as Cloudflare-protected.
 - TorrentDatabase is now marked as Cloudflare-protected.
