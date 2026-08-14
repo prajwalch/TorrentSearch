@@ -3,6 +3,8 @@ package com.prajwalch.torrentsearch.ui.component
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.layout.ColumnScope
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -25,6 +27,7 @@ import com.prajwalch.torrentsearch.domain.model.SortCriteria
 import com.prajwalch.torrentsearch.domain.model.SortOrder
 import com.prajwalch.torrentsearch.ui.sortCriteriaStringResource
 import com.prajwalch.torrentsearch.ui.sortOrderStringResource
+import com.prajwalch.torrentsearch.ui.theme.spaces
 
 @Composable
 fun RoundedDropdownMenu(
@@ -85,7 +88,9 @@ fun SortDropdownMenu(
             )
         }
 
+        Spacer(Modifier.height(MaterialTheme.spaces.small))
         HorizontalDivider()
+        Spacer(Modifier.height(MaterialTheme.spaces.small))
 
         for (order in SortOrder.entries) {
             DropdownMenuItem(
