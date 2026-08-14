@@ -5,20 +5,27 @@
 - Added support for using torrent providers that are protected by Cloudflare.
 - Added a new [DNS over HTTPS](https://en.wikipedia.org/wiki/DNS_over_HTTPS) setting.
 - Added an option to auto-detect supported categories when adding new Torznab provider.
-- Added pull-to-refresh support on the torrent details screen.
-- Added a search bar to find providers more easily on the search providers screen.
+- Added pull-to-refresh support on the torrent Details screen.
+- Added a search bar to find providers more easily on the Search providers screen.
 - The swipe-to-delete icon on bookmarks now dims until you've swiped far enough to trigger the action,
   so it's clearer when the delete will actually go through.
 - Resetting search providers to default now asks for confirmation first.
 - After a fresh install (or clearing app data), you'll now see a one-time prompt offering to enable recommended torrent providers, instead of them being enabled automatically.
 - A one-time tip now shows up to let new users about the swipe-to-delete gesture on bookmarks.
-- Revamped details screen UI with some new features:
+- Revamped Details screen UI with some new features:
+  - Cover images are now displayed with a nice blur effect.
   - Poster and screenshot images now show a proper loading indicator and error message while loading.
   - Torrent descriptions are now automatically hidden for NSFW torrent details, with a button to show or hide them.
   - Added an inline button to copy the torrent's info hash.
 - `Eztv` now provides torrent details.
 - `TorrentDownloads` now provides torrent details and; latest and top torrents.
 - Added Portuguese language by [@SantosSi](https://github.com/SantosSi)
+- Other UI improvements:
+  - Torrent list items now use a card-style design instead of the previous flat style.
+  - Dropdown menus now have a more distinguishable background color.
+  - The "Delete all" action on the Bookmarks screen has moved into the dropdown menu, with a refreshed look.
+  - The "Enable all" and "Disable all" actions on the Search providers screen have moved into the dropdown menu.
+  - The "Dark theme" option on the Settings screen is now an expandable menu instead of a dropdown.
 
 #### New providers
 
@@ -48,19 +55,18 @@
 - TorrentDatabase is now marked as Cloudflare-protected.
 - UIndex is now marked as Cloudflare-protected.
 - Torrent size, seeders, and peers are now hidden instead of showing as `0` or `0 KB` when that information isn't available.
-- feat(SettingsScreen): changed the dialog based Item to Expandable Container for Theme
 
 ### What's fixed
 
-- Fixed the TorrentDatebase provider failing to load a torrent's upload and last-checked dates on the details screen.
+- Fixed the TorrentDatebase provider failing to load a torrent's upload and last-checked dates on the Details screen.
 - Fixed the TorrentDownload provider returning truncated torrent names.
-- Fixed the UIndex provider not correctly showing seeders and peers on the details screen.
-- Fixed the SubsPlease provider failing to handle torrent's upload date on the details screen.
+- Fixed the UIndex provider not correctly showing seeders and peers on the Details screen.
+- Fixed the SubsPlease provider failing to handle torrent's upload date on the Details screen.
 - Fixed an "Unexpected error" message that showed up when manually checking a Torznab connection.
 - Fixed an issue where Torznab search providers sometimes treated a magnet link as if it were a file download link.
-- Fixed search triggering with an empty query when the search bar was expanded on the home screen.
+- Fixed search triggering with an empty query when the search bar was expanded on the Home screen.
 - Fixed top bar action icons on the torrent details screen not rendering correctly over certain cover background images.
-- Fixed a flashing/flickering issue on the search, browse, and search providers screen when applying a filter.
+- Fixed a flashing/flickering issue on the Search, Browse, and Search providers screen when applying a filter.
 
 # v0.5.0
 
