@@ -205,6 +205,7 @@
     <string name="search_providers_protection_protected">Protected</string>
     <string name="search_providers_protection_locked">Locked</string>
     <string name="search_providers_protection_unlocked">Unlocked</string>
+    <string name="search_providers_search_hint">Search providers</string>
 
     <string name="settings_screen_title">Settings</string>
     <string name="settings_section_appearance">Appearance</string>

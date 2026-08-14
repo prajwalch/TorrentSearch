@@ -11,6 +11,7 @@ import com.prajwalch.torrentsearch.domain.model.SearchProviderInfo
 import com.prajwalch.torrentsearch.providers.SearchProviderId
 
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -18,6 +19,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.WhileSubscribed
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
@@ -25,6 +27,8 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 import org.koin.core.annotation.KoinViewModel
+
+import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Duration.Companion.seconds
 
 data class SearchProvidersUiState(
@@ -38,10 +42,7 @@ data class SearchProvidersUiState(
 data class SearchProviderFilter(
     val category: Category = Category.All,
     val protection: SearchProviderProtection? = null,
-) {
-    val isEmpty: Boolean
-        get() = category == Category.All && protection == null
-}
+)
 
 enum class SearchProviderProtection {
     Protected,
@@ -111,13 +112,7 @@ class SearchProvidersViewModel(
     /** Enables all search providers. */
     fun enableAllSearchProviders() {
         viewModelScope.launch {
-            // If filter is not applied, enable all.
-            if (providerInfosProcessor.filter.value.isEmpty) {
-                searchProvidersManager.enableAllProviders()
-                return@launch
-            }
-
-            // If filter is applied, only enable those that're currently displayed.
+            // Respect filter.
             val providerIds = uiState.value.searchProviders.map { it.id }.toSet()
             searchProvidersManager.enableProviderByIds(providerIds)
         }
@@ -126,13 +121,7 @@ class SearchProvidersViewModel(
     /** Disables all search providers. */
     fun disableAllSearchProviders() {
         viewModelScope.launch {
-            // If filter is not applied, disable all.
-            if (providerInfosProcessor.filter.value.isEmpty) {
-                searchProvidersManager.disableAllProviders()
-                return@launch
-            }
-
-            // If filter is applied, only disable those that're currently displayed.
+            // Respect filter.
             val providerIds = uiState.value.searchProviders.map { it.id }.toSet()
             searchProvidersManager.disableProviderByIds(providerIds)
         }
@@ -168,6 +157,10 @@ class SearchProvidersViewModel(
         }
     }
 
+    fun filterSearchProviders(query: String) {
+        providerInfosProcessor.filterByQuery(query)
+    }
+
     /** Selects/unselects the given category. */
     fun toggleCategory(category: Category) {
         providerInfosProcessor.toggleCategory(category)
@@ -187,27 +180,34 @@ class SearchProvidersViewModel(
 private class SearchProviderInfosProcessor(
     searchProviderInfos: Flow<List<SearchProviderInfo>>,
 ) {
+    private val query = MutableStateFlow("")
+
     private val _filter = MutableStateFlow(SearchProviderFilter())
     val filter = _filter.asStateFlow()
 
+    @OptIn(FlowPreview::class)
     val filteredSearchProviderInfos =
         combine(
             searchProviderInfos,
+            query.debounce(500L.milliseconds),
             _filter,
             ::filterSearchProviderInfos
         ).flowOn(Dispatchers.Default)
 
     private fun filterSearchProviderInfos(
         infos: List<SearchProviderInfo>,
+        query: String,
         filter: SearchProviderFilter,
     ): List<SearchProviderInfo> {
-        val predicates = buildFilterPredicates(filter)
+        val predicates = buildFilterPredicates(query, filter)
+
         return infos.filter { info ->
             predicates.all { predicate -> predicate(info) }
         }
     }
 
     private fun buildFilterPredicates(
+        query: String,
         filter: SearchProviderFilter,
     ): List<(SearchProviderInfo) -> Boolean> = buildList {
         when (filter.protection) {
@@ -229,6 +229,14 @@ private class SearchProviderInfosProcessor(
         if (filter.category != Category.All) {
             add { it.supportedCategories.contains(filter.category) }
         }
+
+        if (query.isNotBlank()) {
+            add { it.name.contains(query, ignoreCase = true) }
+        }
+    }
+
+    fun filterByQuery(query: String) {
+        this.query.value = query
     }
 
     fun toggleCategory(category: Category) {

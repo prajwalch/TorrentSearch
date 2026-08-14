@@ -42,7 +42,9 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.prajwalch.torrentsearch.R
 import com.prajwalch.torrentsearch.providers.SearchProviderId
 import com.prajwalch.torrentsearch.ui.component.ArrowBackIconButton
+import com.prajwalch.torrentsearch.ui.component.CollapsibleSearchBar
 import com.prajwalch.torrentsearch.ui.component.RoundedDropdownMenu
+import com.prajwalch.torrentsearch.ui.component.rememberCollapsibleSearchBarState
 import com.prajwalch.torrentsearch.ui.settings.searchproviders.component.CloudflareChallengeBottomSheet
 import com.prajwalch.torrentsearch.ui.settings.searchproviders.component.ResetToDefaultDialog
 import com.prajwalch.torrentsearch.ui.settings.searchproviders.component.SearchProviderFilterRow
@@ -130,6 +132,7 @@ fun SearchProvidersScreen(
         topBar = {
             SearchProvidersScreenTopBar(
                 onNavigateBack = onNavigateBack,
+                onFilterSearchProviders = viewModel::filterSearchProviders,
                 onEnableAllSearchProviders = viewModel::enableAllSearchProviders,
                 onDisableAllSearchProviders = viewModel::disableAllSearchProviders,
                 onUpdateProtectionStatus = viewModel::updateProtectionStatus,
@@ -189,6 +192,7 @@ fun SearchProvidersScreen(
 @Composable
 private fun SearchProvidersScreenTopBar(
     onNavigateBack: () -> Unit,
+    onFilterSearchProviders: (String) -> Unit,
     onEnableAllSearchProviders: () -> Unit,
     onDisableAllSearchProviders: () -> Unit,
     onUpdateProtectionStatus: () -> Unit,
@@ -197,36 +201,38 @@ private fun SearchProvidersScreenTopBar(
     subtitle: @Composable (() -> Unit)? = null,
     scrollBehavior: TopAppBarScrollBehavior? = null,
 ) {
+    val searchBarState = rememberCollapsibleSearchBarState(visibleOnInitial = false)
+
     TopAppBar(
         modifier = modifier,
         title = {
-            Column(verticalArrangement = Arrangement.Center) {
-                Text(text = stringResource(R.string.search_providers_screen_title))
-                CompositionLocalProvider(
-                    LocalContentColor provides MaterialTheme.colorScheme.onSurfaceVariant,
-                    LocalTextStyle provides MaterialTheme.typography.labelMedium,
-                ) {
-                    subtitle?.let { it() }
+            CollapsibleSearchBar(
+                state = searchBarState,
+                onQueryChange = onFilterSearchProviders,
+                placeholder = { Text(stringResource(R.string.search_providers_search_hint)) },
+            )
+
+            if (!searchBarState.isVisible) {
+                Column(verticalArrangement = Arrangement.Center) {
+                    Text(text = stringResource(R.string.search_providers_screen_title))
+                    CompositionLocalProvider(
+                        LocalContentColor provides MaterialTheme.colorScheme.onSurfaceVariant,
+                        LocalTextStyle provides MaterialTheme.typography.labelMedium,
+                    ) {
+                        subtitle?.let { it() }
+                    }
                 }
             }
         },
         navigationIcon = { ArrowBackIconButton(onClick = onNavigateBack) },
         actions = {
-            IconButton(onClick = onEnableAllSearchProviders) {
-                Icon(
-                    painter = painterResource(R.drawable.ic_select_all),
-                    contentDescription = stringResource(
-                        R.string.search_providers_action_enable_all,
-                    ),
-                )
-            }
-            IconButton(onClick = onDisableAllSearchProviders) {
-                Icon(
-                    painter = painterResource(R.drawable.ic_deselect_all),
-                    contentDescription = stringResource(
-                        R.string.search_providers_action_disable_all,
-                    ),
-                )
+            if (!searchBarState.isVisible) {
+                IconButton(onClick = { searchBarState.showSearchBar() }) {
+                    Icon(
+                        painter = painterResource(R.drawable.ic_search),
+                        contentDescription = null,
+                    )
+                }
             }
 
             Box {
@@ -241,6 +247,14 @@ private fun SearchProvidersScreenTopBar(
                 TopBarMoreMenu(
                     expanded = showMoreMenu,
                     onDismiss = { showMoreMenu = false },
+                    onEnableAllSearchProviders = {
+                        onEnableAllSearchProviders()
+                        showMoreMenu = false
+                    },
+                    onDisableAllSearchProviders = {
+                        onDisableAllSearchProviders()
+                        showMoreMenu = false
+                    },
                     onUpdateProtectionStatus = {
                         onUpdateProtectionStatus()
                         showMoreMenu = false
@@ -260,6 +274,8 @@ private fun SearchProvidersScreenTopBar(
 private fun TopBarMoreMenu(
     expanded: Boolean,
     onDismiss: () -> Unit,
+    onEnableAllSearchProviders: () -> Unit,
+    onDisableAllSearchProviders: () -> Unit,
     onUpdateProtectionStatus: () -> Unit,
     onResetToDefault: () -> Unit,
     modifier: Modifier = Modifier,
@@ -269,6 +285,31 @@ private fun TopBarMoreMenu(
         expanded = expanded,
         onDismissRequest = onDismiss
     ) {
+
+        DropdownMenuItem(
+            leadingIcon = {
+                Icon(
+                    painter = painterResource(R.drawable.ic_select_all),
+                    contentDescription = stringResource(
+                        R.string.search_providers_action_enable_all,
+                    ),
+                )
+            },
+            text = { Text(stringResource(R.string.search_providers_action_enable_all)) },
+            onClick = onEnableAllSearchProviders,
+        )
+        DropdownMenuItem(
+            leadingIcon = {
+                Icon(
+                    painter = painterResource(R.drawable.ic_deselect_all),
+                    contentDescription = stringResource(
+                        R.string.search_providers_action_disable_all,
+                    ),
+                )
+            },
+            text = { Text(stringResource(R.string.search_providers_action_disable_all)) },
+            onClick = onDisableAllSearchProviders,
+        )
         DropdownMenuItem(
             leadingIcon = {
                 Icon(
