@@ -34,7 +34,7 @@ fun RoundedDropdownMenu(
     offset: DpOffset = DpOffset(0.dp, 0.dp),
     scrollState: ScrollState = rememberScrollState(),
     shape: Shape = MaterialTheme.shapes.medium,
-    containerColor: Color = MenuDefaults.containerColor,
+    containerColor: Color = MaterialTheme.colorScheme.surfaceContainerHighest,
     tonalElevation: Dp = MenuDefaults.TonalElevation,
     shadowElevation: Dp = MenuDefaults.ShadowElevation,
     border: BorderStroke? = null,
