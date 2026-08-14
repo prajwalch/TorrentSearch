@@ -10,10 +10,15 @@ import com.prajwalch.torrentsearch.domain.model.CloudflareProtectionStatus
 import com.prajwalch.torrentsearch.domain.model.SearchProviderInfo
 import com.prajwalch.torrentsearch.providers.SearchProviderId
 
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.WhileSubscribed
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
@@ -23,8 +28,8 @@ import org.koin.core.annotation.KoinViewModel
 import kotlin.time.Duration.Companion.seconds
 
 data class SearchProvidersUiState(
-    val filter: SearchProviderFilter = SearchProviderFilter(),
     val searchProviders: List<SearchProviderInfo> = emptyList(),
+    val filter: SearchProviderFilter = SearchProviderFilter(),
     val totalNumProviders: Int = 0,
     val enabledProvidersCount: Int = 0,
     val protectionUpdateState: ProtectionUpdateState = ProtectionUpdateState.Idle,
@@ -59,75 +64,38 @@ class SearchProvidersViewModel(
     private val searchProvidersManager: SearchProvidersManager,
     settingsRepository: SettingsRepository,
 ) : ViewModel() {
-    private val filter = MutableStateFlow(SearchProviderFilter())
+    private val providerInfosProcessor =
+        SearchProviderInfosProcessor(searchProvidersManager.getProviderInfos())
+
     private val protectionUpdateState =
         MutableStateFlow<ProtectionUpdateState>(ProtectionUpdateState.Idle)
 
-    val uiState = combine(
-        filter,
-        protectionUpdateState,
-        searchProvidersManager.getProviderInfos(),
-        searchProvidersManager.getProvidersCount(),
-        settingsRepository.enabledSearchProviderIds.map { it.size },
-    ) {
-            filter,
+    val uiState: StateFlow<SearchProvidersUiState> =
+        combine(
+            providerInfosProcessor.filteredSearchProviderInfos,
+            providerInfosProcessor.filter,
             protectionUpdateState,
-            searchProviderInfos,
-            totalNumProviders,
-            enabledProvidersCount,
-        ->
-
-        val filteredSearchProviderInfos =
-            filterSearchProviderInfos(
-                infos = searchProviderInfos,
+            searchProvidersManager.getProvidersCount(),
+            settingsRepository.enabledSearchProviderIds.map { it.size },
+        ) {
+                searchProviderInfos,
+                filter,
+                protectionUpdateState,
+                totalNumProviders,
+                enabledProvidersCount,
+            ->
+            SearchProvidersUiState(
                 filter = filter,
+                searchProviders = searchProviderInfos,
+                totalNumProviders = totalNumProviders,
+                enabledProvidersCount = enabledProvidersCount,
+                protectionUpdateState = protectionUpdateState,
             )
-        SearchProvidersUiState(
-            filter = filter,
-            searchProviders = filteredSearchProviderInfos,
-            totalNumProviders = totalNumProviders,
-            enabledProvidersCount = enabledProvidersCount,
-            protectionUpdateState = protectionUpdateState,
+        }.stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5.seconds),
+            initialValue = SearchProvidersUiState(),
         )
-    }.stateIn(
-        scope = viewModelScope,
-        started = SharingStarted.WhileSubscribed(5.seconds),
-        initialValue = SearchProvidersUiState(),
-    )
-
-    private fun filterSearchProviderInfos(
-        infos: List<SearchProviderInfo>,
-        filter: SearchProviderFilter,
-    ): List<SearchProviderInfo> {
-        val predicates = buildFilterPredicates(filter)
-        return infos.filter { info ->
-            predicates.all { predicate -> predicate(info) }
-        }
-    }
-
-    private fun buildFilterPredicates(
-        filter: SearchProviderFilter,
-    ): List<(SearchProviderInfo) -> Boolean> = buildList {
-        when (filter.protection) {
-            SearchProviderProtection.Protected -> add {
-                it.cloudflareProtectionStatus != CloudflareProtectionStatus.UnProtected
-            }
-
-            SearchProviderProtection.Locked -> add {
-                it.cloudflareProtectionStatus == CloudflareProtectionStatus.Locked
-            }
-
-            SearchProviderProtection.Unlocked -> add {
-                it.cloudflareProtectionStatus == CloudflareProtectionStatus.Unlocked
-            }
-
-            else -> {}
-        }
-
-        if (filter.category != Category.All) {
-            add { it.supportedCategories.contains(filter.category) }
-        }
-    }
 
     /** Enables/disables search provider matching the specified ID. */
     fun enableSearchProvider(providerId: SearchProviderId, enable: Boolean) {
@@ -144,7 +112,7 @@ class SearchProvidersViewModel(
     fun enableAllSearchProviders() {
         viewModelScope.launch {
             // If filter is not applied, enable all.
-            if (filter.value.isEmpty) {
+            if (providerInfosProcessor.filter.value.isEmpty) {
                 searchProvidersManager.enableAllProviders()
                 return@launch
             }
@@ -159,7 +127,7 @@ class SearchProvidersViewModel(
     fun disableAllSearchProviders() {
         viewModelScope.launch {
             // If filter is not applied, disable all.
-            if (filter.value.isEmpty) {
+            if (providerInfosProcessor.filter.value.isEmpty) {
                 searchProvidersManager.disableAllProviders()
                 return@launch
             }
@@ -202,18 +170,74 @@ class SearchProvidersViewModel(
 
     /** Selects/unselects the given category. */
     fun toggleCategory(category: Category) {
-        filter.update { it.copy(category = category) }
+        providerInfosProcessor.toggleCategory(category)
     }
 
     fun toggleProviderProtection(protection: SearchProviderProtection) {
-        filter.update {
-            it.copy(protection = if (it.protection == protection) null else protection)
-        }
+        providerInfosProcessor.toggleProviderProtection(protection)
     }
 
     fun markProviderAsUnlocked(id: SearchProviderId) {
         viewModelScope.launch {
             searchProvidersManager.unlockProvider(id)
+        }
+    }
+}
+
+private class SearchProviderInfosProcessor(
+    searchProviderInfos: Flow<List<SearchProviderInfo>>,
+) {
+    private val _filter = MutableStateFlow(SearchProviderFilter())
+    val filter = _filter.asStateFlow()
+
+    val filteredSearchProviderInfos =
+        combine(
+            searchProviderInfos,
+            _filter,
+            ::filterSearchProviderInfos
+        ).flowOn(Dispatchers.Default)
+
+    private fun filterSearchProviderInfos(
+        infos: List<SearchProviderInfo>,
+        filter: SearchProviderFilter,
+    ): List<SearchProviderInfo> {
+        val predicates = buildFilterPredicates(filter)
+        return infos.filter { info ->
+            predicates.all { predicate -> predicate(info) }
+        }
+    }
+
+    private fun buildFilterPredicates(
+        filter: SearchProviderFilter,
+    ): List<(SearchProviderInfo) -> Boolean> = buildList {
+        when (filter.protection) {
+            SearchProviderProtection.Protected -> add {
+                it.cloudflareProtectionStatus != CloudflareProtectionStatus.UnProtected
+            }
+
+            SearchProviderProtection.Locked -> add {
+                it.cloudflareProtectionStatus == CloudflareProtectionStatus.Locked
+            }
+
+            SearchProviderProtection.Unlocked -> add {
+                it.cloudflareProtectionStatus == CloudflareProtectionStatus.Unlocked
+            }
+
+            else -> {}
+        }
+
+        if (filter.category != Category.All) {
+            add { it.supportedCategories.contains(filter.category) }
+        }
+    }
+
+    fun toggleCategory(category: Category) {
+        _filter.update { it.copy(category = category) }
+    }
+
+    fun toggleProviderProtection(protection: SearchProviderProtection) {
+        _filter.update {
+            it.copy(protection = if (it.protection == protection) null else protection)
         }
     }
 }
