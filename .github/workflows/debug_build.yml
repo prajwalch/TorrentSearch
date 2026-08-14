@@ -26,10 +26,10 @@ jobs:
       run: chmod +x gradlew
 
     - name: Build debug APK
-      run: ./gradlew app:assembleDebug
+      run: ./gradlew androidApp:assembleDebug
 
     - name: Upload debug APK
       uses: actions/upload-artifact@v7.0.1
       with:
         name: torrentsearch-debug
-        path: app/build/outputs/apk/debug/app-debug.apk
+        path: androidApp/build/outputs/apk/debug/androidApp-debug.apk
