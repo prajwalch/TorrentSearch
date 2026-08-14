@@ -30,6 +30,7 @@ import androidx.compose.runtime.retain.retain
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalClipboard
 import androidx.compose.ui.res.painterResource
@@ -239,6 +240,9 @@ fun BrowseScreen(
 
                     is BrowseContentState.Available -> {
                         TorrentList(
+                            modifier = Modifier
+                                .weight(1f)
+                                .clipToBounds(),
                             torrents = uiState.torrents,
                             onTorrentClick = {
                                 selectedTorrent = it
