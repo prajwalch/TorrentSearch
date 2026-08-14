@@ -16,6 +16,7 @@
 ## Table of Contents
 
 - [Intro](#intro)
+- [Screenshots](#screenshots)
 - [Download](#download)
 - [Features](#features)
    * [Search](#search)
@@ -27,7 +28,6 @@
    * [Safe Mode](#safe-mode)
    * [Integrations](#integrations)
    * [Material 3 Design](#material-3-design)
-- [Screenshots](#screenshots)
 - [Building from Source](#building-from-source)
    * [Command Line](#command-line)
 - [Contributing](#contributing)
@@ -41,6 +41,13 @@
 
 TorrentSearch is an Android app for searching torrents across multiple providers simultaneously,
 with fast search speed, detailed results, category filters, and a full set of torrent actions.
+
+## Screenshots
+
+<img width="23%" src="https://github.com/prajwalch/TorrentSearch/blob/main/fastlane/metadata/android/en-US/images/phoneScreenshots/screenshot_1.jpg" alt="Home screen"> <img width="23%" src="https://github.com/prajwalch/TorrentSearch/blob/main/fastlane/metadata/android/en-US/images/phoneScreenshots/screenshot_2.jpg" alt="Search screen"> <img width="23%" src="https://github.com/prajwalch/TorrentSearch/blob/main/fastlane/metadata/android/en-US/images/phoneScreenshots/screenshot_3.jpg" alt="Torrent actions"> <img width="23%" src="https://github.com/prajwalch/TorrentSearch/blob/main/fastlane/metadata/android/en-US/images/phoneScreenshots/screenshot_4.jpg" alt="Bookmarks screen">
+<br>
+<img width="23%" src="https://github.com/prajwalch/TorrentSearch/blob/main/fastlane/metadata/android/en-US/images/phoneScreenshots/screenshot_5.jpg" alt="Browse screen"> <img width="23%" src="https://github.com/prajwalch/TorrentSearch/blob/main/fastlane/metadata/android/en-US/images/phoneScreenshots/screenshot_6.jpg" alt="Torrent details screen"> <img width="23%" src="https://github.com/prajwalch/TorrentSearch/blob/main/fastlane/metadata/android/en-US/images/phoneScreenshots/screenshot_7.jpg" alt="Settings screen">
+<img width="23%" src="https://github.com/prajwalch/TorrentSearch/blob/main/fastlane/metadata/android/en-US/images/phoneScreenshots/screenshot_8.jpg" alt="Search providers screen">
 
 ## Download
 
@@ -129,13 +136,6 @@ See the [wiki](https://github.com/prajwalch/TorrentSearch/wiki) for setup instru
 
 - Clean, easy-to-use interface
 - Adapts to your wallpaper and system theme, with full light/dark mode support
-
-## Screenshots
-
-<img width="23%" src="https://github.com/prajwalch/TorrentSearch/blob/main/fastlane/metadata/android/en-US/images/phoneScreenshots/screenshot_1.jpg" alt="Home screen"> <img width="23%" src="https://github.com/prajwalch/TorrentSearch/blob/main/fastlane/metadata/android/en-US/images/phoneScreenshots/screenshot_2.jpg" alt="Search screen"> <img width="23%" src="https://github.com/prajwalch/TorrentSearch/blob/main/fastlane/metadata/android/en-US/images/phoneScreenshots/screenshot_3.jpg" alt="Torrent actions"> <img width="23%" src="https://github.com/prajwalch/TorrentSearch/blob/main/fastlane/metadata/android/en-US/images/phoneScreenshots/screenshot_4.jpg" alt="Bookmarks screen">
-<br>
-<img width="23%" src="https://github.com/prajwalch/TorrentSearch/blob/main/fastlane/metadata/android/en-US/images/phoneScreenshots/screenshot_5.jpg" alt="Browse screen"> <img width="23%" src="https://github.com/prajwalch/TorrentSearch/blob/main/fastlane/metadata/android/en-US/images/phoneScreenshots/screenshot_6.jpg" alt="Torrent details screen"> <img width="23%" src="https://github.com/prajwalch/TorrentSearch/blob/main/fastlane/metadata/android/en-US/images/phoneScreenshots/screenshot_7.jpg" alt="Settings screen">
-<img width="23%" src="https://github.com/prajwalch/TorrentSearch/blob/main/fastlane/metadata/android/en-US/images/phoneScreenshots/screenshot_8.jpg" alt="Search providers screen">
 
 ## Building from Source
 
