@@ -173,7 +173,8 @@ private object RutorDetailsPageParser {
                 ?.ownText()
                 ?.takeWhile { it != '(' }
                 ?.trim()
-                ?.let { TorrentDateParser.parse(date = it, format = "dd-MM-yyyy H:m:s") }
+                ?.runCatching { TorrentDateParser.parse(date = this, format = "dd-MM-yyyy H:m:s") }
+                ?.getOrNull()
             val category = infos["Категория"]
                 ?.selectFirst("a")
                 ?.attr("href")
@@ -184,7 +185,8 @@ private object RutorDetailsPageParser {
                 ?.ownText()
                 ?.takeWhile { it != '(' }
                 ?.trim()
-                ?.let { TorrentDateParser.parse(date = it, format = "dd-MM-yyyy H:m:s") }
+                ?.runCatching { TorrentDateParser.parse(date = this, format = "dd-MM-yyyy H:m:s") }
+                ?.getOrNull()
             val posterUrl = html.selectFirst(POSTER_URL)?.attr("src")
             val descriptionElement = html.selectFirst(DESCRIPTION)
             val screenshotUrls = descriptionElement?.let(::extractScreenshots)
