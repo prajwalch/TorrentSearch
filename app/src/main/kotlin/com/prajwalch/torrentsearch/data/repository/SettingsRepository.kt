@@ -80,7 +80,7 @@ class SettingsRepository(private val dataStore: DataStore<Preferences>) {
         .getOrDefault(key = SHOW_SEARCH_HISTORY, default = true)
 
     val openTorrentDetailsInApp: Flow<Boolean> = dataStore
-        .getOrDefault(key = OPEN_TORRENT_DETAILS_IN_APP, default = false)
+        .getOrDefault(key = OPEN_TORRENT_DETAILS_IN_APP, default = true)
 
     val enableShareIntegration: Flow<Boolean> = dataStore
         .getOrDefault(key = ENABLE_SHARE_INTEGRATION, default = true)

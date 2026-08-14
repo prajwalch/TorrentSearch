@@ -11,14 +11,14 @@ import kotlinx.coroutines.flow.WhileSubscribed
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 
-import kotlin.time.Duration.Companion.seconds
 import org.koin.core.annotation.KoinViewModel
+import kotlin.time.Duration.Companion.seconds
 
 data class MainUiState(
     val enableDynamicTheme: Boolean = true,
     val darkTheme: DarkTheme = DarkTheme.FollowSystem,
     val pureBlack: Boolean = false,
-    val openTorrentDetailsInApp: Boolean = false,
+    val openTorrentDetailsInApp: Boolean = true,
 )
 
 @KoinViewModel
