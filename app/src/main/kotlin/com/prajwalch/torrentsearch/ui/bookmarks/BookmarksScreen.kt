@@ -8,13 +8,17 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.RowScope
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.MenuDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
@@ -52,7 +56,6 @@ import com.prajwalch.torrentsearch.ui.component.AnimatedScrollToTopFAB
 import com.prajwalch.torrentsearch.ui.component.ArrowBackIconButton
 import com.prajwalch.torrentsearch.ui.component.CollapsibleSearchBar
 import com.prajwalch.torrentsearch.ui.component.ContentState
-import com.prajwalch.torrentsearch.ui.component.DeleteForeverIconButton
 import com.prajwalch.torrentsearch.ui.component.MessageCard
 import com.prajwalch.torrentsearch.ui.component.MessageType
 import com.prajwalch.torrentsearch.ui.component.RoundedDropdownMenu
@@ -66,7 +69,6 @@ import com.prajwalch.torrentsearch.ui.rememberTorrentListState
 import com.prajwalch.torrentsearch.ui.theme.spaces
 
 import kotlinx.coroutines.launch
-
 import org.koin.androidx.compose.koinViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -315,11 +317,6 @@ private fun BookmarksScreenTopBar(
                 currentOrder = uiState.sortOptions.order,
                 onChangeOrder = onChangeSortOrder,
             )
-            DeleteForeverIconButton(
-                onClick = onDeleteAllBookmarks,
-                contentDescription = R.string.bookmarks_action_delete_all,
-                enabled = enableBookmarkRelatedActions,
-            )
         }
 
         // Additional actions.
@@ -337,7 +334,9 @@ private fun BookmarksScreenTopBar(
                 onDismiss = { showAdditionalActions = false },
                 onImportBookmarks = onImportBookmarks,
                 onExportBookmarks = onExportBookmarks,
+                onDeleteAllBookmarks = onDeleteAllBookmarks,
                 onNavigateToSettings = onNavigateToSettings,
+                enableDeleteAllAction = enableBookmarkRelatedActions,
             )
         }
     }
@@ -356,13 +355,16 @@ private fun TopBarAdditionalActionsDropdownMenu(
     onDismiss: () -> Unit,
     onImportBookmarks: () -> Unit,
     onExportBookmarks: () -> Unit,
+    onDeleteAllBookmarks: () -> Unit,
     onNavigateToSettings: () -> Unit,
     modifier: Modifier = Modifier,
+    enableDeleteAllAction: Boolean = true,
 ) {
     fun actionWithDismiss(action: () -> Unit) = {
         action()
         onDismiss()
     }
+
     RoundedDropdownMenu(
         modifier = modifier,
         expanded = expanded,
@@ -376,7 +378,7 @@ private fun TopBarAdditionalActionsDropdownMenu(
                     painter = painterResource(R.drawable.ic_download),
                     contentDescription = stringResource(R.string.bookmarks_action_import),
                 )
-            }
+            },
         )
         DropdownMenuItem(
             text = { Text(stringResource(R.string.bookmarks_action_export)) },
@@ -386,8 +388,28 @@ private fun TopBarAdditionalActionsDropdownMenu(
                     painter = painterResource(R.drawable.ic_upload),
                     contentDescription = stringResource(R.string.bookmarks_action_export),
                 )
-            }
+            },
         )
+        DropdownMenuItem(
+            text = { Text(stringResource(R.string.bookmarks_action_delete_all)) },
+            onClick = actionWithDismiss(onDeleteAllBookmarks),
+            leadingIcon = {
+                Icon(
+                    painter = painterResource(R.drawable.ic_delete_sweep),
+                    contentDescription = stringResource(R.string.bookmarks_action_delete_all),
+                )
+            },
+            enabled = enableDeleteAllAction,
+            colors = MenuDefaults.itemColors(
+                textColor = MaterialTheme.colorScheme.onErrorContainer,
+                leadingIconColor = MaterialTheme.colorScheme.onErrorContainer,
+            ),
+        )
+
+        Spacer(Modifier.height(MaterialTheme.spaces.small))
+        HorizontalDivider(Modifier.padding(MenuDefaults.DropdownMenuItemContentPadding))
+        Spacer(Modifier.height(MaterialTheme.spaces.small))
+
         DropdownMenuItem(
             text = { Text(stringResource(R.string.bookmarks_action_settings)) },
             onClick = actionWithDismiss(onNavigateToSettings),
