@@ -38,7 +38,7 @@ import java.time.Instant
         TorznabConfigEntity::class,
         ViewedTorrentEntity::class,
     ],
-    version = 6,
+    version = 7,
     exportSchema = true,
     autoMigrations = [
         AutoMigration(from = 1, to = 2),
@@ -94,6 +94,7 @@ abstract class TorrentSearchDatabase : RoomDatabase() {
                 )
                 .addMigrations(MIGRATION_4_5)
                 .addMigrations(MIGRATION_5_6)
+                .addMigrations(MIGRATION_6_7)
 
             return databaseBuilder.build().also { Instance = it }
         }
@@ -334,5 +335,44 @@ private val MIGRATION_5_6 = object : Migration(5, 6) {
         }
         db.execSQL("DROP TABLE torznab_configs_old")
         db.execSQL("CREATE UNIQUE INDEX IF NOT EXISTS `index_torznab_configs_id` ON `torznab_configs` (`id`)")
+    }
+}
+
+/**
+ * Migration from 6 to 7:
+ * - Adds new `last_searched_at` column into the `search_history` table.
+ */
+private val MIGRATION_6_7 = object : Migration(6, 7) {
+    override fun migrate(db: SupportSQLiteDatabase) {
+        // language="RoomSql"
+        db.execSQL("ALTER TABLE search_history RENAME TO search_history_old")
+        // language="RoomSql"
+        db.execSQL(
+            """
+            CREATE TABLE IF NOT EXISTS `search_history` (
+                `id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+                `query` TEXT NOT NULL,
+                `last_searched_at` INTEGER NOT NULL
+            )
+            """.trimIndent()
+        )
+        db.query("SELECT * FROM search_history_old").use { cursor ->
+            while (cursor.moveToNext()) {
+                val id = cursor.getLong(cursor.getColumnIndexOrThrow("id"))
+                val query = cursor.getString(cursor.getColumnIndexOrThrow("query"))
+                val lastSearchedAt = System.currentTimeMillis()
+
+                val columnValues = ContentValues().apply {
+                    put("id", id)
+                    put("query", query)
+                    put("last_searched_at", lastSearchedAt)
+                }
+                db.insert("search_history", SQLiteDatabase.CONFLICT_IGNORE, columnValues)
+            }
+        }
+        // language="RoomSql"
+        db.execSQL("DROP TABLE search_history_old")
+        // language="RoomSql"
+        db.execSQL("CREATE UNIQUE INDEX IF NOT EXISTS `index_search_history_query` ON `search_history` (`query`)")
     }
 }

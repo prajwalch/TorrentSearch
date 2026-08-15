@@ -32,7 +32,6 @@ import com.prajwalch.torrentsearch.ui.searchhistory.component.DeleteAllConfirmat
 import com.prajwalch.torrentsearch.ui.searchhistory.component.SearchHistoryList
 
 import kotlinx.coroutines.launch
-
 import org.koin.androidx.compose.koinViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -43,7 +42,7 @@ fun SearchHistoryScreen(
     modifier: Modifier = Modifier,
     viewModel: SearchHistoryViewModel = koinViewModel(),
 ) {
-    val searchHistoryList by viewModel.uiState.collectAsStateWithLifecycle()
+    val searchHistoriesByDate by viewModel.uiState.collectAsStateWithLifecycle()
 
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
     val clipboard = LocalClipboard.current
@@ -73,7 +72,7 @@ fun SearchHistoryScreen(
                 navigationIcon = { ArrowBackIconButton(onClick = onNavigateBack) },
                 title = { Text(text = stringResource(R.string.search_history_screen_title)) },
                 actions = {
-                    if (searchHistoryList.isNotEmpty()) {
+                    if (searchHistoriesByDate != null) {
                         DeleteForeverIconButton(
                             onClick = { showDeleteAllConfirmationDialog = true },
                             contentDescription = R.string.search_history_action_delete_all,
@@ -85,7 +84,9 @@ fun SearchHistoryScreen(
         },
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
     ) { innerPadding ->
-        if (searchHistoryList.isEmpty()) {
+        val innerSearchHistoriesByDate = searchHistoriesByDate
+
+        if (innerSearchHistoriesByDate == null) {
             ContentState(
                 modifier = Modifier
                     .padding(innerPadding)
@@ -96,8 +97,9 @@ fun SearchHistoryScreen(
             SearchHistoryList(
                 modifier = Modifier
                     .fillMaxSize()
+                    .padding(top = innerPadding.calculateTopPadding())
                     .consumeWindowInsets(innerPadding),
-                histories = searchHistoryList,
+                histories = innerSearchHistoriesByDate,
                 onSearchRequest = onPerformSearch,
                 onCopyQueryToClipboard = {
                     coroutineScope.launch {
@@ -106,7 +108,6 @@ fun SearchHistoryScreen(
                     }
                 },
                 onDeleteSearchHistory = { viewModel.deleteSearchHistory(id = it) },
-                contentPadding = innerPadding,
             )
         }
     }
