@@ -237,4 +237,6 @@
     <string name="search_providers_protection_locked">Kilitli</string>
     <string name="search_providers_protection_unlocked">Kilidi açıldı</string>
     <string name="search_providers_search_hint">Arama sağlayıcıları</string>
+    <string name="search_history_today">Bugün</string>
+    <string name="search_history_yesterday">Dün</string>
 </resources>
