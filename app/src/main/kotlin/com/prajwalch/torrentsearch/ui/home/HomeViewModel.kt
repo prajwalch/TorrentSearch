@@ -22,15 +22,15 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
-import kotlin.time.Duration.Companion.seconds
 import org.koin.core.annotation.KoinViewModel
+import kotlin.time.Duration.Companion.seconds
 
 data class HomeUiState(
     val histories: List<SearchHistory> = emptyList(),
     val categories: List<Category> = Category.entries,
     val selectedCategory: Category = Category.All,
     val searchHistoryEnabled: Boolean = true,
-    val searchProvidersInitialized: Boolean = false,
+    val searchProvidersInitialized: Boolean? = null,
 )
 
 /**

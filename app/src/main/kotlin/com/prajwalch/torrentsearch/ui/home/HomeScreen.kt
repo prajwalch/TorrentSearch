@@ -69,7 +69,7 @@ fun HomeScreen(
                 .verticalScroll(rememberScrollState()),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
-            AnimatedVisibility(!uiState.searchProvidersInitialized) {
+            AnimatedVisibility(uiState.searchProvidersInitialized == false) {
                 SearchProvidersNotEnabledMessage(
                     modifier = Modifier.padding(MaterialTheme.spaces.large),
                     onEnableRecommended = { viewModel.enableDefaultSearchProviders() },
