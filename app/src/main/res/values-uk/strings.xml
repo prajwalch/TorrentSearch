@@ -238,4 +238,7 @@
     <string name="search_providers_protection_protected">Захищено</string>
     <string name="search_providers_protection_locked">Замкнено</string>
     <string name="search_providers_protection_unlocked">Розімкнено</string>
+    <string name="search_history_today">Сьогодні</string>
+    <string name="search_history_yesterday">Учора</string>
+    <string name="search_providers_search_hint">Пошукові системи</string>
 </resources>
