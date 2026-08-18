@@ -66,6 +66,12 @@ class SearchHistoryRepository(private val dao: SearchHistoryDao) {
         return dao.getSearchHistoriesByTerm(term).map { it.toDomain() }
     }
 
+    fun getRecentSearches(): Flow<List<String>> {
+        return dao.getRecentSearchHistories().map { historyEntities ->
+            historyEntities.map { it.query }
+        }
+    }
+
     /**
      * Adds the given search history otherwise does noting if the query
      * is already saved.

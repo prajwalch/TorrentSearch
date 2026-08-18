@@ -13,6 +13,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.WhileSubscribed
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.firstOrNull
@@ -27,8 +28,13 @@ import kotlin.time.Duration.Companion.seconds
 
 data class HomeUiState(
     val histories: List<SearchHistory> = emptyList(),
+    val recentSearches: List<String> = emptyList(),
     val categories: List<Category> = Category.entries,
     val selectedCategory: Category = Category.All,
+    val settings: HomeRelevantSettings = HomeRelevantSettings(),
+)
+
+data class HomeRelevantSettings(
     val searchHistoryEnabled: Boolean = true,
     val searchProvidersInitialized: Boolean? = null,
 )
@@ -83,39 +89,51 @@ class HomeViewModel(
      */
     private val selectedCategory = MutableStateFlow(Category.All)
 
+    private val homeRelevantSettings: Flow<HomeRelevantSettings> =
+        combine(
+            settingsRepository.saveSearchHistory,
+            settingsRepository.searchProvidersInitialized,
+        ) { searchHistoryEnabled, searchProvidersInitialized ->
+            HomeRelevantSettings(
+                searchHistoryEnabled = searchHistoryEnabled,
+                searchProvidersInitialized = searchProvidersInitialized,
+            )
+        }
+
     /**
      * The primary read-only UI state.
      */
-    val uiState = combine(
-        searchHistories,
-        selectableCategories,
-        selectedCategory,
-        settingsRepository.saveSearchHistory,
-        settingsRepository.searchProvidersInitialized,
-    ) {
-            histories,
+    val uiState: StateFlow<HomeUiState> =
+        combine(
+            searchHistories,
+            searchHistoryRepository.getRecentSearches(),
             selectableCategories,
             selectedCategory,
-            searchHistoryEnabled,
-            searchProvidersInitialized,
-        ->
-        val selectedCategory = when {
-            selectedCategory in selectableCategories -> selectedCategory
-            else -> Category.All
-        }
+            homeRelevantSettings,
+        ) {
+                histories,
+                recentSearches,
+                selectableCategories,
+                selectedCategory,
+                homeRelevantSettings,
+            ->
+            val selectedCategory = when {
+                selectedCategory in selectableCategories -> selectedCategory
+                else -> Category.All
+            }
 
-        HomeUiState(
-            histories = histories,
-            categories = selectableCategories,
-            selectedCategory = selectedCategory,
-            searchHistoryEnabled = searchHistoryEnabled,
-            searchProvidersInitialized = searchProvidersInitialized,
+            HomeUiState(
+                histories = histories,
+                recentSearches = recentSearches,
+                categories = selectableCategories,
+                selectedCategory = selectedCategory,
+                settings = homeRelevantSettings,
+            )
+        }.stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5.seconds),
+            initialValue = HomeUiState(),
         )
-    }.stateIn(
-        scope = viewModelScope,
-        started = SharingStarted.WhileSubscribed(5.seconds),
-        initialValue = HomeUiState(),
-    )
 
     init {
         loadDefaultCategory()

@@ -20,6 +20,9 @@ interface SearchHistoryDao {
     @Query("SELECT * FROM search_history WHERE `query` LIKE '%' || :term || '%' ORDER BY id DESC")
     fun getSearchHistoriesByTerm(term: String): Flow<List<SearchHistoryEntity>>
 
+    @Query("SELECT * FROM search_history ORDER BY last_searched_at DESC LIMIT 5")
+    fun getRecentSearchHistories(): Flow<List<SearchHistoryEntity>>
+
     @Query("DElETE from search_history where id=:id")
     suspend fun deleteSearchHistoryById(id: Long)
 

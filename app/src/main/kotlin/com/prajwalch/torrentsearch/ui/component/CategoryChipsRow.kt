@@ -40,7 +40,6 @@ fun CategoryChipsRow(
     ) {
         items(items = categories, contentType = { it }) {
             FilterChip(
-                modifier = Modifier.animateItem(),
                 selected = selectedCategory == it,
                 onClick = { onCategoryClick(it) },
                 leadingIcon = {

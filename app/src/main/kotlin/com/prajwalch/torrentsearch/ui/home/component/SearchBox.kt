@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.foundation.text.input.setTextAndPlaceCursorAtEnd
@@ -26,13 +25,14 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.unit.dp
+import androidx.compose.ui.tooling.preview.Preview
 
 import com.prajwalch.torrentsearch.R
 import com.prajwalch.torrentsearch.domain.model.Category
 import com.prajwalch.torrentsearch.domain.model.SearchHistory
 import com.prajwalch.torrentsearch.ui.component.CategoryChipsRow
 import com.prajwalch.torrentsearch.ui.component.ExpandableSearchBar
+import com.prajwalch.torrentsearch.ui.theme.TorrentSearchTheme
 import com.prajwalch.torrentsearch.ui.theme.spaces
 
 import kotlinx.coroutines.flow.collectLatest
@@ -87,7 +87,7 @@ fun SearchBox(
 
     Column(
         modifier = modifier.then(focusableModifier),
-        verticalArrangement = Arrangement.Center,
+        verticalArrangement = Arrangement.spacedBy(MaterialTheme.spaces.small),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         ExpandableSearchBar(
@@ -112,10 +112,8 @@ fun SearchBox(
                 onInsertQuery = textFieldState::setTextAndPlaceCursorAtEnd,
             )
         }
-        Spacer(Modifier.height(MaterialTheme.spaces.large))
 
         categoryChipsRow()
-        Spacer(Modifier.height(24.dp))
 
         Row(
             horizontalArrangement = Arrangement.Center,
@@ -128,5 +126,21 @@ fun SearchBox(
             Spacer(Modifier.width(MaterialTheme.spaces.small))
             BrowseButton(onClick = onBrowse)
         }
+    }
+}
+
+@Preview
+@Composable
+private fun SearchBoxPreview() {
+    TorrentSearchTheme {
+        SearchBox(
+            onSearch = {},
+            onBrowse = {},
+            selectedCategory = Category.All,
+            categories = Category.entries,
+            onCategorySelect = {},
+            histories = emptyList(),
+            onFilterSearchHistories = {},
+        )
     }
 }
