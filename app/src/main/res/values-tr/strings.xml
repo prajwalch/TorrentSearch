@@ -239,4 +239,5 @@
     <string name="search_providers_search_hint">Arama sağlayıcıları</string>
     <string name="search_history_today">Bugün</string>
     <string name="search_history_yesterday">Dün</string>
+    <string name="home_title_recent_searches">Son aramalar</string>
 </resources>
