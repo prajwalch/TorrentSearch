@@ -8,6 +8,7 @@ import com.prajwalch.torrentsearch.domain.model.Category
 import com.prajwalch.torrentsearch.domain.model.GetTorrentDetailsResponse
 import com.prajwalch.torrentsearch.domain.model.MaxNumResults
 import com.prajwalch.torrentsearch.domain.model.SearchProviderError
+import com.prajwalch.torrentsearch.domain.model.SearchProviderFailureReason
 import com.prajwalch.torrentsearch.domain.model.SearchProviderResult
 import com.prajwalch.torrentsearch.domain.model.SearchResults
 import com.prajwalch.torrentsearch.domain.model.Torrent
@@ -152,15 +153,19 @@ class SearchProvidersGateway(
     } catch (cause: Exception) {
         Log.e(TAG, "${provider.name} crashed", cause)
 
-        if (cause is CloudflareChallengeException) {
+        val failureReason = if (cause is CloudflareChallengeException) {
             Log.i(TAG, "Locking ${provider.name} (${provider.id})")
             searchProvidersManager.lockProvider(provider.id)
+
+            SearchProviderFailureReason.CloudflareChallenge
+        } else {
+            SearchProviderFailureReason.Crash
         }
 
         val error = SearchProviderError(
             providerName = provider.name,
             providerUrl = provider.url,
-            message = cause.message ?: cause.toString(),
+            failureReason = failureReason,
             cause = cause,
         )
         SearchProviderResult.Error(error)

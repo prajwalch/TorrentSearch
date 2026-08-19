@@ -42,6 +42,7 @@ import androidx.compose.ui.unit.dp
 
 import com.prajwalch.torrentsearch.R
 import com.prajwalch.torrentsearch.domain.model.SearchProviderError
+import com.prajwalch.torrentsearch.domain.model.SearchProviderFailureReason
 import com.prajwalch.torrentsearch.ui.component.BottomInfo
 import com.prajwalch.torrentsearch.ui.component.StackTraceCard
 import com.prajwalch.torrentsearch.ui.theme.TorrentSearchTheme
@@ -123,7 +124,7 @@ private fun SearchProviderErrorCard(error: SearchProviderError, modifier: Modifi
             headlineContent = { Text(error.providerName) },
             supportingContent = {
                 Text(
-                    text = error.message ?: stringResource(R.string.search_unexpected_error),
+                    text = error.failureReason.displayName(),
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )
@@ -152,6 +153,18 @@ private fun SearchProviderErrorCard(error: SearchProviderError, modifier: Modifi
             )
         }
     }
+}
+
+@Composable
+private fun SearchProviderFailureReason.displayName(): String {
+    val resId = when (this) {
+        SearchProviderFailureReason.Crash -> R.string.search_error_crashed
+        SearchProviderFailureReason.CloudflareChallenge -> {
+            R.string.search_error_cloudflare_challenge_encountered
+        }
+    }
+
+    return stringResource(resId)
 }
 
 @Composable
@@ -220,7 +233,8 @@ private fun SearchProviderErrorCardPreview() {
             error = SearchProviderError(
                 providerName = "TokyoToshokan",
                 providerUrl = "https://example.com",
-                null, null,
+                failureReason = SearchProviderFailureReason.CloudflareChallenge,
+                cause = null,
             ),
         )
     }

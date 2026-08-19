@@ -5,7 +5,7 @@ package com.prajwalch.torrentsearch.domain.model
  */
 data class SearchProviderError(
     /**
-     * Name of the crashed search provider.
+     * Name of the search provider for which this error belongs.
      */
     val providerName: String,
     /**
@@ -13,11 +13,16 @@ data class SearchProviderError(
      */
     val providerUrl: String,
     /**
-     * Error message.
+     * What was the reason for failure?
      */
-    val message: String?,
+    val failureReason: SearchProviderFailureReason,
     /**
      * What caused the error?.
      */
     val cause: Throwable?,
 )
+
+enum class SearchProviderFailureReason {
+    Crash,
+    CloudflareChallenge,
+}
