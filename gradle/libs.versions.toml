@@ -23,7 +23,7 @@ ktor = "3.5.2"
 lazycolumnscrollbar = "2.2.0"
 lifecycleRuntimeKtx = "2.11.0"
 navigationCompose = "2.9.8"
-okhttpDnsoverhttps = "5.4.0"
+okhttpDnsoverhttps = "5.5.0"
 room = "2.8.4"
 
 [libraries]
