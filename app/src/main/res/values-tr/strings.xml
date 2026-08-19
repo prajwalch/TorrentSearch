@@ -240,4 +240,6 @@
     <string name="search_history_today">Bugün</string>
     <string name="search_history_yesterday">Dün</string>
     <string name="home_title_recent_searches">Son aramalar</string>
+    <string name="search_title_stack_trace">Yığın izleme</string>
+    <string name="search_message_no_stack_trace">Yığın izleme bulunamadı</string>
 </resources>
