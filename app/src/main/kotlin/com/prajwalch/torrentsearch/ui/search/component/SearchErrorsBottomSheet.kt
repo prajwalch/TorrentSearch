@@ -1,41 +1,50 @@
 package com.prajwalch.torrentsearch.ui.search.component
 
-import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.ListItemDefaults
+import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 
 import com.prajwalch.torrentsearch.R
 import com.prajwalch.torrentsearch.domain.model.SearchProviderError
 import com.prajwalch.torrentsearch.ui.component.BottomInfo
 import com.prajwalch.torrentsearch.ui.component.StackTraceCard
+import com.prajwalch.torrentsearch.ui.theme.TorrentSearchTheme
 import com.prajwalch.torrentsearch.ui.theme.spaces
 
 import kotlinx.collections.immutable.ImmutableList
@@ -75,40 +84,6 @@ fun SearchErrorsBottomSheet(
     }
 }
 
-//@Preview
-//@Composable
-//private fun SearchErrorsBottomSheetPreview() {
-//    val failures = persistentListOf(
-//        SearchProviderError(
-//            providerName = "ThePirateBay",
-//            searchUrl = "https://example.com",
-//            null, null,
-//        ),
-//        SearchProviderError(
-//            providerName = "TheRarBg",
-//            searchUrl = "https://example.com",
-//            null, null,
-//        ),
-//        SearchProviderError(
-//            providerName = "TorrentDownloads",
-//            searchUrl = "https://example.com",
-//            null, null,
-//        ),
-//        SearchProviderError(
-//            providerName = "TokyoToshokan",
-//            searchUrl = "https://example.com",
-//            null, null,
-//        ),
-//    )
-//
-//    TorrentSearchTheme(darkTheme = true) {
-//        SearchErrorsBottomSheet(
-//            onDismiss = {},
-//            errors = failures,
-//        )
-//    }
-//}
-
 @Composable
 private fun SearchProviderErrorList(
     errors: ImmutableList<SearchProviderError>,
@@ -123,7 +98,7 @@ private fun SearchProviderErrorList(
         contentPadding = contentPadding,
     ) {
         items(items = errors) {
-            SearchProviderErrorListItem(
+            SearchProviderErrorCard(
                 modifier = Modifier.animateItem(),
                 error = it,
             )
@@ -132,49 +107,121 @@ private fun SearchProviderErrorList(
 }
 
 @Composable
-private fun SearchProviderErrorListItem(
-    error: SearchProviderError,
+private fun SearchProviderErrorCard(error: SearchProviderError, modifier: Modifier = Modifier) {
+    var showStackTrace by rememberSaveable { mutableStateOf(false) }
+    val chevronIconRotation by animateFloatAsState(if (showStackTrace) 180f else 0f)
+
+    Card(modifier = modifier, shape = MaterialTheme.shapes.large) {
+        ListItem(
+            modifier = Modifier.clickable { showStackTrace = !showStackTrace },
+            leadingContent = {
+                Icon(
+                    painter = painterResource(R.drawable.ic_error),
+                    contentDescription = null,
+                )
+            },
+            headlineContent = { Text(error.providerName) },
+            supportingContent = {
+                Text(
+                    text = error.message ?: stringResource(R.string.search_unexpected_error),
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+            },
+            trailingContent = {
+                Icon(
+                    modifier = Modifier.rotate(chevronIconRotation),
+                    painter = painterResource(R.drawable.ic_keyboard_arrow_down),
+                    contentDescription = null,
+                )
+            },
+            colors = ListItemDefaults.colors(
+                containerColor = CardDefaults.cardColors().containerColor,
+                leadingIconColor = MaterialTheme.colorScheme.error,
+                supportingColor = MaterialTheme.colorScheme.error,
+            ),
+        )
+
+        AnimatedVisibility(showStackTrace) {
+            StackTraceSection(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(MaterialTheme.spaces.large),
+                stackTrace = error.cause?.stackTraceToString(),
+//                onCopyStackTrace = {},
+            )
+        }
+    }
+}
+
+@Composable
+private fun StackTraceSection(
+    stackTrace: String?,
+//    onCopyStackTrace: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Column(
         modifier = modifier,
         verticalArrangement = Arrangement.spacedBy(MaterialTheme.spaces.small),
     ) {
-        var showStackTrace by rememberSaveable { mutableStateOf(false) }
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(MaterialTheme.spaces.large),
+        ) {
+            Icon(
+                painter = painterResource(R.drawable.ic_data_object),
+                contentDescription = null,
+            )
+            Text(stringResource(R.string.search_title_stack_trace))
+        }
 
-        val exceptionMessage = error.message ?: stringResource(R.string.search_unexpected_error)
-        val listItemColors = ListItemDefaults.colors(
-            containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
-            supportingColor = MaterialTheme.colorScheme.error,
-        )
-
-        ListItem(
-            modifier = Modifier
-                .clip(shape = MaterialTheme.shapes.medium)
-                .clickable { showStackTrace = !showStackTrace },
-            headlineContent = { Text(text = error.providerName) },
-            supportingContent = { Text(text = exceptionMessage) },
-            trailingContent = {
-                AnimatedContent(targetState = showStackTrace) { stackTraceVisible ->
-                    val iconId = if (stackTraceVisible) {
-                        R.drawable.ic_keyboard_arrow_up
-                    } else {
-                        R.drawable.ic_keyboard_arrow_down
-                    }
-                    Icon(
-                        painter = painterResource(iconId),
-                        contentDescription = null,
-                    )
-                }
-            },
-            colors = listItemColors,
-        )
-
-        AnimatedVisibility(visible = showStackTrace) {
+//        Box(
+//            modifier = Modifier
+//                .fillMaxWidth()
+//                .height(IntrinsicSize.Max)
+//        ) {
+        CompositionLocalProvider(
+            LocalTextStyle provides MaterialTheme.typography.bodyMedium,
+        ) {
             StackTraceCard(
-                modifier = Modifier.height(360.dp),
-                stackTrace = error.cause?.stackTraceToString() ?: "",
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(360.dp),
+                stackTrace = stackTrace
+                    ?: stringResource(R.string.search_message_no_stack_trace),
+                colors = CardDefaults.cardColors(
+                    containerColor = MaterialTheme.colorScheme.surfaceContainerLow,
+                    contentColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                ),
             )
         }
+
+//            FilledTonalIconButton(
+//                modifier = Modifier
+//                    .align(Alignment.TopEnd)
+//                    .padding(MaterialTheme.spaces.small),
+//                onClick = onCopyStackTrace,
+//                enabled = stackTrace != null,
+//            ) {
+//                Icon(
+//                    painter = painterResource(R.drawable.ic_copy),
+//                    contentDescription = null,
+//                )
+//            }
+//        }
+    }
+}
+
+@Preview
+@Composable
+private fun SearchProviderErrorCardPreview() {
+    TorrentSearchTheme {
+        SearchProviderErrorCard(
+            error = SearchProviderError(
+                providerName = "TokyoToshokan",
+                providerUrl = "https://example.com",
+                null, null,
+            ),
+        )
     }
 }

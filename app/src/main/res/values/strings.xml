@@ -102,6 +102,8 @@
     <string name="search_results_count_format">%1$s results for \'%2$s\' (%3$s)</string>
     <string name="search_errors_bottom_sheet_title">Failed search providers</string>
     <string name="search_unexpected_error">Unexpected error</string>
+    <string name="search_title_stack_trace">Stack trace</string>
+    <string name="search_message_no_stack_trace">No stack trace found</string>
     <string name="search_info_troubleshoot_help">To help troubleshoot issues, export the logs from the settings screen and create a GitHub issue with the logs attached.</string>
 
     <string name="torrent_details_screen_title">Details</string>
