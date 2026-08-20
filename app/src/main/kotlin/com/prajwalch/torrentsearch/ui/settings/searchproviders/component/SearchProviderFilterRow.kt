@@ -3,9 +3,8 @@ package com.prajwalch.torrentsearch.ui.settings.searchproviders.component
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FilterChipDefaults
@@ -17,7 +16,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -37,53 +35,42 @@ fun SearchProviderFilterRow(
     protection: SearchProviderProtection?,
     onProtectionSelect: (SearchProviderProtection) -> Unit,
     modifier: Modifier = Modifier,
-    contentPadding: PaddingValues = PaddingValues(MaterialTheme.spaces.large),
 ) {
-    LazyRow(
-        modifier = modifier,
-        horizontalArrangement = Arrangement.spacedBy(
-            space = MaterialTheme.spaces.small,
-            alignment = Alignment.CenterHorizontally,
-        ),
-        verticalAlignment = Alignment.CenterVertically,
-        contentPadding = contentPadding,
-    ) {
-        item(key = "category") {
-            var showCategoryDropdownMenu by rememberSaveable(category) {
-                mutableStateOf(false)
-            }
+    var showCategoryDropdownMenu by rememberSaveable(category) {
+        mutableStateOf(false)
+    }
+    var showProtectionDropdownMenu by rememberSaveable(protection) {
+        mutableStateOf(false)
+    }
 
-            Box {
-                CategoryFilterChip(
-                    category = category,
-                    onClick = { showCategoryDropdownMenu = true },
-                )
-                CategoryDropdownMenu(
-                    expanded = showCategoryDropdownMenu,
-                    onDismiss = { showCategoryDropdownMenu = false },
-                    selectedCategory = category,
-                    onCategorySelect = onCategorySelect,
-                )
-            }
+    Row(
+        modifier = modifier,
+        horizontalArrangement = Arrangement.spacedBy(MaterialTheme.spaces.small),
+    ) {
+        Box {
+            CategoryFilterChip(
+                category = category,
+                onClick = { showCategoryDropdownMenu = true },
+            )
+            CategoryDropdownMenu(
+                expanded = showCategoryDropdownMenu,
+                onDismiss = { showCategoryDropdownMenu = false },
+                selectedCategory = category,
+                onCategorySelect = onCategorySelect,
+            )
         }
 
-        item(key = "cloudflare_protection") {
-            var showProtectionDropdownMenu by rememberSaveable(protection) {
-                mutableStateOf(false)
-            }
-
-            Box {
-                ProtectionFilterChip(
-                    protection = protection,
-                    onClick = { showProtectionDropdownMenu = true },
-                )
-                ProtectionDropdownMenu(
-                    expanded = showProtectionDropdownMenu,
-                    onDismiss = { showProtectionDropdownMenu = false },
-                    selectedProtection = protection,
-                    onProtectionSelect = onProtectionSelect,
-                )
-            }
+        Box {
+            ProtectionFilterChip(
+                protection = protection,
+                onClick = { showProtectionDropdownMenu = true },
+            )
+            ProtectionDropdownMenu(
+                expanded = showProtectionDropdownMenu,
+                onDismiss = { showProtectionDropdownMenu = false },
+                selectedProtection = protection,
+                onProtectionSelect = onProtectionSelect,
+            )
         }
     }
 }

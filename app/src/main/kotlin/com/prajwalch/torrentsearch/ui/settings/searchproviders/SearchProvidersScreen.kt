@@ -160,11 +160,11 @@ fun SearchProvidersScreen(
     ) { innerPadding ->
         Column(modifier = Modifier.padding(innerPadding)) {
             SearchProviderFilterRow(
+                modifier = Modifier.padding(horizontal = MaterialTheme.spaces.large),
                 category = uiState.filter.category,
                 onCategorySelect = viewModel::toggleCategory,
                 protection = uiState.filter.protection,
                 onProtectionSelect = viewModel::toggleProviderProtection,
-                contentPadding = PaddingValues(horizontal = MaterialTheme.spaces.large),
             )
             SearchProviderList(
                 modifier = Modifier
