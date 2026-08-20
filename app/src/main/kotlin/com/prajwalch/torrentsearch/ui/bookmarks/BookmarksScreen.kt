@@ -321,17 +321,17 @@ private fun BookmarksScreenTopBar(
 
         // Additional actions.
         Box {
-            var showAdditionalActions by rememberSaveable { mutableStateOf(false) }
+            var showMoreMenu by rememberSaveable { mutableStateOf(false) }
 
-            IconButton(onClick = { showAdditionalActions = true }) {
+            IconButton(onClick = { showMoreMenu = true }) {
                 Icon(
                     painter = painterResource(R.drawable.ic_more_vert),
                     contentDescription = null,
                 )
             }
-            TopBarAdditionalActionsDropdownMenu(
-                expanded = showAdditionalActions,
-                onDismiss = { showAdditionalActions = false },
+            TopBarMoreMenu(
+                expanded = showMoreMenu,
+                onDismiss = { showMoreMenu = false },
                 onImportBookmarks = onImportBookmarks,
                 onExportBookmarks = onExportBookmarks,
                 onDeleteAllBookmarks = onDeleteAllBookmarks,
@@ -350,7 +350,7 @@ private fun BookmarksScreenTopBar(
 }
 
 @Composable
-private fun TopBarAdditionalActionsDropdownMenu(
+private fun TopBarMoreMenu(
     expanded: Boolean,
     onDismiss: () -> Unit,
     onImportBookmarks: () -> Unit,
