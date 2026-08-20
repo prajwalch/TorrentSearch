@@ -13,9 +13,9 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.withContext
 
-import org.jsoup.Jsoup
-import org.jsoup.nodes.Document
-import org.jsoup.nodes.Element
+import com.fleeksoft.ksoup.Ksoup
+import com.fleeksoft.ksoup.nodes.Document
+import com.fleeksoft.ksoup.nodes.Element
 
 class Bt4g(private val networkClient: NetworkClient) : SearchProvider, LatestTorrentsProvider,
     TopTorrentsProvider, TorrentDetailsProvider {
@@ -79,7 +79,7 @@ private class Bt4gResultsPageParser(
 ) {
     suspend fun parse(html: String, pageUrl: String): List<Torrent> =
         withContext(Dispatchers.Default) {
-            Jsoup.parse(html, pageUrl)
+            Ksoup.parse(html, pageUrl)
                 .select(LIST_ITEM)
                 .map { async { parseListItem(it) } }
                 .awaitAll()
@@ -145,7 +145,7 @@ private class Bt4gDetailsPageParser(private val networkClient: NetworkClient) {
     }
 
     suspend fun parse(html: String): TorrentDetails? = withContext(Dispatchers.Default) {
-        val html = Jsoup.parse(html)
+        val html = Ksoup.parse(html)
 
         val infoHash = extractInfoHash(html) ?: return@withContext null
         val torrentName = html.selectFirst(TORRENT_NAME)?.ownText() ?: return@withContext null
@@ -189,7 +189,7 @@ private class Bt4gDetailsPageParser(private val networkClient: NetworkClient) {
         }
 
         return withContext(Dispatchers.Default) {
-            extractInfoHash(Jsoup.parse(detailsPageHtml))
+            extractInfoHash(Ksoup.parse(detailsPageHtml))
         }
     }
 

@@ -14,8 +14,8 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.withContext
 
-import org.jsoup.Jsoup
-import org.jsoup.nodes.Element
+import com.fleeksoft.ksoup.Ksoup
+import com.fleeksoft.ksoup.nodes.Element
 
 class TheRarBg(private val networkClient: NetworkClient) :
     SearchProvider,
@@ -117,7 +117,7 @@ private class TheRarBgResultsPageParser(
 ) {
     suspend fun parse(html: String, pageUrl: String): List<Torrent> =
         withContext(Dispatchers.Default) {
-            Jsoup.parse(html, pageUrl)
+            Ksoup.parse(html, pageUrl)
                 .select(LIST_ITEM)
                 .map { async { parseListItem(it) } }
                 .awaitAll()
@@ -174,7 +174,7 @@ private object TheRarBgDetailsPageParser {
     private const val MAGNET_URI = """a[href^="magnet:?"]"""
 
     suspend fun parse(html: String): TorrentDetails? = withContext(Dispatchers.Default) {
-        val html = Jsoup.parse(html)
+        val html = Ksoup.parse(html)
 
         val name = html.selectFirst(NAME)?.ownText() ?: return@withContext null
         val magnetUri = html.selectFirst(MAGNET_URI)?.attr("href") ?: return@withContext null

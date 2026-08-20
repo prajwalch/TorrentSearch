@@ -12,8 +12,8 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.withContext
 
-import org.jsoup.Jsoup
-import org.jsoup.nodes.Element
+import com.fleeksoft.ksoup.Ksoup
+import com.fleeksoft.ksoup.nodes.Element
 
 class MegaPeer(private val networkClient: NetworkClient) : SearchProvider, TorrentDetailsProvider {
     override val id = "megapeer"
@@ -76,7 +76,7 @@ private class MegaPeerResultsPageParser(
 
     suspend fun parse(html: String, pageUrl: String): List<Torrent> =
         withContext(Dispatchers.Default) {
-            Jsoup.parse(html, pageUrl)
+            Ksoup.parse(html, pageUrl)
                 .select(LIST_ITEM)
                 .map { async { parseListItem(it) } }
                 .awaitAll()
@@ -131,7 +131,7 @@ private class MegaPeersDetailsPageParser(private val networkClient: NetworkClien
 
     suspend fun parse(html: String, pageUrl: String): TorrentDetails? =
         withContext(Dispatchers.Default) {
-            val html = Jsoup.parse(html, pageUrl)
+            val html = Ksoup.parse(html, pageUrl)
 
             val torrentName = html.selectFirst(TORRENT_NAME)?.text() ?: return@withContext null
             val magnetUri = html.selectFirst(MAGNET_URI)?.attr("href") ?: return@withContext null
@@ -219,7 +219,7 @@ private class MegaPeersDetailsPageParser(private val networkClient: NetworkClien
     suspend fun getMagnetUri(detailsPageUrl: String): String? {
         val detailsPageHtml = withContext(Dispatchers.IO) { networkClient.getText(detailsPageUrl) }
         return withContext(Dispatchers.Default) {
-            Jsoup.parse(detailsPageHtml).selectFirst(MAGNET_URI)?.attr("href")
+            Ksoup.parse(detailsPageHtml).selectFirst(MAGNET_URI)?.attr("href")
         }
     }
 }

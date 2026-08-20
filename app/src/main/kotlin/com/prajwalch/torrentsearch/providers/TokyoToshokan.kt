@@ -12,8 +12,8 @@ import com.prajwalch.torrentsearch.util.TorrentUtils
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
-import org.jsoup.Jsoup
-import org.jsoup.nodes.Element
+import com.fleeksoft.ksoup.Ksoup
+import com.fleeksoft.ksoup.nodes.Element
 
 class TokyoToshokan(private val networkClient: NetworkClient) : SearchProvider,
     TorrentDetailsProvider, LatestTorrentsProvider,
@@ -84,7 +84,7 @@ class TokyoToshokan(private val networkClient: NetworkClient) : SearchProvider,
 private class TokyoToshokanResultsPageParser(private val providerName: String) {
     suspend fun parse(html: String, pageUrl: String): List<Torrent> =
         withContext(Dispatchers.Default) {
-            Jsoup
+            Ksoup
                 .parse(html, pageUrl)
                 .select(LIST_ITEM)
                 .zipWithNext()
@@ -155,7 +155,7 @@ private object TokyoToshokanDetailsPageParser {
 
     suspend fun parse(html: String, pageUrl: String): TorrentDetails? =
         withContext(Dispatchers.Default) {
-            val html = Jsoup.parse(html, pageUrl)
+            val html = Ksoup.parse(html, pageUrl)
 
             val nameAnchor = html.selectFirst(NAME) ?: return@withContext null
             val name = nameAnchor.text()

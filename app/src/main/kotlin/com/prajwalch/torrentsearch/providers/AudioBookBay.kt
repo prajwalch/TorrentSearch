@@ -12,8 +12,8 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.withContext
 
-import org.jsoup.Jsoup
-import org.jsoup.nodes.Element
+import com.fleeksoft.ksoup.Ksoup
+import com.fleeksoft.ksoup.nodes.Element
 
 class AudioBookBay(private val networkClient: NetworkClient) : SearchProvider,
     LatestTorrentsProvider, TorrentDetailsProvider {
@@ -50,7 +50,7 @@ private class AudioBookBayResultsPageParser(
 ) {
     suspend fun parse(html: String, pageUrl: String): List<Torrent> =
         withContext(Dispatchers.Default) {
-            Jsoup.parse(html, pageUrl)
+            Ksoup.parse(html, pageUrl)
                 .select(LIST_ITEM)
                 .map { async { parseListItem(it) } }
                 .awaitAll()
@@ -88,7 +88,7 @@ private class AudioBookBayResultsPageParser(
 
     private suspend fun getInfoHash(detailsPageUrl: String): String? {
         return networkClient.getText(detailsPageUrl)
-            .let(Jsoup::parse)
+            .let(Ksoup::parse)
             .selectFirst("td:containsOwn(Info Hash:)")
             ?.nextElementSibling()
             ?.ownText()
@@ -113,7 +113,7 @@ private object AudioBookBayDetailsPageParser {
     private const val POSTER_URL = """img[itemprop="image"]"""
 
     suspend fun parse(html: String): TorrentDetails? = withContext(Dispatchers.Default) {
-        val html = Jsoup.parse(html)
+        val html = Ksoup.parse(html)
 
         val torrentName = html.selectFirst(TORRENT_NAME)?.ownText() ?: return@withContext null
         val infoHash = html.selectFirst(INFO_HASH)
