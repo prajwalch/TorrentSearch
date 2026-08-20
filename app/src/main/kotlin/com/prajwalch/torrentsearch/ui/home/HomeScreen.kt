@@ -98,8 +98,8 @@ fun HomeScreen(
                     categories = uiState.categories,
                     selectedCategory = uiState.selectedCategory,
                     onCategorySelect = viewModel::setCategory,
-                    histories = uiState.histories,
-                    onFilterSearchHistories = viewModel::filterSearchHistories,
+                    suggestions = uiState.searchSuggestions,
+                    onFilterSuggestions = viewModel::filterSearchSuggestions,
                 )
             }
 

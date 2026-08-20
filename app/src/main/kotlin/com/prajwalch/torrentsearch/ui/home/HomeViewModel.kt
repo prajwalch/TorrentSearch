@@ -7,7 +7,6 @@ import com.prajwalch.torrentsearch.data.repository.SearchHistoryRepository
 import com.prajwalch.torrentsearch.data.repository.SettingsRepository
 import com.prajwalch.torrentsearch.domain.SearchProvidersManager
 import com.prajwalch.torrentsearch.domain.model.Category
-import com.prajwalch.torrentsearch.domain.model.SearchHistory
 
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
@@ -27,7 +26,7 @@ import org.koin.core.annotation.KoinViewModel
 import kotlin.time.Duration.Companion.seconds
 
 data class HomeUiState(
-    val histories: List<SearchHistory> = emptyList(),
+    val searchSuggestions: List<String> = emptyList(),
     val recentSearches: List<String> = emptyList(),
     val categories: List<Category> = Category.entries,
     val selectedCategory: Category = Category.All,
@@ -50,7 +49,7 @@ class HomeViewModel(
 ) : ViewModel() {
     /**
      * The internal source for the current search query used only for
-     * filtering search histories.
+     * filtering search suggestions.
      *
      * UI maintains the query by itself but notifies the ViewModel whenever the
      * query changes. We then update this flow with copy of the query.
@@ -58,21 +57,24 @@ class HomeViewModel(
     private val searchQuery = MutableStateFlow("")
 
     /**
-     * The primary asynchronous stream of [SearchHistory].
+     * The primary asynchronous stream of search suggestions which is shown
+     * on the expanded search bar.
      */
     @OptIn(ExperimentalCoroutinesApi::class)
-    private val searchHistories: Flow<List<SearchHistory>> =
+    private val searchSuggestions: Flow<List<String>> =
         combine(
             searchQuery,
             settingsRepository.showSearchHistory,
             ::Pair,
-        ).flatMapLatest { (query, showSearchHistory) ->
+        ).flatMapLatest { (query, showSearchSuggestions) ->
             when {
                 // Avoid fetching histories when not needed.
-                !showSearchHistory -> flowOf(emptyList())
+                !showSearchSuggestions -> flowOf(emptyList())
                 query.isBlank() -> searchHistoryRepository.getAllSearchHistories()
                 else -> searchHistoryRepository.getSearchHistoriesByTerm(query)
             }
+        }.map { histories ->
+            histories.map { it.query }
         }
 
     /**
@@ -105,13 +107,13 @@ class HomeViewModel(
      */
     val uiState: StateFlow<HomeUiState> =
         combine(
-            searchHistories,
+            searchSuggestions,
             searchHistoryRepository.getRecentSearches(),
             selectableCategories,
             selectedCategory,
             homeRelevantSettings,
         ) {
-                histories,
+                searchSuggestions,
                 recentSearches,
                 selectableCategories,
                 selectedCategory,
@@ -123,7 +125,7 @@ class HomeViewModel(
             }
 
             HomeUiState(
-                histories = histories,
+                searchSuggestions = searchSuggestions,
                 recentSearches = recentSearches,
                 categories = selectableCategories,
                 selectedCategory = selectedCategory,
@@ -158,9 +160,9 @@ class HomeViewModel(
     }
 
     /**
-     * Filters search histories by the given query.
+     * Filters search suggestions by the given query.
      */
-    fun filterSearchHistories(query: String) {
+    fun filterSearchSuggestions(query: String) {
         searchQuery.value = query
     }
 

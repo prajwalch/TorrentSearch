@@ -16,31 +16,30 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 
 import com.prajwalch.torrentsearch.R
-import com.prajwalch.torrentsearch.domain.model.SearchHistory
 
 @Composable
-fun SearchHistoryList(
-    histories: List<SearchHistory>,
+fun SearchSuggestionList(
+    queries: List<String>,
     onSearchRequest: (String) -> Unit,
     onInsertQuery: (String) -> Unit,
     modifier: Modifier = Modifier,
     contentPadding: PaddingValues = PaddingValues(0.dp),
 ) {
     LazyColumn(modifier = modifier, contentPadding = contentPadding) {
-        items(items = histories, key = { it.id }) {
-            SearchHistoryListItem(
+        items(items = queries, key = { it }) {
+            SearchSuggestionListItem(
                 modifier = Modifier
                     .animateItem()
-                    .clickable { onSearchRequest(it.query) },
-                query = it.query,
-                onInsertClick = { onInsertQuery(it.query) },
+                    .clickable { onSearchRequest(it) },
+                query = it,
+                onInsertClick = { onInsertQuery(it) },
             )
         }
     }
 }
 
 @Composable
-private fun SearchHistoryListItem(
+private fun SearchSuggestionListItem(
     query: String,
     onInsertClick: () -> Unit,
     modifier: Modifier = Modifier,

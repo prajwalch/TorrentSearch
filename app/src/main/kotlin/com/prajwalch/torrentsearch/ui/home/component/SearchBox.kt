@@ -29,7 +29,6 @@ import androidx.compose.ui.tooling.preview.Preview
 
 import com.prajwalch.torrentsearch.R
 import com.prajwalch.torrentsearch.domain.model.Category
-import com.prajwalch.torrentsearch.domain.model.SearchHistory
 import com.prajwalch.torrentsearch.ui.component.CategoryChipsRow
 import com.prajwalch.torrentsearch.ui.component.ExpandableSearchBar
 import com.prajwalch.torrentsearch.ui.theme.TorrentSearchTheme
@@ -48,8 +47,8 @@ fun SearchBox(
     selectedCategory: Category,
     categories: List<Category>,
     onCategorySelect: (Category) -> Unit,
-    histories: List<SearchHistory>,
-    onFilterSearchHistories: (String) -> Unit,
+    suggestions: List<String>,
+    onFilterSuggestions: (String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val coroutineScope = rememberCoroutineScope()
@@ -82,7 +81,7 @@ fun SearchBox(
             // Ignore the initial empty text.
             .drop(1)
             .distinctUntilChanged()
-            .collectLatest { onFilterSearchHistories(it.toString()) }
+            .collectLatest { onFilterSuggestions(it.toString()) }
     }
 
     Column(
@@ -102,8 +101,8 @@ fun SearchBox(
             placeholder = { Text(stringResource(R.string.home_search_query_hint)) },
         ) {
             categoryChipsRow()
-            SearchHistoryList(
-                histories = histories,
+            SearchSuggestionList(
+                queries = suggestions,
                 onSearchRequest = {
                     onSearch(it)
                     textFieldState.setTextAndPlaceCursorAtEnd(it)
@@ -139,8 +138,8 @@ private fun SearchBoxPreview() {
             selectedCategory = Category.All,
             categories = Category.entries,
             onCategorySelect = {},
-            histories = emptyList(),
-            onFilterSearchHistories = {},
+            suggestions = emptyList(),
+            onFilterSuggestions = {},
         )
     }
 }
