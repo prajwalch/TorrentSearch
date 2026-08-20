@@ -20,7 +20,7 @@ object TorrentSearchConstants {
     const val LOGS_FILE_TYPE = "text/plain"
 
     /** Name of the export file. */
-    const val BOOKMARKS_EXPORT_FILE_NAME = "bookmarks.json"
+    const val BOOKMARKS_EXPORT_FILE_NAME = "torrentsearch_bookmarks.json"
 
     /** Export file type. */
     const val BOOKMARKS_EXPORT_FILE_TYPE = "application/json"
