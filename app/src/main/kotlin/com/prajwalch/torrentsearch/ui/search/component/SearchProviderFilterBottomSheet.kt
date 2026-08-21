@@ -33,7 +33,7 @@ import kotlinx.collections.immutable.ImmutableList
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SearchProvidersFilterBottomSheet(
+fun SearchProviderFilterBottomSheet(
     onDismiss: () -> Unit,
     filterOptions: ImmutableList<TorrentFilter.SearchProviderOption>,
     onToggleSearchProvider: (providerName: String) -> Unit,
@@ -43,12 +43,43 @@ fun SearchProvidersFilterBottomSheet(
     modifier: Modifier = Modifier,
 ) {
     ModalBottomSheet(modifier = modifier, onDismissRequest = onDismiss) {
-        BottomSheetContent(
+        Column(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = MaterialTheme.spaces.large),
-            filterOptions = filterOptions,
-            onToggleSearchProvider = onToggleSearchProvider,
+        ) {
+            BottomSheetHeader(
+                onSelectAll = onSelectAll,
+                onDeselectAll = onDeselectAll,
+                onInvertSelection = onInvertSelection,
+            )
+            SearchProviderFilterChipRow(
+                modifier = Modifier.padding(vertical = MaterialTheme.spaces.large),
+                filterOptions = filterOptions,
+                onToggleSearchProvider = onToggleSearchProvider,
+            )
+        }
+    }
+}
+
+@Composable
+private fun BottomSheetHeader(
+    onSelectAll: () -> Unit,
+    onDeselectAll: () -> Unit,
+    onInvertSelection: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Row(
+        modifier = modifier,
+        horizontalArrangement = Arrangement.spacedBy(MaterialTheme.spaces.large),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Text(
+            modifier = Modifier.weight(1f),
+            text = stringResource(R.string.search_filter_providers_title),
+            style = MaterialTheme.typography.titleMedium,
+        )
+        SearchProviderFilterActions(
             onSelectAll = onSelectAll,
             onDeselectAll = onDeselectAll,
             onInvertSelection = onInvertSelection,
@@ -57,46 +88,7 @@ fun SearchProvidersFilterBottomSheet(
 }
 
 @Composable
-private fun BottomSheetContent(
-    filterOptions: ImmutableList<TorrentFilter.SearchProviderOption>,
-    onToggleSearchProvider: (providerName: String) -> Unit,
-    onSelectAll: () -> Unit,
-    onDeselectAll: () -> Unit,
-    onInvertSelection: () -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    Column(modifier = modifier) {
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            SearchProvidersFilterTitle(modifier = Modifier.weight(1f))
-            SearchProvidersFilterActions(
-                onSelectAll = onSelectAll,
-                onDeselectAll = onDeselectAll,
-                onInvertSelection = onInvertSelection,
-            )
-        }
-
-        SearchProvidersChipRow(
-            modifier = Modifier.padding(vertical = MaterialTheme.spaces.large),
-            filterOptions = filterOptions,
-            onToggleSearchProvider = onToggleSearchProvider,
-        )
-    }
-}
-
-@Composable
-private fun SearchProvidersFilterTitle(modifier: Modifier = Modifier) {
-    Text(
-        modifier = modifier,
-        text = stringResource(R.string.search_filter_providers_title),
-        style = MaterialTheme.typography.titleMedium,
-    )
-}
-
-@Composable
-private fun SearchProvidersFilterActions(
+private fun SearchProviderFilterActions(
     onSelectAll: () -> Unit,
     onDeselectAll: () -> Unit,
     onInvertSelection: () -> Unit,
@@ -154,7 +146,7 @@ private fun IconButtonWithTooltip(
 }
 
 @Composable
-private fun SearchProvidersChipRow(
+private fun SearchProviderFilterChipRow(
     filterOptions: ImmutableList<TorrentFilter.SearchProviderOption>,
     onToggleSearchProvider: (String) -> Unit,
     modifier: Modifier = Modifier,

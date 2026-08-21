@@ -48,10 +48,10 @@ fun TorrentFilter(
         filter.providers.count { it.selected }
     }
 
-    var showSearchProvidersFilter by rememberSaveable { mutableStateOf(false) }
-    if (showSearchProvidersFilter) {
-        SearchProvidersFilterBottomSheet(
-            onDismiss = { showSearchProvidersFilter = false },
+    var showSearchProviderFilter by rememberSaveable { mutableStateOf(false) }
+    if (showSearchProviderFilter) {
+        SearchProviderFilterBottomSheet(
+            onDismiss = { showSearchProviderFilter = false },
             filterOptions = filter.providers,
             onToggleSearchProvider = onToggleSearchProvider,
             onSelectAll = onSelectAllSearchProviders,
@@ -117,7 +117,7 @@ fun TorrentFilter(
             FilterChip(
                 modifier = Modifier.animateItem(),
                 selected = selected,
-                onClick = { showSearchProvidersFilter = true },
+                onClick = { showSearchProviderFilter = true },
                 leadingIcon = {
                     Icon(
                         modifier = Modifier.size(FilterChipDefaults.IconSize),
