@@ -2,8 +2,10 @@ package com.prajwalch.torrentsearch.ui.settings
 
 import android.content.ComponentName
 import android.content.pm.PackageManager
+
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+
 import com.prajwalch.torrentsearch.BuildConfig
 import com.prajwalch.torrentsearch.data.repository.SettingsRepository
 import com.prajwalch.torrentsearch.data.repository.ViewedTorrentRepository
@@ -14,6 +16,7 @@ import com.prajwalch.torrentsearch.domain.model.DohProvider
 import com.prajwalch.torrentsearch.domain.model.MaxNumResults
 import com.prajwalch.torrentsearch.domain.model.SortOptions
 import com.prajwalch.torrentsearch.util.LogsUtils
+
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.WhileSubscribed
@@ -21,6 +24,7 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+
 import org.koin.core.annotation.KoinViewModel
 import java.io.OutputStream
 import kotlin.time.Duration.Companion.seconds
@@ -232,7 +236,7 @@ private fun SettingsRepository.getSearchSettings(
     searchProvidersCount: Flow<Int>,
 ): Flow<SearchSettingsUiState> {
     val searchProvidersStat = combine(
-        this.enabledSearchProviderIds.map { it.size },
+        this.enabledSearchProviderIds.map { it?.size ?: 0 },
         searchProvidersCount,
         SearchSettingsUiState::SearchProvidersStat,
     )

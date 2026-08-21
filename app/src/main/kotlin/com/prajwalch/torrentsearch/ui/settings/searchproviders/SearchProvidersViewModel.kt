@@ -77,7 +77,7 @@ class SearchProvidersViewModel(
             providerInfosProcessor.filter,
             protectionUpdateState,
             searchProvidersManager.getProvidersCount(),
-            settingsRepository.enabledSearchProviderIds.map { it.size },
+            settingsRepository.enabledSearchProviderIds.map { it?.size ?: 0 },
         ) {
                 searchProviderInfos,
                 filter,

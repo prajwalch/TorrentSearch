@@ -15,6 +15,7 @@ import coil3.request.CachePolicy
 import coil3.request.allowHardware
 import coil3.request.crossfade
 
+import com.prajwalch.torrentsearch.data.repository.SettingsRepository
 import com.prajwalch.torrentsearch.di.ViewModelModule
 import com.prajwalch.torrentsearch.di.builtinSearchProvidersModule
 import com.prajwalch.torrentsearch.di.dataStoreModule
@@ -26,6 +27,11 @@ import com.prajwalch.torrentsearch.network.NetworkClient
 import com.prajwalch.torrentsearch.ui.crash.CrashActivity
 import com.prajwalch.torrentsearch.util.TorrentSearchExceptionHandler
 
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.launch
+
 import org.koin.android.ext.android.inject
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.context.startKoin
@@ -33,6 +39,8 @@ import org.koin.plugin.module.dsl.module
 
 class TorrentSearchApplication : Application(), SingletonImageLoader.Factory {
     private val networkClient: NetworkClient by inject()
+    private val settingsRepository: SettingsRepository by inject()
+    private val coroutineScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
 
     override fun onCreate() {
         super.onCreate()
@@ -71,6 +79,16 @@ class TorrentSearchApplication : Application(), SingletonImageLoader.Factory {
                 activityToLaunch = CrashActivity::class.java,
             ),
         )
+
+        coroutineScope.launch {
+            initializeSettings()
+        }
+    }
+
+    private suspend fun initializeSettings() {
+        // Initialize `search_providers_initialized`
+        val enabledProviderIds = settingsRepository.currentEnabledProviderIds()
+        settingsRepository.setSearchProvidersInitialized(enabledProviderIds != null)
     }
 
     @OptIn(ExperimentalCoilApi::class)

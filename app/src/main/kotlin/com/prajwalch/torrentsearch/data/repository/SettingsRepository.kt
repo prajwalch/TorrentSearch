@@ -20,6 +20,7 @@ import com.prajwalch.torrentsearch.providers.SearchProviderId
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
 
 class SettingsRepository(private val dataStore: DataStore<Preferences>) {
@@ -42,8 +43,8 @@ class SettingsRepository(private val dataStore: DataStore<Preferences>) {
     val blurNSFWImages: Flow<Boolean> = dataStore
         .getOrDefault(key = BLUR_NSFW_IMAGES, default = true)
 
-    val enabledSearchProviderIds: Flow<Set<SearchProviderId>> = dataStore
-        .getOrDefault(key = ENABLED_SEARCH_PROVIDER_IDS, default = emptySet())
+    val enabledSearchProviderIds: Flow<Set<SearchProviderId>?> =
+        dataStore.get(key = ENABLED_SEARCH_PROVIDER_IDS)
 
     val defaultCategory: Flow<Category> = dataStore
         .getMapOrDefault(
@@ -112,8 +113,8 @@ class SettingsRepository(private val dataStore: DataStore<Preferences>) {
     val showBookmarkSwipeDeleteTip: Flow<Boolean> =
         dataStore.getOrDefault(key = SHOW_BOOKMARK_SWIPE_DELETE_TIP, default = true)
 
-    val searchProvidersInitialized: Flow<Boolean> =
-        dataStore.getOrDefault(key = SEARCH_PROVIDERS_INITIALIZED, default = false)
+    val searchProvidersInitialized: Flow<Boolean?> =
+        dataStore.get(key = SEARCH_PROVIDERS_INITIALIZED)
 
     val protectionUnlockedProviderIds: Flow<Set<SearchProviderId>> =
         dataStore.getOrDefault(key = PROTECTION_UNLOCKED_PROVIDER_IDS, default = emptySet())
@@ -138,8 +139,8 @@ class SettingsRepository(private val dataStore: DataStore<Preferences>) {
         dataStore.setOrUpdate(key = BLUR_NSFW_IMAGES, value = enable)
     }
 
-    suspend fun currentEnabledProviderIds(): Set<SearchProviderId> =
-        enabledSearchProviderIds.first()
+    suspend fun currentEnabledProviderIds(): Set<SearchProviderId>? =
+        enabledSearchProviderIds.firstOrNull()
 
     suspend fun setEnabledSearchProviderIds(ids: Set<SearchProviderId>) {
         dataStore.setOrUpdate(key = ENABLED_SEARCH_PROVIDER_IDS, value = ids)
@@ -289,6 +290,10 @@ class SettingsRepository(private val dataStore: DataStore<Preferences>) {
         val PROTECTION_UNLOCKED_PROVIDER_IDS =
             stringSetPreferencesKey("protection_unlocked_provider_ids")
     }
+}
+
+private fun <T> DataStore<Preferences>.get(key: Preferences.Key<T>): Flow<T?> {
+    return data.map { preferences -> preferences[key] }
 }
 
 /** Returns a pre-saved preferences or `default` if it doesn't exist. */

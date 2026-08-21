@@ -65,6 +65,7 @@ class SearchProvidersManager(
      */
     suspend fun getEnabledProviders(): List<SearchProvider> {
         val enabledProviderIds = settingsRepository.currentEnabledProviderIds()
+            ?: return emptyList()
         val enabledBuiltinProviders = builtinProviders.filter { it.id in enabledProviderIds }
         val enabledTorznabProviders = getEnabledTorznabProviders(enabledProviderIds)
 
@@ -106,6 +107,7 @@ class SearchProvidersManager(
      */
     suspend fun getEnabledLatestTorrentsProviders(category: Category): List<LatestTorrentsProvider> {
         val enabledProviderIds = settingsRepository.currentEnabledProviderIds()
+            ?: return emptyList()
         val enabledProviders = builtinProviders.filterIsInstance<LatestTorrentsProvider>()
             .filter { it.id in enabledProviderIds }
 
@@ -122,6 +124,7 @@ class SearchProvidersManager(
      */
     suspend fun getEnabledTopTorrentsProviders(category: Category): List<TopTorrentsProvider> {
         val enabledProviderIds = settingsRepository.currentEnabledProviderIds()
+            ?: return emptyList()
         val enabledProviders = builtinProviders.filterIsInstance<TopTorrentsProvider>()
             .filter { it.id in enabledProviderIds }
 
@@ -152,13 +155,15 @@ class SearchProvidersManager(
                     else -> CloudflareProtectionStatus.Locked
                 }
                 it.getInfo(
-                    isEnabled = it.id in enabledProviderIds,
+                    isEnabled = !enabledProviderIds.isNullOrEmpty() && it.id in enabledProviderIds,
                     protectionStatus = cloudflareProtectionStatus,
                 )
             }
 
             val torznabProviderInfos = torznabConfigs.map {
-                it.toSearchProviderInfo(isEnabled = it.id in enabledProviderIds)
+                it.toSearchProviderInfo(
+                    isEnabled = !enabledProviderIds.isNullOrEmpty() && it.id in enabledProviderIds,
+                )
             }
 
             builtinProviderInfos + torznabProviderInfos
@@ -254,6 +259,7 @@ class SearchProvidersManager(
      */
     suspend fun disableNsfwAndUnsafeProviders() {
         val enabledProviderIds = settingsRepository.currentEnabledProviderIds()
+        if (enabledProviderIds.isNullOrEmpty()) return
 
         val nsfwCategories = Category.entries.filter { it.isNSFW }
         val enabledUnsafeProviderIds = builtinProviders
