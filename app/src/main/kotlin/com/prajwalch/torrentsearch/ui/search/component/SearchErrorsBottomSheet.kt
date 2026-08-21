@@ -202,10 +202,6 @@ private fun StackTraceSection(
                     .height(360.dp),
                 stackTrace = stackTrace
                     ?: stringResource(R.string.search_message_no_stack_trace),
-                colors = CardDefaults.cardColors(
-                    containerColor = MaterialTheme.colorScheme.surfaceContainerLow,
-                    contentColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                ),
             )
         }
 
