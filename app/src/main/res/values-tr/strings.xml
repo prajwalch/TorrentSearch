@@ -242,4 +242,6 @@
     <string name="home_title_recent_searches">Son aramalar</string>
     <string name="search_title_stack_trace">Yığın izleme</string>
     <string name="search_message_no_stack_trace">Yığın izleme bulunamadı</string>
+    <string name="search_error_crashed">Çöktü</string>
+    <string name="search_error_cloudflare_challenge_encountered">Cloudflare göreviyle karşılaşıldı</string>
 </resources>
