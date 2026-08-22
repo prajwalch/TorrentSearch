@@ -1,9 +1,9 @@
 package com.prajwalch.torrentsearch.ui
 
+import androidx.activity.compose.LocalActivity
 import androidx.compose.animation.AnimatedContentTransitionScope.SlideDirection
 import androidx.compose.animation.fadeIn
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -84,20 +84,10 @@ fun TorrentSearchApp(
         )
     }
 
-    SideEffect(initialSearchQuery) {
-        if (initialSearchQuery == null) return@SideEffect
+    val activity = LocalActivity.current
+    val startDestination = initialSearchQuery?.let { Search(it) } ?: Home
 
-        val searchRoute = Search(query = initialSearchQuery)
-        navController.navigate(searchRoute) {
-            popUpTo(Home) {
-                // When the initial query is given, going back should close
-                // the app instead of showing or navigating to home screen.
-                inclusive = true
-            }
-        }
-    }
-
-    NavHost(navController = navController, startDestination = Home) {
+    NavHost(navController = navController, startDestination = startDestination) {
         composable<Home>(
             enterTransition = { fadeIn() },
             exitTransition = { slideOutOfContainer(SlideDirection.Start) },
@@ -115,7 +105,12 @@ fun TorrentSearchApp(
 
         parentComposable<Search> {
             SearchScreen(
-                onNavigateBack = { navController.navigateUp() },
+                onNavigateBack = {
+                    when (startDestination) {
+                        is Home -> navController.navigateUp()
+                        is Search -> activity?.finish()
+                    }
+                },
                 onNavigateToSettings = { navController.navigateToSettings() },
                 onNavigateToProviders = { navController.navigateToSearchProviders() },
                 onOpenMagnetLink = { showTorrentClientNotFoundDialog = !onOpenMagnetLink(it) },
