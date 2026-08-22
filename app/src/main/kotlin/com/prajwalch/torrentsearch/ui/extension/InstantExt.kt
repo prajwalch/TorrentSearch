@@ -3,7 +3,7 @@ package com.prajwalch.torrentsearch.ui.extension
 import android.text.format.DateUtils
 import java.time.Instant
 
-fun Instant.toDisplayDate(): String {
+fun Instant.toRelativeTimeSpanString(): String {
     return DateUtils.getRelativeTimeSpanString(
         /* time = */
         this.toEpochMilli(),

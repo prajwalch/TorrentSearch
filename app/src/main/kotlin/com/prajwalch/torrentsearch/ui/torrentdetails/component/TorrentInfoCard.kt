@@ -34,7 +34,7 @@ import com.prajwalch.torrentsearch.R
 import com.prajwalch.torrentsearch.domain.model.Category
 import com.prajwalch.torrentsearch.ui.component.CategoryBadge
 import com.prajwalch.torrentsearch.ui.component.SearchProviderBadge
-import com.prajwalch.torrentsearch.ui.extension.toDisplayDate
+import com.prajwalch.torrentsearch.ui.extension.toRelativeTimeSpanString
 import com.prajwalch.torrentsearch.ui.theme.TorrentSearchTheme
 import com.prajwalch.torrentsearch.ui.theme.spaces
 
@@ -119,7 +119,7 @@ fun TorrentInfoCard(
             InfoRow(
                 leadingIcon = R.drawable.ic_calendar_month,
                 label = stringResource(R.string.torrent_details_label_upload_date),
-                value = { OptionalInfoText(uploadDate?.toDisplayDate()) },
+                value = { OptionalInfoText(uploadDate?.toRelativeTimeSpanString()) },
             )
             InfoRow(
                 leadingIcon = R.drawable.ic_category,
@@ -139,7 +139,7 @@ fun TorrentInfoCard(
             InfoRow(
                 leadingIcon = R.drawable.ic_update,
                 label = stringResource(R.string.torrent_details_label_last_checked),
-                value = { OptionalInfoText(lastChecked?.toDisplayDate()) },
+                value = { OptionalInfoText(lastChecked?.toRelativeTimeSpanString()) },
             )
         }
         HorizontalDivider()

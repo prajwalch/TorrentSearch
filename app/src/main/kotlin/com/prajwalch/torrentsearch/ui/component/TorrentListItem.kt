@@ -28,7 +28,7 @@ import androidx.compose.ui.unit.dp
 
 import com.prajwalch.torrentsearch.R
 import com.prajwalch.torrentsearch.domain.model.Category
-import com.prajwalch.torrentsearch.ui.extension.toDisplayDate
+import com.prajwalch.torrentsearch.ui.extension.toRelativeTimeSpanString
 import com.prajwalch.torrentsearch.ui.iconResId
 import com.prajwalch.torrentsearch.ui.theme.TorrentSearchTheme
 import com.prajwalch.torrentsearch.ui.theme.spaces
@@ -71,7 +71,7 @@ fun TorrentListItem(
                     horizontalArrangement = Arrangement.spacedBy(MaterialTheme.spaces.small),
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
-                    uploadDate?.let { Text(it.toDisplayDate()) }
+                    uploadDate?.let { Text(it.toRelativeTimeSpanString()) }
                     if (isNSFW) NSFWBadge()
                 }
                 Text(providerName)
