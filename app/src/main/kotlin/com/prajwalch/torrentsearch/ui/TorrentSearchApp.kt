@@ -1,6 +1,8 @@
 package com.prajwalch.torrentsearch.ui
 
 import androidx.activity.compose.LocalActivity
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.runtime.Composable
@@ -92,10 +94,12 @@ fun TorrentSearchApp(
             slideInHorizontally(initialOffsetX = { fullWidth -> fullWidth })
         },
         exitTransition = {
-            slideOutHorizontally(targetOffsetX = { fullWidth -> -fullWidth / 3 })
+            slideOutHorizontally(targetOffsetX = { fullWidth -> -fullWidth / 3 }) +
+                    fadeOut(targetAlpha = 0.6f)
         },
         popEnterTransition = {
-            slideInHorizontally(initialOffsetX = { fullWidth -> -fullWidth / 3 })
+            slideInHorizontally(initialOffsetX = { fullWidth -> -fullWidth / 3 }) +
+                    fadeIn(initialAlpha = 0.6f)
         },
         popExitTransition = {
             slideOutHorizontally(targetOffsetX = { fullWidth -> fullWidth })
