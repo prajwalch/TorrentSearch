@@ -1,8 +1,11 @@
 package com.prajwalch.torrentsearch.ui
 
 import androidx.activity.compose.LocalActivity
-import androidx.compose.animation.AnimatedContentTransitionScope.SlideDirection
-import androidx.compose.animation.fadeIn
+import androidx.compose.animation.core.FastOutLinearInEasing
+import androidx.compose.animation.core.LinearOutSlowInEasing
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -18,8 +21,6 @@ import com.prajwalch.torrentsearch.domain.model.MagnetUri
 import com.prajwalch.torrentsearch.ui.bookmarks.BookmarksScreen
 import com.prajwalch.torrentsearch.ui.browse.BrowseScreen
 import com.prajwalch.torrentsearch.ui.component.TorrentClientNotFoundDialog
-import com.prajwalch.torrentsearch.ui.extension.childComposable
-import com.prajwalch.torrentsearch.ui.extension.parentComposable
 import com.prajwalch.torrentsearch.ui.home.HomeScreen
 import com.prajwalch.torrentsearch.ui.search.SearchScreen
 import com.prajwalch.torrentsearch.ui.searchhistory.SearchHistoryScreen
@@ -87,12 +88,35 @@ fun TorrentSearchApp(
     val activity = LocalActivity.current
     val startDestination = initialSearchQuery?.let { Search(it) } ?: Home
 
-    NavHost(navController = navController, startDestination = startDestination) {
-        composable<Home>(
-            enterTransition = { fadeIn() },
-            exitTransition = { slideOutOfContainer(SlideDirection.Start) },
-            popEnterTransition = { slideIntoContainer(SlideDirection.End) },
-        ) {
+    NavHost(
+        navController = navController,
+        startDestination = startDestination,
+        enterTransition = {
+            slideInHorizontally(
+                animationSpec = tween(easing = LinearOutSlowInEasing),
+                initialOffsetX = { fullWidth -> fullWidth },
+            )
+        },
+        exitTransition = {
+            slideOutHorizontally(
+                animationSpec = tween(easing = FastOutLinearInEasing),
+                targetOffsetX = { fullWidth -> -fullWidth / 3 },
+            )
+        },
+        popEnterTransition = {
+            slideInHorizontally(
+                animationSpec = tween(easing = LinearOutSlowInEasing),
+                initialOffsetX = { fullWidth -> -fullWidth / 3 },
+            )
+        },
+        popExitTransition = {
+            slideOutHorizontally(
+                animationSpec = tween(easing = FastOutLinearInEasing),
+                targetOffsetX = { fullWidth -> fullWidth },
+            )
+        },
+    ) {
+        composable<Home> {
             HomeScreen(
                 onNavigateToBookmarks = { navController.navigate(Bookmarks) },
                 onNavigateToSearchHistory = { navController.navigate(SearchHistory) },
@@ -103,7 +127,7 @@ fun TorrentSearchApp(
             )
         }
 
-        parentComposable<Search> {
+        composable<Search> {
             SearchScreen(
                 onNavigateBack = {
                     when (startDestination) {
@@ -120,7 +144,7 @@ fun TorrentSearchApp(
             )
         }
 
-        childComposable<TorrentDetails> {
+        composable<TorrentDetails> {
             TorrentDetailsScreen(
                 onNavigateBack = navController::navigateUp,
                 onOpenMagnetLink = { showTorrentClientNotFoundDialog = !onOpenMagnetLink(it) },
@@ -128,7 +152,7 @@ fun TorrentSearchApp(
             )
         }
 
-        parentComposable<Bookmarks> {
+        composable<Bookmarks> {
             BookmarksScreen(
                 onNavigateBack = { navController.navigateUp() },
                 onNavigateToSettings = { navController.navigateToSettings() },
@@ -139,7 +163,7 @@ fun TorrentSearchApp(
             )
         }
 
-        parentComposable<SearchHistory> {
+        composable<SearchHistory> {
             SearchHistoryScreen(
                 onNavigateBack = { navController.navigateUp() },
                 onPerformSearch = {
@@ -150,7 +174,7 @@ fun TorrentSearchApp(
             )
         }
 
-        parentComposable<Browse> {
+        composable<Browse> {
             BrowseScreen(
                 onNavigateBack = { navController.navigateUp() },
                 onNavigateToSettings = { navController.navigateToSettings() },

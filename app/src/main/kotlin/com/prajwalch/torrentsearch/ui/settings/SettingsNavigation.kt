@@ -2,9 +2,8 @@ package com.prajwalch.torrentsearch.ui.settings
 
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
+import androidx.navigation.compose.composable
 
-import com.prajwalch.torrentsearch.ui.extension.childComposable
-import com.prajwalch.torrentsearch.ui.extension.parentComposable
 import com.prajwalch.torrentsearch.ui.settings.defaultcategory.DefaultCategoryScreen
 import com.prajwalch.torrentsearch.ui.settings.defaultsortoptions.DefaultSortOptionsScreen
 import com.prajwalch.torrentsearch.ui.settings.searchproviders.navigateToSearchProviders
@@ -22,7 +21,7 @@ private object DefaultCategory
 private object DefaultSortOptions
 
 fun NavGraphBuilder.settingsNavigation(navController: NavHostController) {
-    parentComposable<Settings> {
+    composable<Settings> {
         SettingsScreen(
             onNavigateBack = { navController.navigateUp() },
             onNavigateToDefaultCategory = { navController.navigate(DefaultCategory) },
@@ -31,11 +30,11 @@ fun NavGraphBuilder.settingsNavigation(navController: NavHostController) {
         )
     }
 
-    childComposable<DefaultCategory> {
+    composable<DefaultCategory> {
         DefaultCategoryScreen(onNavigateBack = { navController.navigateUp() })
     }
 
-    childComposable<DefaultSortOptions> {
+    composable<DefaultSortOptions> {
         DefaultSortOptionsScreen(onNavigateBack = { navController.navigateUp() })
     }
 

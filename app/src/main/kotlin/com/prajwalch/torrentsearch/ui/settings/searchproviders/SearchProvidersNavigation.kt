@@ -2,11 +2,10 @@ package com.prajwalch.torrentsearch.ui.settings.searchproviders
 
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
+import androidx.navigation.compose.composable
 import androidx.navigation.navigation
 
 import com.prajwalch.torrentsearch.providers.SearchProviderId
-import com.prajwalch.torrentsearch.ui.extension.childComposable
-import com.prajwalch.torrentsearch.ui.extension.parentComposable
 import com.prajwalch.torrentsearch.ui.settings.searchproviders.addedit.AddEditSearchProviderScreen
 
 import kotlinx.serialization.Serializable
@@ -22,7 +21,7 @@ private data class AddEdit(val id: SearchProviderId? = null)
 
 fun NavGraphBuilder.searchProvidersNavigation(navController: NavHostController) {
     navigation<SearchProviders>(startDestination = Home) {
-        parentComposable<Home> {
+        composable<Home> {
             SearchProvidersScreen(
                 onNavigateBack = { navController.navigateUp() },
                 onNavigateToAddSearchProvider = { navController.navigate(AddEdit()) },
@@ -30,7 +29,7 @@ fun NavGraphBuilder.searchProvidersNavigation(navController: NavHostController) 
             )
         }
 
-        childComposable<AddEdit> {
+        composable<AddEdit> {
             AddEditSearchProviderScreen(onNavigateBack = { navController.navigateUp() })
         }
     }
