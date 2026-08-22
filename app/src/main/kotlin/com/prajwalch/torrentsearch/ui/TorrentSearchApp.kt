@@ -1,9 +1,6 @@
 package com.prajwalch.torrentsearch.ui
 
 import androidx.activity.compose.LocalActivity
-import androidx.compose.animation.core.FastOutLinearInEasing
-import androidx.compose.animation.core.LinearOutSlowInEasing
-import androidx.compose.animation.core.tween
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.runtime.Composable
@@ -92,28 +89,16 @@ fun TorrentSearchApp(
         navController = navController,
         startDestination = startDestination,
         enterTransition = {
-            slideInHorizontally(
-                animationSpec = tween(easing = LinearOutSlowInEasing),
-                initialOffsetX = { fullWidth -> fullWidth },
-            )
+            slideInHorizontally(initialOffsetX = { fullWidth -> fullWidth })
         },
         exitTransition = {
-            slideOutHorizontally(
-                animationSpec = tween(easing = FastOutLinearInEasing),
-                targetOffsetX = { fullWidth -> -fullWidth / 3 },
-            )
+            slideOutHorizontally(targetOffsetX = { fullWidth -> -fullWidth / 3 })
         },
         popEnterTransition = {
-            slideInHorizontally(
-                animationSpec = tween(easing = LinearOutSlowInEasing),
-                initialOffsetX = { fullWidth -> -fullWidth / 3 },
-            )
+            slideInHorizontally(initialOffsetX = { fullWidth -> -fullWidth / 3 })
         },
         popExitTransition = {
-            slideOutHorizontally(
-                animationSpec = tween(easing = FastOutLinearInEasing),
-                targetOffsetX = { fullWidth -> fullWidth },
-            )
+            slideOutHorizontally(targetOffsetX = { fullWidth -> fullWidth })
         },
     ) {
         composable<Home> {
