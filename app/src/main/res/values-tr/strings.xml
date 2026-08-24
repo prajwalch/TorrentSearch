@@ -225,7 +225,7 @@
     <string name="search_providers_reset_to_default_button_dismiss">İptal</string>
     <string name="bookmarks_swipe_delete_tip">Ayrıca, bir yer imini silmek için sola kaydırabilirsiniz.</string>
     <string name="home_search_providers_not_enabled_msg">Henüz herhangi bir arama sağlayıcısı etkinleştirilmedi. Tavsiye edilenleri etkinleştirmek ister misiniz?</string>
-    <string name="home_button_enable_recommended">Tavsiye edilenleri etkinleştir</string>
+    <string name="home_button_enable">Tavsiye edilenleri etkinleştir</string>
     <string name="home_button_i_will_choose_myself">Kendim seçeceğim</string>
     <string name="torrent_details_label_provider">Sağlayıcı</string>
     <string name="torrent_details_message_info_hash_copied">Bilgi sağlama toplamı panoya kopyalandı</string>

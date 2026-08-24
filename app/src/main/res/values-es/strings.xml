@@ -227,7 +227,7 @@
     <string name="settings_dns_over_https_summary">Resuelve los nombres de dominio a través de una conexión segura, en lugar de utilizar el DNS predeterminado de tu red</string>
     <string name="home_button_browse">Navegar</string>
     <string name="home_search_providers_not_enabled_msg">No hay proveedores de busqueda seleccionados. ¿Desea activar los recomendados?</string>
-    <string name="home_button_enable_recommended">Hablitar recomendados</string>
+    <string name="home_button_enable">Hablitar recomendados</string>
     <string name="home_button_i_will_choose_myself">Los elegiré yo mismo</string>
     <string name="search_screen_title">Buscar</string>
     <string name="search_action_refresh">Actualizar</string>

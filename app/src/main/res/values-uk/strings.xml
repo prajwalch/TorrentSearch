@@ -222,7 +222,7 @@
     <string name="search_providers_state_challenge_solve_error_title">Помилка розблокування</string>
     <string name="search_providers_state_challenge_solve_error_description">Не вдалося пройти перевірку. Перевірте, чи працює інтернет, і повторіть спробу.</string>
     <string name="home_search_providers_not_enabled_msg">Пошукових систем ще не ввімкнено. Увімкнути рекомендовані?</string>
-    <string name="home_button_enable_recommended">Увімкнути рекомендовані</string>
+    <string name="home_button_enable">Увімкнути рекомендовані</string>
     <string name="home_button_i_will_choose_myself">Оберу самостійно</string>
     <string name="bookmarks_swipe_delete_tip">Щоб видалити закладку, посуньте її ліворуч.</string>
     <string name="search_providers_reset_to_default_title">Відновити типові?</string>

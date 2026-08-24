@@ -135,7 +135,7 @@
     <string name="crash_logs_export_success_message">Logs wurden in einer Datei exportiert</string>
     <string name="home_button_browse">Suchen</string>
     <string name="home_search_providers_not_enabled_msg">Keine Such-Anbieter bisher aktiviert. Wollen Sie die empfohlenen aktivieren?</string>
-    <string name="home_button_enable_recommended">Empfohlene aktivieren</string>
+    <string name="home_button_enable">Empfohlene aktivieren</string>
     <string name="home_button_i_will_choose_myself">Ich suche selber aus</string>
     <string name="search_screen_title">Suche</string>
     <string name="search_action_refresh">Aktualisieren</string>

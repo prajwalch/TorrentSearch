@@ -1,7 +1,6 @@
 package com.prajwalch.torrentsearch.ui.home
 
 import android.content.res.Configuration
-
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -32,9 +31,9 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.prajwalch.torrentsearch.R
 import com.prajwalch.torrentsearch.domain.model.Category
 import com.prajwalch.torrentsearch.ui.home.component.AppBranding
+import com.prajwalch.torrentsearch.ui.home.component.EnableSearchProvidersDialog
 import com.prajwalch.torrentsearch.ui.home.component.RecentSearchList
 import com.prajwalch.torrentsearch.ui.home.component.SearchBox
-import com.prajwalch.torrentsearch.ui.home.component.SearchProvidersNotEnabledMessage
 import com.prajwalch.torrentsearch.ui.theme.spaces
 
 import org.koin.androidx.compose.koinViewModel
@@ -51,6 +50,17 @@ fun HomeScreen(
     viewModel: HomeViewModel = koinViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+
+    if (uiState.settings.searchProvidersInitialized == false) {
+        EnableSearchProvidersDialog(
+            onDismiss = { viewModel.skipDefaultSearchProviders() },
+            onEnableRecommended = { viewModel.enableDefaultSearchProviders() },
+            onLetUserChoose = {
+                onNavigateToSearchProviders()
+                viewModel.skipDefaultSearchProviders()
+            },
+        )
+    }
 
     Scaffold(
         modifier = Modifier
@@ -72,18 +82,6 @@ fun HomeScreen(
                 .verticalScroll(rememberScrollState()),
             verticalArrangement = Arrangement.spacedBy(48.dp),
         ) {
-            AnimatedVisibility(uiState.settings.searchProvidersInitialized == false) {
-                SearchProvidersNotEnabledMessage(
-                    modifier = Modifier.padding(MaterialTheme.spaces.large),
-                    onEnableRecommended = { viewModel.enableDefaultSearchProviders() },
-                    onSkip = {
-                        viewModel.skipDefaultSearchProviders()
-                        onNavigateToSearchProviders()
-                    },
-                    onClose = { viewModel.skipDefaultSearchProviders() },
-                )
-            }
-
             Spacer(Modifier.height(MaterialTheme.spaces.extraLarge))
 
             Column(
