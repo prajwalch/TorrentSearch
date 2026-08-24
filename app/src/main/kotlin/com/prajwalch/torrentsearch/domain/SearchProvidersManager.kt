@@ -223,14 +223,13 @@ class SearchProvidersManager(
             .toSet()
 
         settingsRepository.setEnabledSearchProviderIds(defaultProviderIds)
-        settingsRepository.setSearchProvidersInitialized(true)
     }
 
     /**
      * Skips enabling the default set of search providers.
      */
     suspend fun skipDefaultSearchProviders() {
-        settingsRepository.setSearchProvidersInitialized(true)
+        settingsRepository.setEnabledSearchProviderIds(emptySet())
     }
 
     /**

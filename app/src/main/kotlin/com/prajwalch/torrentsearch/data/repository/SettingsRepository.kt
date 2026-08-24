@@ -46,6 +46,8 @@ class SettingsRepository(private val dataStore: DataStore<Preferences>) {
     val enabledSearchProviderIds: Flow<Set<SearchProviderId>?> =
         dataStore.get(key = ENABLED_SEARCH_PROVIDER_IDS)
 
+    val searchProvidersInitialized: Flow<Boolean> = enabledSearchProviderIds.map { it != null }
+
     val defaultCategory: Flow<Category> = dataStore
         .getMapOrDefault(
             key = DEFAULT_CATEGORY,
@@ -112,9 +114,6 @@ class SettingsRepository(private val dataStore: DataStore<Preferences>) {
 
     val showBookmarkSwipeDeleteTip: Flow<Boolean> =
         dataStore.getOrDefault(key = SHOW_BOOKMARK_SWIPE_DELETE_TIP, default = true)
-
-    val searchProvidersInitialized: Flow<Boolean?> =
-        dataStore.get(key = SEARCH_PROVIDERS_INITIALIZED)
 
     val protectionUnlockedProviderIds: Flow<Set<SearchProviderId>> =
         dataStore.getOrDefault(key = PROTECTION_UNLOCKED_PROVIDER_IDS, default = emptySet())
@@ -226,10 +225,6 @@ class SettingsRepository(private val dataStore: DataStore<Preferences>) {
         dataStore.setOrUpdate(key = SHOW_BOOKMARK_SWIPE_DELETE_TIP, value = show)
     }
 
-    suspend fun setSearchProvidersInitialized(initialized: Boolean) {
-        dataStore.setOrUpdate(key = SEARCH_PROVIDERS_INITIALIZED, value = initialized)
-    }
-
     suspend fun currentProtectionUnlockedProviderIds(): Set<SearchProviderId> =
         protectionUnlockedProviderIds.first()
 
@@ -286,7 +281,6 @@ class SettingsRepository(private val dataStore: DataStore<Preferences>) {
         val SHOW_BOOKMARK_SWIPE_DELETE_TIP =
             booleanPreferencesKey("show_bookmark_swipe_delete_tip")
 
-        val SEARCH_PROVIDERS_INITIALIZED = booleanPreferencesKey("search_providers_initialized")
         val PROTECTION_UNLOCKED_PROVIDER_IDS =
             stringSetPreferencesKey("protection_unlocked_provider_ids")
     }
