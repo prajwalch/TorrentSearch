@@ -2,7 +2,7 @@ package com.prajwalch.torrentsearch.ui.settings.searchproviders.component
 
 import android.content.res.Configuration
 
-import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.background
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
@@ -103,8 +103,8 @@ fun SearchProviderListItem(
                     QuestionMarkButton(onClick = { onShowUnsafeReason(safetyStatus.reason) })
                 }
 
-                AnimatedContent(protectionStatus) { protectionStatus ->
-                    if (protectionStatus == CloudflareProtectionStatus.Locked) {
+                Crossfade(protectionStatus) { providerProtectionStatus ->
+                    if (providerProtectionStatus == CloudflareProtectionStatus.Locked) {
                         LockOpenButton(onClick = onUnlockProtection)
                     } else {
                         Switch(checked = enabled, onCheckedChange = onEnable)
@@ -121,7 +121,7 @@ private fun SearchProviderProtectionStatus(
     protectionStatus: CloudflareProtectionStatus,
     modifier: Modifier = Modifier,
 ) {
-    AnimatedContent(modifier = modifier, targetState = protectionStatus) { status ->
+    Crossfade(modifier = modifier, targetState = protectionStatus) { status ->
         when (status) {
             CloudflareProtectionStatus.Locked -> {
                 Icon(
