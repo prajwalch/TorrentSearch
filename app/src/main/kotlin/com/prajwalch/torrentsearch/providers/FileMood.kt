@@ -10,8 +10,8 @@ import com.prajwalch.torrentsearch.util.TorrentUtils
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
-import org.jsoup.Jsoup
-import org.jsoup.nodes.Element
+import com.fleeksoft.ksoup.Ksoup
+import com.fleeksoft.ksoup.nodes.Element
 
 class FileMood(private val networkClient: NetworkClient) : SearchProvider, TorrentDetailsProvider {
     override val id = "filemood"
@@ -43,7 +43,7 @@ class FileMood(private val networkClient: NetworkClient) : SearchProvider, Torre
 private class FileMoodResultsPageParser(private val providerName: String) {
     suspend fun parse(html: String, pageUrl: String): List<Torrent> =
         withContext(Dispatchers.Default) {
-            Jsoup
+            Ksoup
                 .parse(html, pageUrl)
                 .select(LIST_ITEM)
                 .mapNotNull(::parseListItem)
@@ -96,7 +96,7 @@ private object FileMoodDetailsPageParser {
         "div.well > table:nth-child(3) > tbody > tr:nth-child(5) > td:nth-child(2) > p"
 
     suspend fun parse(html: String): TorrentDetails? = withContext(Dispatchers.Default) {
-        val html = Jsoup.parse(html)
+        val html = Ksoup.parse(html)
 
         val torrentName = html.selectFirst(TORRENT_NAME)?.ownText() ?: return@withContext null
         val infoHash = html.selectFirst(INFO_HASH)

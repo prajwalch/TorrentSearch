@@ -12,8 +12,8 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.withContext
 
-import org.jsoup.Jsoup
-import org.jsoup.nodes.Element
+import com.fleeksoft.ksoup.Ksoup
+import com.fleeksoft.ksoup.nodes.Element
 
 import java.time.Instant
 
@@ -82,7 +82,7 @@ private class ThirteenThirtySevenXResultsPageParser(
 ) {
     suspend fun parse(html: String, pageUrl: String): List<Torrent> =
         withContext(Dispatchers.Default.limitedParallelism(3)) {
-            Jsoup.parse(html, pageUrl)
+            Ksoup.parse(html, pageUrl)
                 .select(LIST_ITEM)
                 .map { async { parseListItem(it) } }
                 .awaitAll()
@@ -185,7 +185,7 @@ private object ThirteenThirtySevenXDetailsPageParser {
 
     suspend fun parse(html: String, pageUrl: String): TorrentDetails? =
         withContext(Dispatchers.Default) {
-            val html = Jsoup.parse(html, pageUrl)
+            val html = Ksoup.parse(html, pageUrl)
 
             val torrentName = html.selectFirst(TORRENT_NAME)?.ownText() ?: return@withContext null
             val magnetUri = html.selectFirst(MAGNET_URI)?.attr("href") ?: return@withContext null

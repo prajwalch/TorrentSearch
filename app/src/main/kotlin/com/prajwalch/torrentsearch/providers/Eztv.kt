@@ -10,9 +10,9 @@ import com.prajwalch.torrentsearch.util.TorrentUtils
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
-import org.jsoup.Jsoup
-import org.jsoup.nodes.Element
-import org.jsoup.nodes.TextNode
+import com.fleeksoft.ksoup.Ksoup
+import com.fleeksoft.ksoup.nodes.Element
+import com.fleeksoft.ksoup.nodes.TextNode
 
 class Eztv(private val networkClient: NetworkClient) : SearchProvider, TorrentDetailsProvider {
     override val id = "eztvx"
@@ -46,7 +46,7 @@ class Eztv(private val networkClient: NetworkClient) : SearchProvider, TorrentDe
 private class EztvResultsPageParser(private val providerName: String) {
     suspend fun parse(html: String, pageUrl: String): List<Torrent> =
         withContext(Dispatchers.Default) {
-            Jsoup.parse(html, pageUrl)
+            Ksoup.parse(html, pageUrl)
                 .select(LIST_ITEM)
                 .drop(2)
                 .mapNotNull(::parseListItem)
@@ -102,7 +102,7 @@ private object EztvDetailsPageParser {
 
     suspend fun parse(html: String, pageUrl: String): TorrentDetails? =
         withContext(Dispatchers.Default) {
-            val html = Jsoup.parse(html, pageUrl)
+            val html = Ksoup.parse(html, pageUrl)
 
             val torrentName = html.selectFirst(TORRENT_NAME)?.ownText() ?: return@withContext null
             val magnetUri = html.selectFirst(MAGNET_URI)?.attr("href") ?: return@withContext null
@@ -113,14 +113,14 @@ private object EztvDetailsPageParser {
             val size = torrentInfoContainer
                 ?.find { it.ownText() == "Filesize:" }
                 ?.nextSibling()
-                ?.takeIf { it is TextNode }
-                ?.nodeValue()
+                .let { it as? TextNode }
+                ?.text()
                 ?.trim()
             val uploadDate = torrentInfoContainer
                 ?.find { it.ownText() == "Released:" }
                 ?.nextSibling()
-                ?.takeIf { it is TextNode }
-                ?.nodeValue()
+                .let { it as? TextNode }
+                ?.text()
                 ?.trim()
                 ?.replace(Regex("(\\d+)(st|nd|rd|th)"), "$1")
                 ?.let { TorrentDateParser.parse(date = it, format = "d MMM yyyy") }

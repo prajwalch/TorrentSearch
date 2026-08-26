@@ -10,8 +10,8 @@ import com.prajwalch.torrentsearch.util.TorrentUtils
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
-import org.jsoup.Jsoup
-import org.jsoup.nodes.Element
+import com.fleeksoft.ksoup.Ksoup
+import com.fleeksoft.ksoup.nodes.Element
 
 class Rutor(private val networkClient: NetworkClient) : SearchProvider, LatestTorrentsProvider,
     TopTorrentsProvider, TorrentDetailsProvider {
@@ -96,7 +96,7 @@ private class RutorResultsPageParser(private val providerName: String) {
         pageUrl: String,
         searchCategory: Category,
     ): List<Torrent> = withContext(Dispatchers.Default) {
-        Jsoup.parse(html, pageUrl)
+        Ksoup.parse(html, pageUrl)
             .select(LIST_ITEM)
             .drop(1)
             .mapNotNull { parseListItem(it, searchCategory) }
@@ -152,7 +152,7 @@ private object RutorDetailsPageParser {
 
     suspend fun parse(html: String, pageUrl: String): TorrentDetails? =
         withContext(Dispatchers.Default) {
-            val html = Jsoup.parse(html, pageUrl)
+            val html = Ksoup.parse(html, pageUrl)
 
             val torrentName = html.selectFirst(TORRENT_NAME)?.text() ?: return@withContext null
             val magnetUri = html.selectFirst(MAGNET_URI)?.attr("href") ?: return@withContext null
@@ -223,7 +223,7 @@ private object RutorDetailsPageParser {
             .find { it.selectFirst("div.hidehead")?.ownText() == "Скриншоты" }
             ?.selectFirst("textarea.hidearea")
             ?.ownText()
-            ?.let(Jsoup::parse)
+            ?.let(Ksoup::parse)
             ?.select("a > img")
             ?.mapNotNull { it.attr("src") }
     }

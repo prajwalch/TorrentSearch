@@ -90,7 +90,7 @@ dependencies {
     implementation(libs.coil.compose)
     implementation(libs.coil.network.ktor)
     implementation(libs.compose.markdown)
-    implementation(libs.jsoup)
+    implementation(libs.ksoup)
     implementation(libs.koin.android)
     implementation(libs.koin.androidx.compose)
     implementation(libs.koin.annotations)
