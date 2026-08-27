@@ -53,15 +53,12 @@ import com.prajwalch.torrentsearch.ui.bookmarks.component.BookmarkList
 import com.prajwalch.torrentsearch.ui.bookmarks.component.BookmarksCount
 import com.prajwalch.torrentsearch.ui.bookmarks.component.DeleteAllConfirmationDialog
 import com.prajwalch.torrentsearch.ui.component.AnimatedScrollToTopFAB
-import com.prajwalch.torrentsearch.ui.component.ArrowBackIconButton
 import com.prajwalch.torrentsearch.ui.component.CollapsibleSearchBar
 import com.prajwalch.torrentsearch.ui.component.ContentState
 import com.prajwalch.torrentsearch.ui.component.MessageCard
 import com.prajwalch.torrentsearch.ui.component.MessageType
 import com.prajwalch.torrentsearch.ui.component.RoundedDropdownMenu
-import com.prajwalch.torrentsearch.ui.component.SearchIconButton
 import com.prajwalch.torrentsearch.ui.component.SortDropdownMenu
-import com.prajwalch.torrentsearch.ui.component.SortIconButton
 import com.prajwalch.torrentsearch.ui.component.TorrentActionsBottomSheet
 import com.prajwalch.torrentsearch.ui.component.rememberCollapsibleSearchBarState
 import com.prajwalch.torrentsearch.ui.extension.copyText
@@ -301,14 +298,24 @@ private fun BookmarksScreenTopBar(
             uiState.bookmarks.isNotEmpty() || !searchBarState.isTextBlank
 
         if (!searchBarState.isVisible) {
-            SearchIconButton(
+            IconButton(
                 onClick = { searchBarState.showSearchBar() },
                 enabled = enableBookmarkRelatedActions,
-            )
-            SortIconButton(
+            ) {
+                Icon(
+                    painter = painterResource(R.drawable.ic_search),
+                    contentDescription = null,
+                )
+            }
+            IconButton(
                 onClick = { showSortOptions = true },
                 enabled = enableBookmarkRelatedActions,
-            )
+            ) {
+                Icon(
+                    painter = painterResource(R.drawable.ic_sort),
+                    contentDescription = stringResource(R.string.action_sort),
+                )
+            }
             SortDropdownMenu(
                 expanded = showSortOptions,
                 onDismissRequest = { showSortOptions = false },
@@ -343,7 +350,14 @@ private fun BookmarksScreenTopBar(
 
     TopAppBar(
         title = topBarTitle,
-        navigationIcon = { ArrowBackIconButton(onClick = onNavigateBack) },
+        navigationIcon = {
+            IconButton(onClick = onNavigateBack) {
+                Icon(
+                    painter = painterResource(R.drawable.ic_arrow_back),
+                    contentDescription = null,
+                )
+            }
+        },
         actions = topBarActions,
         scrollBehavior = scrollBehavior,
     )
