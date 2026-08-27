@@ -4,12 +4,15 @@ import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -20,13 +23,12 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalClipboard
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 
 import com.prajwalch.torrentsearch.R
-import com.prajwalch.torrentsearch.ui.component.ArrowBackIconButton
 import com.prajwalch.torrentsearch.ui.component.ContentState
-import com.prajwalch.torrentsearch.ui.component.DeleteForeverIconButton
 import com.prajwalch.torrentsearch.ui.extension.copyText
 import com.prajwalch.torrentsearch.ui.searchhistory.component.DeleteAllConfirmationDialog
 import com.prajwalch.torrentsearch.ui.searchhistory.component.SearchHistoryList
@@ -68,17 +70,10 @@ fun SearchHistoryScreen(
             .nestedScroll(connection = scrollBehavior.nestedScrollConnection)
             .then(modifier),
         topBar = {
-            TopAppBar(
-                navigationIcon = { ArrowBackIconButton(onClick = onNavigateBack) },
-                title = { Text(text = stringResource(R.string.search_history_screen_title)) },
-                actions = {
-                    if (searchHistoriesByDate != null) {
-                        DeleteForeverIconButton(
-                            onClick = { showDeleteAllConfirmationDialog = true },
-                            contentDescription = R.string.search_history_action_delete_all,
-                        )
-                    }
-                },
+            SearchHistoryScreenTopBar(
+                onNavigateBack = onNavigateBack,
+                showDeleteAction = searchHistoriesByDate != null,
+                onDeleteAllSearchHistory = { showDeleteAllConfirmationDialog = true },
                 scrollBehavior = scrollBehavior,
             )
         },
@@ -110,5 +105,56 @@ fun SearchHistoryScreen(
                 onDeleteSearchHistory = { viewModel.deleteSearchHistory(id = it) },
             )
         }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun SearchHistoryScreenTopBar(
+    onNavigateBack: () -> Unit,
+    showDeleteAction: Boolean,
+    onDeleteAllSearchHistory: () -> Unit,
+    modifier: Modifier = Modifier,
+    scrollBehavior: TopAppBarScrollBehavior? = null,
+) {
+    TopAppBar(
+        modifier = modifier,
+        navigationIcon = {
+            IconButton(onClick = onNavigateBack) {
+                Icon(
+                    painter = painterResource(R.drawable.ic_arrow_back),
+                    contentDescription = null,
+                )
+            }
+        },
+        title = { Text(stringResource(R.string.search_history_screen_title)) },
+        actions = {
+            if (showDeleteAction) {
+                DeleteSweepIconButton(
+                    onClick = onDeleteAllSearchHistory,
+                    contentDescription = stringResource(R.string.search_history_action_delete_all),
+                )
+            }
+        },
+        scrollBehavior = scrollBehavior,
+    )
+}
+
+@Composable
+private fun DeleteSweepIconButton(
+    onClick: () -> Unit,
+    contentDescription: String?,
+    modifier: Modifier = Modifier,
+    enabled: Boolean = true,
+) {
+    IconButton(
+        modifier = modifier,
+        onClick = onClick,
+        enabled = enabled,
+    ) {
+        Icon(
+            painter = painterResource(R.drawable.ic_delete_sweep),
+            contentDescription = contentDescription,
+        )
     }
 }
