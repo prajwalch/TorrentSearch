@@ -45,7 +45,6 @@ import com.prajwalch.torrentsearch.ui.browse.component.BrowseFilters
 import com.prajwalch.torrentsearch.ui.browse.component.TorrentList
 import com.prajwalch.torrentsearch.ui.browse.component.TorrentsUnavailableState
 import com.prajwalch.torrentsearch.ui.component.AnimatedScrollToTopFAB
-import com.prajwalch.torrentsearch.ui.component.ArrowBackIconButton
 import com.prajwalch.torrentsearch.ui.component.CollapsibleSearchBar
 import com.prajwalch.torrentsearch.ui.component.NoInternetConnectionState
 import com.prajwalch.torrentsearch.ui.component.TorrentActionsBottomSheet
@@ -55,7 +54,6 @@ import com.prajwalch.torrentsearch.ui.rememberTorrentListState
 import com.prajwalch.torrentsearch.ui.theme.spaces
 
 import kotlinx.coroutines.launch
-
 import org.koin.androidx.compose.koinViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -281,7 +279,14 @@ private fun BrowseScreenTopBar(
 
     TopAppBar(
         modifier = modifier,
-        navigationIcon = { ArrowBackIconButton(onClick = onNavigateBack) },
+        navigationIcon = {
+            IconButton(onClick = onNavigateBack) {
+                Icon(
+                    painter = painterResource(R.drawable.ic_arrow_back),
+                    contentDescription = null,
+                )
+            }
+        },
         title = {
             CollapsibleSearchBar(
                 state = searchBarState,
