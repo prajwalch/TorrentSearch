@@ -65,9 +65,12 @@ fun ExpandableSearchBar(
             label = "Expandable search bar leading icon animation",
         ) { searchBarValue ->
             if (searchBarValue == SearchBarValue.Expanded) {
-                ArrowBackIconButton(
-                    onClick = { coroutineScope.launch { state.animateToCollapsed() } }
-                )
+                IconButton(onClick = { coroutineScope.launch { state.animateToCollapsed() } }) {
+                    Icon(
+                        painter = painterResource(R.drawable.ic_arrow_back),
+                        contentDescription = null,
+                    )
+                }
             } else {
                 Icon(
                     painter = painterResource(R.drawable.ic_search),
