@@ -49,13 +49,10 @@ import com.prajwalch.torrentsearch.domain.model.SortOrder
 import com.prajwalch.torrentsearch.domain.model.Torrent
 import com.prajwalch.torrentsearch.ui.TorrentFileDownloadEffect
 import com.prajwalch.torrentsearch.ui.component.AnimatedScrollToTopFAB
-import com.prajwalch.torrentsearch.ui.component.ArrowBackIconButton
 import com.prajwalch.torrentsearch.ui.component.CollapsibleSearchBar
 import com.prajwalch.torrentsearch.ui.component.NoInternetConnectionState
 import com.prajwalch.torrentsearch.ui.component.RoundedDropdownMenu
-import com.prajwalch.torrentsearch.ui.component.SearchIconButton
 import com.prajwalch.torrentsearch.ui.component.SortDropdownMenu
-import com.prajwalch.torrentsearch.ui.component.SortIconButton
 import com.prajwalch.torrentsearch.ui.component.TorrentActionsBottomSheet
 import com.prajwalch.torrentsearch.ui.component.rememberCollapsibleSearchBarState
 import com.prajwalch.torrentsearch.ui.extension.copyText
@@ -318,14 +315,24 @@ private fun SearchScreenTopBar(
 
     val topBarActions: @Composable RowScope.() -> Unit = @Composable {
         if (!searchBarState.isVisible) {
-            SearchIconButton(
+            IconButton(
                 onClick = { searchBarState.showSearchBar() },
                 enabled = enableSearchResultsAction,
-            )
-            SortIconButton(
+            ) {
+                Icon(
+                    painter = painterResource(R.drawable.ic_search),
+                    contentDescription = null,
+                )
+            }
+            IconButton(
                 onClick = { showSortOptions = true },
                 enabled = enableSearchResultsAction,
-            )
+            ) {
+                Icon(
+                    painter = painterResource(R.drawable.ic_sort),
+                    contentDescription = stringResource(R.string.action_sort),
+                )
+            }
             SortDropdownMenu(
                 expanded = showSortOptions,
                 onDismissRequest = { showSortOptions = false },
@@ -360,7 +367,14 @@ private fun SearchScreenTopBar(
 
     TopAppBar(
         modifier = modifier,
-        navigationIcon = { ArrowBackIconButton(onClick = onNavigateBack) },
+        navigationIcon = {
+            IconButton(onClick = onNavigateBack) {
+                Icon(
+                    painter = painterResource(R.drawable.ic_arrow_back),
+                    contentDescription = null,
+                )
+            }
+        },
         title = {
             CollapsibleSearchBar(
                 state = searchBarState,
