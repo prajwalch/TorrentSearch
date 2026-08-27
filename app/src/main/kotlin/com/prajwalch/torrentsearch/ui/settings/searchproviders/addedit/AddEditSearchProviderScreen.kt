@@ -13,6 +13,8 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
@@ -27,13 +29,13 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalResources
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 
 import com.prajwalch.torrentsearch.R
 import com.prajwalch.torrentsearch.domain.model.Category
 import com.prajwalch.torrentsearch.domain.model.TorznabConnectionCheckResult
-import com.prajwalch.torrentsearch.ui.component.ArrowBackIconButton
 import com.prajwalch.torrentsearch.ui.settings.searchproviders.addedit.component.AutoDetectCategoriesButton
 import com.prajwalch.torrentsearch.ui.settings.searchproviders.addedit.component.CheckConnectionButton
 import com.prajwalch.torrentsearch.ui.settings.searchproviders.addedit.component.LearnHowToAddLinkInfo
@@ -139,7 +141,14 @@ private fun AddEditSearchProviderScreenTopBar(
     TopAppBar(
         modifier = modifier,
         title = { Text(text = title) },
-        navigationIcon = { ArrowBackIconButton(onClick = onNavigateBack) },
+        navigationIcon = {
+            IconButton(onClick = onNavigateBack) {
+                Icon(
+                    painter = painterResource(R.drawable.ic_arrow_back),
+                    contentDescription = null,
+                )
+            }
+        },
     )
 }
 
