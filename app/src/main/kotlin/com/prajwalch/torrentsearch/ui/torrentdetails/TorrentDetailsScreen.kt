@@ -64,7 +64,6 @@ import com.prajwalch.torrentsearch.domain.model.Category
 import com.prajwalch.torrentsearch.domain.model.MagnetUri
 import com.prajwalch.torrentsearch.domain.model.TorrentDetails
 import com.prajwalch.torrentsearch.ui.TorrentFileDownloadEffect
-import com.prajwalch.torrentsearch.ui.component.ArrowBackIconButton
 import com.prajwalch.torrentsearch.ui.component.NSFWBadge
 import com.prajwalch.torrentsearch.ui.component.NoInternetConnectionState
 import com.prajwalch.torrentsearch.ui.extension.copyText
@@ -81,9 +80,8 @@ import com.prajwalch.torrentsearch.ui.torrentdetails.component.TorrentInfoCard
 import com.prajwalch.torrentsearch.ui.torrentdetails.component.UnsupportedTorrentSiteState
 
 import kotlinx.coroutines.launch
-import java.time.Instant
-
 import org.koin.androidx.compose.koinViewModel
+import java.time.Instant
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -248,7 +246,14 @@ private fun TorrentDetailsScreenTopBar(
 
     TopAppBar(
         modifier = modifier,
-        navigationIcon = { ArrowBackIconButton(onClick = onNavigateBack) },
+        navigationIcon = {
+            IconButton(onClick = onNavigateBack) {
+                Icon(
+                    painter = painterResource(R.drawable.ic_arrow_back),
+                    contentDescription = null,
+                )
+            }
+        },
         title = { Text(stringResource(R.string.torrent_details_screen_title)) },
         actions = {
             IconButton(onClick = onOpenPageLink) {
