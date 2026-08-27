@@ -22,12 +22,14 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TopAppBarScrollBehavior
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
@@ -51,7 +53,11 @@ import com.prajwalch.torrentsearch.ui.settings.searchproviders.component.SearchP
 import com.prajwalch.torrentsearch.ui.settings.searchproviders.component.SearchProviderList
 import com.prajwalch.torrentsearch.ui.theme.spaces
 
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+
 import org.koin.androidx.compose.koinViewModel
+import kotlin.time.Duration.Companion.seconds
 
 private typealias ProtectedProvider = Pair<SearchProviderId, String>
 
@@ -68,6 +74,7 @@ fun SearchProvidersScreen(
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
 
     val localResources = LocalResources.current
+    val coroutineScope = rememberCoroutineScope()
     val snackbarHostState = remember { SnackbarHostState() }
 
     LaunchedEffect(uiState.protectionUpdateState) {
@@ -100,16 +107,24 @@ fun SearchProvidersScreen(
         }
     }
 
+    val bottomSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     var protectedProvider by rememberSaveable { mutableStateOf<ProtectedProvider?>(null) }
+
     protectedProvider?.let { (searchProviderId, solverUrl) ->
         CloudflareChallengeBottomSheet(
             onDismiss = { protectedProvider = null },
             solverUrl = solverUrl,
             onChallengeSolved = {
-                protectedProvider = null
                 viewModel.markProviderAsUnlocked(searchProviderId)
+
+                coroutineScope.launch {
+                    delay(1.seconds)
+                    bottomSheetState.hide()
+                    protectedProvider = null
+                }
             },
             webViewMaxHeight = 500.dp,
+            sheetState = bottomSheetState,
         )
     }
 

@@ -18,9 +18,10 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.SheetState
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -36,9 +37,6 @@ import androidx.compose.ui.unit.dp
 import com.prajwalch.torrentsearch.R
 import com.prajwalch.torrentsearch.ui.theme.spaces
 
-import kotlinx.coroutines.delay
-import kotlin.time.Duration.Companion.seconds
-
 private sealed interface ChallengeSolveState {
     data object Solving : ChallengeSolveState
     data object Solved : ChallengeSolveState
@@ -53,17 +51,15 @@ fun CloudflareChallengeBottomSheet(
     onChallengeSolved: () -> Unit,
     modifier: Modifier = Modifier,
     webViewMaxHeight: Dp = 400.dp,
+    sheetState: SheetState = rememberModalBottomSheetState(),
 ) {
-    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     var challengeSolveState by remember {
         mutableStateOf<ChallengeSolveState>(ChallengeSolveState.Solving)
     }
     var showWebView by rememberSaveable(challengeSolveState) { mutableStateOf(false) }
 
-    LaunchedEffect(challengeSolveState) {
+    SideEffect(challengeSolveState) {
         if (challengeSolveState == ChallengeSolveState.Solved) {
-            delay(1.seconds)
-            sheetState.hide()
             onChallengeSolved()
         }
     }
