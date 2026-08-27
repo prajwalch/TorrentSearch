@@ -19,6 +19,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RadioButton
@@ -48,7 +49,6 @@ import com.prajwalch.torrentsearch.domain.model.DarkTheme
 import com.prajwalch.torrentsearch.domain.model.DohProvider
 import com.prajwalch.torrentsearch.domain.model.MaxNumResults
 import com.prajwalch.torrentsearch.ui.categoryStringResource
-import com.prajwalch.torrentsearch.ui.component.ArrowBackIconButton
 import com.prajwalch.torrentsearch.ui.darkThemeStringResource
 import com.prajwalch.torrentsearch.ui.settings.component.ClearViewedTorrentsDialog
 import com.prajwalch.torrentsearch.ui.settings.component.DohProvidersMenu
@@ -151,7 +151,14 @@ private fun SettingsScreenTopBar(
     TopAppBar(
         modifier = modifier,
         title = { Text(stringResource(R.string.settings_screen_title)) },
-        navigationIcon = { ArrowBackIconButton(onClick = onNavigateBack) },
+        navigationIcon = {
+            IconButton(onClick = onNavigateBack) {
+                Icon(
+                    painter = painterResource(R.drawable.ic_arrow_back),
+                    contentDescription = null,
+                )
+            }
+        },
         scrollBehavior = scrollBehavior,
     )
 }
