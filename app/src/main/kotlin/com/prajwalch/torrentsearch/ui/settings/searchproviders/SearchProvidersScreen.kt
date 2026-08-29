@@ -1,16 +1,24 @@
 package com.prajwalch.torrentsearch.ui.settings.searchproviders
 
-import androidx.compose.foundation.layout.Arrangement
+import androidx.activity.compose.BackHandler
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.AnimatedContentTransitionScope.SlideDirection
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconToggleButton
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
@@ -32,6 +40,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.input.nestedscroll.nestedScroll
@@ -43,19 +53,22 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 
 import com.prajwalch.torrentsearch.R
 import com.prajwalch.torrentsearch.providers.SearchProviderId
-import com.prajwalch.torrentsearch.ui.component.CollapsibleSearchBar
+import com.prajwalch.torrentsearch.ui.component.FilterSearchBar
 import com.prajwalch.torrentsearch.ui.component.RoundedDropdownMenu
-import com.prajwalch.torrentsearch.ui.component.rememberCollapsibleSearchBarState
 import com.prajwalch.torrentsearch.ui.settings.searchproviders.component.CloudflareChallengeBottomSheet
 import com.prajwalch.torrentsearch.ui.settings.searchproviders.component.ResetToDefaultDialog
 import com.prajwalch.torrentsearch.ui.settings.searchproviders.component.SearchProviderFilterRow
 import com.prajwalch.torrentsearch.ui.settings.searchproviders.component.SearchProviderList
 import com.prajwalch.torrentsearch.ui.theme.spaces
 
+import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.launch
 
 import org.koin.androidx.compose.koinViewModel
+
+import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Duration.Companion.seconds
 
 private typealias ProtectedProvider = Pair<SearchProviderId, String>
@@ -70,11 +83,11 @@ fun SearchProvidersScreen(
     viewModel: SearchProvidersViewModel = koinViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-    val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
 
-    val localResources = LocalResources.current
+    val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
     val coroutineScope = rememberCoroutineScope()
     val snackbarHostState = remember { SnackbarHostState() }
+    val localResources = LocalResources.current
 
     LaunchedEffect(uiState.protectionUpdateState) {
         when (val protectionUpdateState = uiState.protectionUpdateState) {
@@ -215,28 +228,20 @@ private fun SearchProvidersScreenTopBar(
     subtitle: @Composable (() -> Unit)? = null,
     scrollBehavior: TopAppBarScrollBehavior? = null,
 ) {
-    val searchBarState = rememberCollapsibleSearchBarState(visibleOnInitial = false)
+    var showSearchBar by rememberSaveable { mutableStateOf(false) }
+
+    BackHandler(enabled = showSearchBar) {
+        showSearchBar = false
+    }
 
     TopAppBar(
         modifier = modifier,
         title = {
-            CollapsibleSearchBar(
-                state = searchBarState,
-                onQueryChange = onFilterSearchProviders,
-                placeholder = { Text(stringResource(R.string.search_providers_search_hint)) },
+            TopBarTitle(
+                showSearchBar = showSearchBar,
+                onFilterSearchProviders = onFilterSearchProviders,
+                subtitle = subtitle,
             )
-
-            if (!searchBarState.isVisible) {
-                Column(verticalArrangement = Arrangement.Center) {
-                    Text(text = stringResource(R.string.search_providers_screen_title))
-                    CompositionLocalProvider(
-                        LocalContentColor provides MaterialTheme.colorScheme.onSurfaceVariant,
-                        LocalTextStyle provides MaterialTheme.typography.labelMedium,
-                    ) {
-                        subtitle?.let { it() }
-                    }
-                }
-            }
         },
         navigationIcon = {
             IconButton(onClick = onNavigateBack) {
@@ -247,13 +252,14 @@ private fun SearchProvidersScreenTopBar(
             }
         },
         actions = {
-            if (!searchBarState.isVisible) {
-                IconButton(onClick = { searchBarState.showSearchBar() }) {
-                    Icon(
-                        painter = painterResource(R.drawable.ic_search),
-                        contentDescription = null,
-                    )
-                }
+            IconToggleButton(
+                checked = showSearchBar,
+                onCheckedChange = { showSearchBar = it },
+            ) {
+                Icon(
+                    painter = painterResource(R.drawable.ic_search),
+                    contentDescription = null,
+                )
             }
 
             Box {
@@ -291,6 +297,70 @@ private fun SearchProvidersScreenTopBar(
     )
 }
 
+@OptIn(FlowPreview::class)
+@Composable
+private fun TopBarTitle(
+    showSearchBar: Boolean,
+    onFilterSearchProviders: (String) -> Unit,
+    modifier: Modifier = Modifier,
+    subtitle: @Composable (() -> Unit)? = null,
+) {
+    // Hoisting the text field state here helps to preserve query when
+    // showing or hiding the search bar.
+    val textFieldState = rememberTextFieldState()
+
+    if (showSearchBar) {
+        LaunchedEffect(Unit) {
+            snapshotFlow { textFieldState.text }
+                .debounce(500.milliseconds)
+                .collect { onFilterSearchProviders(it.toString()) }
+        }
+    }
+
+    AnimatedContent(
+        modifier = modifier.fillMaxWidth(),
+        targetState = showSearchBar,
+        transitionSpec = {
+            val slideDirection = if (targetState) {
+                SlideDirection.Up
+            } else {
+                SlideDirection.Down
+            }
+
+            slideIntoContainer(slideDirection) + fadeIn() togetherWith
+                    slideOutOfContainer(slideDirection) + fadeOut()
+        },
+        contentAlignment = Alignment.Center,
+    ) { innerShowSearchBar ->
+        if (!innerShowSearchBar) {
+            SearchProvidersScreenTitle(subtitle = subtitle)
+        } else {
+            FilterSearchBar(
+                textFieldState = textFieldState,
+                placeholder = {
+                    Text(stringResource(R.string.search_providers_search_hint))
+                },
+            )
+        }
+    }
+}
+
+@Composable
+private fun SearchProvidersScreenTitle(
+    modifier: Modifier = Modifier,
+    subtitle: @Composable (() -> Unit)? = null,
+) {
+    Column(modifier = modifier) {
+        Text(stringResource(R.string.search_providers_screen_title))
+        CompositionLocalProvider(
+            LocalContentColor provides MaterialTheme.colorScheme.onSurfaceVariant,
+            LocalTextStyle provides MaterialTheme.typography.labelMedium,
+        ) {
+            subtitle?.invoke()
+        }
+    }
+}
+
 @Composable
 private fun TopBarMoreMenu(
     expanded: Boolean,
@@ -306,7 +376,6 @@ private fun TopBarMoreMenu(
         expanded = expanded,
         onDismissRequest = onDismiss
     ) {
-
         DropdownMenuItem(
             leadingIcon = {
                 Icon(
