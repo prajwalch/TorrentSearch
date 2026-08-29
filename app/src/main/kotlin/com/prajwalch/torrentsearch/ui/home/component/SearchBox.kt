@@ -13,7 +13,6 @@ import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.foundation.text.input.setTextAndPlaceCursorAtEnd
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.material3.rememberSearchBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -24,13 +23,11 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 
-import com.prajwalch.torrentsearch.R
 import com.prajwalch.torrentsearch.domain.model.Category
 import com.prajwalch.torrentsearch.ui.component.CategoryChipsRow
-import com.prajwalch.torrentsearch.ui.component.ExpandableSearchBar
+import com.prajwalch.torrentsearch.ui.search.component.ExpandableSearchBar
 import com.prajwalch.torrentsearch.ui.theme.TorrentSearchTheme
 import com.prajwalch.torrentsearch.ui.theme.spaces
 
@@ -98,7 +95,6 @@ fun SearchBox(
                     coroutineScope.launch { searchBarState.animateToCollapsed() }
                 }
             },
-            placeholder = { Text(stringResource(R.string.home_search_query_hint)) },
         ) {
             categoryChipsRow()
             SearchSuggestionList(
