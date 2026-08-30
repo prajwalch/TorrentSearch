@@ -36,12 +36,12 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.prajwalch.torrentsearch.R
 import com.prajwalch.torrentsearch.domain.model.Category
 import com.prajwalch.torrentsearch.domain.model.TorznabConnectionCheckResult
-import com.prajwalch.torrentsearch.ui.settings.searchproviders.addedit.component.AutoDetectCategoriesButton
-import com.prajwalch.torrentsearch.ui.settings.searchproviders.addedit.component.CheckConnectionButton
-import com.prajwalch.torrentsearch.ui.settings.searchproviders.addedit.component.LearnHowToAddLinkInfo
-import com.prajwalch.torrentsearch.ui.settings.searchproviders.addedit.component.OutlinedUrlTextField
-import com.prajwalch.torrentsearch.ui.settings.searchproviders.addedit.component.SaveButton
-import com.prajwalch.torrentsearch.ui.settings.searchproviders.addedit.component.SupportedCategories
+import com.prajwalch.torrentsearch.ui.searchproviders.addedit.component.AutoDetectCategoriesButton
+import com.prajwalch.torrentsearch.ui.searchproviders.addedit.component.CheckConnectionButton
+import com.prajwalch.torrentsearch.ui.searchproviders.addedit.component.LearnHowToAddLinkInfo
+import com.prajwalch.torrentsearch.ui.searchproviders.addedit.component.OutlinedUrlTextField
+import com.prajwalch.torrentsearch.ui.searchproviders.addedit.component.SaveButton
+import com.prajwalch.torrentsearch.ui.searchproviders.addedit.component.SupportedCategories
 import com.prajwalch.torrentsearch.ui.theme.spaces
 
 import org.koin.androidx.compose.koinViewModel

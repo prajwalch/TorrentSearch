@@ -25,7 +25,7 @@ import com.prajwalch.torrentsearch.domain.model.Category
 import com.prajwalch.torrentsearch.ui.categoryStringResource
 import com.prajwalch.torrentsearch.ui.component.RoundedDropdownMenu
 import com.prajwalch.torrentsearch.ui.iconResId
-import com.prajwalch.torrentsearch.ui.settings.searchproviders.SearchProviderProtection
+import com.prajwalch.torrentsearch.ui.searchproviders.SearchProviderProtection
 import com.prajwalch.torrentsearch.ui.theme.spaces
 
 @Composable
