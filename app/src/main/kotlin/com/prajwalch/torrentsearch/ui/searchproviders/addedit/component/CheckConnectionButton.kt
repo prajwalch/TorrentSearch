@@ -1,6 +1,5 @@
-package com.prajwalch.torrentsearch.ui.settings.searchproviders.addedit.component
+package com.prajwalch.torrentsearch.ui.searchproviders.addedit.component
 
-import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -18,40 +17,38 @@ import androidx.compose.ui.unit.dp
 import com.prajwalch.torrentsearch.R
 
 @Composable
-fun AutoDetectCategoriesButton(
+fun CheckConnectionButton(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
-    isDetecting: Boolean = false,
+    isCheckingConnection: Boolean = false,
 ) {
     TextButton(
         modifier = modifier,
         onClick = onClick,
-        contentPadding = ButtonDefaults.TextButtonWithIconContentPadding,
         enabled = enabled,
+        contentPadding = ButtonDefaults.TextButtonWithIconContentPadding,
     ) {
-        if (!isDetecting) {
-            Icon(
-                modifier = Modifier.size(ButtonDefaults.IconSize),
-                painter = painterResource(R.drawable.ic_category_search),
-                contentDescription = null,
-            )
-        } else {
+        if (isCheckingConnection) {
             CircularProgressIndicator(
                 modifier = Modifier.size(ButtonDefaults.IconSize),
                 strokeWidth = 2.0.dp,
+            )
+        } else {
+            Icon(
+                modifier = Modifier.size(ButtonDefaults.IconSize),
+                painter = painterResource(R.drawable.ic_network_check),
+                contentDescription = null,
             )
         }
 
         Spacer(Modifier.width(ButtonDefaults.IconSpacing))
 
-        Crossfade(isDetecting) { isDetectingCategories ->
-            val labelResId = if (isDetectingCategories) {
-                R.string.search_providers_button_auto_detect_categories_detecting
-            } else {
-                R.string.search_providers_button_auto_detect_categories
-            }
-            Text(stringResource(labelResId))
+        val labelResId = if (isCheckingConnection) {
+            R.string.search_providers_button_check_connection_checking
+        } else {
+            R.string.search_providers_button_check_connection
         }
+        Text(stringResource(labelResId))
     }
 }

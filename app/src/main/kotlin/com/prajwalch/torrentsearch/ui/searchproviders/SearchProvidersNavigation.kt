@@ -1,4 +1,4 @@
-package com.prajwalch.torrentsearch.ui.settings.searchproviders
+package com.prajwalch.torrentsearch.ui.searchproviders
 
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
@@ -6,7 +6,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navigation
 
 import com.prajwalch.torrentsearch.providers.SearchProviderId
-import com.prajwalch.torrentsearch.ui.settings.searchproviders.addedit.AddEditSearchProviderScreen
+import com.prajwalch.torrentsearch.ui.searchproviders.addedit.AddEditSearchProviderScreen
 
 import kotlinx.serialization.Serializable
 
@@ -14,14 +14,14 @@ import kotlinx.serialization.Serializable
 private object SearchProviders
 
 @Serializable
-private object Home
+private object SearchProviderList
 
 @Serializable
 private data class AddEdit(val id: SearchProviderId? = null)
 
 fun NavGraphBuilder.searchProvidersNavigation(navController: NavHostController) {
-    navigation<SearchProviders>(startDestination = Home) {
-        composable<Home> {
+    navigation<SearchProviders>(startDestination = SearchProviderList) {
+        composable<SearchProviderList> {
             SearchProvidersScreen(
                 onNavigateBack = { navController.navigateUp() },
                 onNavigateToAddSearchProvider = { navController.navigate(AddEdit()) },

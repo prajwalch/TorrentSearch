@@ -1,4 +1,4 @@
-package com.prajwalch.torrentsearch.ui.settings.searchproviders.addedit
+package com.prajwalch.torrentsearch.ui.searchproviders.addedit
 
 import android.content.res.Resources
 

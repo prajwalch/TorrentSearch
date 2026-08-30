@@ -1,4 +1,4 @@
-package com.prajwalch.torrentsearch.ui.settings.searchproviders.component
+package com.prajwalch.torrentsearch.ui.searchproviders.component
 
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Icon

@@ -23,7 +23,8 @@ import com.prajwalch.torrentsearch.ui.component.TorrentClientNotFoundDialog
 import com.prajwalch.torrentsearch.ui.home.HomeScreen
 import com.prajwalch.torrentsearch.ui.search.SearchScreen
 import com.prajwalch.torrentsearch.ui.searchhistory.SearchHistoryScreen
-import com.prajwalch.torrentsearch.ui.settings.navigateToSearchProviders
+import com.prajwalch.torrentsearch.ui.searchproviders.navigateToSearchProviders
+import com.prajwalch.torrentsearch.ui.searchproviders.searchProvidersNavigation
 import com.prajwalch.torrentsearch.ui.settings.navigateToSettings
 import com.prajwalch.torrentsearch.ui.settings.settingsNavigation
 import com.prajwalch.torrentsearch.ui.torrentdetails.TorrentDetailsScreen
@@ -175,6 +176,7 @@ fun TorrentSearchApp(
             )
         }
 
-        settingsNavigation(navController = navController)
+        searchProvidersNavigation(navController)
+        settingsNavigation(navController)
     }
 }

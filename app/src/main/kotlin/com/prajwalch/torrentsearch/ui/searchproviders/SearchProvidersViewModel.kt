@@ -1,4 +1,4 @@
-package com.prajwalch.torrentsearch.ui.settings.searchproviders
+package com.prajwalch.torrentsearch.ui.searchproviders
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope

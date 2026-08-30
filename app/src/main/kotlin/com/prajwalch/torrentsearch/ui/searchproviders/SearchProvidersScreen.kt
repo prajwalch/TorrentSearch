@@ -1,4 +1,4 @@
-package com.prajwalch.torrentsearch.ui.settings.searchproviders
+package com.prajwalch.torrentsearch.ui.searchproviders
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -34,11 +34,11 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 
 import com.prajwalch.torrentsearch.R
 import com.prajwalch.torrentsearch.providers.SearchProviderId
-import com.prajwalch.torrentsearch.ui.settings.searchproviders.component.CloudflareChallengeBottomSheet
-import com.prajwalch.torrentsearch.ui.settings.searchproviders.component.ResetToDefaultDialog
-import com.prajwalch.torrentsearch.ui.settings.searchproviders.component.SearchProviderFilterRow
-import com.prajwalch.torrentsearch.ui.settings.searchproviders.component.SearchProviderList
-import com.prajwalch.torrentsearch.ui.settings.searchproviders.component.SearchProvidersScreenTopBar
+import com.prajwalch.torrentsearch.ui.searchproviders.component.CloudflareChallengeBottomSheet
+import com.prajwalch.torrentsearch.ui.searchproviders.component.ResetToDefaultDialog
+import com.prajwalch.torrentsearch.ui.searchproviders.component.SearchProviderFilterRow
+import com.prajwalch.torrentsearch.ui.searchproviders.component.SearchProviderList
+import com.prajwalch.torrentsearch.ui.searchproviders.component.SearchProvidersScreenTopBar
 import com.prajwalch.torrentsearch.ui.theme.spaces
 
 import kotlinx.coroutines.delay

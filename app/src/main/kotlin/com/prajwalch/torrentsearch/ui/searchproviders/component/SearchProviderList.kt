@@ -1,4 +1,4 @@
-package com.prajwalch.torrentsearch.ui.settings.searchproviders.component
+package com.prajwalch.torrentsearch.ui.searchproviders.component
 
 import androidx.compose.foundation.LocalIndication
 import androidx.compose.foundation.combinedClickable

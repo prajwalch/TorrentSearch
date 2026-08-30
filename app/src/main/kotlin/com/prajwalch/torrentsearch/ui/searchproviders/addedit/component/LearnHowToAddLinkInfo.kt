@@ -1,4 +1,4 @@
-package com.prajwalch.torrentsearch.ui.settings.searchproviders.addedit.component
+package com.prajwalch.torrentsearch.ui.searchproviders.addedit.component
 
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
