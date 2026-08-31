@@ -51,7 +51,7 @@ import kotlinx.coroutines.flow.drop
 @Composable
 fun BookmarksScreenTopBar(
     onNavigateBack: () -> Unit,
-    bookmarksCount: Int,
+    totalBookmarksCount: Int,
     onFilterBookmarks: (String) -> Unit,
     sortOptions: SortOptions,
     onChangeSortCriteria: (SortCriteria) -> Unit,
@@ -63,7 +63,7 @@ fun BookmarksScreenTopBar(
     modifier: Modifier = Modifier,
     scrollBehavior: TopAppBarScrollBehavior? = null,
 ) {
-    var showSearchBar by rememberSaveable { mutableStateOf(false) }
+    var showSearchBar by rememberSaveable(totalBookmarksCount) { mutableStateOf(false) }
     var showSortMenu by rememberSaveable(sortOptions) { mutableStateOf(false) }
     var showOverflowMenu by rememberSaveable { mutableStateOf(false) }
 
@@ -75,7 +75,7 @@ fun BookmarksScreenTopBar(
         modifier = modifier,
         title = {
             TopBarTitle(
-                bookmarksCount = bookmarksCount,
+                totalBookmarksCount = totalBookmarksCount,
                 showSearchBar = showSearchBar,
                 onFilterBookmarks = onFilterBookmarks,
             )
@@ -89,9 +89,12 @@ fun BookmarksScreenTopBar(
             }
         },
         actions = {
+            val isBookmarksNotEmpty = totalBookmarksCount > 0
+
             AnimatedVisibility(!showSearchBar) {
                 IconButton(
                     onClick = { showSearchBar = true },
+                    enabled = isBookmarksNotEmpty,
                 ) {
                     Icon(
                         painter = painterResource(R.drawable.ic_search),
@@ -102,6 +105,7 @@ fun BookmarksScreenTopBar(
 
             IconButton(
                 onClick = { showSortMenu = true },
+                enabled = isBookmarksNotEmpty,
             ) {
                 Icon(
                     painter = painterResource(R.drawable.ic_sort),
@@ -131,6 +135,7 @@ fun BookmarksScreenTopBar(
                     onExportBookmarks = onExportBookmarks,
                     onDeleteAllBookmarks = onDeleteAllBookmarks,
                     onNavigateToSettings = onNavigateToSettings,
+                    enableDeleteAllAction = isBookmarksNotEmpty,
                 )
             }
         },
@@ -140,7 +145,7 @@ fun BookmarksScreenTopBar(
 
 @Composable
 private fun TopBarTitle(
-    bookmarksCount: Int,
+    totalBookmarksCount: Int,
     showSearchBar: Boolean,
     onFilterBookmarks: (String) -> Unit,
     modifier: Modifier = Modifier,
@@ -170,7 +175,7 @@ private fun TopBarTitle(
         },
     ) { targetShowSearchBar ->
         if (!targetShowSearchBar) {
-            BookmarksScreenTitle(bookmarksCount)
+            BookmarksScreenTitle(totalBookmarksCount)
         } else {
             FilterSearchBar(
                 textFieldState = textFieldState,
@@ -183,14 +188,14 @@ private fun TopBarTitle(
 }
 
 @Composable
-private fun BookmarksScreenTitle(bookmarksCount: Int, modifier: Modifier = Modifier) {
+private fun BookmarksScreenTitle(totalBookmarksCount: Int, modifier: Modifier = Modifier) {
     Column(modifier = modifier, verticalArrangement = Arrangement.Center) {
         Text(stringResource(R.string.bookmarks_screen_title))
 
-        AnimatedVisibility(visible = bookmarksCount > 0) {
+        AnimatedVisibility(visible = totalBookmarksCount > 0) {
             BookmarksCount(
-                totalBookmarksCount = bookmarksCount,
-                currentBookmarksCount = bookmarksCount,
+                totalBookmarksCount = totalBookmarksCount,
+                currentBookmarksCount = totalBookmarksCount,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 style = MaterialTheme.typography.labelMedium,
             )

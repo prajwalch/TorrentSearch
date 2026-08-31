@@ -15,23 +15,36 @@ import com.prajwalch.torrentsearch.util.FileSizeUtils
 
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.WhileSubscribed
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
+import org.koin.core.annotation.KoinViewModel
+
 import java.io.InputStream
 import java.io.OutputStream
 
 import kotlin.time.Duration.Companion.seconds
-import org.koin.core.annotation.KoinViewModel
 
 /** UI state for the Bookmarks screen. */
 data class BookmarksUiState(
-    val bookmarks: List<BookmarkedTorrent> = emptyList(),
+    val bookmarksState: BookmarksState = BookmarksState.Loading,
+    val totalBookmarksCount: Int = 0,
     val sortOptions: SortOptions = SortOptions(),
     val showSwipeDeleteTip: Boolean = true,
 )
+
+sealed interface BookmarksState {
+    data object Loading : BookmarksState
+
+    data object Empty : BookmarksState
+
+    data object EmptyNoMatches : BookmarksState
+
+    data class Ready(val bookmarks: List<BookmarkedTorrent>) : BookmarksState
+}
 
 /** ViewModel that handles the business logic of Bookmarks screen. */
 @KoinViewModel
@@ -41,37 +54,61 @@ class BookmarksViewModel(
     private val torrentFileDownloader: TorrentFileDownloader,
     private val savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
-    private val bookmarks: Flow<List<BookmarkedTorrent>> =
+    private val filterQuery = savedStateHandle.getStateFlow(KEY_FILTER_QUERY, initialValue = "")
+
+    private val bookmarksState: Flow<BookmarksState> =
         combine(
             bookmarkRepository.getAllBookmarks(),
             settingsRepository.enableNSFWMode,
-            savedStateHandle.getStateFlow(KEY_FILTER_QUERY, initialValue = ""),
+            filterQuery,
         ) { bookmarks, nsfwModeEnabled, filterQuery ->
-            bookmarks
+            if (bookmarks.isEmpty()) return@combine BookmarksState.Empty
+
+            val filteredBookmarks = bookmarks
                 .filterIf(!nsfwModeEnabled) { !it.torrent.isNSFW }
                 .filterIf(filterQuery.isNotBlank()) {
                     it.torrent.name.contains(filterQuery, ignoreCase = true)
                 }
+
+            if (filteredBookmarks.isEmpty()) {
+                BookmarksState.EmptyNoMatches
+            } else {
+                BookmarksState.Ready(filteredBookmarks)
+            }
         }
 
-    val uiState = combine(
-        bookmarks,
-        settingsRepository.bookmarksSortOptions,
-        settingsRepository.showBookmarkSwipeDeleteTip,
-    ) { bookmarks, sortOptions, showSwipeDeleteTip ->
-        val sortedBookmarks = bookmarks.sortedWith(
-            createSortComparator(sortOptions.criteria, sortOptions.order)
+    val uiState: StateFlow<BookmarksUiState> =
+        combine(
+            bookmarksState,
+            bookmarkRepository.getBookmarksCount(),
+            settingsRepository.bookmarksSortOptions,
+            settingsRepository.showBookmarkSwipeDeleteTip,
+        ) {
+                bookmarksState,
+                totalBookmarksCount,
+                sortOptions,
+                showSwipeDeleteTip,
+            ->
+            val finalBookmarksState = if (bookmarksState is BookmarksState.Ready) {
+                bookmarksState.bookmarks
+                    .sortedWith(createSortComparator(sortOptions.criteria, sortOptions.order))
+                    .let(BookmarksState::Ready)
+            } else {
+                bookmarksState
+            }
+
+            BookmarksUiState(
+                bookmarksState = finalBookmarksState,
+                totalBookmarksCount = totalBookmarksCount,
+                sortOptions = sortOptions,
+                showSwipeDeleteTip = showSwipeDeleteTip,
+            )
+        }.stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5.seconds),
+            initialValue = BookmarksUiState(),
         )
-        BookmarksUiState(
-            bookmarks = sortedBookmarks,
-            sortOptions = sortOptions,
-            showSwipeDeleteTip = showSwipeDeleteTip,
-        )
-    }.stateIn(
-        scope = viewModelScope,
-        started = SharingStarted.WhileSubscribed(5.seconds),
-        initialValue = BookmarksUiState(),
-    )
+
     val torrentFileDownloadState = torrentFileDownloader.state
     val torrentFileDownloadEvents = torrentFileDownloader.events
 
