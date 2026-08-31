@@ -247,4 +247,5 @@
     <string name="tpb_unsafe_reason">Много жалоб на вирусы из-за неадекватной модерации.</string>
     <string name="therarbg_unsafe_reason">Клон оригинального RARBG с множеством фейковых торрентов. Используйте очень осторожно.</string>
     <string name="search_providers_reset_to_default_text">Активный набор поисковых систем будет сброшен до заводских настроек, и куки для систем с разблокированной защитой будут очищены.</string>
+    <string name="bookmarks_no_bookmarks_matched">Нет соответствующих закладок</string>
 </resources>
