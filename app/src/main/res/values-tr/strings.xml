@@ -90,7 +90,7 @@
     <string name="settings_group_general">Genel</string>
     <string name="settings_language">Dil</string>
     <string name="settings_enable_nsfw_mode">NSFW (Yetişkin içerikleri) modunu etkinleştir</string>
-    <string name="settings_enable_nsfw_mode_summary">Devre dışı bırakıldığında, NSFW (Yetişkin içerikleri) kategorilerini ve arama sonuçlarını gizler.</string>
+    <string name="settings_enable_nsfw_mode_summary">Devre dışı bırakıldığında, NSFW (Yetişkin içerikleri) kategorilerini ve arama sonuçlarını gizler</string>
     <string name="settings_group_search">Ara</string>
     <string name="settings_search_providers">Arama sağlayıcıları</string>
     <string name="nsfw">NSFW (Yetişkin İçerik)</string>
@@ -112,7 +112,7 @@
     <string name="settings_show_search_history_summary">Arama çubuğunda arama geçmişini göster</string>
     <string name="settings_section_advanced">Gelişmiş</string>
     <string name="settings_enable_share_integration">Paylaşım entegrasyonunu etkinleştirin</string>
-    <string name="settings_enable_share_integration_summary">Etkinleştirildiğinde, bu uygulamayı paylaşım menüsüne ekler.</string>
+    <string name="settings_enable_share_integration_summary">Etkinleştirildiğinde, bu uygulamayı paylaşım menüsüne ekler</string>
     <string name="settings_enable_quick_search">Hızlı aramayı etkinleştir</string>
     <string name="settings_enable_quick_search_summary">Etkinleştirildiğinde, bu uygulamayı metin seçim menüsüne ekler (Kopyala veya Kes gibi).</string>
     <string name="settings_group_about">Hakkında</string>
@@ -246,4 +246,6 @@
     <string name="search_error_cloudflare_challenge_encountered">Cloudflare göreviyle karşılaşıldı</string>
     <string name="home_title_enable_search_providers">Arama sağlayıcılarını etkinleştir</string>
     <string name="bookmarks_no_bookmarks_matched">Yer imi eşleşmedi</string>
+    <string name="settings_group_content_and_privacy">İçerik ve gizlilik</string>
+    <string name="settings_group_network">Ağ</string>
 </resources>
