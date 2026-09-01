@@ -101,7 +101,7 @@
     <string name="settings_dns_over_https">DNS over HTTPS（DoH）</string>
     <string name="settings_dns_over_https_label_provider">提供商</string>
     <string name="settings_dns_over_https_summary">通过安全连接解析域名，而非使用网络默认 DNS</string>
-    <string name="settings_section_about">关于</string>
+    <string name="settings_group_about">关于</string>
     <string name="settings_version">版本</string>
     <string name="settings_source_code">源代码</string>
     <string name="bookmarks_button_delete">删除</string>

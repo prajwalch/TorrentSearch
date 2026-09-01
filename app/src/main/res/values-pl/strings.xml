@@ -238,7 +238,7 @@
     <string name="settings_dns_over_https_summary">Rozwiązuje nazwy domen za pomocą bezpiecznego połączenia zamiast domyślnego serwera DNS twojej sieci</string>
     <string name="settings_export_logs_to_file">Eksportuj dzienniki do pliku</string>
     <string name="settings_export_logs_to_file_summary">Generuje plik z działaniami aplikacji, który może pomóc w rozwiązywaniu problemów</string>
-    <string name="settings_section_about">O aplikacji</string>
+    <string name="settings_group_about">O aplikacji</string>
     <string name="settings_version">Wersja</string>
     <string name="settings_source_code">Kod źródłowy</string>
     <string name="limetorrents_unsafe_reason">Technicznie rzecz biorąc, nie jest niebezpieczny, ale ignoruje wybór kategorii. Wybieraj ostrożnie.</string>

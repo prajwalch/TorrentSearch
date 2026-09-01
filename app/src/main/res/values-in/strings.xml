@@ -135,7 +135,7 @@
     <string name="settings_enable_quick_search_summary">Jika diaktifkan, menambahkan aplikasi ini ke menu pemilihan teks (seperti Salin atau Potong).</string>
     <string name="settings_export_logs_to_file">Ekspor log ke file</string>
     <string name="settings_export_logs_to_file_summary">Menghasilkan file berisi aktivitas aplikasi yang dapat membantu mengatasi masalah</string>
-    <string name="settings_section_about">Tentang</string>
+    <string name="settings_group_about">Tentang</string>
     <string name="settings_version">Versi</string>
     <string name="settings_source_code">Kode sumber</string>
     <string name="torrent_file_downloading_message">Mengunduh file torrent…</string>

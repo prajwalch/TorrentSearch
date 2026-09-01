@@ -44,7 +44,7 @@
     <string name="settings_show_search_history_summary">സേർച്ച് ബാറിൽ സേർച്ച് ഹിസ്റ്ററി കാണിക്കുക</string>
     <string name="search_history_screen_title">സേർച്ച് ഹിസ്റ്ററി</string>
     <string name="search_history_action_delete_all">എല്ലാ സേർച്ച് ഹിസ്റ്ററിയും മായ്ക്കുക</string>
-    <string name="settings_section_about">വിവരം</string>
+    <string name="settings_group_about">വിവരം</string>
     <string name="settings_version">പതിപ്പ്</string>
     <string name="settings_source_code">സോഴ്സ് കോഡ്</string>
     <string name="search_providers_action_enable_all">എല്ലാ സേർച്ച് പ്രൊവൈഡറുകളും ഓണാക്കുക</string>

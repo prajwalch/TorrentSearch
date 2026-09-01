@@ -151,7 +151,7 @@
     <string name="settings_enable_quick_search_summary">Se abilitata, aggiunge quest\'app nel menù di selezione del testo (come Copia o Taglia).</string>
     <string name="settings_export_logs_to_file">Esporta log su file</string>
     <string name="settings_export_logs_to_file_summary">Genera un file con le attività dell\'applicazione che può aiutare a investigare e risolvere problemi</string>
-    <string name="settings_section_about">About</string>
+    <string name="settings_group_about">About</string>
     <string name="settings_version">Versione</string>
     <string name="settings_source_code">Codice sorgente</string>
     <string name="limetorrents_unsafe_reason">Non è tecnicamente insicuro, ma ignora la categoria selezionata. Utilizzare con cautela.</string>

@@ -108,7 +108,7 @@
     <string name="settings_enable_share_integration_summary">Si se activa, añade esta aplicación al menú Compartir.</string>
     <string name="settings_enable_quick_search">Activar búsqueda rápida</string>
     <string name="settings_enable_quick_search_summary">Si se activa, añade esta aplicación al menú de selección de texto (junto a Copiar/Cortar).</string>
-    <string name="settings_section_about">Acerca de</string>
+    <string name="settings_group_about">Acerca de</string>
     <string name="settings_version">Versión</string>
     <string name="bookmarked_message">Marcado</string>
     <string name="settings_enable_dynamic_theme_summary">Genera un tema para la aplicación basado en el fondo de pantalla del dispositivo</string>

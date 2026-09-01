@@ -264,7 +264,7 @@
     <string name="settings_dns_over_https">DNS over HTTPS (DoH)</string>
     <string name="settings_dns_over_https_label_provider">Provider</string>
     <string name="settings_dns_over_https_summary">Resolves domain names through a secure connection instead of your network\'s default DNS</string>
-    <string name="settings_section_about">About</string>
+    <string name="settings_group_about">About</string>
     <string name="settings_export_logs_to_file">Export logs to file</string>
     <string name="settings_export_logs_to_file_summary">Generates a file with application activities that can help troubleshoot issues</string>
     <string name="settings_version">Version</string>

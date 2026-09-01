@@ -106,7 +106,7 @@
     <string name="settings_enable_share_integration_summary">وقتی فعال شود این برنامه را به منوی اشتراک‌ گذاری اضافه می‌ کند</string>
     <string name="settings_enable_quick_search">فعال کردن جستجوی سریع</string>
     <string name="settings_enable_quick_search_summary">وقتی فعال شود این برنامه را به منوی انتخاب متن اضافه می‌ کند (مانند کپی یا برش)</string>
-    <string name="settings_section_about">درباره</string>
+    <string name="settings_group_about">درباره</string>
     <string name="settings_version">نسخه</string>
     <string name="settings_source_code">کد منبع</string>
     <string name="bookmarked_message">نشانه گذاری شده</string>

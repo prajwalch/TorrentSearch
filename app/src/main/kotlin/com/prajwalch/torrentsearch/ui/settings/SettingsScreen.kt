@@ -498,7 +498,7 @@ private fun About(
     val uriHandler = LocalUriHandler.current
 
     Column(modifier = modifier) {
-        SettingsGroupName(name = R.string.settings_section_about)
+        SettingsGroupName(name = R.string.settings_group_about)
 
         SettingsListItem(
             onClick = onExportLogsToFile,

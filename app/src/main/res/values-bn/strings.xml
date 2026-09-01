@@ -112,7 +112,7 @@
     <string name="settings_enable_share_integration_summary">সক্রিয় করা হলে, শেয়ার মেনুতে এই অ্যাপটি দেখাবে</string>
     <string name="settings_enable_quick_search">দ্রুত অনুসন্ধান অন করুন</string>
     <string name="settings_enable_quick_search_summary">সক্রিয় থাকাকালীন, এই অ্যাপটি টেক্সট নির্বাচন মেনুতে (যেমন কপি বা কাট) যোগ করবে।</string>
-    <string name="settings_section_about">সম্পর্কে</string>
+    <string name="settings_group_about">সম্পর্কে</string>
     <string name="settings_version">সংস্করণ</string>
     <string name="settings_source_code">সোর্স কোড</string>
 </resources>

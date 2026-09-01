@@ -112,7 +112,7 @@
     <string name="settings_enable_share_integration_summary">Wenn aktiviert, wird diese App dem Freigabemenü hinzugefügt.</string>
     <string name="settings_enable_quick_search">Aktivieren Schnellsuche</string>
     <string name="settings_enable_quick_search_summary">Wenn aktiviert, wird diese App dem Textauswahlmenü hinzugefügt (wie Kopieren oder Ausschneiden).</string>
-    <string name="settings_section_about">Über</string>
+    <string name="settings_group_about">Über</string>
     <string name="settings_version">Version</string>
     <string name="settings_source_code">Quellcode</string>
     <string name="torznab_conn_check_result_conn_established">Verbindung aufgebaut</string>

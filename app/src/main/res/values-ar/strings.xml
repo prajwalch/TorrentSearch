@@ -113,7 +113,7 @@
     <string name="settings_enable_share_integration_summary">عند تمكينه، تتم إضافة هذا التطبيق إلى قائمة المشاركة.</string>
     <string name="settings_enable_quick_search">تمكين البحث السريع</string>
     <string name="settings_enable_quick_search_summary">عند تمكينه، تتم إضافة هذا التطبيق إلى قائمة اختيار النص (مثل النسخ أو القص).</string>
-    <string name="settings_section_about">عن</string>
+    <string name="settings_group_about">عن</string>
     <string name="settings_version">إصدار</string>
     <string name="settings_source_code">مصدر الكود</string>
     <string name="settings_save_search_history_summary">يخزن عمليات البحث الأخيرة محليًا للوصول السريع والاقتراحات</string>

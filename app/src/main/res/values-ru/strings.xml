@@ -87,7 +87,7 @@
     <string name="settings_search_providers_summary_format">Включено %1$d из %2$d</string>
     <string name="settings_default_category">Категория по умолчанию</string>
     <string name="settings_default_sort_options">Настройки сортировки по умолчанию</string>
-    <string name="settings_section_about">О приложении</string>
+    <string name="settings_group_about">О приложении</string>
     <string name="settings_version">Версия</string>
     <string name="settings_source_code">Исходный код</string>
     <string name="settings_section_sort_criteria">Критерии сортировки</string>
