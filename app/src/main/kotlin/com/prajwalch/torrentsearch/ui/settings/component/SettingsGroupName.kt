@@ -13,15 +13,15 @@ import androidx.compose.ui.text.TextStyle
 import com.prajwalch.torrentsearch.ui.theme.spaces
 
 @Composable
-fun SettingsSectionTitle(
-    @StringRes title: Int,
+fun SettingsGroupName(
+    @StringRes name: Int,
     modifier: Modifier = Modifier,
     color: Color = MaterialTheme.colorScheme.primary,
-    style: TextStyle = MaterialTheme.typography.titleSmall,
+    style: TextStyle = MaterialTheme.typography.titleMedium,
 ) {
     Text(
         modifier = modifier.padding(MaterialTheme.spaces.large),
-        text = stringResource(title),
+        text = stringResource(name),
         color = color,
         style = style,
     )

@@ -145,7 +145,7 @@
     <string name="search_providers_label_api_key">Chave de API</string>
     <string name="search_providers_button_check_connection">Verifique a conexão</string>
     <string name="settings_screen_title">Configurações</string>
-    <string name="settings_section_appearance">Aparência</string>
+    <string name="settings_group_appearance">Aparência</string>
     <string name="settings_enable_dynamic_theme">Ativar tema dinâmico</string>
     <string name="settings_enable_dynamic_theme_summary">Gera um tema para a app com base no papel de parede do dispositivo</string>
     <string name="settings_dark_theme">Tema escuro</string>
@@ -154,7 +154,7 @@
     <string name="settings_dark_theme_follow_system">Conforme sistema</string>
     <string name="settings_pure_black">Preto puro</string>
     <string name="settings_pure_black_summary">Ativa o modo de tema AMOLED</string>
-    <string name="settings_section_general">Geral</string>
+    <string name="settings_group_general">Geral</string>
     <string name="settings_language">Idioma</string>
     <string name="settings_enable_nsfw_mode">Ativar modo NSFW</string>
     <string name="settings_enable_nsfw_mode_summary">Quando desativado, oculta categorias +18 e resultados de pesquisa.</string>
@@ -165,7 +165,7 @@
     <string name="settings_clear_viewed_torrents_dialog_text">Tem certeza que deseja limpar todos os torrents vistos?</string>
     <string name="settings_clear_viewed_torrents_dialog_button_clear">Limpar</string>
     <string name="settings_clear_viewed_torrents_dialog_button_cancel">Cancelar</string>
-    <string name="settings_section_search">Pesquisa</string>
+    <string name="settings_group_search">Pesquisa</string>
     <string name="settings_search_providers">Repositórios de pesquisa</string>
     <string name="settings_search_providers_summary_format">%1$d ou %2$d ativado</string>
     <string name="settings_default_category">Categoria padrão</string>
@@ -175,7 +175,7 @@
     <string name="settings_max_num_results">Quantidade máxima de resultados</string>
     <string name="settings_max_num_results_summary_format">%1$d resultados</string>
     <string name="settings_max_num_results_button_unlimited">Ilimitado</string>
-    <string name="settings_section_search_history">Histórico de pesquisa</string>
+    <string name="settings_group_search_history">Histórico de pesquisa</string>
     <string name="settings_save_search_history">Gravar histórico de pesquisa</string>
     <string name="settings_save_search_history_summary">Armazena pesquisas recentes localmente para acesso rápido e sugestões</string>
     <string name="settings_show_search_history">Mostrar histórico de pesquisa</string>

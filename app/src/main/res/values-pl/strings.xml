@@ -191,7 +191,7 @@
     <string name="search_providers_protection_unlocked">Odblokowany</string>
     <string name="search_providers_search_hint">Dostawcy wyszukiwania</string>
     <string name="settings_screen_title">Ustawienia</string>
-    <string name="settings_section_appearance">Wygląd</string>
+    <string name="settings_group_appearance">Wygląd</string>
     <string name="settings_enable_dynamic_theme">Włącz dynamiczny motyw</string>
     <string name="settings_enable_dynamic_theme_summary">Generuje motyw aplikacji na podstawie tapety urządzenia</string>
     <string name="settings_dark_theme">Ciemny motyw</string>
@@ -200,7 +200,7 @@
     <string name="settings_dark_theme_follow_system">Systemowy</string>
     <string name="settings_pure_black">Czysta czerń</string>
     <string name="settings_pure_black_summary">Włącza tryb motywu AMOLED</string>
-    <string name="settings_section_general">Ogólne</string>
+    <string name="settings_group_general">Ogólne</string>
     <string name="settings_language">Język</string>
     <string name="settings_enable_nsfw_mode">Włącz tryb NSFW</string>
     <string name="settings_enable_nsfw_mode_summary">Gdy wyłączone, ukrywa kategorie NSFW i wyniki wyszukiwania.</string>
@@ -211,7 +211,7 @@
     <string name="settings_clear_viewed_torrents_dialog_text">Czy na pewno chcesz wyczyścić wszystkie wyświetlone torrenty?</string>
     <string name="settings_clear_viewed_torrents_dialog_button_clear">Wyczyść</string>
     <string name="settings_clear_viewed_torrents_dialog_button_cancel">Anuluj</string>
-    <string name="settings_section_search">Szukaj</string>
+    <string name="settings_group_search">Szukaj</string>
     <string name="settings_search_providers">Dostawcy wyszukiwania</string>
     <string name="settings_search_providers_summary_format">%1$d z %2$d włączono</string>
     <string name="settings_default_category">Domyślna kategoria</string>
@@ -221,7 +221,7 @@
     <string name="settings_max_num_results">Maksymalna liczba wyników</string>
     <string name="settings_max_num_results_summary_format">Wyniki: %1$d</string>
     <string name="settings_max_num_results_button_unlimited">Bez limitu</string>
-    <string name="settings_section_search_history">Historia wyszukiwania</string>
+    <string name="settings_group_search_history">Historia wyszukiwania</string>
     <string name="settings_save_search_history">Zapisz historię wyszukiwania</string>
     <string name="settings_save_search_history_summary">Przechowuje ostatnio wyszukiwane wyniki lokalnie, umożliwiając szybki dostęp i wyświetlanie sugestii</string>
     <string name="settings_show_search_history">Pokaż historię wyszukiwania</string>

@@ -15,7 +15,6 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.WhileSubscribed
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
@@ -44,7 +43,7 @@ data class HomeRelevantSettings(
 @KoinViewModel
 class HomeViewModel(
     searchHistoryRepository: SearchHistoryRepository,
-    private val settingsRepository: SettingsRepository,
+    settingsRepository: SettingsRepository,
     private val searchProvidersManager: SearchProvidersManager,
 ) : ViewModel() {
     /**
@@ -136,21 +135,6 @@ class HomeViewModel(
             started = SharingStarted.WhileSubscribed(5.seconds),
             initialValue = HomeUiState(),
         )
-
-    init {
-        loadDefaultCategory()
-    }
-
-    /**
-     * Loads the user-defined default category.
-     */
-    private fun loadDefaultCategory() = viewModelScope.launch {
-        val defaultCategory = settingsRepository.defaultCategory.firstOrNull()
-
-        if (defaultCategory != null) {
-            selectedCategory.value = defaultCategory
-        }
-    }
 
     /**
      * Sets the currently selected category to given one.

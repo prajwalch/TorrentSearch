@@ -22,14 +22,14 @@
     <string name="bookmarks_screen_title">ബുക്ക്‌മാർക്കുകൾ</string>
     <string name="bookmarks_action_delete_all">എല്ലാ ബുക്ക്‌മാർക്കുകളും മായ്ക്കുക</string>
     <string name="settings_screen_title">സെറ്റിംഗ്‌സ്</string>
-    <string name="settings_section_appearance">അപ്പിയറൻസ്</string>
+    <string name="settings_group_appearance">അപ്പിയറൻസ്</string>
     <string name="settings_enable_dynamic_theme">ഡൈനാമിക് തീം ആക്റ്റീവ് ചെയ്യുക</string>
     <string name="settings_dark_theme">ഡാർക്ക് തീം</string>
     <string name="settings_pure_black">ശുദ്ധ കറുപ്പ്</string>
-    <string name="settings_section_general">സാധാരണ</string>
+    <string name="settings_group_general">സാധാരണ</string>
     <string name="settings_language">ഭാഷ</string>
     <string name="settings_enable_nsfw_mode">NSFW മോഡ് ആക്റ്റീവ് ചെയ്യുക</string>
-    <string name="settings_section_search">സേർച്ച്</string>
+    <string name="settings_group_search">സേർച്ച്</string>
     <string name="settings_search_providers">സേർച്ച് പ്രൊവൈഡേഴ്‌സ്</string>
     <string name="settings_search_providers_summary_format">%1$d / %2$d സജീവമാണ്</string>
     <string name="settings_default_category">ഡീഫാൾട്ട് വിഭാഗം</string>
@@ -38,7 +38,7 @@
     <string name="settings_max_num_results">ഫലങ്ങളുടെ പരമാവധി എണ്ണം</string>
     <string name="settings_max_num_results_summary_format">%1$d ഫലങ്ങൾ</string>
     <string name="settings_max_num_results_button_unlimited">പരിധിയില്ല</string>
-    <string name="settings_section_search_history">സേർച്ച് ഹിസ്റ്ററി</string>
+    <string name="settings_group_search_history">സേർച്ച് ഹിസ്റ്ററി</string>
     <string name="settings_save_search_history">സേർച്ച് ഹിസ്റ്ററി സേവ് ചെയ്യുക</string>
     <string name="settings_show_search_history">സേർച്ച് ഹിസ്റ്ററി കാണിക്കുക</string>
     <string name="settings_show_search_history_summary">സേർച്ച് ബാറിൽ സേർച്ച് ഹിസ്റ്ററി കാണിക്കുക</string>

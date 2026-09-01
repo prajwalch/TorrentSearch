@@ -79,7 +79,7 @@
     <string name="search_providers_url_validation_error">ভুল লিংক</string>
     <string name="search_providers_label_api_key">APi চাবি</string>
     <string name="settings_screen_title">সেটিংস</string>
-    <string name="settings_section_appearance">চেহারা</string>
+    <string name="settings_group_appearance">চেহারা</string>
     <string name="settings_enable_dynamic_theme">ডায়নামিক থিম চালু করুন</string>
     <string name="settings_enable_dynamic_theme_summary">ডিভাইস ওয়ালপেপারের উপর ভিত্তি করে অ্যাপ থিম তৈরি করুন</string>
     <string name="settings_dark_theme">কালো থিম</string>
@@ -88,11 +88,11 @@
     <string name="settings_dark_theme_follow_system">সিস্টেম অনুসরণ করুন</string>
     <string name="settings_pure_black">একদম কালো</string>
     <string name="settings_pure_black_summary">AMOLED থিম মোড চালু</string>
-    <string name="settings_section_general">সাধারণ</string>
+    <string name="settings_group_general">সাধারণ</string>
     <string name="settings_language">ভাষা</string>
     <string name="settings_enable_nsfw_mode">অনিরাপদ চালু করুন</string>
     <string name="settings_enable_nsfw_mode_summary">বন্ধ থাকলে, নগ্নতা বিভাগ এবং অনুসন্ধান ফলাফল লুকানো থাকবে।</string>
-    <string name="settings_section_search">অনুসন্ধান</string>
+    <string name="settings_group_search">অনুসন্ধান</string>
     <string name="settings_search_providers">সরবরাহকারী অনুসন্ধান করুন</string>
     <string name="settings_search_providers_summary_format">%1$d এর %2$d চালু</string>
     <string name="settings_default_category">ডিফল্ট বিভাগ</string>
@@ -102,7 +102,7 @@
     <string name="settings_max_num_results">ফলাফলের সর্বাধিক সংখ্যা</string>
     <string name="settings_max_num_results_summary_format">%1$d ফলাফল</string>
     <string name="settings_max_num_results_button_unlimited">অসীম</string>
-    <string name="settings_section_search_history">অনুসন্ধানের ইতিহাস</string>
+    <string name="settings_group_search_history">অনুসন্ধানের ইতিহাস</string>
     <string name="settings_save_search_history">অনুসন্ধানের ইতিহাস সংরক্ষণ করুন</string>
     <string name="settings_save_search_history_summary">দ্রুত অ্যাক্সেস এবং পরামর্শের জন্য স্থানীয়ভাবে সাম্প্রতিক অনুসন্ধানগুলি সংরক্ষণ করে</string>
     <string name="settings_show_search_history">অনুসন্ধানের ইতিহাস দেখান</string>

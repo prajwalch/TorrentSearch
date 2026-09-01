@@ -111,7 +111,7 @@
     <string name="search_providers_label_api_key">API key</string>
     <string name="search_providers_button_check_connection">Controlla la connessione</string>
     <string name="settings_screen_title">Impostazioni</string>
-    <string name="settings_section_appearance">Aspetto</string>
+    <string name="settings_group_appearance">Aspetto</string>
     <string name="settings_enable_dynamic_theme">Abilita tema dinamico</string>
     <string name="settings_enable_dynamic_theme_summary">Genera il tema dell\'app sulla base dello sfondo del dispositivo</string>
     <string name="settings_dark_theme">Tema scuro</string>
@@ -120,7 +120,7 @@
     <string name="settings_dark_theme_follow_system">Utilizza impostazione di sistema</string>
     <string name="settings_pure_black">Nero puro</string>
     <string name="settings_pure_black_summary">Abilita il tema AMOLED</string>
-    <string name="settings_section_general">Generale</string>
+    <string name="settings_group_general">Generale</string>
     <string name="settings_language">Lingua</string>
     <string name="settings_enable_nsfw_mode">Abilità modalità NSFW</string>
     <string name="settings_enable_nsfw_mode_summary">Se disabilitato, nasconde categorie e risultati di ricerca NSFW.</string>
@@ -129,7 +129,7 @@
     <string name="settings_clear_viewed_torrents_dialog_text">Vuoi davvero cancellare tutti i torrent visualizzati?</string>
     <string name="settings_clear_viewed_torrents_dialog_button_clear">Cancella</string>
     <string name="settings_clear_viewed_torrents_dialog_button_cancel">Annulla</string>
-    <string name="settings_section_search">Cerca</string>
+    <string name="settings_group_search">Cerca</string>
     <string name="settings_search_providers">Provider di ricerca</string>
     <string name="settings_search_providers_summary_format">%1$d di %2$d abilitati</string>
     <string name="settings_default_category">Categoria predefinita</string>
@@ -139,7 +139,7 @@
     <string name="settings_max_num_results">Massimo numero di risultati</string>
     <string name="settings_max_num_results_summary_format">%1$d risultati</string>
     <string name="settings_max_num_results_button_unlimited">Illimitati</string>
-    <string name="settings_section_search_history">Cronologia di ricerca</string>
+    <string name="settings_group_search_history">Cronologia di ricerca</string>
     <string name="settings_save_search_history">Salva cronologia di ricerca</string>
     <string name="settings_save_search_history_summary">Salva le ricerche recenti localmente per accesso veloce e suggerimenti</string>
     <string name="settings_show_search_history">Mostra cronologia di ricerca</string>

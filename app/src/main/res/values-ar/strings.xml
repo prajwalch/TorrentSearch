@@ -81,7 +81,7 @@
     <string name="search_providers_url_validation_error">عنوان URL ليس صالحًا</string>
     <string name="search_providers_label_api_key">مفتاح API</string>
     <string name="settings_screen_title">إعدادات</string>
-    <string name="settings_section_appearance">مظهر</string>
+    <string name="settings_group_appearance">مظهر</string>
     <string name="settings_enable_dynamic_theme">تمكين السمة الديناميكية</string>
     <string name="settings_enable_dynamic_theme_summary">إنشاء سمة التطبيق بناءً على خلفية الجهاز</string>
     <string name="settings_dark_theme">المظهر الداكن</string>
@@ -90,11 +90,11 @@
     <string name="settings_dark_theme_follow_system">اتبع النظام</string>
     <string name="settings_pure_black">أسود نقي</string>
     <string name="settings_pure_black_summary">تمكين وضع سمة AMOLED</string>
-    <string name="settings_section_general">عام</string>
+    <string name="settings_group_general">عام</string>
     <string name="settings_language">اللغة</string>
     <string name="settings_enable_nsfw_mode">تمكين وضع NSFW</string>
     <string name="settings_enable_nsfw_mode_summary">عند تعطيله، يتم إخفاء فئات NSFW ونتائج البحث.</string>
-    <string name="settings_section_search">البحث</string>
+    <string name="settings_group_search">البحث</string>
     <string name="settings_search_providers">مزوّدو البحث</string>
     <string name="settings_search_providers_summary_format">تم تمكين %1$d من %2$d</string>
     <string name="settings_default_category">الفئة الافتراضية</string>
@@ -104,7 +104,7 @@
     <string name="settings_max_num_results">الحد الأقصى لعدد النتائج</string>
     <string name="settings_max_num_results_summary_format">%1$d نتيجة</string>
     <string name="settings_max_num_results_button_unlimited">غير محدود</string>
-    <string name="settings_section_search_history">‮سجل البحث</string>
+    <string name="settings_group_search_history">‮سجل البحث</string>
     <string name="settings_save_search_history">حفظ سجل البحث</string>
     <string name="settings_show_search_history">إظهار سجل البحث</string>
     <string name="settings_show_search_history_summary">إظهار سجل البحث في شريط البحث</string>

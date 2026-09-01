@@ -100,7 +100,7 @@
     <string name="search_providers_label_api_key">Kunci API</string>
     <string name="search_providers_button_check_connection">Periksa koneksi</string>
     <string name="settings_screen_title">Pengaturan</string>
-    <string name="settings_section_appearance">Tampilan</string>
+    <string name="settings_group_appearance">Tampilan</string>
     <string name="settings_enable_dynamic_theme">Aktifkan tema dinamis</string>
     <string name="settings_enable_dynamic_theme_summary">Menghasilkan tema aplikasi berdasarkan wallpaper perangkat</string>
     <string name="settings_dark_theme">Tema gelap</string>
@@ -109,11 +109,11 @@
     <string name="settings_dark_theme_follow_system">Ikuti sistem</string>
     <string name="settings_pure_black">Hitam pekat</string>
     <string name="settings_pure_black_summary">Mengaktifkan mode tema AMOLED</string>
-    <string name="settings_section_general">Umum</string>
+    <string name="settings_group_general">Umum</string>
     <string name="settings_language">Bahasa</string>
     <string name="settings_enable_nsfw_mode">Aktifkan mode NSFW</string>
     <string name="settings_enable_nsfw_mode_summary">Jika dinonaktifkan, menyembunyikan kategori dan hasil pencarian NSFW.</string>
-    <string name="settings_section_search">Pencarian</string>
+    <string name="settings_group_search">Pencarian</string>
     <string name="settings_search_providers">Penyedia pencarian</string>
     <string name="settings_search_providers_summary_format">%1$d dari %2$d diaktifkan</string>
     <string name="settings_default_category">Kategori default</string>
@@ -123,7 +123,7 @@
     <string name="settings_max_num_results">Jumlah maksimum hasil</string>
     <string name="settings_max_num_results_summary_format">%1$d hasil</string>
     <string name="settings_max_num_results_button_unlimited">Tidak terbatas</string>
-    <string name="settings_section_search_history">Riwayat pencarian</string>
+    <string name="settings_group_search_history">Riwayat pencarian</string>
     <string name="settings_save_search_history">Simpan riwayat pencarian</string>
     <string name="settings_save_search_history_summary">Menyimpan pencarian terbaru secara lokal untuk akses cepat dan saran</string>
     <string name="settings_show_search_history">Tampilkan riwayat pencarian</string>

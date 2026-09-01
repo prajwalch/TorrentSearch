@@ -65,7 +65,7 @@
     <string name="search_providers_label_name">Nombre</string>
     <string name="search_providers_url_validation_error">URL no válido</string>
     <string name="settings_screen_title">Configuración</string>
-    <string name="settings_section_appearance">Apariencia</string>
+    <string name="settings_group_appearance">Apariencia</string>
     <string name="settings_enable_dynamic_theme">Activar tema dinámico</string>
     <string name="settings_dark_theme">Tema oscuro</string>
     <string name="settings_dark_theme_on">Activado</string>
@@ -75,7 +75,7 @@
     <string name="settings_language">Idioma</string>
     <string name="settings_enable_nsfw_mode">Activar modo para adultos</string>
     <string name="settings_enable_nsfw_mode_summary">Estando desactivado, oculta categorías y resultados de búsqueda para adultos.</string>
-    <string name="settings_section_search">Buscar</string>
+    <string name="settings_group_search">Buscar</string>
     <string name="settings_search_providers">Buscar proveedores</string>
     <string name="settings_default_category">Categoría predeterminada</string>
     <string name="settings_default_sort_options">Opciones de clasificación predeterminadas</string>
@@ -83,7 +83,7 @@
     <string name="settings_section_sort_order">Orden de clasificación</string>
     <string name="settings_max_num_results">Número máximo de resultados</string>
     <string name="settings_max_num_results_button_unlimited">Ilimitado</string>
-    <string name="settings_section_search_history">Historial de búsquedas</string>
+    <string name="settings_group_search_history">Historial de búsquedas</string>
     <string name="settings_save_search_history">Guardar historial de búsquedas</string>
     <string name="settings_show_search_history">Mostrar historial de búsqueda</string>
     <string name="settings_show_search_history_summary">Mostrar historial de búsqueda en la barra de búsqueda</string>
@@ -101,7 +101,7 @@
     <string name="search_history_query_copied_message">¡Consulta copiada al portapapeles!</string>
     <string name="search_providers_label_url">URL</string>
     <string name="search_providers_label_api_key">Clave de API</string>
-    <string name="settings_section_general">General</string>
+    <string name="settings_group_general">General</string>
     <string name="settings_search_providers_summary_format">%1$d de %2$d activados</string>
     <string name="settings_max_num_results_summary_format">%1$d resultados</string>
     <string name="settings_enable_share_integration">Activar integración de compartir</string>

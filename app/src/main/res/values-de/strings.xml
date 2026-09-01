@@ -79,7 +79,7 @@
     <string name="search_providers_url_validation_error">Keine gültige URL</string>
     <string name="search_providers_label_api_key">API Schlüssel</string>
     <string name="settings_screen_title">Einstellungen</string>
-    <string name="settings_section_appearance">Darstellung</string>
+    <string name="settings_group_appearance">Darstellung</string>
     <string name="settings_enable_dynamic_theme">Dynamisches Design aktivieren</string>
     <string name="settings_enable_dynamic_theme_summary">Generiert ein App-Design basierend auf dem Gerätehintergrundbild</string>
     <string name="settings_dark_theme">Dunkles Design</string>
@@ -88,11 +88,11 @@
     <string name="settings_dark_theme_follow_system">System folgen</string>
     <string name="settings_pure_black">Pures Schwarz</string>
     <string name="settings_pure_black_summary">Aktiviert den AMOLED Design Modus</string>
-    <string name="settings_section_general">Allgemein</string>
+    <string name="settings_group_general">Allgemein</string>
     <string name="settings_language">Sprache</string>
     <string name="settings_enable_nsfw_mode">Aktivieren den NSFW Modus</string>
     <string name="settings_enable_nsfw_mode_summary">Wenn deaktiviert, werden NSFW-Kategorien und Suchergebnisse ausgeblendet.</string>
-    <string name="settings_section_search">Suche</string>
+    <string name="settings_group_search">Suche</string>
     <string name="settings_search_providers">Suchanbieter</string>
     <string name="settings_search_providers_summary_format">%1$d von %2$d aktiviert</string>
     <string name="settings_default_category">Standart Kategorie</string>
@@ -102,7 +102,7 @@
     <string name="settings_max_num_results">Maximale Anzahl an Ergebnissen</string>
     <string name="settings_max_num_results_summary_format">%1$d Ergebnisse</string>
     <string name="settings_max_num_results_button_unlimited">Unlimitiert</string>
-    <string name="settings_section_search_history">Suchverlauf</string>
+    <string name="settings_group_search_history">Suchverlauf</string>
     <string name="settings_save_search_history">Speichere den Suchverlauf</string>
     <string name="settings_save_search_history_summary">Speichert die letzten Suchanfragen lokal für schnellen Zugriff und Vorschläge</string>
     <string name="settings_show_search_history">Zeige den Suchverlauf</string>

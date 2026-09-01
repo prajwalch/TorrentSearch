@@ -5,7 +5,6 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
 
 import com.prajwalch.torrentsearch.ui.searchproviders.navigateToSearchProviders
-import com.prajwalch.torrentsearch.ui.settings.defaultcategory.DefaultCategoryScreen
 import com.prajwalch.torrentsearch.ui.settings.defaultsortoptions.DefaultSortOptionsScreen
 
 import kotlinx.serialization.Serializable
@@ -14,23 +13,15 @@ import kotlinx.serialization.Serializable
 private object Settings
 
 @Serializable
-private object DefaultCategory
-
-@Serializable
 private object DefaultSortOptions
 
 fun NavGraphBuilder.settingsNavigation(navController: NavHostController) {
     composable<Settings> {
         SettingsScreen(
             onNavigateBack = { navController.navigateUp() },
-            onNavigateToDefaultCategory = { navController.navigate(DefaultCategory) },
             onNavigateToSearchProviders = { navController.navigateToSearchProviders() },
             onNavigateToDefaultSortOptions = { navController.navigate(DefaultSortOptions) },
         )
-    }
-
-    composable<DefaultCategory> {
-        DefaultCategoryScreen(onNavigateBack = { navController.navigateUp() })
     }
 
     composable<DefaultSortOptions> {

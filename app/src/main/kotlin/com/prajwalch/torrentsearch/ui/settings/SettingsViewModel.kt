@@ -10,7 +10,6 @@ import com.prajwalch.torrentsearch.BuildConfig
 import com.prajwalch.torrentsearch.data.repository.SettingsRepository
 import com.prajwalch.torrentsearch.data.repository.ViewedTorrentRepository
 import com.prajwalch.torrentsearch.domain.SearchProvidersManager
-import com.prajwalch.torrentsearch.domain.model.Category
 import com.prajwalch.torrentsearch.domain.model.DarkTheme
 import com.prajwalch.torrentsearch.domain.model.DohProvider
 import com.prajwalch.torrentsearch.domain.model.MaxNumResults
@@ -32,9 +31,9 @@ import kotlin.time.Duration.Companion.seconds
 data class SettingsUiState(
     val appearanceSettings: AppearanceSettingsUiState = AppearanceSettingsUiState(),
     val generalSettings: GeneralSettingsUiState = GeneralSettingsUiState(),
+    val contentAndPrivacySettings: ContentAndPrivacySettingsUiState = ContentAndPrivacySettingsUiState(),
     val searchSettings: SearchSettingsUiState = SearchSettingsUiState(),
-    val searchHistorySettings: SearchHistorySettingsUiState = SearchHistorySettingsUiState(),
-    val advancedSettings: AdvancedSettingsUiState = AdvancedSettingsUiState(),
+    val networkSettings: NetworkSettingsUiState = NetworkSettingsUiState(),
 )
 
 data class AppearanceSettingsUiState(
@@ -44,13 +43,20 @@ data class AppearanceSettingsUiState(
 )
 
 data class GeneralSettingsUiState(
+    val openTorrentDetailsInApp: Boolean = true,
+    val enableShareIntegration: Boolean = true,
+    val enableQuickSearch: Boolean = true,
+)
+
+data class ContentAndPrivacySettingsUiState(
     val enableNSFWMode: Boolean = false,
     val blurNSFWImages: Boolean = true,
+    val saveSearchHistory: Boolean = true,
+    val showSearchHistory: Boolean = true,
 )
 
 data class SearchSettingsUiState(
     val searchProvidersStat: SearchProvidersStat = SearchProvidersStat(),
-    val defaultCategory: Category = Category.All,
     val defaultSortOptions: SortOptions = SortOptions(),
     val maxNumResults: MaxNumResults = MaxNumResults.Unlimited,
 ) {
@@ -60,15 +66,7 @@ data class SearchSettingsUiState(
     )
 }
 
-data class SearchHistorySettingsUiState(
-    val saveSearchHistory: Boolean = true,
-    val showSearchHistory: Boolean = true,
-)
-
-data class AdvancedSettingsUiState(
-    val openTorrentDetailsInApp: Boolean = true,
-    val enableShareIntegration: Boolean = true,
-    val enableQuickSearch: Boolean = true,
+data class NetworkSettingsUiState(
     val dohProvider: DohProvider = DohProvider.Default,
 )
 
@@ -82,9 +80,9 @@ class SettingsViewModel(
     val uiState = combine(
         settingsRepository.getAppearanceSettings(),
         settingsRepository.getGeneralSettings(),
+        settingsRepository.getContentAndPrivacySettings(),
         settingsRepository.getSearchSettings(searchProvidersManager.getProvidersCount()),
-        settingsRepository.getSearchHistorySettings(),
-        settingsRepository.getAdvancedSettings(),
+        settingsRepository.getNetworkSettings(),
         ::SettingsUiState,
     ).stateIn(
         scope = viewModelScope,
@@ -92,28 +90,24 @@ class SettingsViewModel(
         initialValue = SettingsUiState(),
     )
 
-    /** Enables/disables dynamic theme. */
     fun enableDynamicTheme(enable: Boolean) {
         viewModelScope.launch {
             settingsRepository.enableDynamicTheme(enable = enable)
         }
     }
 
-    /** Changes the dark theme mode. */
     fun setDarkTheme(darkTheme: DarkTheme) {
         viewModelScope.launch {
             settingsRepository.setDarkTheme(darkTheme = darkTheme)
         }
     }
 
-    /** Enables/disables pure black mode. */
     fun enablePureBlackTheme(enable: Boolean) {
         viewModelScope.launch {
             settingsRepository.enablePureBlack(enable = enable)
         }
     }
 
-    /** Enables/disables NSFW mode. */
     fun enableNSFWMode(enable: Boolean) {
         viewModelScope.launch {
             settingsRepository.enableNSFWMode(enable = enable)
@@ -127,31 +121,27 @@ class SettingsViewModel(
         }
     }
 
-    /** Clears the list of viewed torrents. */
     fun clearViewedTorrents() {
         viewModelScope.launch {
             viewedTorrentRepository.clearAll()
         }
     }
 
-    /** Updates the maximum number of results. */
-    fun setMaxNumResults(maxNumResults: MaxNumResults) {
-        viewModelScope.launch {
-            settingsRepository.setMaxNumResults(maxNumResults = maxNumResults)
-        }
-    }
-
-    /** Saves/unsaves search history. */
     fun enableSaveSearchHistory(save: Boolean) {
         viewModelScope.launch {
             settingsRepository.enableSaveSearchHistory(enable = save)
         }
     }
 
-    /** Shows/hides search history. */
     fun enableShowSearchHistory(show: Boolean) {
         viewModelScope.launch {
             settingsRepository.enableShowSearchHistory(show = show)
+        }
+    }
+
+    fun setMaxNumResults(maxNumResults: MaxNumResults) {
+        viewModelScope.launch {
+            settingsRepository.setMaxNumResults(maxNumResults = maxNumResults)
         }
     }
 
@@ -227,9 +217,19 @@ private fun SettingsRepository.getAppearanceSettings() =
 
 private fun SettingsRepository.getGeneralSettings() =
     combine(
+        this.openTorrentDetailsInApp,
+        this.enableShareIntegration,
+        this.enableQuickSearch,
+        ::GeneralSettingsUiState,
+    )
+
+private fun SettingsRepository.getContentAndPrivacySettings() =
+    combine(
         this.enableNSFWMode,
         this.blurNSFWImages,
-        ::GeneralSettingsUiState,
+        this.saveSearchHistory,
+        this.showSearchHistory,
+        ::ContentAndPrivacySettingsUiState,
     )
 
 private fun SettingsRepository.getSearchSettings(
@@ -243,25 +243,11 @@ private fun SettingsRepository.getSearchSettings(
 
     return combine(
         searchProvidersStat,
-        this.defaultCategory,
         this.defaultSortOptions,
         this.maxNumResults,
         ::SearchSettingsUiState,
     )
 }
 
-private fun SettingsRepository.getSearchHistorySettings() =
-    combine(
-        this.saveSearchHistory,
-        this.showSearchHistory,
-        ::SearchHistorySettingsUiState,
-    )
-
-private fun SettingsRepository.getAdvancedSettings() =
-    combine(
-        this.openTorrentDetailsInApp,
-        this.enableShareIntegration,
-        this.enableQuickSearch,
-        this.dohProvider,
-        ::AdvancedSettingsUiState,
-    )
+private fun SettingsRepository.getNetworkSettings() =
+    this.dohProvider.map(::NetworkSettingsUiState)

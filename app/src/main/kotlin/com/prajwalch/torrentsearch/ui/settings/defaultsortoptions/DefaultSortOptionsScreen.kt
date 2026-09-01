@@ -28,7 +28,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.prajwalch.torrentsearch.R
 import com.prajwalch.torrentsearch.domain.model.SortCriteria
 import com.prajwalch.torrentsearch.domain.model.SortOrder
-import com.prajwalch.torrentsearch.ui.settings.component.SettingsSectionTitle
+import com.prajwalch.torrentsearch.ui.settings.component.SettingsGroupName
 import com.prajwalch.torrentsearch.ui.sortCriteriaStringResource
 import com.prajwalch.torrentsearch.ui.sortOrderStringResource
 
@@ -103,7 +103,7 @@ private fun SortCriteriaSection(
     modifier: Modifier = Modifier,
 ) {
     Column(modifier = modifier) {
-        SettingsSectionTitle(title = R.string.settings_section_sort_criteria)
+        SettingsGroupName(name = R.string.settings_section_sort_criteria)
 
         for (criteria in SortCriteria.entries) {
             ListItem(
@@ -131,7 +131,7 @@ private fun SortOrderSection(
     modifier: Modifier = Modifier,
 ) {
     Column(modifier = modifier) {
-        SettingsSectionTitle(title = R.string.settings_section_sort_order)
+        SettingsGroupName(name = R.string.settings_section_sort_order)
 
         for (order in SortOrder.entries) {
             ListItem(

@@ -78,7 +78,7 @@
     <string name="search_providers_url_validation_error">Geçerli bir URL değil</string>
     <string name="search_providers_label_api_key">API anahtarı</string>
     <string name="settings_screen_title">Ayarlar</string>
-    <string name="settings_section_appearance">Görünüm</string>
+    <string name="settings_group_appearance">Görünüm</string>
     <string name="settings_enable_dynamic_theme">Dinamik temayı etkinleştir</string>
     <string name="settings_enable_dynamic_theme_summary">Cihaz duvar kağıdına göre uygulama teması oluşturur</string>
     <string name="settings_dark_theme">Koyu tema</string>
@@ -87,11 +87,11 @@
     <string name="settings_dark_theme_follow_system">Sistemi takip et</string>
     <string name="settings_pure_black">Saf siyah</string>
     <string name="settings_pure_black_summary">AMOLED tema modunu etkinleştirir</string>
-    <string name="settings_section_general">Genel</string>
+    <string name="settings_group_general">Genel</string>
     <string name="settings_language">Dil</string>
     <string name="settings_enable_nsfw_mode">NSFW (Yetişkin içerikleri) modunu etkinleştir</string>
     <string name="settings_enable_nsfw_mode_summary">Devre dışı bırakıldığında, NSFW (Yetişkin içerikleri) kategorilerini ve arama sonuçlarını gizler.</string>
-    <string name="settings_section_search">Ara</string>
+    <string name="settings_group_search">Ara</string>
     <string name="settings_search_providers">Arama sağlayıcıları</string>
     <string name="nsfw">NSFW (Yetişkin İçerik)</string>
     <string name="bookmarks_action_import">Dosyadan içe aktar</string>
@@ -105,7 +105,7 @@
     <string name="settings_max_num_results">Maksimum sonuç sayısı</string>
     <string name="settings_max_num_results_summary_format">%1$d sonuç</string>
     <string name="settings_max_num_results_button_unlimited">Sınırsız</string>
-    <string name="settings_section_search_history">Arama geçmişi</string>
+    <string name="settings_group_search_history">Arama geçmişi</string>
     <string name="settings_save_search_history">Arama geçmişini kaydet</string>
     <string name="settings_save_search_history_summary">Son yerel aramaları saklayarak hızlı erişim ve öneriler sunar</string>
     <string name="settings_show_search_history">Arama geçmişini göster</string>

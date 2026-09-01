@@ -2,7 +2,6 @@ package com.prajwalch.torrentsearch.ui.settings
 
 import android.content.Context
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Build
 import android.provider.Settings
@@ -48,14 +47,13 @@ import com.prajwalch.torrentsearch.constant.TorrentSearchConstants
 import com.prajwalch.torrentsearch.domain.model.DarkTheme
 import com.prajwalch.torrentsearch.domain.model.DohProvider
 import com.prajwalch.torrentsearch.domain.model.MaxNumResults
-import com.prajwalch.torrentsearch.ui.categoryStringResource
 import com.prajwalch.torrentsearch.ui.darkThemeStringResource
 import com.prajwalch.torrentsearch.ui.settings.component.ClearViewedTorrentsDialog
 import com.prajwalch.torrentsearch.ui.settings.component.DohProvidersMenu
 import com.prajwalch.torrentsearch.ui.settings.component.ExpandableItem
 import com.prajwalch.torrentsearch.ui.settings.component.MaxNumResultsDialog
+import com.prajwalch.torrentsearch.ui.settings.component.SettingsGroupName
 import com.prajwalch.torrentsearch.ui.settings.component.SettingsListItem
-import com.prajwalch.torrentsearch.ui.settings.component.SettingsSectionTitle
 import com.prajwalch.torrentsearch.ui.sortCriteriaStringResource
 import com.prajwalch.torrentsearch.ui.sortOrderStringResource
 import com.prajwalch.torrentsearch.ui.theme.spaces
@@ -66,7 +64,6 @@ import org.koin.androidx.compose.koinViewModel
 @Composable
 fun SettingsScreen(
     onNavigateBack: () -> Unit,
-    onNavigateToDefaultCategory: () -> Unit,
     onNavigateToSearchProviders: () -> Unit,
     onNavigateToDefaultSortOptions: () -> Unit,
     modifier: Modifier = Modifier,
@@ -76,7 +73,6 @@ fun SettingsScreen(
 
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
     val contentResolver = LocalContext.current.contentResolver
-
     val logsExportLocationChooser = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.CreateDocument(TorrentSearchConstants.LOGS_FILE_TYPE),
     ) { fileUri ->
@@ -86,10 +82,9 @@ fun SettingsScreen(
     }
 
     Scaffold(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxSize()
-            .nestedScroll(scrollBehavior.nestedScrollConnection)
-            .then(modifier),
+            .nestedScroll(scrollBehavior.nestedScrollConnection),
         topBar = {
             SettingsScreenTopBar(
                 onNavigateBack = onNavigateBack,
@@ -99,8 +94,8 @@ fun SettingsScreen(
     ) { innerPadding ->
         Column(
             modifier = Modifier
-                .verticalScroll(state = rememberScrollState())
-                .padding(innerPadding),
+                .padding(innerPadding)
+                .verticalScroll(state = rememberScrollState()),
         ) {
             AppearanceSettings(
                 uiState = uiState.appearanceSettings,
@@ -108,35 +103,41 @@ fun SettingsScreen(
                 onSetDarkTheme = viewModel::setDarkTheme,
                 onEnablePureBlackTheme = viewModel::enablePureBlackTheme,
             )
+
+            val packageManager = LocalContext.current.packageManager
             GeneralSettings(
                 uiState = uiState.generalSettings,
+                onEnableOpenTorrentDetailsInApp = viewModel::enableOpenTorrentDetailsInApp,
+                onEnableShareIntegration = { viewModel.enableShareIntegration(it, packageManager) },
+                onEnableQuickSearch = { viewModel.enableQuickSearch(it, packageManager) },
+            )
+
+            ContentAndPrivacySettings(
+                uiState = uiState.contentAndPrivacySettings,
                 onEnableNSFWMode = viewModel::enableNSFWMode,
                 onEnableBlurNSFWImages = viewModel::enableBlurNSFWImages,
                 onClearViewedTorrents = viewModel::clearViewedTorrents,
-            )
-            SearchSettings(
-                uiState = uiState.searchSettings,
-                onNavigateToSearchProviders = onNavigateToSearchProviders,
-                onNavigateToDefaultCategory = onNavigateToDefaultCategory,
-                onNavigateToDefaultSortOptions = onNavigateToDefaultSortOptions,
-                onSetMaxNumResults = viewModel::setMaxNumResults,
-            )
-            SearchHistorySettings(
-                uiState = uiState.searchHistorySettings,
                 onEnableSaveSearchHistory = viewModel::enableSaveSearchHistory,
                 onEnableShowSearchHistory = viewModel::enableShowSearchHistory,
             )
-            AdvancedSettings(
-                uiState = uiState.advancedSettings,
-                onEnableOpenTorrentDetailsInApp = viewModel::enableOpenTorrentDetailsInApp,
-                onEnableShareIntegration = viewModel::enableShareIntegration,
-                onEnableQuickSearch = viewModel::enableQuickSearch,
+
+            SearchSettings(
+                uiState = uiState.searchSettings,
+                onNavigateToSearchProviders = onNavigateToSearchProviders,
+                onNavigateToDefaultSortOptions = onNavigateToDefaultSortOptions,
+                onSetMaxNumResults = viewModel::setMaxNumResults,
+            )
+
+            NetworkSettings(
+                uiState = uiState.networkSettings,
                 onSetDohProvider = viewModel::setDohProvider,
+            )
+
+            About(
                 onExportLogsToFile = {
                     logsExportLocationChooser.launch(TorrentSearchConstants.APP_LOGS_FILE_NAME)
                 },
             )
-            About()
         }
     }
 }
@@ -171,8 +172,10 @@ private fun AppearanceSettings(
     onEnablePureBlackTheme: (Boolean) -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    var showDarkThemeOptions by rememberSaveable(uiState.darkTheme) { mutableStateOf(false) }
+
     Column(modifier = modifier) {
-        SettingsSectionTitle(title = R.string.settings_section_appearance)
+        SettingsGroupName(name = R.string.settings_group_appearance)
 
         // Dynamic theme is available only on Android 12+.
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
@@ -189,8 +192,6 @@ private fun AppearanceSettings(
                 },
             )
         }
-
-        var showDarkThemeOptions by rememberSaveable(uiState.darkTheme) { mutableStateOf(false) }
 
         ExpandableItem(
             title = stringResource(R.string.settings_dark_theme),
@@ -231,24 +232,13 @@ private fun AppearanceSettings(
 @Composable
 private fun GeneralSettings(
     uiState: GeneralSettingsUiState,
-    onEnableNSFWMode: (Boolean) -> Unit,
-    onEnableBlurNSFWImages: (Boolean) -> Unit,
-    onClearViewedTorrents: () -> Unit,
+    onEnableOpenTorrentDetailsInApp: (Boolean) -> Unit,
+    onEnableShareIntegration: (Boolean) -> Unit,
+    onEnableQuickSearch: (Boolean) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    var showClearViewedTorrentsDialog by rememberSaveable { mutableStateOf(false) }
-    if (showClearViewedTorrentsDialog) {
-        ClearViewedTorrentsDialog(
-            onDismiss = { showClearViewedTorrentsDialog = false },
-            onConfirm = {
-                onClearViewedTorrents()
-                showClearViewedTorrentsDialog = false
-            },
-        )
-    }
-
     Column(modifier = modifier) {
-        SettingsSectionTitle(title = R.string.settings_section_general)
+        SettingsGroupName(name = R.string.settings_group_general)
 
         // Per-app language preferences is available only on Android 13+.
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
@@ -266,6 +256,75 @@ private fun GeneralSettings(
                 },
             )
         }
+
+        SettingsListItem(
+            onClick = { onEnableOpenTorrentDetailsInApp(!uiState.openTorrentDetailsInApp) },
+            icon = R.drawable.ic_link,
+            headline = R.string.settings_open_torrent_details_in_app,
+            supportingContent = stringResource(R.string.settings_open_torrent_details_in_app_summary),
+            trailingContent = {
+                Switch(
+                    checked = uiState.openTorrentDetailsInApp,
+                    onCheckedChange = onEnableOpenTorrentDetailsInApp,
+                )
+            }
+        )
+
+        SettingsListItem(
+            onClick = { onEnableShareIntegration(!uiState.enableShareIntegration) },
+            icon = R.drawable.ic_share,
+            headline = R.string.settings_enable_share_integration,
+            supportingContent = stringResource(
+                R.string.settings_enable_share_integration_summary,
+            ),
+            trailingContent = {
+                Switch(
+                    checked = uiState.enableShareIntegration,
+                    onCheckedChange = onEnableShareIntegration,
+                )
+            },
+        )
+
+        SettingsListItem(
+            onClick = { onEnableQuickSearch(!uiState.enableQuickSearch) },
+            icon = R.drawable.ic_search,
+            headline = R.string.settings_enable_quick_search,
+            supportingContent = stringResource(
+                R.string.settings_enable_quick_search_summary,
+            ),
+            trailingContent = {
+                Switch(
+                    checked = uiState.enableQuickSearch,
+                    onCheckedChange = onEnableQuickSearch,
+                )
+            },
+        )
+    }
+}
+
+@Composable
+private fun ContentAndPrivacySettings(
+    uiState: ContentAndPrivacySettingsUiState,
+    onEnableNSFWMode: (Boolean) -> Unit,
+    onEnableBlurNSFWImages: (Boolean) -> Unit,
+    onClearViewedTorrents: () -> Unit,
+    onEnableSaveSearchHistory: (Boolean) -> Unit,
+    onEnableShowSearchHistory: (Boolean) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    var showClearViewedTorrentsDialog by rememberSaveable { mutableStateOf(false) }
+    if (showClearViewedTorrentsDialog) {
+        ClearViewedTorrentsDialog(
+            onDismiss = { showClearViewedTorrentsDialog = false },
+            onConfirm = {
+                onClearViewedTorrents()
+                showClearViewedTorrentsDialog = false
+            },
+        )
+    }
+
+    Column(modifier = modifier) {
+        SettingsGroupName(R.string.settings_group_content_and_privacy)
 
         SettingsListItem(
             onClick = { onEnableNSFWMode(!uiState.enableNSFWMode) },
@@ -299,6 +358,32 @@ private fun GeneralSettings(
             headline = R.string.settings_clear_viewed_torrents,
             supportingContent = stringResource(R.string.settings_clear_viewed_torrents_summary),
         )
+
+        SettingsListItem(
+            onClick = { onEnableSaveSearchHistory(!uiState.saveSearchHistory) },
+            icon = R.drawable.ic_search_activity,
+            headline = R.string.settings_save_search_history,
+            supportingContent = stringResource(R.string.settings_save_search_history_summary),
+            trailingContent = {
+                Switch(
+                    checked = uiState.saveSearchHistory,
+                    onCheckedChange = onEnableSaveSearchHistory,
+                )
+            },
+        )
+
+        SettingsListItem(
+            onClick = { onEnableShowSearchHistory(!uiState.showSearchHistory) },
+            icon = R.drawable.ic_history_toggle_off,
+            headline = R.string.settings_show_search_history,
+            supportingContent = stringResource(R.string.settings_show_search_history_summary),
+            trailingContent = {
+                Switch(
+                    checked = uiState.showSearchHistory,
+                    onCheckedChange = onEnableShowSearchHistory,
+                )
+            },
+        )
     }
 }
 
@@ -306,7 +391,6 @@ private fun GeneralSettings(
 private fun SearchSettings(
     uiState: SearchSettingsUiState,
     onNavigateToSearchProviders: () -> Unit,
-    onNavigateToDefaultCategory: () -> Unit,
     onNavigateToDefaultSortOptions: () -> Unit,
     onSetMaxNumResults: (MaxNumResults) -> Unit,
     modifier: Modifier = Modifier,
@@ -325,7 +409,8 @@ private fun SearchSettings(
     }
 
     Column(modifier = modifier) {
-        SettingsSectionTitle(title = R.string.settings_section_search)
+        SettingsGroupName(name = R.string.settings_group_search)
+
         SettingsListItem(
             onClick = onNavigateToSearchProviders,
             icon = R.drawable.ic_travel_explore,
@@ -335,18 +420,6 @@ private fun SearchSettings(
                 uiState.searchProvidersStat.enabledSearchProvidersCount,
                 uiState.searchProvidersStat.totalSearchProvidersCount,
             ),
-            trailingContent = {
-                Icon(
-                    painter = painterResource(R.drawable.ic_arrow_forward),
-                    contentDescription = null,
-                )
-            },
-        )
-        SettingsListItem(
-            onClick = onNavigateToDefaultCategory,
-            icon = R.drawable.ic_category_search,
-            headline = R.string.settings_default_category,
-            supportingContent = categoryStringResource(uiState.defaultCategory),
             trailingContent = {
                 Icon(
                     painter = painterResource(R.drawable.ic_arrow_forward),
@@ -369,6 +442,7 @@ private fun SearchSettings(
                 )
             },
         )
+
         SettingsListItem(
             onClick = { showMaxNumResultsDialog = true },
             icon = R.drawable.ic_format_list_numbered,
@@ -383,100 +457,15 @@ private fun SearchSettings(
 }
 
 @Composable
-private fun SearchHistorySettings(
-    uiState: SearchHistorySettingsUiState,
-    onEnableSaveSearchHistory: (Boolean) -> Unit,
-    onEnableShowSearchHistory: (Boolean) -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    Column(modifier = modifier) {
-        SettingsSectionTitle(title = R.string.settings_section_search_history)
-        SettingsListItem(
-            onClick = { onEnableSaveSearchHistory(!uiState.saveSearchHistory) },
-            icon = R.drawable.ic_search_activity,
-            headline = R.string.settings_save_search_history,
-            supportingContent = stringResource(R.string.settings_save_search_history_summary),
-            trailingContent = {
-                Switch(
-                    checked = uiState.saveSearchHistory,
-                    onCheckedChange = onEnableSaveSearchHistory,
-                )
-            },
-        )
-        SettingsListItem(
-            onClick = { onEnableShowSearchHistory(!uiState.showSearchHistory) },
-            icon = R.drawable.ic_history_toggle_off,
-            headline = R.string.settings_show_search_history,
-            supportingContent = stringResource(R.string.settings_show_search_history_summary),
-            trailingContent = {
-                Switch(
-                    checked = uiState.showSearchHistory,
-                    onCheckedChange = onEnableShowSearchHistory,
-                )
-            },
-        )
-    }
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-private fun AdvancedSettings(
-    uiState: AdvancedSettingsUiState,
-    onEnableOpenTorrentDetailsInApp: (Boolean) -> Unit,
-    onEnableShareIntegration: (Boolean, PackageManager) -> Unit,
-    onEnableQuickSearch: (Boolean, PackageManager) -> Unit,
+private fun NetworkSettings(
+    uiState: NetworkSettingsUiState,
     onSetDohProvider: (DohProvider) -> Unit,
-    onExportLogsToFile: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val context = LocalContext.current
-    val packageManager = context.packageManager
+    var showDohProviders by rememberSaveable(uiState.dohProvider) { mutableStateOf(false) }
 
     Column(modifier = modifier) {
-        SettingsSectionTitle(R.string.settings_section_advanced)
-
-        SettingsListItem(
-            onClick = { onEnableOpenTorrentDetailsInApp(!uiState.openTorrentDetailsInApp) },
-            icon = R.drawable.ic_link,
-            headline = R.string.settings_open_torrent_details_in_app,
-            supportingContent = stringResource(R.string.settings_open_torrent_details_in_app_summary),
-            trailingContent = {
-                Switch(
-                    checked = uiState.openTorrentDetailsInApp,
-                    onCheckedChange = onEnableOpenTorrentDetailsInApp,
-                )
-            }
-        )
-        SettingsListItem(
-            onClick = { onEnableShareIntegration(!uiState.enableShareIntegration, packageManager) },
-            icon = R.drawable.ic_share,
-            headline = R.string.settings_enable_share_integration,
-            supportingContent = stringResource(
-                R.string.settings_enable_share_integration_summary,
-            ),
-            trailingContent = {
-                Switch(
-                    checked = uiState.enableShareIntegration,
-                    onCheckedChange = { onEnableShareIntegration(it, packageManager) },
-                )
-            },
-        )
-        SettingsListItem(
-            onClick = { onEnableQuickSearch(!uiState.enableQuickSearch, packageManager) },
-            icon = R.drawable.ic_search,
-            headline = R.string.settings_enable_quick_search,
-            supportingContent = stringResource(
-                R.string.settings_enable_quick_search_summary,
-            ),
-            trailingContent = {
-                Switch(
-                    checked = uiState.enableQuickSearch,
-                    onCheckedChange = { onEnableQuickSearch(it, packageManager) },
-                )
-            },
-        )
-
-        var showDohProviders by rememberSaveable(uiState.dohProvider) { mutableStateOf(false) }
+        SettingsGroupName(R.string.settings_group_network)
 
         ListItem(
             leadingContent = {
@@ -498,6 +487,18 @@ private fun AdvancedSettings(
                 }
             },
         )
+    }
+}
+
+@Composable
+private fun About(
+    onExportLogsToFile: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    val uriHandler = LocalUriHandler.current
+
+    Column(modifier = modifier) {
+        SettingsGroupName(name = R.string.settings_section_about)
 
         SettingsListItem(
             onClick = onExportLogsToFile,
@@ -511,15 +512,7 @@ private fun AdvancedSettings(
                 )
             },
         )
-    }
-}
 
-@Composable
-private fun About(modifier: Modifier = Modifier) {
-    val uriHandler = LocalUriHandler.current
-
-    Column(modifier = modifier) {
-        SettingsSectionTitle(title = R.string.settings_section_about)
         SettingsListItem(
             onClick = { uriHandler.openUri(uri = TorrentSearchConstants.GITHUB_RELEASE_URL) },
             icon = R.drawable.ic_info,
@@ -532,6 +525,7 @@ private fun About(modifier: Modifier = Modifier) {
                 )
             },
         )
+
         SettingsListItem(
             onClick = { uriHandler.openUri(uri = TorrentSearchConstants.GITHUB_REPO_URL) },
             icon = R.drawable.ic_code,
