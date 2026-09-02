@@ -203,7 +203,7 @@
     <string name="settings_group_general">Ogólne</string>
     <string name="settings_language">Język</string>
     <string name="settings_enable_nsfw_mode">Włącz tryb NSFW</string>
-    <string name="settings_enable_nsfw_mode_summary">Gdy wyłączone, ukrywa kategorie NSFW i wyniki wyszukiwania.</string>
+    <string name="settings_enable_nsfw_mode_summary">Gdy wyłączone, ukrywa kategorie NSFW i wyniki wyszukiwania</string>
     <string name="settings_blur_nsfw_images">Rozmyj obrazy NSFW</string>
     <string name="settings_blur_nsfw_images_summary">Automatycznie rozmywa obrazy NSFW</string>
     <string name="settings_clear_viewed_torrents">Wyczyść wyświetlone torrenty</string>
@@ -230,9 +230,9 @@
     <string name="settings_open_torrent_details_in_app">Otwórz szczegóły torrenta w aplikacji</string>
     <string name="settings_open_torrent_details_in_app_summary">Otwiera szczegóły torrenta bezpośrednio na ekranie natywnym aplikacji</string>
     <string name="settings_enable_share_integration">Włącz integrację udostępniania</string>
-    <string name="settings_enable_share_integration_summary">Po włączeniu dodaje tę aplikację do menu udostępniania.</string>
+    <string name="settings_enable_share_integration_summary">Po włączeniu dodaje tę aplikację do menu udostępniania</string>
     <string name="settings_enable_quick_search">Włącz szybkie wyszukiwanie</string>
-    <string name="settings_enable_quick_search_summary">Po włączeniu dodaje tę aplikację do menu wyboru tekstu (takiego jak Kopiuj lub Wytnij).</string>
+    <string name="settings_enable_quick_search_summary">Po włączeniu dodaje tę aplikację do menu wyboru tekstu (takiego jak Kopiuj lub Wytnij)</string>
     <string name="settings_dns_over_https">DNS przez HTTPS (DoH)</string>
     <string name="settings_dns_over_https_label_provider">Dostawca</string>
     <string name="settings_dns_over_https_summary">Rozwiązuje nazwy domen za pomocą bezpiecznego połączenia zamiast domyślnego serwera DNS twojej sieci</string>
@@ -244,4 +244,7 @@
     <string name="limetorrents_unsafe_reason">Technicznie rzecz biorąc, nie jest niebezpieczny, ale ignoruje wybór kategorii. Wybieraj ostrożnie.</string>
     <string name="tpb_unsafe_reason">Wiele zgłoszeń o złośliwym oprogramowaniu wynika z nieodpowiedniej moderacji.</string>
     <string name="therarbg_unsafe_reason">Klon oryginalnego RARBG z wieloma fałszywymi torrentami. Zachowaj szczególną ostrożność.</string>
+    <string name="bookmarks_no_bookmarks_matched">Brak pasujących zakładek</string>
+    <string name="settings_group_content_and_privacy">Treść i prywatność</string>
+    <string name="settings_group_network">Sieć</string>
 </resources>
