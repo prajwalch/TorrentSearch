@@ -81,7 +81,7 @@
     <string name="settings_group_general">Общие</string>
     <string name="settings_language">Язык</string>
     <string name="settings_enable_nsfw_mode">Включить режим для взрослых</string>
-    <string name="settings_enable_nsfw_mode_summary">Выключите, чтобы скрыть категории для взрослых и результаты поиска.</string>
+    <string name="settings_enable_nsfw_mode_summary">Выключите, чтобы скрыть категории для взрослых и результаты поиска</string>
     <string name="settings_group_search">Поиск</string>
     <string name="settings_search_providers">Поисковые системы</string>
     <string name="settings_search_providers_summary_format">Включено %1$d из %2$d</string>
@@ -101,9 +101,9 @@
     <string name="settings_show_search_history_summary">Показывать историю в панели поиска</string>
     <string name="settings_section_advanced">Дополнительное</string>
     <string name="settings_enable_share_integration">Включить интеграцию в \"Поделиться\"</string>
-    <string name="settings_enable_share_integration_summary">Включите, чтобы приложение отображалось в меню \"Поделиться\".</string>
+    <string name="settings_enable_share_integration_summary">Включите, чтобы приложение отображалось в меню \"Поделиться\"</string>
     <string name="settings_enable_quick_search">Включить быстрый поиск</string>
-    <string name="settings_enable_quick_search_summary">Включите, чтобы добавить приложение в меню выбора текста (рядом с \"Скопировать\" и \"Вставить\").</string>
+    <string name="settings_enable_quick_search_summary">Включите, чтобы добавить приложение в меню выбора текста (рядом с \"Скопировать\" и \"Вставить\")</string>
     <string name="bookmarked_message">Добавлен в закладки</string>
     <string name="bookmarks_dialog_title_delete_all">Удалить все закладки?</string>
     <string name="bookmarks_dialog_message_delete_all">Все закладки будут безвозвратно удалены</string>
@@ -248,4 +248,6 @@
     <string name="therarbg_unsafe_reason">Клон оригинального RARBG с множеством фейковых торрентов. Используйте очень осторожно.</string>
     <string name="search_providers_reset_to_default_text">Активный набор поисковых систем будет сброшен до заводских настроек, и куки для систем с разблокированной защитой будут очищены.</string>
     <string name="bookmarks_no_bookmarks_matched">Нет соответствующих закладок</string>
+    <string name="settings_group_content_and_privacy">Контент и приватность</string>
+    <string name="settings_group_network">Сеть</string>
 </resources>
