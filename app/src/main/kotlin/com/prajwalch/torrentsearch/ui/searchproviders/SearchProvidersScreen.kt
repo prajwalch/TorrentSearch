@@ -1,9 +1,12 @@
 package com.prajwalch.torrentsearch.ui.searchproviders
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
@@ -23,6 +26,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.input.nestedscroll.nestedScroll
@@ -34,6 +38,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 
 import com.prajwalch.torrentsearch.R
 import com.prajwalch.torrentsearch.providers.SearchProviderId
+import com.prajwalch.torrentsearch.ui.component.FilterSearchBar
 import com.prajwalch.torrentsearch.ui.searchproviders.component.CloudflareChallengeBottomSheet
 import com.prajwalch.torrentsearch.ui.searchproviders.component.ResetToDefaultDialog
 import com.prajwalch.torrentsearch.ui.searchproviders.component.SearchProviderFilterRow
@@ -41,15 +46,20 @@ import com.prajwalch.torrentsearch.ui.searchproviders.component.SearchProviderLi
 import com.prajwalch.torrentsearch.ui.searchproviders.component.SearchProvidersScreenTopBar
 import com.prajwalch.torrentsearch.ui.theme.spaces
 
+import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.launch
 
 import org.koin.androidx.compose.koinViewModel
+
+import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Duration.Companion.seconds
 
 private typealias ProtectedProvider = Pair<SearchProviderId, String>
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, FlowPreview::class)
 @Composable
 fun SearchProvidersScreen(
     onNavigateBack: () -> Unit,
@@ -127,6 +137,18 @@ fun SearchProvidersScreen(
         )
     }
 
+    var showSearchBar by rememberSaveable { mutableStateOf(false) }
+    val textFieldState = rememberTextFieldState()
+
+    if (showSearchBar) {
+        LaunchedEffect(Unit) {
+            snapshotFlow { textFieldState.text }
+                .drop(1)
+                .debounce(500.milliseconds)
+                .collect { viewModel.filterSearchProviders(it.toString()) }
+        }
+    }
+
     Scaffold(
         modifier = Modifier
             .fillMaxSize()
@@ -135,7 +157,7 @@ fun SearchProvidersScreen(
         topBar = {
             SearchProvidersScreenTopBar(
                 onNavigateBack = onNavigateBack,
-                onFilterSearchProviders = viewModel::filterSearchProviders,
+                onToggleSearchBar = { showSearchBar = !showSearchBar },
                 onEnableAll = viewModel::enableAllSearchProviders,
                 onDisableAll = viewModel::disableAllSearchProviders,
                 onUpdateProtectionStatus = viewModel::updateProtectionStatus,
@@ -162,13 +184,27 @@ fun SearchProvidersScreen(
         },
     ) { innerPadding ->
         Column(modifier = Modifier.padding(innerPadding)) {
-            SearchProviderFilterRow(
-                modifier = Modifier.padding(horizontal = MaterialTheme.spaces.large),
-                category = uiState.filter.category,
-                onCategorySelect = viewModel::toggleCategory,
-                protection = uiState.filter.protection,
-                onProtectionSelect = viewModel::toggleProviderProtection,
-            )
+            Column(modifier = Modifier.padding(horizontal = MaterialTheme.spaces.large)) {
+                AnimatedVisibility(visible = showSearchBar) {
+                    FilterSearchBar(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(top = MaterialTheme.spaces.small),
+                        textFieldState = textFieldState,
+                        placeholder = {
+                            Text(stringResource(R.string.search_providers_search_hint))
+                        },
+                    )
+                }
+
+                SearchProviderFilterRow(
+                    category = uiState.filter.category,
+                    onCategorySelect = viewModel::toggleCategory,
+                    protection = uiState.filter.protection,
+                    onProtectionSelect = viewModel::toggleProviderProtection,
+                )
+            }
+
             SearchProviderList(
                 modifier = Modifier
                     .weight(1f)
