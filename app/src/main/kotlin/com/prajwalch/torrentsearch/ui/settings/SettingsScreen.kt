@@ -8,20 +8,23 @@ import android.provider.Settings
 
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.annotation.DrawableRes
 import androidx.annotation.RequiresApi
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.plus
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
@@ -39,6 +42,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 
 import com.prajwalch.torrentsearch.BuildConfig
@@ -49,10 +53,12 @@ import com.prajwalch.torrentsearch.domain.model.DohProvider
 import com.prajwalch.torrentsearch.domain.model.MaxNumResults
 import com.prajwalch.torrentsearch.ui.darkThemeStringResource
 import com.prajwalch.torrentsearch.ui.settings.component.ClearViewedTorrentsDialog
+import com.prajwalch.torrentsearch.ui.settings.component.DarkThemeOption
 import com.prajwalch.torrentsearch.ui.settings.component.DohProvidersMenu
-import com.prajwalch.torrentsearch.ui.settings.component.ExpandableItem
 import com.prajwalch.torrentsearch.ui.settings.component.MaxNumResultsDialog
-import com.prajwalch.torrentsearch.ui.settings.component.SettingsGroupName
+import com.prajwalch.torrentsearch.ui.settings.component.SectionTitle
+import com.prajwalch.torrentsearch.ui.settings.component.SettingsGroup
+import com.prajwalch.torrentsearch.ui.settings.component.SettingsItemCard
 import com.prajwalch.torrentsearch.ui.settings.component.SettingsListItem
 import com.prajwalch.torrentsearch.ui.sortCriteriaStringResource
 import com.prajwalch.torrentsearch.ui.sortOrderStringResource
@@ -94,10 +100,11 @@ fun SettingsScreen(
     ) { innerPadding ->
         Column(
             modifier = Modifier
-                .padding(innerPadding)
+                .padding(innerPadding + PaddingValues(horizontal = MaterialTheme.spaces.large))
                 .verticalScroll(state = rememberScrollState()),
+            verticalArrangement = Arrangement.spacedBy(MaterialTheme.spaces.large),
         ) {
-            AppearanceSettings(
+            AppearanceSection(
                 uiState = uiState.appearanceSettings,
                 onEnableDynamicTheme = viewModel::enableDynamicTheme,
                 onSetDarkTheme = viewModel::setDarkTheme,
@@ -105,14 +112,14 @@ fun SettingsScreen(
             )
 
             val packageManager = LocalContext.current.packageManager
-            GeneralSettings(
+            GeneralSection(
                 uiState = uiState.generalSettings,
                 onEnableOpenTorrentDetailsInApp = viewModel::enableOpenTorrentDetailsInApp,
                 onEnableShareIntegration = { viewModel.enableShareIntegration(it, packageManager) },
                 onEnableQuickSearch = { viewModel.enableQuickSearch(it, packageManager) },
             )
 
-            ContentAndPrivacySettings(
+            ContentAndPrivacySection(
                 uiState = uiState.contentAndPrivacySettings,
                 onEnableNSFWMode = viewModel::enableNSFWMode,
                 onEnableBlurNSFWImages = viewModel::enableBlurNSFWImages,
@@ -121,23 +128,25 @@ fun SettingsScreen(
                 onEnableShowSearchHistory = viewModel::enableShowSearchHistory,
             )
 
-            SearchSettings(
+            SearchSection(
                 uiState = uiState.searchSettings,
                 onNavigateToSearchProviders = onNavigateToSearchProviders,
                 onNavigateToDefaultSortOptions = onNavigateToDefaultSortOptions,
                 onSetMaxNumResults = viewModel::setMaxNumResults,
             )
 
-            NetworkSettings(
+            NetworkSection(
                 uiState = uiState.networkSettings,
                 onSetDohProvider = viewModel::setDohProvider,
             )
 
-            About(
+            AboutSection(
                 onExportLogsToFile = {
                     logsExportLocationChooser.launch(TorrentSearchConstants.APP_LOGS_FILE_NAME)
                 },
             )
+
+            Spacer(Modifier.height(MaterialTheme.spaces.large))
         }
     }
 }
@@ -165,145 +174,163 @@ private fun SettingsScreenTopBar(
 }
 
 @Composable
-private fun AppearanceSettings(
+private fun AppearanceSection(
     uiState: AppearanceSettingsUiState,
     onEnableDynamicTheme: (Boolean) -> Unit,
     onSetDarkTheme: (DarkTheme) -> Unit,
     onEnablePureBlackTheme: (Boolean) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    var showDarkThemeOptions by rememberSaveable(uiState.darkTheme) { mutableStateOf(false) }
+    Column(
+        modifier = modifier,
+        verticalArrangement = Arrangement.spacedBy(MaterialTheme.spaces.large),
+    ) {
+        SectionTitle(stringResource(R.string.settings_group_appearance))
 
-    Column(modifier = modifier) {
-        SettingsGroupName(name = R.string.settings_group_appearance)
+        SettingsGroup {
+            // Dynamic theme is available only on Android 12+.
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                SettingsListItem(
+                    onClick = { onEnableDynamicTheme(!uiState.enableDynamicTheme) },
+                    leadingIcon = painterResource(R.drawable.ic_palette),
+                    title = stringResource(R.string.settings_enable_dynamic_theme),
+                    subtitle = stringResource(R.string.settings_enable_dynamic_theme_summary),
+                    trailingContent = {
+                        Switch(
+                            checked = uiState.enableDynamicTheme,
+                            onCheckedChange = onEnableDynamicTheme,
+                        )
+                    },
+                )
+            }
 
-        // Dynamic theme is available only on Android 12+.
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            SettingsItemCard(
+                leadingIcon = painterResource(R.drawable.ic_dark_mode),
+                title = stringResource(R.string.settings_dark_theme),
+            ) {
+                Row(horizontalArrangement = Arrangement.spacedBy(MaterialTheme.spaces.small)) {
+                    DarkTheme.entries.forEach {
+                        DarkThemeOption(
+                            modifier = Modifier.weight(1f),
+                            onClick = { onSetDarkTheme(it) },
+                            selected = uiState.darkTheme == it,
+                            icon = painterResource(it.iconResId()),
+                            label = darkThemeStringResource(it),
+                        )
+                    }
+                }
+            }
+
             SettingsListItem(
-                onClick = { onEnableDynamicTheme(!uiState.enableDynamicTheme) },
-                icon = R.drawable.ic_palette,
-                headline = R.string.settings_enable_dynamic_theme,
-                supportingContent = stringResource(R.string.settings_enable_dynamic_theme_summary),
+                onClick = { onEnablePureBlackTheme(!uiState.pureBlack) },
+                leadingIcon = painterResource(R.drawable.ic_contrast),
+                title = stringResource(R.string.settings_pure_black),
+                subtitle = stringResource(R.string.settings_pure_black_summary),
                 trailingContent = {
                     Switch(
-                        checked = uiState.enableDynamicTheme,
-                        onCheckedChange = onEnableDynamicTheme,
+                        checked = uiState.pureBlack,
+                        onCheckedChange = onEnablePureBlackTheme,
                     )
                 },
             )
         }
-
-        ExpandableItem(
-            title = stringResource(R.string.settings_dark_theme),
-            subtitle = darkThemeStringResource(uiState.darkTheme),
-            isExpanded = showDarkThemeOptions,
-            onToggle = { showDarkThemeOptions = !showDarkThemeOptions },
-            icon = R.drawable.ic_dark_mode,
-        ) {
-            DarkTheme.entries.forEach { theme ->
-                ListItem(
-                    modifier = Modifier.clickable { onSetDarkTheme(theme) },
-                    leadingContent = {
-                        RadioButton(
-                            selected = uiState.darkTheme == theme,
-                            onClick = { onSetDarkTheme(theme) },
-                        )
-                    },
-                    headlineContent = { Text(darkThemeStringResource(theme)) },
-                )
-            }
-        }
-
-        SettingsListItem(
-            onClick = { onEnablePureBlackTheme(!uiState.pureBlack) },
-            icon = R.drawable.ic_contrast,
-            headline = R.string.settings_pure_black,
-            supportingContent = stringResource(R.string.settings_pure_black_summary),
-            trailingContent = {
-                Switch(
-                    checked = uiState.pureBlack,
-                    onCheckedChange = onEnablePureBlackTheme,
-                )
-            },
-        )
     }
 }
 
+@DrawableRes
+private fun DarkTheme.iconResId(): Int = when (this) {
+    DarkTheme.On -> R.drawable.ic_dark_mode
+    DarkTheme.Off -> R.drawable.ic_light_mode
+    DarkTheme.FollowSystem -> R.drawable.ic_phone_android
+}
+
 @Composable
-private fun GeneralSettings(
+private fun GeneralSection(
     uiState: GeneralSettingsUiState,
     onEnableOpenTorrentDetailsInApp: (Boolean) -> Unit,
     onEnableShareIntegration: (Boolean) -> Unit,
     onEnableQuickSearch: (Boolean) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    Column(modifier = modifier) {
-        SettingsGroupName(name = R.string.settings_group_general)
+    Column(
+        modifier = modifier,
+        verticalArrangement = Arrangement.spacedBy(MaterialTheme.spaces.large),
+    ) {
+        SectionTitle(stringResource(R.string.settings_group_general))
 
-        // Per-app language preferences is available only on Android 13+.
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            val context = LocalContext.current
+        SettingsGroup {
+            // Per-app language preferences is available only on Android 13+.
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                val context = LocalContext.current
+
+                SettingsListItem(
+                    onClick = { context.openAppLocaleSettings() },
+                    leadingIcon = painterResource(R.drawable.ic_language),
+                    title = stringResource(R.string.settings_language),
+                    trailingContent = {
+                        Icon(
+                            painter = painterResource(R.drawable.ic_arrow_forward),
+                            contentDescription = null,
+                        )
+                    },
+                )
+            }
 
             SettingsListItem(
-                onClick = { context.openAppLocaleSettings() },
-                icon = R.drawable.ic_language,
-                headline = R.string.settings_language,
+                onClick = { onEnableOpenTorrentDetailsInApp(!uiState.openTorrentDetailsInApp) },
+                leadingIcon = painterResource(R.drawable.ic_link),
+                title = stringResource(R.string.settings_open_torrent_details_in_app),
+                subtitle = stringResource(R.string.settings_open_torrent_details_in_app_summary),
                 trailingContent = {
-                    Icon(
-                        painter = painterResource(R.drawable.ic_arrow_forward),
-                        contentDescription = null,
+                    Switch(
+                        checked = uiState.openTorrentDetailsInApp,
+                        onCheckedChange = onEnableOpenTorrentDetailsInApp,
+                    )
+                },
+            )
+
+            SettingsListItem(
+                onClick = { onEnableShareIntegration(!uiState.enableShareIntegration) },
+                leadingIcon = painterResource(R.drawable.ic_share),
+                title = stringResource(R.string.settings_enable_share_integration),
+                subtitle = stringResource(R.string.settings_enable_share_integration_summary),
+                trailingContent = {
+                    Switch(
+                        checked = uiState.enableShareIntegration,
+                        onCheckedChange = onEnableShareIntegration,
+                    )
+                },
+            )
+
+            SettingsListItem(
+                onClick = { onEnableQuickSearch(!uiState.enableQuickSearch) },
+                leadingIcon = painterResource(R.drawable.ic_search),
+                title = stringResource(R.string.settings_enable_quick_search),
+                subtitle = stringResource(R.string.settings_enable_quick_search_summary),
+                trailingContent = {
+                    Switch(
+                        checked = uiState.enableQuickSearch,
+                        onCheckedChange = onEnableQuickSearch,
                     )
                 },
             )
         }
-
-        SettingsListItem(
-            onClick = { onEnableOpenTorrentDetailsInApp(!uiState.openTorrentDetailsInApp) },
-            icon = R.drawable.ic_link,
-            headline = R.string.settings_open_torrent_details_in_app,
-            supportingContent = stringResource(R.string.settings_open_torrent_details_in_app_summary),
-            trailingContent = {
-                Switch(
-                    checked = uiState.openTorrentDetailsInApp,
-                    onCheckedChange = onEnableOpenTorrentDetailsInApp,
-                )
-            }
-        )
-
-        SettingsListItem(
-            onClick = { onEnableShareIntegration(!uiState.enableShareIntegration) },
-            icon = R.drawable.ic_share,
-            headline = R.string.settings_enable_share_integration,
-            supportingContent = stringResource(
-                R.string.settings_enable_share_integration_summary,
-            ),
-            trailingContent = {
-                Switch(
-                    checked = uiState.enableShareIntegration,
-                    onCheckedChange = onEnableShareIntegration,
-                )
-            },
-        )
-
-        SettingsListItem(
-            onClick = { onEnableQuickSearch(!uiState.enableQuickSearch) },
-            icon = R.drawable.ic_search,
-            headline = R.string.settings_enable_quick_search,
-            supportingContent = stringResource(
-                R.string.settings_enable_quick_search_summary,
-            ),
-            trailingContent = {
-                Switch(
-                    checked = uiState.enableQuickSearch,
-                    onCheckedChange = onEnableQuickSearch,
-                )
-            },
-        )
     }
 }
 
+@RequiresApi(Build.VERSION_CODES.TIRAMISU)
+private fun Context.openAppLocaleSettings() {
+    val appUri = Uri.fromParts("package", this.packageName, null)
+    val localeSettingsIntent = Intent().apply {
+        action = Settings.ACTION_APP_LOCALE_SETTINGS
+        data = appUri
+    }
+
+    this.startActivity(localeSettingsIntent)
+}
+
 @Composable
-private fun ContentAndPrivacySettings(
+private fun ContentAndPrivacySection(
     uiState: ContentAndPrivacySettingsUiState,
     onEnableNSFWMode: (Boolean) -> Unit,
     onEnableBlurNSFWImages: (Boolean) -> Unit,
@@ -323,72 +350,77 @@ private fun ContentAndPrivacySettings(
         )
     }
 
-    Column(modifier = modifier) {
-        SettingsGroupName(R.string.settings_group_content_and_privacy)
+    Column(
+        modifier = modifier,
+        verticalArrangement = Arrangement.spacedBy(MaterialTheme.spaces.large),
+    ) {
+        SectionTitle(stringResource(R.string.settings_group_content_and_privacy))
 
-        SettingsListItem(
-            onClick = { onEnableNSFWMode(!uiState.enableNSFWMode) },
-            icon = R.drawable.ic_18_up_rating,
-            headline = R.string.settings_enable_nsfw_mode,
-            supportingContent = stringResource(R.string.settings_enable_nsfw_mode_summary),
-            trailingContent = {
-                Switch(
-                    checked = uiState.enableNSFWMode,
-                    onCheckedChange = onEnableNSFWMode,
-                )
-            },
-        )
+        SettingsGroup {
+            SettingsListItem(
+                onClick = { onEnableNSFWMode(!uiState.enableNSFWMode) },
+                leadingIcon = painterResource(R.drawable.ic_18_up_rating),
+                title = stringResource(R.string.settings_enable_nsfw_mode),
+                subtitle = stringResource(R.string.settings_enable_nsfw_mode_summary),
+                trailingContent = {
+                    Switch(
+                        checked = uiState.enableNSFWMode,
+                        onCheckedChange = onEnableNSFWMode,
+                    )
+                },
+            )
 
-        SettingsListItem(
-            onClick = { onEnableBlurNSFWImages(!uiState.blurNSFWImages) },
-            icon = R.drawable.ic_18_up_rating,
-            headline = R.string.settings_blur_nsfw_images,
-            supportingContent = stringResource(R.string.settings_blur_nsfw_images_summary),
-            trailingContent = {
-                Switch(
-                    checked = uiState.blurNSFWImages,
-                    onCheckedChange = onEnableBlurNSFWImages,
-                )
-            }
-        )
+            SettingsListItem(
+                onClick = { onEnableBlurNSFWImages(!uiState.blurNSFWImages) },
+                leadingIcon = painterResource(R.drawable.ic_18_up_rating),
+                title = stringResource(R.string.settings_blur_nsfw_images),
+                subtitle = stringResource(R.string.settings_blur_nsfw_images_summary),
+                trailingContent = {
+                    Switch(
+                        checked = uiState.blurNSFWImages,
+                        onCheckedChange = onEnableBlurNSFWImages,
+                    )
+                },
+            )
 
-        SettingsListItem(
-            onClick = { showClearViewedTorrentsDialog = true },
-            icon = R.drawable.ic_history,
-            headline = R.string.settings_clear_viewed_torrents,
-            supportingContent = stringResource(R.string.settings_clear_viewed_torrents_summary),
-        )
+            SettingsListItem(
+                onClick = { showClearViewedTorrentsDialog = true },
+                leadingIcon = painterResource(R.drawable.ic_history),
+                title = stringResource(R.string.settings_clear_viewed_torrents),
+                subtitle = stringResource(R.string.settings_clear_viewed_torrents_summary),
+            )
 
-        SettingsListItem(
-            onClick = { onEnableSaveSearchHistory(!uiState.saveSearchHistory) },
-            icon = R.drawable.ic_search_activity,
-            headline = R.string.settings_save_search_history,
-            supportingContent = stringResource(R.string.settings_save_search_history_summary),
-            trailingContent = {
-                Switch(
-                    checked = uiState.saveSearchHistory,
-                    onCheckedChange = onEnableSaveSearchHistory,
-                )
-            },
-        )
+            SettingsListItem(
+                onClick = { onEnableSaveSearchHistory(!uiState.saveSearchHistory) },
+                leadingIcon = painterResource(R.drawable.ic_search_activity),
+                title = stringResource(R.string.settings_save_search_history),
+                subtitle = stringResource(R.string.settings_save_search_history_summary),
+                trailingContent = {
+                    Switch(
+                        checked = uiState.saveSearchHistory,
+                        onCheckedChange = onEnableSaveSearchHistory,
+                    )
+                },
+            )
 
-        SettingsListItem(
-            onClick = { onEnableShowSearchHistory(!uiState.showSearchHistory) },
-            icon = R.drawable.ic_history_toggle_off,
-            headline = R.string.settings_show_search_history,
-            supportingContent = stringResource(R.string.settings_show_search_history_summary),
-            trailingContent = {
-                Switch(
-                    checked = uiState.showSearchHistory,
-                    onCheckedChange = onEnableShowSearchHistory,
-                )
-            },
-        )
+            SettingsListItem(
+                onClick = { onEnableShowSearchHistory(!uiState.showSearchHistory) },
+                leadingIcon = painterResource(R.drawable.ic_history_toggle_off),
+                title = stringResource(R.string.settings_show_search_history),
+                subtitle = stringResource(R.string.settings_show_search_history_summary),
+                trailingContent = {
+                    Switch(
+                        checked = uiState.showSearchHistory,
+                        onCheckedChange = onEnableShowSearchHistory,
+                    )
+                },
+            )
+        }
     }
 }
 
 @Composable
-private fun SearchSettings(
+private fun SearchSection(
     uiState: SearchSettingsUiState,
     onNavigateToSearchProviders: () -> Unit,
     onNavigateToDefaultSortOptions: () -> Unit,
@@ -408,146 +440,147 @@ private fun SearchSettings(
         )
     }
 
-    Column(modifier = modifier) {
-        SettingsGroupName(name = R.string.settings_group_search)
+    Column(
+        modifier = modifier,
+        verticalArrangement = Arrangement.spacedBy(MaterialTheme.spaces.large),
+    ) {
+        SectionTitle(stringResource(R.string.settings_group_search))
 
-        SettingsListItem(
-            onClick = onNavigateToSearchProviders,
-            icon = R.drawable.ic_travel_explore,
-            headline = R.string.settings_search_providers,
-            supportingContent = stringResource(
-                R.string.settings_search_providers_summary_format,
-                uiState.searchProvidersStat.enabledSearchProvidersCount,
-                uiState.searchProvidersStat.totalSearchProvidersCount,
-            ),
-            trailingContent = {
-                Icon(
-                    painter = painterResource(R.drawable.ic_arrow_forward),
-                    contentDescription = null,
-                )
-            },
-        )
+        SettingsGroup {
+            SettingsListItem(
+                onClick = onNavigateToSearchProviders,
+                leadingIcon = painterResource(R.drawable.ic_hub),
+                title = stringResource(R.string.settings_search_providers),
+                subtitle = stringResource(
+                    R.string.settings_search_providers_summary_format,
+                    uiState.searchProvidersStat.enabledSearchProvidersCount,
+                    uiState.searchProvidersStat.totalSearchProvidersCount,
+                ),
+                trailingContent = {
+                    Icon(
+                        painter = painterResource(R.drawable.ic_arrow_forward),
+                        contentDescription = null,
+                    )
+                },
+            )
 
-        val defaultSortCriteria = sortCriteriaStringResource(uiState.defaultSortOptions.criteria)
-        val defaultSortOrder = sortOrderStringResource(uiState.defaultSortOptions.order)
-        SettingsListItem(
-            onClick = onNavigateToDefaultSortOptions,
-            icon = R.drawable.ic_sort,
-            headline = R.string.settings_default_sort_options,
-            supportingContent = "$defaultSortCriteria / $defaultSortOrder",
-            trailingContent = {
-                Icon(
-                    painter = painterResource(R.drawable.ic_arrow_forward),
-                    contentDescription = null,
-                )
-            },
-        )
+            val defaultSortOptions = uiState.defaultSortOptions
+            val defaultSortCriteria = sortCriteriaStringResource(defaultSortOptions.criteria)
+            val defaultSortOrder = sortOrderStringResource(defaultSortOptions.order)
 
-        SettingsListItem(
-            onClick = { showMaxNumResultsDialog = true },
-            icon = R.drawable.ic_format_list_numbered,
-            headline = R.string.settings_max_num_results,
-            supportingContent = if (uiState.maxNumResults.isUnlimited()) {
-                stringResource(R.string.settings_max_num_results_button_unlimited)
-            } else {
-                uiState.maxNumResults.n.toString()
-            },
-        )
+            SettingsListItem(
+                onClick = onNavigateToDefaultSortOptions,
+                leadingIcon = painterResource(R.drawable.ic_sort),
+                title = stringResource(R.string.settings_default_sort_options),
+                subtitle = "$defaultSortCriteria / $defaultSortOrder",
+                trailingContent = {
+                    Icon(
+                        painter = painterResource(R.drawable.ic_arrow_forward),
+                        contentDescription = null,
+                    )
+                },
+            )
+
+            SettingsListItem(
+                onClick = { showMaxNumResultsDialog = true },
+                leadingIcon = painterResource(R.drawable.ic_format_list_numbered),
+                title = stringResource(R.string.settings_max_num_results),
+                subtitle = if (uiState.maxNumResults.isUnlimited()) {
+                    stringResource(R.string.settings_max_num_results_button_unlimited)
+                } else {
+                    uiState.maxNumResults.n.toString()
+                },
+            )
+        }
     }
 }
 
 @Composable
-private fun NetworkSettings(
+private fun NetworkSection(
     uiState: NetworkSettingsUiState,
     onSetDohProvider: (DohProvider) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    var showDohProviders by rememberSaveable(uiState.dohProvider) { mutableStateOf(false) }
 
-    Column(modifier = modifier) {
-        SettingsGroupName(R.string.settings_group_network)
+    Column(
+        modifier = modifier,
+        verticalArrangement = Arrangement.spacedBy(MaterialTheme.spaces.large),
+    ) {
+        SectionTitle(stringResource(R.string.settings_group_network))
 
-        ListItem(
-            leadingContent = {
-                Icon(
-                    painter = painterResource(R.drawable.ic_dns),
-                    contentDescription = null,
-                )
-            },
-            headlineContent = { Text(text = stringResource(R.string.settings_dns_over_https)) },
-            supportingContent = {
-                Column(verticalArrangement = Arrangement.spacedBy(MaterialTheme.spaces.medium)) {
-                    Text(stringResource(R.string.settings_dns_over_https_summary))
-                    DohProvidersMenu(
-                        expanded = showDohProviders,
-                        onExpandedChange = { showDohProviders = it },
-                        selectedDohProvider = uiState.dohProvider,
-                        onDohProviderSelect = onSetDohProvider,
-                    )
+        SettingsGroup {
+            SettingsItemCard(
+                leadingIcon = painterResource(R.drawable.ic_dns),
+                title = stringResource(R.string.settings_dns_over_https),
+                subtitle = stringResource(R.string.settings_dns_over_https_summary),
+            ) {
+                var showDohProviders by rememberSaveable(uiState.dohProvider) {
+                    mutableStateOf(false)
                 }
-            },
-        )
+                DohProvidersMenu(
+                    modifier = Modifier.padding(start = 40.dp),
+                    expanded = showDohProviders,
+                    onExpandedChange = { showDohProviders = it },
+                    selectedDohProvider = uiState.dohProvider,
+                    onDohProviderSelect = onSetDohProvider,
+                )
+            }
+        }
     }
 }
 
 @Composable
-private fun About(
+private fun AboutSection(
     onExportLogsToFile: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val uriHandler = LocalUriHandler.current
 
-    Column(modifier = modifier) {
-        SettingsGroupName(name = R.string.settings_group_about)
+    Column(
+        modifier = modifier,
+        verticalArrangement = Arrangement.spacedBy(MaterialTheme.spaces.large)
+    ) {
+        SectionTitle(stringResource(R.string.settings_group_about))
 
-        SettingsListItem(
-            onClick = onExportLogsToFile,
-            icon = R.drawable.ic_file_export,
-            headline = R.string.settings_export_logs_to_file,
-            supportingContent = stringResource(R.string.settings_export_logs_to_file_summary),
-            trailingContent = {
-                Icon(
-                    painter = painterResource(R.drawable.ic_arrow_forward),
-                    contentDescription = null,
-                )
-            },
-        )
+        SettingsGroup {
+            SettingsListItem(
+                onClick = onExportLogsToFile,
+                leadingIcon = painterResource(R.drawable.ic_file_export),
+                title = stringResource(R.string.settings_export_logs_to_file),
+                subtitle = stringResource(R.string.settings_export_logs_to_file_summary),
+                trailingContent = {
+                    Icon(
+                        painter = painterResource(R.drawable.ic_arrow_forward),
+                        contentDescription = null,
+                    )
+                },
+            )
 
-        SettingsListItem(
-            onClick = { uriHandler.openUri(uri = TorrentSearchConstants.GITHUB_RELEASE_URL) },
-            icon = R.drawable.ic_info,
-            headline = R.string.settings_version,
-            supportingContent = "${BuildConfig.VERSION_NAME} (${BuildConfig.VERSION_CODE})",
-            trailingContent = {
-                Icon(
-                    painter = painterResource(R.drawable.ic_arrow_outward),
-                    contentDescription = null,
-                )
-            },
-        )
+            SettingsListItem(
+                onClick = { uriHandler.openUri(TorrentSearchConstants.GITHUB_RELEASE_URL) },
+                leadingIcon = painterResource(R.drawable.ic_info),
+                title = stringResource(R.string.settings_version),
+                subtitle = "${BuildConfig.VERSION_NAME} (${BuildConfig.VERSION_CODE})",
+                trailingContent = {
+                    Icon(
+                        painter = painterResource(R.drawable.ic_arrow_outward),
+                        contentDescription = null,
+                    )
+                },
+            )
 
-        SettingsListItem(
-            onClick = { uriHandler.openUri(uri = TorrentSearchConstants.GITHUB_REPO_URL) },
-            icon = R.drawable.ic_code,
-            headline = R.string.settings_source_code,
-            supportingContent = TorrentSearchConstants.GITHUB_REPO_URL,
-            trailingContent = {
-                Icon(
-                    painter = painterResource(R.drawable.ic_arrow_outward),
-                    contentDescription = null,
-                )
-            },
-        )
+            SettingsListItem(
+                onClick = { uriHandler.openUri(TorrentSearchConstants.GITHUB_REPO_URL) },
+                leadingIcon = painterResource(R.drawable.ic_code),
+                title = stringResource(R.string.settings_source_code),
+                subtitle = TorrentSearchConstants.GITHUB_REPO_URL,
+                trailingContent = {
+                    Icon(
+                        painter = painterResource(R.drawable.ic_arrow_outward),
+                        contentDescription = null,
+                    )
+                },
+            )
+        }
     }
-}
-
-@RequiresApi(Build.VERSION_CODES.TIRAMISU)
-private fun Context.openAppLocaleSettings() {
-    val appUri = Uri.fromParts("package", this.packageName, null)
-    val localeSettingsIntent = Intent().apply {
-        action = Settings.ACTION_APP_LOCALE_SETTINGS
-        data = appUri
-    }
-
-    this.startActivity(localeSettingsIntent)
 }

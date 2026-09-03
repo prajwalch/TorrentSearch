@@ -10,6 +10,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.ListItem
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -28,9 +29,10 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.prajwalch.torrentsearch.R
 import com.prajwalch.torrentsearch.domain.model.SortCriteria
 import com.prajwalch.torrentsearch.domain.model.SortOrder
-import com.prajwalch.torrentsearch.ui.settings.component.SettingsGroupName
+import com.prajwalch.torrentsearch.ui.settings.component.SectionTitle
 import com.prajwalch.torrentsearch.ui.sortCriteriaStringResource
 import com.prajwalch.torrentsearch.ui.sortOrderStringResource
+import com.prajwalch.torrentsearch.ui.theme.spaces
 
 import org.koin.androidx.compose.koinViewModel
 
@@ -58,9 +60,9 @@ fun DefaultSortOptionsScreen(
     ) { innerPadding ->
         Column(
             modifier = Modifier
+                .padding(innerPadding)
                 .fillMaxSize()
-                .verticalScroll(state = rememberScrollState())
-                .padding(innerPadding),
+                .verticalScroll(state = rememberScrollState()),
         ) {
             SortCriteriaSection(
                 selectedCriteria = uiState.criteria,
@@ -103,7 +105,10 @@ private fun SortCriteriaSection(
     modifier: Modifier = Modifier,
 ) {
     Column(modifier = modifier) {
-        SettingsGroupName(name = R.string.settings_section_sort_criteria)
+        SectionTitle(
+            modifier = Modifier.padding(MaterialTheme.spaces.large),
+            title = stringResource(R.string.settings_section_sort_criteria),
+        )
 
         for (criteria in SortCriteria.entries) {
             ListItem(
@@ -131,7 +136,10 @@ private fun SortOrderSection(
     modifier: Modifier = Modifier,
 ) {
     Column(modifier = modifier) {
-        SettingsGroupName(name = R.string.settings_section_sort_order)
+        SectionTitle(
+            modifier = Modifier.padding(MaterialTheme.spaces.large),
+            title = stringResource(R.string.settings_section_sort_order),
+        )
 
         for (order in SortOrder.entries) {
             ListItem(
