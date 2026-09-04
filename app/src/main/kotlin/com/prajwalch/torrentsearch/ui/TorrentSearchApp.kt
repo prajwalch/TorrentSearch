@@ -105,6 +105,13 @@ fun TorrentSearchApp(
         popExitTransition = {
             slideOutHorizontally(targetOffsetX = { fullWidth -> fullWidth })
         },
+        predictivePopEnterTransition = {
+            slideInHorizontally(initialOffsetX = { fullWidth -> -fullWidth / 3 }) +
+                    fadeIn(initialAlpha = 0.6f)
+        },
+        predictivePopExitTransition = {
+            slideOutHorizontally(targetOffsetX = { fullWidth -> fullWidth })
+        }
     ) {
         composable<Home> {
             HomeScreen(
