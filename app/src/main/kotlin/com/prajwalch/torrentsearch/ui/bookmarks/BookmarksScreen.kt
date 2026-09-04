@@ -8,9 +8,12 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.text.input.TextFieldState
+import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
@@ -20,6 +23,8 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -27,8 +32,10 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.retain.retain
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalClipboard
 import androidx.compose.ui.platform.LocalContext
@@ -45,6 +52,7 @@ import com.prajwalch.torrentsearch.ui.bookmarks.component.BookmarksScreenTopBar
 import com.prajwalch.torrentsearch.ui.bookmarks.component.DeleteAllConfirmationDialog
 import com.prajwalch.torrentsearch.ui.component.AnimatedScrollToTopFAB
 import com.prajwalch.torrentsearch.ui.component.ContentState
+import com.prajwalch.torrentsearch.ui.component.FilterSearchBar
 import com.prajwalch.torrentsearch.ui.component.MessageCard
 import com.prajwalch.torrentsearch.ui.component.MessageType
 import com.prajwalch.torrentsearch.ui.component.TorrentActionsBottomSheet
@@ -52,7 +60,10 @@ import com.prajwalch.torrentsearch.ui.extension.copyText
 import com.prajwalch.torrentsearch.ui.rememberTorrentListState
 import com.prajwalch.torrentsearch.ui.theme.spaces
 
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.launch
+
 import org.koin.androidx.compose.koinViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -173,17 +184,33 @@ fun BookmarksScreen(
         snackbarHostState = snackbarHostState,
     )
 
+    var showSearchBar by rememberSaveable { mutableStateOf(false) }
+    val textFieldState = rememberTextFieldState()
+
+    if (showSearchBar) {
+        LaunchedEffect(Unit) {
+            snapshotFlow { textFieldState.text }
+                .drop(1)
+                .collectLatest { viewModel.filterBookmarks(it.toString()) }
+        }
+    }
+
+    // Hide/show search bar when bookmarks state changes.
+    SideEffect(uiState.bookmarksState) {
+        if (uiState.bookmarksState == BookmarksState.Empty) {
+            showSearchBar = false
+        }
+    }
+
     Scaffold(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxSize()
-            .nestedScroll(scrollBehavior.nestedScrollConnection)
-            .then(modifier),
+            .nestedScroll(scrollBehavior.nestedScrollConnection),
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
         topBar = {
             BookmarksScreenTopBar(
                 onNavigateBack = onNavigateBack,
-                totalBookmarksCount = uiState.totalBookmarksCount,
-                onFilterBookmarks = viewModel::filterBookmarks,
+                onToggleSearchBar = { showSearchBar = !showSearchBar },
                 sortOptions = uiState.sortOptions,
                 onChangeSortCriteria = viewModel::setSortCriteria,
                 onChangeSortOrder = viewModel::setSortOrder,
@@ -202,6 +229,7 @@ fun BookmarksScreen(
                     )
                 },
                 onNavigateToSettings = onNavigateToSettings,
+                totalBookmarksCount = uiState.totalBookmarksCount,
                 scrollBehavior = scrollBehavior,
             )
         },
@@ -212,19 +240,70 @@ fun BookmarksScreen(
             )
         },
     ) { innerPadding ->
-        AnimatedContent(
+        BookmarksScreenContent(
             modifier = Modifier.padding(innerPadding),
-            targetState = uiState.bookmarksState,
+            bookmarksState = uiState.bookmarksState,
+            onBookmarkClick = { selectedBookmark = it },
+            onDeleteBookmark = { viewModel.deleteBookmarkById(it.id) },
+            showSearchBar = showSearchBar,
+            textFieldState = textFieldState,
+            showSwipeDeleteTip = uiState.showSwipeDeleteTip,
+            onHideSwipeDeleteTip = { viewModel.hideSwipeToDeleteTip() },
+            lazyListState = torrentListState.lazyListState,
+        )
+    }
+}
+
+@Composable
+private fun BookmarksScreenContent(
+    bookmarksState: BookmarksState,
+    onBookmarkClick: (BookmarkedTorrent) -> Unit,
+    onDeleteBookmark: (BookmarkedTorrent) -> Unit,
+    showSearchBar: Boolean,
+    textFieldState: TextFieldState,
+    showSwipeDeleteTip: Boolean,
+    onHideSwipeDeleteTip: () -> Unit,
+    modifier: Modifier = Modifier,
+    lazyListState: LazyListState = rememberLazyListState(),
+) {
+    Column(modifier = modifier) {
+        if (bookmarksState is BookmarksState.Ready) {
+            AnimatedVisibility(visible = showSwipeDeleteTip) {
+                MessageCard(
+                    modifier = Modifier
+                        .padding(horizontal = MaterialTheme.spaces.large)
+                        .padding(top = MaterialTheme.spaces.small),
+                    onClose = onHideSwipeDeleteTip,
+                    messageType = MessageType.Tip,
+                    text = { Text(stringResource(R.string.bookmarks_swipe_delete_tip)) },
+                )
+            }
+        }
+
+        AnimatedVisibility(visible = showSearchBar) {
+            FilterSearchBar(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(
+                        horizontal = MaterialTheme.spaces.large,
+                        vertical = MaterialTheme.spaces.small,
+                    ),
+                textFieldState = textFieldState,
+                placeholder = { Text(stringResource(R.string.bookmarks_search_query_hint)) },
+            )
+        }
+
+        AnimatedContent(
+            targetState = bookmarksState,
             contentKey = { it::class },
-        ) { bookmarksState ->
-            when (bookmarksState) {
+        ) { targetBookmarksState ->
+            when (targetBookmarksState) {
                 BookmarksState.Loading -> {
                     Box(
                         modifier = Modifier.fillMaxSize(),
                         contentAlignment = Alignment.Center,
-                    ) {
-                        CircularProgressIndicator()
-                    }
+                        content = { CircularProgressIndicator() },
+                    )
                 }
 
                 BookmarksState.Empty -> {
@@ -242,48 +321,18 @@ fun BookmarksScreen(
                 }
 
                 is BookmarksState.Ready -> {
-                    BookmarksScreenContent(
-                        modifier = Modifier.fillMaxSize(),
-                        bookmarks = bookmarksState.bookmarks,
-                        onBookmarkClick = { selectedBookmark = it },
-                        onDeleteBookmark = { viewModel.deleteBookmarkById(it.id) },
-                        showSwipeDeleteTip = uiState.showSwipeDeleteTip,
-                        onHideSwipeDeleteTip = { viewModel.hideSwipeToDeleteTip() },
-                        lazyListState = torrentListState.lazyListState,
+                    BookmarkList(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .clipToBounds(),
+                        bookmarks = targetBookmarksState.bookmarks,
+                        onBookmarkClick = onBookmarkClick,
+                        onDeleteBookmark = onDeleteBookmark,
+                        contentPadding = PaddingValues(MaterialTheme.spaces.large),
+                        lazyListState = lazyListState,
                     )
                 }
             }
         }
-    }
-}
-
-@Composable
-private fun BookmarksScreenContent(
-    bookmarks: List<BookmarkedTorrent>,
-    onBookmarkClick: (BookmarkedTorrent) -> Unit,
-    onDeleteBookmark: (BookmarkedTorrent) -> Unit,
-    showSwipeDeleteTip: Boolean,
-    onHideSwipeDeleteTip: () -> Unit,
-    modifier: Modifier = Modifier,
-    lazyListState: LazyListState = rememberLazyListState(),
-) {
-    Column(modifier = modifier) {
-        AnimatedVisibility(showSwipeDeleteTip) {
-            MessageCard(
-                modifier = Modifier.padding(MaterialTheme.spaces.large),
-                onClose = onHideSwipeDeleteTip,
-                messageType = MessageType.Tip,
-                text = { Text(stringResource(R.string.bookmarks_swipe_delete_tip)) },
-            )
-        }
-
-        BookmarkList(
-            modifier = Modifier.fillMaxSize(),
-            bookmarks = bookmarks,
-            onBookmarkClick = onBookmarkClick,
-            onDeleteBookmark = onDeleteBookmark,
-            contentPadding = PaddingValues(MaterialTheme.spaces.large),
-            lazyListState = lazyListState,
-        )
     }
 }
