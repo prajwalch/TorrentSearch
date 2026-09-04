@@ -50,6 +50,12 @@ fun FilterSearchBar(
             .focusRequester(focusRequester),
         state = textFieldState,
         placeholder = placeholder,
+        leadingIcon = {
+            Icon(
+                painter = painterResource(R.drawable.ic_search),
+                contentDescription = null,
+            )
+        },
         trailingIcon = {
             AnimatedVisibility(
                 visible = showClearTextButton,
