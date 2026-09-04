@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -22,12 +23,15 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.retain.retain
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clipToBounds
@@ -45,15 +49,17 @@ import com.prajwalch.torrentsearch.ui.browse.component.BrowseFilters
 import com.prajwalch.torrentsearch.ui.browse.component.TorrentList
 import com.prajwalch.torrentsearch.ui.browse.component.TorrentsUnavailableState
 import com.prajwalch.torrentsearch.ui.component.AnimatedScrollToTopFAB
-import com.prajwalch.torrentsearch.ui.component.CollapsibleSearchBar
+import com.prajwalch.torrentsearch.ui.component.FilterSearchBar
 import com.prajwalch.torrentsearch.ui.component.NoInternetConnectionState
 import com.prajwalch.torrentsearch.ui.component.TorrentActionsBottomSheet
-import com.prajwalch.torrentsearch.ui.component.rememberCollapsibleSearchBarState
 import com.prajwalch.torrentsearch.ui.extension.copyText
 import com.prajwalch.torrentsearch.ui.rememberTorrentListState
 import com.prajwalch.torrentsearch.ui.theme.spaces
 
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.launch
+
 import org.koin.androidx.compose.koinViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -151,6 +157,17 @@ fun BrowseScreen(
         snackbarHostState = snackbarHostState,
     )
 
+    var showSearchBar by rememberSaveable { mutableStateOf(false) }
+    val textFieldState = rememberTextFieldState()
+
+    if (showSearchBar) {
+        LaunchedEffect(Unit) {
+            snapshotFlow { textFieldState.text }
+                .drop(1)
+                .collectLatest { viewModel.searchTorrents(it.toString()) }
+        }
+    }
+
     Scaffold(
         modifier = modifier
             .fillMaxSize()
@@ -158,7 +175,7 @@ fun BrowseScreen(
         topBar = {
             BrowseScreenTopBar(
                 onNavigateBack = onNavigateBack,
-                onSearchQueryChange = viewModel::searchTorrents,
+                onToggleSearchBar = { showSearchBar = !showSearchBar },
                 onNavigateToSettings = onNavigateToSettings,
                 enableSearchAction = uiState.contentState is BrowseContentState.Available,
                 scrollBehavior = scrollBehavior,
@@ -184,26 +201,39 @@ fun BrowseScreen(
                 LinearProgressIndicator()
             }
 
-            val enableViewFilters = uiState.contentState is BrowseContentState.Available
-            BrowseFilters(
-                sort = uiState.queryParams.sort,
-                onChangeSort = viewModel::updateBrowseSort,
-                category = uiState.queryParams.category,
-                onChangeCategory = viewModel::updateCategory,
-                deadTorrents = uiState.viewFilters.deadTorrents,
-                onToggleDeadTorrents = viewModel::toggleDeadTorrents,
-                hideViewed = uiState.viewFilters.hideViewed,
-                onToggleHideViewed = viewModel::toggleHideViewed,
-                providerOptions = uiState.viewFilters.providers,
-                onToggleSearchProvider = viewModel::toggleSearchProviderResults,
-                onSelectAllSearchProviders = viewModel::selectAllSearchProviders,
-                onDeselectAllSearchProviders = viewModel::deselectAllSearchProviders,
-                onInvertSearchProvidersSelection = viewModel::invertSearchProvidersSelection,
-                enableDeadTorrents = enableViewFilters,
-                enableHideViewed = enableViewFilters,
-                enableSearchProvidersFilter = enableViewFilters,
-                contentPadding = PaddingValues(horizontal = MaterialTheme.spaces.large),
-            )
+            Column {
+                AnimatedVisibility(visible = showSearchBar) {
+                    FilterSearchBar(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = MaterialTheme.spaces.large)
+                            .padding(top = MaterialTheme.spaces.small),
+                        textFieldState = textFieldState,
+                        placeholder = { Text(stringResource(R.string.browse_search_query_hint)) },
+                    )
+                }
+
+                val enableViewFilters = uiState.contentState is BrowseContentState.Available
+                BrowseFilters(
+                    sort = uiState.queryParams.sort,
+                    onChangeSort = viewModel::updateBrowseSort,
+                    category = uiState.queryParams.category,
+                    onChangeCategory = viewModel::updateCategory,
+                    deadTorrents = uiState.viewFilters.deadTorrents,
+                    onToggleDeadTorrents = viewModel::toggleDeadTorrents,
+                    hideViewed = uiState.viewFilters.hideViewed,
+                    onToggleHideViewed = viewModel::toggleHideViewed,
+                    providerOptions = uiState.viewFilters.providers,
+                    onToggleSearchProvider = viewModel::toggleSearchProviderResults,
+                    onSelectAllSearchProviders = viewModel::selectAllSearchProviders,
+                    onDeselectAllSearchProviders = viewModel::deselectAllSearchProviders,
+                    onInvertSearchProvidersSelection = viewModel::invertSearchProvidersSelection,
+                    enableDeadTorrents = enableViewFilters,
+                    enableHideViewed = enableViewFilters,
+                    enableSearchProvidersFilter = enableViewFilters,
+                    contentPadding = PaddingValues(horizontal = MaterialTheme.spaces.large),
+                )
+            }
 
             AnimatedContent(
                 targetState = uiState.contentState,
@@ -269,14 +299,12 @@ private fun BrowseContentState.getAnimationContentKey() = when (this) {
 @Composable
 private fun BrowseScreenTopBar(
     onNavigateBack: () -> Unit,
-    onSearchQueryChange: (String) -> Unit,
+    onToggleSearchBar: () -> Unit,
     onNavigateToSettings: () -> Unit,
     modifier: Modifier = Modifier,
     enableSearchAction: Boolean = true,
     scrollBehavior: TopAppBarScrollBehavior? = null,
 ) {
-    val searchBarState = rememberCollapsibleSearchBarState(visibleOnInitial = false)
-
     TopAppBar(
         modifier = modifier,
         navigationIcon = {
@@ -287,29 +315,18 @@ private fun BrowseScreenTopBar(
                 )
             }
         },
-        title = {
-            CollapsibleSearchBar(
-                state = searchBarState,
-                onQueryChange = onSearchQueryChange,
-                placeholder = { Text(stringResource(R.string.browse_search_query_hint)) },
-            )
-
-            if (!searchBarState.isVisible) {
-                Text(stringResource(R.string.browse_screen_title))
-            }
-        },
+        title = { Text(stringResource(R.string.browse_screen_title)) },
         actions = {
-            if (!searchBarState.isVisible) {
-                IconButton(
-                    onClick = { searchBarState.showSearchBar() },
-                    enabled = enableSearchAction,
-                ) {
-                    Icon(
-                        painter = painterResource(R.drawable.ic_search),
-                        contentDescription = null,
-                    )
-                }
+            IconButton(
+                onClick = onToggleSearchBar,
+                enabled = enableSearchAction,
+            ) {
+                Icon(
+                    painter = painterResource(R.drawable.ic_search),
+                    contentDescription = null,
+                )
             }
+
             IconButton(onClick = onNavigateToSettings) {
                 Icon(
                     painter = painterResource(R.drawable.ic_settings),
