@@ -5,10 +5,10 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -24,6 +24,7 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -31,6 +32,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.retain.retain
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clipToBounds
@@ -49,12 +51,11 @@ import com.prajwalch.torrentsearch.domain.model.SortOrder
 import com.prajwalch.torrentsearch.domain.model.Torrent
 import com.prajwalch.torrentsearch.ui.TorrentFileDownloadEffect
 import com.prajwalch.torrentsearch.ui.component.AnimatedScrollToTopFAB
-import com.prajwalch.torrentsearch.ui.component.CollapsibleSearchBar
+import com.prajwalch.torrentsearch.ui.component.FilterSearchBar
 import com.prajwalch.torrentsearch.ui.component.NoInternetConnectionState
 import com.prajwalch.torrentsearch.ui.component.RoundedDropdownMenu
 import com.prajwalch.torrentsearch.ui.component.SortDropdownMenu
 import com.prajwalch.torrentsearch.ui.component.TorrentActionsBottomSheet
-import com.prajwalch.torrentsearch.ui.component.rememberCollapsibleSearchBarState
 import com.prajwalch.torrentsearch.ui.extension.copyText
 import com.prajwalch.torrentsearch.ui.rememberTorrentListState
 import com.prajwalch.torrentsearch.ui.search.component.ResultsNotFoundState
@@ -63,7 +64,10 @@ import com.prajwalch.torrentsearch.ui.search.component.SearchResults
 import com.prajwalch.torrentsearch.ui.search.component.TorrentFilter
 import com.prajwalch.torrentsearch.ui.theme.spaces
 
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.launch
+
 import org.koin.androidx.compose.koinViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -173,6 +177,17 @@ fun SearchScreen(
         snackbarHostState = snackbarHostState,
     )
 
+    var showSearchBar by rememberSaveable { mutableStateOf(false) }
+    val textFieldState = rememberTextFieldState()
+
+    if (showSearchBar) {
+        LaunchedEffect(Unit) {
+            snapshotFlow { textFieldState.text }
+                .drop(1)
+                .collectLatest { viewModel.filterSearchResultsByName(it.toString()) }
+        }
+    }
+
     Scaffold(
         modifier = Modifier
             .fillMaxSize()
@@ -181,7 +196,7 @@ fun SearchScreen(
         topBar = {
             SearchScreenTopBar(
                 onNavigateBack = onNavigateBack,
-                onFilterQueryChange = viewModel::filterSearchResultsByName,
+                onToggleSearchBar = { showSearchBar = !showSearchBar },
                 sortOptions = uiState.sortOptions,
                 onChangeSortCriteria = viewModel::updateSortCriteria,
                 onChangeSortOrder = viewModel::updateSortOrder,
@@ -246,22 +261,37 @@ fun SearchScreen(
                             LinearProgressIndicator()
                         }
 
-                        TorrentFilter(
-                            filter = uiState.torrentFilter,
-                            onToggleDeadTorrents = viewModel::toggleDeadTorrents,
-                            onToggleHideViewed = viewModel::toggleHideViewedTorrents,
-                            onToggleSearchProvider = viewModel::toggleSearchProviderResults,
-                            onSelectAllSearchProviders = viewModel::selectAllSearchProviders,
-                            onDeselectAllSearchProviders = viewModel::deselectAllSearchProviders,
-                            onInvertSearchProvidersSelection = viewModel::invertSearchProvidersSelection,
-                            onUpdateCategory = viewModel::updateCategoryFilter,
-                            enableSearchProvidersFilter =
-                                searchState is SearchState.ResultsAvailable.Complete &&
-                                        uiState.torrentFilter.providers.isNotEmpty(),
-                            // Enable only when there is a chance of receiving mixed category results,
-                            // which is always the case when using `All`.
-                            enableCategoryFilter = uiState.searchParams.category == Category.All,
-                        )
+
+                        Column {
+                            AnimatedVisibility(visible = showSearchBar) {
+                                FilterSearchBar(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(horizontal = MaterialTheme.spaces.large)
+                                        .padding(top = MaterialTheme.spaces.small),
+                                    textFieldState = textFieldState,
+                                    placeholder = { Text(stringResource(R.string.search_filter_query_hint)) },
+                                )
+                            }
+
+                            TorrentFilter(
+                                filter = uiState.torrentFilter,
+                                onToggleDeadTorrents = viewModel::toggleDeadTorrents,
+                                onToggleHideViewed = viewModel::toggleHideViewedTorrents,
+                                onToggleSearchProvider = viewModel::toggleSearchProviderResults,
+                                onSelectAllSearchProviders = viewModel::selectAllSearchProviders,
+                                onDeselectAllSearchProviders = viewModel::deselectAllSearchProviders,
+                                onInvertSearchProvidersSelection = viewModel::invertSearchProvidersSelection,
+                                onUpdateCategory = viewModel::updateCategoryFilter,
+                                enableSearchProvidersFilter =
+                                    searchState is SearchState.ResultsAvailable.Complete &&
+                                            uiState.torrentFilter.providers.isNotEmpty(),
+                                // Enable only when there is a chance of receiving mixed category results,
+                                // which is always the case when using `All`.
+                                enableCategoryFilter = uiState.searchParams.category == Category.All,
+                            )
+                        }
+
                         SearchResults(
                             modifier = Modifier
                                 .weight(1f)
@@ -296,7 +326,7 @@ private fun SearchState.getAnimationContentKey() = when (this) {
 @Composable
 private fun SearchScreenTopBar(
     onNavigateBack: () -> Unit,
-    onFilterQueryChange: (String) -> Unit,
+    onToggleSearchBar: () -> Unit,
     sortOptions: SortOptions,
     onChangeSortCriteria: (SortCriteria) -> Unit,
     onChangeSortOrder: (SortOrder) -> Unit,
@@ -310,60 +340,8 @@ private fun SearchScreenTopBar(
     enableSearchErrorsAction: Boolean = true,
     scrollBehavior: TopAppBarScrollBehavior? = null,
 ) {
-    val searchBarState = rememberCollapsibleSearchBarState(visibleOnInitial = false)
     var showSortOptions by rememberSaveable(sortOptions) { mutableStateOf(false) }
-
-    val topBarActions: @Composable RowScope.() -> Unit = @Composable {
-        if (!searchBarState.isVisible) {
-            IconButton(
-                onClick = { searchBarState.showSearchBar() },
-                enabled = enableSearchResultsAction,
-            ) {
-                Icon(
-                    painter = painterResource(R.drawable.ic_search),
-                    contentDescription = null,
-                )
-            }
-            IconButton(
-                onClick = { showSortOptions = true },
-                enabled = enableSearchResultsAction,
-            ) {
-                Icon(
-                    painter = painterResource(R.drawable.ic_sort),
-                    contentDescription = stringResource(R.string.action_sort),
-                )
-            }
-            SortDropdownMenu(
-                expanded = showSortOptions,
-                onDismissRequest = { showSortOptions = false },
-                currentCriteria = sortOptions.criteria,
-                onChangeCriteria = onChangeSortCriteria,
-                currentOrder = sortOptions.order,
-                onChangeOrder = onChangeSortOrder,
-            )
-        }
-
-        Box {
-            var showMoreActions by rememberSaveable { mutableStateOf(false) }
-
-            IconButton(onClick = { showMoreActions = true }) {
-                Icon(
-                    painter = painterResource(R.drawable.ic_more_vert),
-                    contentDescription = null,
-                )
-            }
-            TopBarMoreMenu(
-                expanded = showMoreActions,
-                onDismiss = { showMoreActions = false },
-                onRefresh = onRefresh,
-                onStopSearch = onStopSearch,
-                onShowSearchErrors = onShowSearchErrors,
-                onNavigateToSettings = onNavigateToSettings,
-                searchState = searchState,
-                enableSearchErrorsAction = enableSearchErrorsAction,
-            )
-        }
-    }
+    var showOverflowMenu by rememberSaveable { mutableStateOf(false) }
 
     TopAppBar(
         modifier = modifier,
@@ -375,24 +353,63 @@ private fun SearchScreenTopBar(
                 )
             }
         },
-        title = {
-            CollapsibleSearchBar(
-                state = searchBarState,
-                onQueryChange = onFilterQueryChange,
-                placeholder = { Text(stringResource(R.string.search_filter_query_hint)) },
-            )
+        title = { Text(stringResource(R.string.search_screen_title)) },
+        actions = {
+            IconButton(
+                onClick = onToggleSearchBar,
+                enabled = enableSearchResultsAction,
+            ) {
+                Icon(
+                    painter = painterResource(R.drawable.ic_search),
+                    contentDescription = null,
+                )
+            }
 
-            if (!searchBarState.isVisible) {
-                Text(stringResource(R.string.search_screen_title))
+            Box {
+                IconButton(
+                    onClick = { showSortOptions = true },
+                    enabled = enableSearchResultsAction,
+                ) {
+                    Icon(
+                        painter = painterResource(R.drawable.ic_sort),
+                        contentDescription = stringResource(R.string.action_sort),
+                    )
+                }
+                SortDropdownMenu(
+                    expanded = showSortOptions,
+                    onDismissRequest = { showSortOptions = false },
+                    currentCriteria = sortOptions.criteria,
+                    onChangeCriteria = onChangeSortCriteria,
+                    currentOrder = sortOptions.order,
+                    onChangeOrder = onChangeSortOrder,
+                )
+            }
+
+            Box {
+                IconButton(onClick = { showOverflowMenu = true }) {
+                    Icon(
+                        painter = painterResource(R.drawable.ic_more_vert),
+                        contentDescription = null,
+                    )
+                }
+                TopBarOverflowMenu(
+                    expanded = showOverflowMenu,
+                    onDismiss = { showOverflowMenu = false },
+                    onRefresh = onRefresh,
+                    onStopSearch = onStopSearch,
+                    onShowSearchErrors = onShowSearchErrors,
+                    onNavigateToSettings = onNavigateToSettings,
+                    searchState = searchState,
+                    enableSearchErrorsAction = enableSearchErrorsAction,
+                )
             }
         },
-        actions = topBarActions,
         scrollBehavior = scrollBehavior,
     )
 }
 
 @Composable
-private fun TopBarMoreMenu(
+private fun TopBarOverflowMenu(
     expanded: Boolean,
     onDismiss: () -> Unit,
     onRefresh: () -> Unit,
