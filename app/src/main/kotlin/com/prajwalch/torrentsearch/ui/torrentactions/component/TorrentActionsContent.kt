@@ -143,8 +143,14 @@ private fun BottomSheetHeader(
             onCheckedChange = onToggleBookmark,
             enabled = enableBookmarkAction,
         ) {
+            val iconResId = if (isBookmarked) {
+                R.drawable.ic_bookmark_check
+            } else {
+                R.drawable.ic_bookmark
+            }
+
             Icon(
-                painter = painterResource(R.drawable.ic_star),
+                painter = painterResource(iconResId),
                 contentDescription = null,
             )
         }

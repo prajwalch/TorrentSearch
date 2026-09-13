@@ -144,7 +144,7 @@ private fun HomeScreenTopBar(
         actions = {
             IconButton(onClick = onNavigateToBookmarks) {
                 Icon(
-                    painter = painterResource(R.drawable.ic_star_filled),
+                    painter = painterResource(R.drawable.ic_bookmarks),
                     contentDescription = null,
                 )
             }

@@ -91,7 +91,11 @@ private fun BookmarkButton(
     val tooltipPositionProvider =
         TooltipDefaults.rememberTooltipPositionProvider(TooltipAnchorPosition.Above)
     val buttonText = stringResource(R.string.torrent_details_button_bookmark_torrent)
-    val buttonIconResId = if (isBookmarked) R.drawable.ic_star_filled else R.drawable.ic_star
+    val buttonIconResId = if (isBookmarked) {
+        R.drawable.ic_bookmark_check
+    } else {
+        R.drawable.ic_bookmark
+    }
 
     TooltipBox(
         positionProvider = tooltipPositionProvider,
