@@ -223,4 +223,40 @@
     <string name="search_providers_state_challenge_solve_error_description">لم أتمكن من حل التحدي. تأكد من توفر اتصال الإنترنت وحاول مرة أخرى.</string>
     <string name="search_providers_state_updating_protection_status">جارٍ تحديث حالة الحماية…</string>
     <string name="search_providers_state_protection_status_update_complete">تم فتح %1$d، و %2$d تحتاج للفتح</string>
+    <string name="search_history_today"></string>
+    <string name="search_providers_search_hint"></string>
+    <string name="search_providers_protection_protected"></string>
+    <string name="home_title_enable_search_providers"></string>
+    <string name="search_providers_chip_category"></string>
+    <string name="torrent_client_gopeed" translatable="false"></string>
+    <string name="settings_group_network"></string>
+    <string name="home_button_enable"></string>
+    <string name="search_providers_reset_to_default_button_confirm"></string>
+    <string name="search_message_no_stack_trace"></string>
+    <string name="home_title_recent_searches"></string>
+    <string name="torznab" translatable="false"></string>
+    <string name="torrent_details_message_info_hash_copied"></string>
+    <string name="search_providers_chip_protection"></string>
+    <string name="search_title_stack_trace"></string>
+    <string name="home_button_i_will_choose_myself"></string>
+    <string name="bookmarks_swipe_delete_tip"></string>
+    <string name="home_search_providers_not_enabled_msg"></string>
+    <string name="torrent_client_torrserve" translatable="false"></string>
+    <string name="search_error_crashed"></string>
+    <string name="search_providers_protection_locked"></string>
+    <string name="torrent_client_libretorrent" translatable="false"></string>
+    <string name="search_providers_reset_to_default_title"></string>
+    <string name="search_error_cloudflare_challenge_encountered"></string>
+    <string name="search_providers_reset_to_default_text"></string>
+    <string name="torrent_client_aria2" translatable="false"></string>
+    <string name="torrent_details_label_provider"></string>
+    <string name="torrent_details_message_description_hidden"></string>
+    <string name="bookmarks_no_bookmarks_matched"></string>
+    <string name="torrent_details_error_image_load_failed"></string>
+    <string name="torrent_client_pikatorrent" translatable="false"></string>
+    <string name="settings_group_content_and_privacy"></string>
+    <string name="app_name" translatable="false"></string>
+    <string name="search_providers_reset_to_default_button_dismiss"></string>
+    <string name="search_history_yesterday"></string>
+    <string name="search_providers_protection_unlocked"></string>
 </resources>
