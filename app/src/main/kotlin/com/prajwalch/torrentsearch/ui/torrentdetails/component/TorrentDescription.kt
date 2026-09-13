@@ -1,7 +1,6 @@
 package com.prajwalch.torrentsearch.ui.torrentdetails.component
 
 import android.text.util.Linkify
-
 import androidx.compose.foundation.text.selection.LocalTextSelectionColors
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
@@ -19,6 +18,7 @@ fun TorrentDescription(description: String, modifier: Modifier = Modifier) {
         linkColor = MaterialTheme.colorScheme.primary,
         isTextSelectable = true,
         textSelectionColors = LocalTextSelectionColors.current,
+        style = MaterialTheme.typography.bodyMedium,
         imageLoader = SingletonImageLoader.get(LocalContext.current),
         linkifyMask = Linkify.WEB_URLS,
         enableSoftBreakAddsNewLine = true,

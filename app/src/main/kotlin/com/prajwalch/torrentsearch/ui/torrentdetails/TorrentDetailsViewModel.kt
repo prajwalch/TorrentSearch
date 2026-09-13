@@ -19,7 +19,10 @@ import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.WhileSubscribed
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -29,8 +32,10 @@ import org.koin.core.annotation.KoinViewModel
 import java.io.IOException
 import java.io.OutputStream
 
+import kotlin.time.Duration.Companion.seconds
+
 data class TorrentDetailsUiState(
-    val state: TorrentDetailsState = TorrentDetailsState.Loading,
+    val detailsState: TorrentDetailsState = TorrentDetailsState.Loading,
     val torrentFileState: TorrentFileState = TorrentFileState.Idle,
     val isBookmarked: Boolean = false,
     val isRefreshing: Boolean = false,
@@ -44,7 +49,7 @@ sealed interface TorrentDetailsState {
     data object Unavailable : TorrentDetailsState
     data class UnsupportedTorrentSite(val host: String) : TorrentDetailsState
     data class SomethingWentWrong(val message: String?) : TorrentDetailsState
-    data class Available(val details: TorrentDetails) : TorrentDetailsState
+    data class Ready(val details: TorrentDetails) : TorrentDetailsState
 }
 
 sealed interface TorrentFileState {
@@ -78,27 +83,22 @@ class TorrentDetailsViewModel(
     private val isRefreshing = MutableStateFlow(false)
     private val detailsState = MutableStateFlow<TorrentDetailsState>(TorrentDetailsState.Loading)
     private val torrentFileState = MutableStateFlow<TorrentFileState>(TorrentFileState.Idle)
+    private val isBookmarked = bookmarkRepository.getBookmarkIds().map { torrentId in it }
     private var pendingTorrentFile: ByteArray? = null
 
-    val uiState = combine(
-        detailsState,
-        torrentFileState,
-        isRefreshing,
-        bookmarkRepository.getBookmarkIds(),
-        settingsRepository.blurNSFWImages
-    ) { state, torrentFileState, isRefreshing, bookmarkIds, blurNSFWImages ->
-        TorrentDetailsUiState(
-            state = state,
-            torrentFileState = torrentFileState,
-            isBookmarked = torrentId in bookmarkIds,
-            isRefreshing = isRefreshing,
-            blurNSFWImages = blurNSFWImages
+    val uiState: StateFlow<TorrentDetailsUiState> =
+        combine(
+            detailsState,
+            torrentFileState,
+            isBookmarked,
+            isRefreshing,
+            settingsRepository.blurNSFWImages,
+            ::TorrentDetailsUiState,
+        ).stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5.seconds),
+            initialValue = TorrentDetailsUiState(),
         )
-    }.stateIn(
-        scope = viewModelScope,
-        started = SharingStarted.WhileSubscribed(5000),
-        initialValue = TorrentDetailsUiState(),
-    )
 
     init {
         loadDetails()
@@ -113,9 +113,10 @@ class TorrentDetailsViewModel(
 
     fun refreshDetails() {
         isRefreshing.value = true
+
         viewModelScope.launch {
             val details = getTorrentDetails()
-            if (details is TorrentDetailsState.Available) {
+            if (details is TorrentDetailsState.Ready) {
                 detailsState.value = details
             }
 
@@ -140,7 +141,7 @@ class TorrentDetailsViewModel(
             }
 
             is GetTorrentDetailsResponse.Success -> {
-                TorrentDetailsState.Available(response.details)
+                TorrentDetailsState.Ready(response.details)
             }
         }
     } catch (e: CancellationException) {
@@ -155,11 +156,9 @@ class TorrentDetailsViewModel(
         TorrentDetailsState.SomethingWentWrong(e.message)
     }
 
-    fun toggleBookmark(torrentDetails: TorrentDetails) {
+    fun toggleBookmark(bookmark: Boolean, torrentDetails: TorrentDetails) {
         viewModelScope.launch {
-            val bookmarked = uiState.value.isBookmarked
-
-            if (bookmarked) {
+            if (!bookmark) {
                 bookmarkRepository.deleteBookmarkById(torrentId)
             } else {
                 bookmarkRepository.createAndAddBookmark(

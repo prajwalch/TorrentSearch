@@ -4,12 +4,10 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.Crossfade
-import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -17,17 +15,15 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.plus
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledTonalIconButton
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.LocalContentColor
-import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarDuration
@@ -40,7 +36,6 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -50,7 +45,6 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalClipboard
 import androidx.compose.ui.platform.LocalContext
@@ -59,7 +53,6 @@ import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontStyle
-import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 
 import com.prajwalch.torrentsearch.R
@@ -73,12 +66,11 @@ import com.prajwalch.torrentsearch.ui.extension.copyText
 import com.prajwalch.torrentsearch.ui.extension.openMagnetLink
 import com.prajwalch.torrentsearch.ui.extension.startTextShareIntent
 import com.prajwalch.torrentsearch.ui.theme.spaces
-import com.prajwalch.torrentsearch.ui.torrentdetails.component.CallToActionButton
-import com.prajwalch.torrentsearch.ui.torrentdetails.component.CoverImage
+import com.prajwalch.torrentsearch.ui.torrentdetails.component.ActionButtonRow
 import com.prajwalch.torrentsearch.ui.torrentdetails.component.DetailsUnavailableState
 import com.prajwalch.torrentsearch.ui.torrentdetails.component.NsfwPosterImage
 import com.prajwalch.torrentsearch.ui.torrentdetails.component.PosterImage
-import com.prajwalch.torrentsearch.ui.torrentdetails.component.Screenshots
+import com.prajwalch.torrentsearch.ui.torrentdetails.component.ScreenshotImage
 import com.prajwalch.torrentsearch.ui.torrentdetails.component.SomethingWentWrongState
 import com.prajwalch.torrentsearch.ui.torrentdetails.component.TorrentDescription
 import com.prajwalch.torrentsearch.ui.torrentdetails.component.TorrentInfoCard
@@ -201,13 +193,14 @@ fun TorrentDetailsScreen(
         },
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
     ) { innerPadding ->
-        AnimatedContent(targetState = uiState.state) { contentState ->
-            when (contentState) {
+        AnimatedContent(
+            modifier = Modifier.padding(innerPadding),
+            targetState = uiState.detailsState
+        ) { detailsState ->
+            when (detailsState) {
                 TorrentDetailsState.Loading -> {
                     Box(
-                        modifier = Modifier
-                            .padding(innerPadding)
-                            .fillMaxSize(),
+                        modifier = Modifier.fillMaxSize(),
                         contentAlignment = Alignment.Center
                     ) {
                         CircularProgressIndicator()
@@ -216,18 +209,14 @@ fun TorrentDetailsScreen(
 
                 TorrentDetailsState.NoInternetConnection -> {
                     NoInternetConnectionState(
-                        modifier = Modifier
-                            .padding(innerPadding)
-                            .fillMaxSize(),
+                        modifier = Modifier.fillMaxSize(),
                         onTryAgain = viewModel::loadDetails,
                     )
                 }
 
                 TorrentDetailsState.Unavailable -> {
                     DetailsUnavailableState(
-                        modifier = Modifier
-                            .padding(innerPadding)
-                            .fillMaxSize(),
+                        modifier = Modifier.fillMaxSize(),
                         onTryAgain = viewModel::loadDetails,
                     )
                 }
@@ -235,10 +224,9 @@ fun TorrentDetailsScreen(
                 is TorrentDetailsState.UnsupportedTorrentSite -> {
                     UnsupportedTorrentSiteState(
                         modifier = Modifier
-                            .padding(innerPadding)
                             .fillMaxSize()
                             .padding(horizontal = MaterialTheme.spaces.large),
-                        host = contentState.host,
+                        host = detailsState.host,
                         onOpenInBrowser = { uriHandler.openUri(viewModel.detailsPageUrl) },
                     )
                 }
@@ -246,21 +234,19 @@ fun TorrentDetailsScreen(
                 is TorrentDetailsState.SomethingWentWrong -> {
                     SomethingWentWrongState(
                         modifier = Modifier
-                            .padding(innerPadding)
                             .fillMaxSize()
                             .padding(horizontal = MaterialTheme.spaces.large),
-                        message = contentState.message,
+                        message = detailsState.message,
                         onTryAgain = viewModel::loadDetails,
                     )
                 }
 
-                is TorrentDetailsState.Available -> {
-                    val torrentDetails = contentState.details
+                is TorrentDetailsState.Ready -> {
+                    val torrentDetails = detailsState.details
 
                     TorrentDetailsScreenContent(
                         modifier = Modifier.fillMaxSize(),
                         details = torrentDetails,
-                        providerName = viewModel.providerName,
                         onOpenMagnetLink = {
                             showTorrentClientNotFoundDialog =
                                 !context.openMagnetLink(torrentDetails.magnetUri)
@@ -279,12 +265,11 @@ fun TorrentDetailsScreen(
                             }
                         },
                         isBookmarked = uiState.isBookmarked,
-                        onToggleBookmark = { viewModel.toggleBookmark(torrentDetails) },
+                        onToggleBookmark = { viewModel.toggleBookmark(it, torrentDetails) },
                         isRefreshing = uiState.isRefreshing,
                         onRefresh = viewModel::refreshDetails,
+                        providerName = viewModel.providerName,
                         blurNSFWImage = uiState.blurNSFWImages,
-                        insetPadding = innerPadding,
-                        contentPadding = PaddingValues(vertical = MaterialTheme.spaces.extraLarge),
                     )
                 }
             }
@@ -302,17 +287,6 @@ private fun TorrentDetailsScreenTopBar(
     scrollBehavior: TopAppBarScrollBehavior,
     modifier: Modifier = Modifier,
 ) {
-    val isContentOverlapped = scrollBehavior.state.overlappedFraction > 0.01f
-    val contentColor by animateColorAsState(
-        if (isContentOverlapped) Color.Unspecified else MaterialTheme.colorScheme.onSurface
-    )
-    val colors = TopAppBarDefaults.topAppBarColors(
-        containerColor = Color.Transparent,
-        navigationIconContentColor = contentColor,
-        titleContentColor = contentColor,
-        actionIconContentColor = contentColor,
-    )
-
     TopAppBar(
         modifier = modifier,
         navigationIcon = {
@@ -344,7 +318,6 @@ private fun TorrentDetailsScreenTopBar(
                 )
             }
         },
-        colors = colors,
         scrollBehavior = scrollBehavior,
     )
 }
@@ -352,7 +325,6 @@ private fun TorrentDetailsScreenTopBar(
 @Composable
 private fun TorrentDetailsScreenContent(
     details: TorrentDetails,
-    providerName: String,
     onOpenMagnetLink: () -> Unit,
     onDownloadTorrentFile: () -> Unit,
     onCopyInfoHash: () -> Unit,
@@ -360,75 +332,67 @@ private fun TorrentDetailsScreenContent(
     onToggleBookmark: (Boolean) -> Unit,
     isRefreshing: Boolean,
     onRefresh: () -> Unit,
+    providerName: String,
     modifier: Modifier = Modifier,
     blurNSFWImage: Boolean = true,
-    insetPadding: PaddingValues = PaddingValues(),
-    contentPadding: PaddingValues = PaddingValues(),
 ) {
     PullToRefreshBox(
         modifier = modifier,
         isRefreshing = isRefreshing,
         onRefresh = onRefresh,
     ) {
-        Box(
+        Column(
             modifier = Modifier
                 .fillMaxSize()
-                .verticalScroll(rememberScrollState())
+                .verticalScroll(state = rememberScrollState()),
+            verticalArrangement = Arrangement.spacedBy(MaterialTheme.spaces.large),
         ) {
-            details.posterUrl?.let { CoverImage(url = it) }
+            HeaderSection(
+                posterUrl = details.posterUrl,
+                torrentName = details.name,
+                onOpenMagnetLink = onOpenMagnetLink,
+                onDownloadTorrentFile = onDownloadTorrentFile,
+                isBookmarked = isBookmarked,
+                onToggleBookmark = onToggleBookmark,
+                isNSFW = details.isNSFW,
+                blurNSFWImage = blurNSFWImage,
+            )
 
-            Column(
-                modifier = Modifier.padding(insetPadding + contentPadding),
-                verticalArrangement = Arrangement.spacedBy(MaterialTheme.spaces.extraLarge),
-            ) {
-                HeaderSection(
-                    torrentName = details.name,
-                    posterUrl = details.posterUrl,
-                    isNSFW = details.isNSFW,
-                    onOpenMagnetLink = onOpenMagnetLink,
-                    onDownloadTorrentFile = onDownloadTorrentFile,
-                    isBookmarked = isBookmarked,
-                    onToggleBookmark = onToggleBookmark,
-                    blurNSFWImage = blurNSFWImage,
-                )
+            TorrentInfoSection(
+                size = details.size,
+                seeders = details.seeders,
+                peers = details.peers,
+                uploadDate = details.uploadDate,
+                category = details.category,
+                providerName = providerName,
+                uploader = details.uploader,
+                lastChecked = details.lastChecked,
+                infoHash = details.infoHash,
+                onCopyInfoHash = onCopyInfoHash,
+            )
 
-                HorizontalDivider()
-                TorrentInfoSection(
-                    size = details.size,
-                    seeders = details.seeders,
-                    peers = details.peers,
-                    uploadDate = details.uploadDate,
-                    category = details.category,
-                    providerName = providerName,
-                    uploader = details.uploader,
-                    lastChecked = details.lastChecked,
-                    infoHash = details.infoHash,
-                    onCopyInfoHash = onCopyInfoHash,
-                )
-
-                if (details.screenshotUrls.isNotEmpty()) {
-                    HorizontalDivider()
-                    ScreenshotsSection(details.screenshotUrls)
-                }
-
-                details.description?.let {
-                    HorizontalDivider()
-                    DescriptionSection(description = it, isNSFW = details.isNSFW)
-                }
+            if (details.screenshotUrls.isNotEmpty()) {
+                ScreenshotsSection(details.screenshotUrls)
             }
+
+            details.description?.let {
+                DescriptionSection(description = it, isNSFW = details.isNSFW)
+            }
+
+            Spacer(Modifier.height(MaterialTheme.spaces.large))
         }
     }
 }
 
 @Composable
 private fun HeaderSection(
-    torrentName: String,
     posterUrl: String?,
-    isNSFW: Boolean,
+    torrentName: String,
     onOpenMagnetLink: () -> Unit,
     onDownloadTorrentFile: () -> Unit,
     isBookmarked: Boolean,
     onToggleBookmark: (Boolean) -> Unit,
+    isNSFW: Boolean,
     blurNSFWImage: Boolean,
     modifier: Modifier = Modifier,
 ) {
@@ -444,21 +408,20 @@ private fun HeaderSection(
             }
         }
 
-        Column(verticalArrangement = Arrangement.spacedBy(MaterialTheme.spaces.large)) {
-            Column {
-                if (isNSFW) NSFWBadge()
-                Text(
-                    text = torrentName,
-                    style = MaterialTheme.typography.titleLarge,
-                )
-            }
-            CallToActionButton(
-                onOpenMagnetLink = onOpenMagnetLink,
-                onDownloadTorrentFile = onDownloadTorrentFile,
-                isBookmarked = isBookmarked,
-                onToggleBookmark = onToggleBookmark,
+        Column {
+            if (isNSFW) NSFWBadge()
+            Text(
+                text = torrentName,
+                style = MaterialTheme.typography.titleLarge,
             )
         }
+
+        ActionButtonRow(
+            onOpenMagnetLink = onOpenMagnetLink,
+            onDownloadTorrentFile = onDownloadTorrentFile,
+            isBookmarked = isBookmarked,
+            onToggleBookmark = onToggleBookmark,
+        )
     }
 }
 
@@ -476,11 +439,11 @@ private fun TorrentInfoSection(
     onCopyInfoHash: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    DetailsSection(
-        modifier = modifier,
-        title = { Text(stringResource(R.string.torrent_details_title_info)) },
-        contentPadding = PaddingValues(horizontal = MaterialTheme.spaces.large),
+    Column(
+        modifier = modifier.padding(horizontal = MaterialTheme.spaces.large),
+        verticalArrangement = Arrangement.spacedBy(MaterialTheme.spaces.large),
     ) {
+        SectionTitle(stringResource(R.string.torrent_details_title_info))
         TorrentInfoCard(
             size = size,
             seeders = seeders,
@@ -498,14 +461,24 @@ private fun TorrentInfoSection(
 
 @Composable
 private fun ScreenshotsSection(screenshotUrls: List<String>, modifier: Modifier = Modifier) {
-    DetailsSection(
+    Column(
         modifier = modifier,
-        title = { Text(stringResource(R.string.torrent_details_title_screenshots)) },
+        verticalArrangement = Arrangement.spacedBy(MaterialTheme.spaces.large),
     ) {
-        Screenshots(
-            urls = screenshotUrls,
-            contentPadding = PaddingValues(horizontal = MaterialTheme.spaces.large),
+        SectionTitle(
+            modifier = Modifier.padding(horizontal = MaterialTheme.spaces.large),
+            title = stringResource(R.string.torrent_details_title_screenshots),
         )
+
+        LazyRow(
+            horizontalArrangement = Arrangement.spacedBy(MaterialTheme.spaces.large),
+            verticalAlignment = Alignment.CenterVertically,
+            contentPadding = PaddingValues(horizontal = MaterialTheme.spaces.large),
+        ) {
+            items(items = screenshotUrls, key = { it }) {
+                ScreenshotImage(modifier = Modifier.animateItem(), url = it)
+            }
+        }
     }
 }
 
@@ -515,38 +488,39 @@ private fun DescriptionSection(
     isNSFW: Boolean,
     modifier: Modifier = Modifier,
 ) {
-    var descriptionVisible by rememberSaveable(isNSFW) { mutableStateOf(!isNSFW) }
+    var showDescription by rememberSaveable(isNSFW) { mutableStateOf(!isNSFW) }
 
-    DetailsSection(
-        modifier = modifier.animateContentSize(),
-        title = {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(stringResource(R.string.torrent_details_title_description))
+    Column(
+        modifier = modifier
+            .padding(horizontal = MaterialTheme.spaces.large)
+            .animateContentSize(),
+        verticalArrangement = Arrangement.spacedBy(MaterialTheme.spaces.large),
+    ) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            SectionTitle(stringResource(R.string.torrent_details_title_description))
 
-                if (isNSFW) {
-                    FilledTonalIconButton(onClick = { descriptionVisible = !descriptionVisible }) {
-                        val iconId = if (descriptionVisible) {
-                            R.drawable.ic_visibility_off
-                        } else {
-                            R.drawable.ic_visibility
-                        }
-
-                        Icon(
-                            painter = painterResource(iconId),
-                            contentDescription = null,
-                        )
+            if (isNSFW) {
+                FilledTonalIconButton(onClick = { showDescription = !showDescription }) {
+                    val iconResId = if (showDescription) {
+                        R.drawable.ic_visibility_off
+                    } else {
+                        R.drawable.ic_visibility
                     }
+
+                    Icon(
+                        painter = painterResource(iconResId),
+                        contentDescription = null,
+                    )
                 }
             }
-        },
-        contentPadding = PaddingValues(horizontal = MaterialTheme.spaces.large),
-    ) {
-        Crossfade(descriptionVisible) { showDescription ->
-            if (showDescription) {
+        }
+
+        Crossfade(showDescription) { shouldShowDescription ->
+            if (shouldShowDescription) {
                 TorrentDescription(description)
             } else {
                 Text(
@@ -559,32 +533,11 @@ private fun DescriptionSection(
 }
 
 @Composable
-private fun DetailsSection(
-    title: @Composable () -> Unit,
-    modifier: Modifier = Modifier,
-    contentPadding: PaddingValues = PaddingValues(0.dp),
-    content: @Composable ColumnScope.() -> Unit,
-) {
-    Column(
-        modifier = modifier.fillMaxWidth(),
-    ) {
-        CompositionLocalProvider(
-            LocalContentColor provides MaterialTheme.colorScheme.primary,
-            LocalTextStyle provides MaterialTheme.typography.titleMedium,
-        ) {
-            Box(modifier = Modifier.padding(horizontal = MaterialTheme.spaces.large)) {
-                title()
-            }
-        }
-        Spacer(Modifier.height(MaterialTheme.spaces.large))
-        CompositionLocalProvider(
-            LocalContentColor provides MaterialTheme.colorScheme.onSurfaceVariant,
-            LocalTextStyle provides MaterialTheme.typography.bodyMedium,
-        ) {
-            Column(
-                modifier = Modifier.padding(contentPadding),
-                content = content,
-            )
-        }
-    }
+private fun SectionTitle(title: String, modifier: Modifier = Modifier) {
+    Text(
+        modifier = modifier,
+        text = title,
+        color = MaterialTheme.colorScheme.primary,
+        style = MaterialTheme.typography.titleMedium,
+    )
 }
