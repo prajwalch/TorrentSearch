@@ -526,6 +526,7 @@ private fun DescriptionSection(
                 Text(
                     text = stringResource(R.string.torrent_details_message_description_hidden),
                     fontStyle = FontStyle.Italic,
+                    style = MaterialTheme.typography.bodyMedium,
                 )
             }
         }
