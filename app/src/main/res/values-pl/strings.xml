@@ -247,14 +247,4 @@
     <string name="bookmarks_no_bookmarks_matched">Brak pasujących zakładek</string>
     <string name="settings_group_content_and_privacy">Treść i prywatność</string>
     <string name="settings_group_network">Sieć</string>
-    <string name="torrent_client_gopeed" translatable="false"></string>
-    <string name="search_message_no_stack_trace"></string>
-    <string name="torznab" translatable="false"></string>
-    <string name="search_title_stack_trace"></string>
-    <string name="torrent_client_torrserve" translatable="false"></string>
-    <string name="search_error_crashed"></string>
-    <string name="torrent_client_libretorrent" translatable="false"></string>
-    <string name="torrent_client_aria2" translatable="false"></string>
-    <string name="torrent_client_pikatorrent" translatable="false"></string>
-    <string name="app_name" translatable="false"></string>
 </resources>
