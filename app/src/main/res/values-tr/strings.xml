@@ -248,4 +248,11 @@
     <string name="bookmarks_no_bookmarks_matched">Yer imi eşleşmedi</string>
     <string name="settings_group_content_and_privacy">İçerik ve gizlilik</string>
     <string name="settings_group_network">Ağ</string>
+    <string name="torrent_client_gopeed" translatable="false"></string>
+    <string name="torznab" translatable="false"></string>
+    <string name="torrent_client_torrserve" translatable="false"></string>
+    <string name="torrent_client_libretorrent" translatable="false"></string>
+    <string name="torrent_client_aria2" translatable="false"></string>
+    <string name="torrent_client_pikatorrent" translatable="false"></string>
+    <string name="app_name" translatable="false"></string>
 </resources>
