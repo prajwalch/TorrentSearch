@@ -255,4 +255,5 @@
     <string name="search_history_yesterday"></string>
     <string name="search_providers_button_check_connection_checking"></string>
     <string name="search_providers_protection_unlocked"></string>
+    <string name="app_name" translatable="false"></string>
 </resources>
