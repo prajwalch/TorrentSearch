@@ -116,7 +116,7 @@ fun BookmarksScreen(
         )
     }
 
-    var selectedBookmark by retain { mutableStateOf<Torrent?>(null) }
+    var selectedBookmark by retain(uiState.totalBookmarksCount) { mutableStateOf<Torrent?>(null) }
     selectedBookmark?.let { bookmark ->
         TorrentActionsBottomSheet(
             onDismiss = { selectedBookmark = null },
