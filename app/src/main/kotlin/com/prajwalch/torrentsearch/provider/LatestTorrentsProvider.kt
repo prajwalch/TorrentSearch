@@ -4,7 +4,7 @@ import com.prajwalch.torrentsearch.domain.model.Category
 import com.prajwalch.torrentsearch.domain.model.Torrent
 
 /**
- * A [SearchProvider] that can provide latest/recent torrents.
+ * A [SearchProvider] that can provide the latest/recent torrents.
  */
 interface LatestTorrentsProvider : SearchProvider {
     /**
