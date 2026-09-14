@@ -1,7 +1,6 @@
 package com.prajwalch.torrentsearch.ui.searchproviders.component
 
 import android.content.res.Configuration
-
 import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.background
 import androidx.compose.foundation.horizontalScroll
@@ -15,8 +14,8 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.material3.FilledTonalIconButton
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.ListItemColors
@@ -94,7 +93,7 @@ fun SearchProviderListItem(
         },
         trailingContent = {
             Row(
-                horizontalArrangement = Arrangement.spacedBy(MaterialTheme.spaces.small),
+                horizontalArrangement = Arrangement.spacedBy(MaterialTheme.spaces.extraSmall),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 if ((type == SearchProviderType.Builtin) &&
@@ -172,7 +171,7 @@ private fun SupportedCategories(
     modifier: Modifier = Modifier,
 ) {
     val hasOverflowed = categories.size > 5
-    val fadeOutWidth = 32.dp
+    val fadeOutWidth = 50.dp
     val fadeOutGradient = Brush.horizontalGradient(
         colors = listOf(Color.Transparent, containerColor),
     )
@@ -207,13 +206,13 @@ private fun SupportedCategories(
 private fun QuestionMarkButton(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
-    contentColor: Color = MaterialTheme.colorScheme.error,
 ) {
-    IconButton(
+    FilledTonalIconButton(
         modifier = modifier,
         onClick = onClick,
         colors = IconButtonDefaults.iconButtonColors(
-            contentColor = contentColor,
+            containerColor = MaterialTheme.colorScheme.tertiaryContainer,
+            contentColor = MaterialTheme.colorScheme.onTertiaryContainer,
         ),
     ) {
         Icon(
@@ -225,7 +224,7 @@ private fun QuestionMarkButton(
 
 @Composable
 private fun LockOpenButton(onClick: () -> Unit, modifier: Modifier = Modifier) {
-    IconButton(modifier = modifier, onClick = onClick) {
+    FilledTonalIconButton(modifier = modifier, onClick = onClick) {
         Icon(
             painter = painterResource(R.drawable.ic_lock_open),
             contentDescription = null,
