@@ -29,7 +29,7 @@ fun ActionListItem(
             Icon(
                 modifier = Modifier.size(22.dp),
                 painter = icon,
-                contentDescription = null,
+                contentDescription = label,
             )
         },
         headlineContent = {

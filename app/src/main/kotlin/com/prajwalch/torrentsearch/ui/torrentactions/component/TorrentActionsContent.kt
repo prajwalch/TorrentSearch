@@ -31,6 +31,7 @@ import androidx.compose.ui.unit.dp
 
 import com.prajwalch.torrentsearch.R
 import com.prajwalch.torrentsearch.domain.model.Torrent
+import com.prajwalch.torrentsearch.ui.categoryStringResource
 import com.prajwalch.torrentsearch.ui.component.ContentState
 import com.prajwalch.torrentsearch.ui.component.ContentStateDefaults
 import com.prajwalch.torrentsearch.ui.component.NSFWBadge
@@ -100,7 +101,7 @@ private fun BottomSheetHeader(
     ) {
         Icon(
             painter = painterResource(torrent.category.iconResId()),
-            contentDescription = null,
+            contentDescription = torrent.category?.let { categoryStringResource(it) },
         )
 
         Column(
@@ -149,9 +150,15 @@ private fun BottomSheetHeader(
                 R.drawable.ic_bookmark
             }
 
+            val contentDescriptionResId = if (isBookmarked) {
+                R.string.torrent_action_delete_bookmark
+            } else {
+                R.string.torrent_action_bookmark_torrent
+            }
+
             Icon(
                 painter = painterResource(iconResId),
-                contentDescription = null,
+                contentDescription = stringResource(contentDescriptionResId),
             )
         }
     }
