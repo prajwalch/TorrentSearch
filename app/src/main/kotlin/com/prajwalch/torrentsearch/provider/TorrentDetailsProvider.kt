@@ -17,7 +17,7 @@ interface TorrentDetailsProvider : SearchProvider {
     /**
      * Fetches the [TorrentDetails] for a torrent from the [detailsPageUrl].
      *
-     * Return `null` if the details could not be fetched or parsed.
+     * Returns `null` if the details could not be fetched or parsed.
      */
     suspend fun getDetails(detailsPageUrl: String): TorrentDetails?
 }
