@@ -83,7 +83,7 @@ interface SearchProvider {
     /**
      * Searches torrents for a given query and category.
      *
-     * Any exceptions thrown from this function wil be caught safely.
+     * Any exceptions thrown from this function will be caught safely.
      */
     suspend fun search(query: String, category: Category): List<Torrent>
 }
