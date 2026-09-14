@@ -109,6 +109,7 @@ fun HomeScreen(
                     Text(
                         modifier = Modifier.padding(horizontal = MaterialTheme.spaces.large),
                         text = stringResource(R.string.home_title_recent_searches),
+                        color = MaterialTheme.colorScheme.primary,
                         style = MaterialTheme.typography.titleMedium,
                     )
 
