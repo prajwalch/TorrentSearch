@@ -13,7 +13,7 @@ import com.prajwalch.torrentsearch.domain.model.SearchProviderResult
 import com.prajwalch.torrentsearch.domain.model.SearchResults
 import com.prajwalch.torrentsearch.domain.model.Torrent
 import com.prajwalch.torrentsearch.network.CloudflareChallengeException
-import com.prajwalch.torrentsearch.providers.SearchProvider
+import com.prajwalch.torrentsearch.provider.SearchProvider
 
 import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.persistentListOf

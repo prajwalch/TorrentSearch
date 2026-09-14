@@ -10,7 +10,7 @@ import com.prajwalch.torrentsearch.domain.SearchProvidersManager
 import com.prajwalch.torrentsearch.domain.model.Category
 import com.prajwalch.torrentsearch.domain.model.TorznabConnectionCheckResult
 import com.prajwalch.torrentsearch.network.NetworkClient
-import com.prajwalch.torrentsearch.providers.SearchProviderId
+import com.prajwalch.torrentsearch.provider.SearchProviderId
 import com.prajwalch.torrentsearch.torznab.TorznabUtils
 
 import kotlinx.coroutines.channels.Channel

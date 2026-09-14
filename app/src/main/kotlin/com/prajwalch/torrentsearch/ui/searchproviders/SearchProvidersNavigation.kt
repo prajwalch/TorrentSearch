@@ -5,7 +5,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
 import androidx.navigation.navigation
 
-import com.prajwalch.torrentsearch.providers.SearchProviderId
+import com.prajwalch.torrentsearch.provider.SearchProviderId
 import com.prajwalch.torrentsearch.ui.searchproviders.addedit.AddEditSearchProviderScreen
 
 import kotlinx.serialization.Serializable

@@ -22,8 +22,8 @@ import androidx.compose.ui.unit.dp
 
 import com.prajwalch.torrentsearch.domain.model.CloudflareProtectionStatus
 import com.prajwalch.torrentsearch.domain.model.SearchProviderInfo
-import com.prajwalch.torrentsearch.providers.SearchProviderId
-import com.prajwalch.torrentsearch.providers.SearchProviderType
+import com.prajwalch.torrentsearch.domain.model.SearchProviderType
+import com.prajwalch.torrentsearch.provider.SearchProviderId
 import com.prajwalch.torrentsearch.ui.theme.spaces
 
 @Composable

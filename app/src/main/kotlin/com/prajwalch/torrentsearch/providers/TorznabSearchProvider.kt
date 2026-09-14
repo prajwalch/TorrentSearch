@@ -3,9 +3,12 @@ package com.prajwalch.torrentsearch.providers
 import android.util.Log
 
 import com.prajwalch.torrentsearch.domain.model.Category
+import com.prajwalch.torrentsearch.domain.model.SearchProviderSafetyStatus
+import com.prajwalch.torrentsearch.domain.model.SearchProviderType
 import com.prajwalch.torrentsearch.domain.model.Torrent
 import com.prajwalch.torrentsearch.domain.model.TorznabConfig
 import com.prajwalch.torrentsearch.network.NetworkClient
+import com.prajwalch.torrentsearch.provider.SearchProvider
 import com.prajwalch.torrentsearch.torznab.TorznabCategoryMapper
 import com.prajwalch.torrentsearch.torznab.TorznabFunctions
 import com.prajwalch.torrentsearch.torznab.TorznabResultsXmlParser

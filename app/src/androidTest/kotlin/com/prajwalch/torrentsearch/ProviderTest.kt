@@ -1,6 +1,7 @@
 package com.prajwalch.torrentsearch
 
 import android.content.Context
+
 import androidx.datastore.preferences.core.PreferenceDataStoreFactory
 import androidx.datastore.preferences.preferencesDataStoreFile
 import androidx.test.core.app.ApplicationProvider
@@ -9,8 +10,8 @@ import com.prajwalch.torrentsearch.data.repository.SettingsRepository
 import com.prajwalch.torrentsearch.domain.model.Category
 import com.prajwalch.torrentsearch.domain.model.Torrent
 import com.prajwalch.torrentsearch.network.NetworkClient
+import com.prajwalch.torrentsearch.provider.SearchProvider
 import com.prajwalch.torrentsearch.providers.Knaben
-import com.prajwalch.torrentsearch.providers.SearchProvider
 
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers

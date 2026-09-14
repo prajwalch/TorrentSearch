@@ -8,7 +8,7 @@ import com.prajwalch.torrentsearch.domain.model.MagnetUriState
 import com.prajwalch.torrentsearch.domain.model.Torrent
 import com.prajwalch.torrentsearch.extension.readParentTag
 import com.prajwalch.torrentsearch.extension.skipCurrentTag
-import com.prajwalch.torrentsearch.providers.SearchProviderId
+import com.prajwalch.torrentsearch.provider.SearchProviderId
 import com.prajwalch.torrentsearch.util.FileSizeUtils
 import com.prajwalch.torrentsearch.util.TorrentDateParser
 import com.prajwalch.torrentsearch.util.TorrentUtils

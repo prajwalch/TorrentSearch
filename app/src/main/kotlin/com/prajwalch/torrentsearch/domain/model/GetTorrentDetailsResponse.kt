@@ -1,22 +1,28 @@
 package com.prajwalch.torrentsearch.domain.model
 
 /**
- * Represents a response of
- * [com.prajwalch.torrentsearch.providers.TorrentDetailsProvider.getDetails].
+ * Response returned when requesting a torrent details.
  */
 sealed interface GetTorrentDetailsResponse {
     /**
-     * A successful response.
+     * Request succeed.
      */
     data class Success(val details: TorrentDetails) : GetTorrentDetailsResponse
 
     /**
-     * Given URL is not supported.
+     * Request URL is not supported.
+     *
+     * It occurs when no any providers are found that can handle the
+     * request URl.
      */
     data object UnsupportedUrl : GetTorrentDetailsResponse
 
     /**
-     * Details couldn't be found on the remote host.
+     * Details not available.
+     *
+     * It indicates that the request URL is valid and reachable, but
+     * could not find the details or parsed the page maybe due to layout
+     * change.
      */
     data object Unavailable : GetTorrentDetailsResponse
 }

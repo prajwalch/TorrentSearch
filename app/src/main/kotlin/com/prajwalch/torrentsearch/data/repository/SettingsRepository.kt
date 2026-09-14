@@ -14,7 +14,7 @@ import com.prajwalch.torrentsearch.domain.model.MaxNumResults
 import com.prajwalch.torrentsearch.domain.model.SortCriteria
 import com.prajwalch.torrentsearch.domain.model.SortOptions
 import com.prajwalch.torrentsearch.domain.model.SortOrder
-import com.prajwalch.torrentsearch.providers.SearchProviderId
+import com.prajwalch.torrentsearch.provider.SearchProviderId
 
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine

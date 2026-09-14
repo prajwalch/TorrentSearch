@@ -1,6 +1,7 @@
 package com.prajwalch.torrentsearch.di
 
 import com.prajwalch.torrentsearch.network.NetworkClient
+import com.prajwalch.torrentsearch.provider.SearchProvider
 import com.prajwalch.torrentsearch.providers.AniLibria
 import com.prajwalch.torrentsearch.providers.AniRena
 import com.prajwalch.torrentsearch.providers.AnimeTosho
@@ -26,7 +27,6 @@ import com.prajwalch.torrentsearch.providers.NekoBT
 import com.prajwalch.torrentsearch.providers.Nyaa
 import com.prajwalch.torrentsearch.providers.OxTorrent
 import com.prajwalch.torrentsearch.providers.Rutor
-import com.prajwalch.torrentsearch.providers.SearchProvider
 import com.prajwalch.torrentsearch.providers.SubsPlease
 import com.prajwalch.torrentsearch.providers.Sukebei
 import com.prajwalch.torrentsearch.providers.ThePirateBay

@@ -7,16 +7,16 @@ import com.prajwalch.torrentsearch.data.repository.TorznabConfigRepository
 import com.prajwalch.torrentsearch.domain.model.Category
 import com.prajwalch.torrentsearch.domain.model.CloudflareProtectionStatus
 import com.prajwalch.torrentsearch.domain.model.SearchProviderInfo
+import com.prajwalch.torrentsearch.domain.model.SearchProviderSafetyStatus
+import com.prajwalch.torrentsearch.domain.model.SearchProviderType
 import com.prajwalch.torrentsearch.domain.model.TorznabConfig
 import com.prajwalch.torrentsearch.network.NetworkClient
-import com.prajwalch.torrentsearch.providers.LatestTorrentsProvider
-import com.prajwalch.torrentsearch.providers.MagnetUriProvider
-import com.prajwalch.torrentsearch.providers.SearchProvider
-import com.prajwalch.torrentsearch.providers.SearchProviderId
-import com.prajwalch.torrentsearch.providers.SearchProviderSafetyStatus
-import com.prajwalch.torrentsearch.providers.SearchProviderType
-import com.prajwalch.torrentsearch.providers.TopTorrentsProvider
-import com.prajwalch.torrentsearch.providers.TorrentDetailsProvider
+import com.prajwalch.torrentsearch.provider.LatestTorrentsProvider
+import com.prajwalch.torrentsearch.provider.MagnetUriProvider
+import com.prajwalch.torrentsearch.provider.SearchProvider
+import com.prajwalch.torrentsearch.provider.SearchProviderId
+import com.prajwalch.torrentsearch.provider.TopTorrentsProvider
+import com.prajwalch.torrentsearch.provider.TorrentDetailsProvider
 import com.prajwalch.torrentsearch.providers.TorznabSearchProvider
 
 import kotlinx.coroutines.CancellationException
@@ -27,7 +27,6 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.supervisorScope
 import kotlinx.coroutines.withContext
-
 import kotlin.concurrent.atomics.AtomicInt
 import kotlin.concurrent.atomics.ExperimentalAtomicApi
 import kotlin.concurrent.atomics.incrementAndFetch

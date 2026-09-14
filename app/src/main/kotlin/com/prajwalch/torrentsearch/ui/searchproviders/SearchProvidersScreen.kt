@@ -37,7 +37,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 
 import com.prajwalch.torrentsearch.R
-import com.prajwalch.torrentsearch.providers.SearchProviderId
+import com.prajwalch.torrentsearch.provider.SearchProviderId
 import com.prajwalch.torrentsearch.ui.component.FilterSearchBar
 import com.prajwalch.torrentsearch.ui.searchproviders.component.CloudflareChallengeBottomSheet
 import com.prajwalch.torrentsearch.ui.searchproviders.component.ResetToDefaultDialog

@@ -1,6 +1,6 @@
 package com.prajwalch.torrentsearch.util
 
-import com.prajwalch.torrentsearch.providers.SearchProviderId
+import com.prajwalch.torrentsearch.provider.SearchProviderId
 import java.security.MessageDigest
 
 object TorrentUtils {

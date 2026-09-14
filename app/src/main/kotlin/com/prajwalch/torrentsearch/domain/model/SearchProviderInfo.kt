@@ -1,38 +1,45 @@
 package com.prajwalch.torrentsearch.domain.model
 
-import com.prajwalch.torrentsearch.providers.SearchProviderId
-import com.prajwalch.torrentsearch.providers.SearchProviderSafetyStatus
-import com.prajwalch.torrentsearch.providers.SearchProviderType
+import com.prajwalch.torrentsearch.provider.SearchProviderId
 
-/** Search provider information. */
+/**
+ * High-level information of the search provider.
+ */
 data class SearchProviderInfo(
-    /** Unique ID of the search provider. */
+    /**
+     * Unique ID of the provider.
+     */
     val id: SearchProviderId,
-    /** Name of the search provider. */
+    /**
+     * Name of the provider.
+     */
     val name: String,
-    /** URL of the search provider. */
+    /**
+     * Homepage URL of the provider.
+     */
     val url: String,
-    /** URL which is used to solve Cloudflare challenge. */
+    /**
+     * The URL which should be used for solving Cloudflare challenge.
+     */
     val cloudflareSolverUrl: String? = null,
-    /** Categories supported by the search provider. */
+    /**
+     * Set of categories supported by the provider.
+     */
     val supportedCategories: Set<Category> = emptySet(),
-    /** Safety status of the search provider */
+    /**
+     * Safety flag of the provider.
+     */
     val safetyStatus: SearchProviderSafetyStatus,
-    /** Type of search provider. */
+    /**
+     * Origin from where the provider comes from.
+     */
     val type: SearchProviderType,
-    /** Current status of the provider protection. */
+    /**
+     * Current protection status of the provider.
+     */
     val cloudflareProtectionStatus: CloudflareProtectionStatus,
+    /**
+     * Indicates whether the provider is currently enabled.
+     */
     val isEnabled: Boolean,
 )
-
-/** Indicates the protection status of the provider. */
-enum class CloudflareProtectionStatus {
-    /** Not Cloudflare-protected. */
-    UnProtected,
-
-    /** Cloudflare-protected and not unlocked yet. */
-    Locked,
-
-    /** Cloudflare-protected but already unlocked. */
-    Unlocked,
-}
