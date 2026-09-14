@@ -29,6 +29,7 @@ import com.prajwalch.torrentsearch.ui.component.RoundedDropdownMenu
 @Composable
 fun SearchProvidersScreenTopBar(
     onNavigateBack: () -> Unit,
+    searchBarVisible: Boolean,
     onToggleSearchBar: () -> Unit,
     onEnableAll: () -> Unit,
     onDisableAll: () -> Unit,
@@ -53,8 +54,14 @@ fun SearchProvidersScreenTopBar(
         },
         actions = {
             IconButton(onClick = onToggleSearchBar) {
+                val iconResId = if (searchBarVisible) {
+                    R.drawable.ic_search_off
+                } else {
+                    R.drawable.ic_search
+                }
+
                 Icon(
-                    painter = painterResource(R.drawable.ic_search),
+                    painter = painterResource(iconResId),
                     contentDescription = null,
                 )
             }

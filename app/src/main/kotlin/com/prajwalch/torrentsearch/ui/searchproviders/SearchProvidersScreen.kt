@@ -157,6 +157,7 @@ fun SearchProvidersScreen(
         topBar = {
             SearchProvidersScreenTopBar(
                 onNavigateBack = onNavigateBack,
+                searchBarVisible = showSearchBar,
                 onToggleSearchBar = { showSearchBar = !showSearchBar },
                 onEnableAll = viewModel::enableAllSearchProviders,
                 onDisableAll = viewModel::disableAllSearchProviders,

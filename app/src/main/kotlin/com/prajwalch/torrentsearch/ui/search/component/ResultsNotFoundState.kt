@@ -48,7 +48,7 @@ fun ResultsNotFoundState(
         icon = {
             Icon(
                 modifier = Modifier.size(ContentStateDefaults.IconSize),
-                painter = painterResource(R.drawable.ic_results_not_found),
+                painter = painterResource(R.drawable.ic_search_off),
                 contentDescription = null,
             )
         },

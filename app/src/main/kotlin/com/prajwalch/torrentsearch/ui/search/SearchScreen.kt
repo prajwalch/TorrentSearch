@@ -135,6 +135,7 @@ fun SearchScreen(
         topBar = {
             SearchScreenTopBar(
                 onNavigateBack = onNavigateBack,
+                searchBarVisible = showSearchBar,
                 onToggleSearchBar = { showSearchBar = !showSearchBar },
                 sortOptions = uiState.sortOptions,
                 onChangeSortCriteria = viewModel::updateSortCriteria,
@@ -265,6 +266,7 @@ private fun SearchState.getAnimationContentKey() = when (this) {
 @Composable
 private fun SearchScreenTopBar(
     onNavigateBack: () -> Unit,
+    searchBarVisible: Boolean,
     onToggleSearchBar: () -> Unit,
     sortOptions: SortOptions,
     onChangeSortCriteria: (SortCriteria) -> Unit,
@@ -298,8 +300,14 @@ private fun SearchScreenTopBar(
                 onClick = onToggleSearchBar,
                 enabled = enableSearchResultsAction,
             ) {
+                val iconResId = if (searchBarVisible) {
+                    R.drawable.ic_search_off
+                } else {
+                    R.drawable.ic_search
+                }
+
                 Icon(
-                    painter = painterResource(R.drawable.ic_search),
+                    painter = painterResource(iconResId),
                     contentDescription = null,
                 )
             }

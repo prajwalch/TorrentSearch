@@ -157,6 +157,7 @@ fun BookmarksScreen(
         topBar = {
             BookmarksScreenTopBar(
                 onNavigateBack = onNavigateBack,
+                searchBarVisible = showSearchBar,
                 onToggleSearchBar = { showSearchBar = !showSearchBar },
                 sortOptions = uiState.sortOptions,
                 onChangeSortCriteria = viewModel::setSortCriteria,

@@ -38,6 +38,7 @@ import com.prajwalch.torrentsearch.ui.theme.spaces
 @Composable
 fun BookmarksScreenTopBar(
     onNavigateBack: () -> Unit,
+    searchBarVisible: Boolean,
     onToggleSearchBar: () -> Unit,
     sortOptions: SortOptions,
     onChangeSortCriteria: (SortCriteria) -> Unit,
@@ -71,8 +72,14 @@ fun BookmarksScreenTopBar(
                 onClick = onToggleSearchBar,
                 enabled = isBookmarksNotEmpty,
             ) {
+                val iconResId = if (searchBarVisible) {
+                    R.drawable.ic_search_off
+                } else {
+                    R.drawable.ic_search
+                }
+
                 Icon(
-                    painter = painterResource(R.drawable.ic_search),
+                    painter = painterResource(iconResId),
                     contentDescription = null,
                 )
             }

@@ -116,6 +116,7 @@ fun BrowseScreen(
         topBar = {
             BrowseScreenTopBar(
                 onNavigateBack = onNavigateBack,
+                searchBarVisible = showSearchBar,
                 onToggleSearchBar = { showSearchBar = !showSearchBar },
                 onNavigateToSettings = onNavigateToSettings,
                 enableSearchAction = uiState.contentState is BrowseContentState.Available,
@@ -240,6 +241,7 @@ private fun BrowseContentState.getAnimationContentKey() = when (this) {
 @Composable
 private fun BrowseScreenTopBar(
     onNavigateBack: () -> Unit,
+    searchBarVisible: Boolean,
     onToggleSearchBar: () -> Unit,
     onNavigateToSettings: () -> Unit,
     modifier: Modifier = Modifier,
@@ -262,8 +264,14 @@ private fun BrowseScreenTopBar(
                 onClick = onToggleSearchBar,
                 enabled = enableSearchAction,
             ) {
+                val iconResId = if (searchBarVisible) {
+                    R.drawable.ic_search_off
+                } else {
+                    R.drawable.ic_search
+                }
+
                 Icon(
-                    painter = painterResource(R.drawable.ic_search),
+                    painter = painterResource(iconResId),
                     contentDescription = null,
                 )
             }
