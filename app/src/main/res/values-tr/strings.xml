@@ -114,7 +114,7 @@
     <string name="settings_enable_share_integration">Paylaşım entegrasyonunu etkinleştirin</string>
     <string name="settings_enable_share_integration_summary">Etkinleştirildiğinde, bu uygulamayı paylaşım menüsüne ekler</string>
     <string name="settings_enable_quick_search">Hızlı aramayı etkinleştir</string>
-    <string name="settings_enable_quick_search_summary">Etkinleştirildiğinde, bu uygulamayı metin seçim menüsüne ekler (Kopyala veya Kes gibi).</string>
+    <string name="settings_enable_quick_search_summary">Etkinleştirildiğinde, bu uygulamayı metin seçim menüsüne ekler (Kopyala veya Kes gibi)</string>
     <string name="settings_group_about">Hakkında</string>
     <string name="settings_version">Sürüm</string>
     <string name="settings_source_code">Kaynak kodu</string>
