@@ -248,4 +248,9 @@
     <string name="bookmarks_no_bookmarks_matched">Yer imi eşleşmedi</string>
     <string name="settings_group_content_and_privacy">İçerik ve gizlilik</string>
     <string name="settings_group_network">Ağ</string>
+    <string name="torrent_message_getting_magnet_link">Magnet bağlantısı alınıyor…</string>
+    <string name="torrent_message_failed_to_get_magnet_link">Magnet bağlantısı alınamadı</string>
+    <string name="torrent_message_file_download_complete">İndirme tamamlandı</string>
+    <string name="torrent_button_save_to_file">Dosyaya kaydet</string>
+    <string name="torrent_details_button_bookmark_torrent">Torrenti yer imlerine ekle</string>
 </resources>
