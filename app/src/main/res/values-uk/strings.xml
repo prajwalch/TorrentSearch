@@ -242,4 +242,19 @@
     <string name="search_history_yesterday">Учора</string>
     <string name="search_providers_search_hint">Пошукові системи</string>
     <string name="app_name" translatable="false"></string>
+    <string name="home_title_enable_search_providers"></string>
+    <string name="torrent_client_gopeed" translatable="false"></string>
+    <string name="settings_group_network"></string>
+    <string name="search_message_no_stack_trace"></string>
+    <string name="home_title_recent_searches"></string>
+    <string name="torznab" translatable="false"></string>
+    <string name="search_title_stack_trace"></string>
+    <string name="torrent_client_torrserve" translatable="false"></string>
+    <string name="search_error_crashed"></string>
+    <string name="torrent_client_libretorrent" translatable="false"></string>
+    <string name="search_error_cloudflare_challenge_encountered"></string>
+    <string name="torrent_client_aria2" translatable="false"></string>
+    <string name="bookmarks_no_bookmarks_matched"></string>
+    <string name="torrent_client_pikatorrent" translatable="false"></string>
+    <string name="settings_group_content_and_privacy"></string>
 </resources>
