@@ -3,7 +3,6 @@
 ![TorrentSearch icon](https://github.com/prajwalch/TorrentSearch/blob/main/fastlane/metadata/android/en-US/images/icon.png)
 
 <h1>Torrent Search</h1>
-<br/>
 
 [![Latest release](https://img.shields.io/github/v/release/prajwalch/TorrentSearch?style=for-the-badge&color=green)](https://github.com/prajwalch/TorrentSearch/releases)
 [![F-Droid](https://img.shields.io/f-droid/v/com.prajwalch.torrentsearch?style=for-the-badge&color=blue)](https://f-droid.org/packages/com.prajwalch.torrentsearch)
@@ -13,34 +12,34 @@
 
 </div>
 
-## Table of Contents
+## Table of contents
 
 - [Intro](#intro)
 - [Screenshots](#screenshots)
 - [Download](#download)
 - [Features](#features)
    * [Search](#search)
-   * [Detailed Results](#detailed-results)
-   * [Torrent Actions](#torrent-actions)
-   * [Torrent Details](#torrent-details)
+   * [Detailed results](#detailed-results)
+   * [Torrent actions](#torrent-actions)
+   * [Torrent details](#torrent-details)
    * [Browse](#browse)
    * [Bookmarks](#bookmarks)
-   * [Safe Mode](#safe-mode)
+   * [Safe mode](#safe-mode)
    * [Integrations](#integrations)
-   * [Material 3 Design](#material-3-design)
-- [Building from Source](#building-from-source)
-   * [Command Line](#command-line)
+   * [Material 3 design](#material-3-design)
+- [Building from source](#building-from-source)
+   * [Command line](#command-line)
 - [Contributing](#contributing)
    * [Translation](#translation)
 - [Contributors](#contributors)
-- [Tech Stack and Open Source Libraries](#tech-stack-and-open-source-libraries)
+- [Tech stack and open source libraries](#tech-stack-and-open-source-libraries)
 - [Acknowledgements](#acknowledgements)
 - [Disclaimer](#disclaimer)
 
 ## Intro
 
 TorrentSearch is an Android app for searching torrents across multiple providers simultaneously,
-with fast search speed, detailed results, category filters, and a full set of torrent actions.
+with fast search speed, detailed results, category filters, a full set of torrent actions.
 
 ## Screenshots
 
@@ -58,8 +57,8 @@ with fast search speed, detailed results, category filters, and a full set of to
 > [Actions](https://github.com/prajwalch/TorrentSearch/actions) workflow runs.
 > They are generated automatically for each commit and may be unstable.
 
-[<img src="https://f-droid.org/badge/get-it-on.png" alt="Get it on F-Droid" height="80">](https://f-droid.org/packages/com.prajwalch.torrentsearch)
 [<img src="https://gitlab.com/IzzyOnDroid/repo/-/raw/master/assets/IzzyOnDroid.png" alt="Get it on IzzyOnDroid" height="80">](https://apt.izzysoft.de/fdroid/index/apk/com.prajwalch.torrentsearch)
+[<img src="https://f-droid.org/badge/get-it-on.png" alt="Get it on F-Droid" height="80">](https://f-droid.org/packages/com.prajwalch.torrentsearch)
 [<img src="https://github.com/machiav3lli/oandbackupx/blob/034b226cea5c1b30eb4f6a6f313e4dadcbb0ece4/badge_github.png" alt="Get it on GitHub" height="80">](https://github.com/prajwalch/TorrentSearch/releases/latest/)
 [<img src="https://github.com/ImranR98/Obtainium/blob/main/assets/graphics/badge_obtainium.png" alt="Get it on Obtainium" height="80">](https://apps.obtainium.imranr.dev/redirect?r=obtainium://add/https://github.com/prajwalch/TorrentSearch/)
 
@@ -74,7 +73,7 @@ with fast search speed, detailed results, category filters, and a full set of to
 - Filter out dead or already-viewed torrents
 - Filter results by name, provider or category
 
-### Detailed Results
+### Detailed results
 
 Each result includes:
 
@@ -86,16 +85,16 @@ Each result includes:
 - NSFW indicator
 - Provider name
 
-### Torrent Actions
+### Torrent actions
 
 - **Open magnet link** in an external torrent client
 - **Download `.torrent` file** to local storage
 - **View torrent details** directly inside the app or open the full page in your browser
-- **Copy or share** the magnet link or details page URL
+- **Copy or share** the magnet link or details page link
 
 If no torrent client is installed, TorrentSearch provides links to FOSS torrent clients.
 
-### Torrent Details
+### Torrent details
 
 - **Native details screen** — view torrent details inside the app without a browser or WebView; can
   be disabled to open the page directly in your default browser instead
@@ -106,7 +105,7 @@ If no torrent client is installed, TorrentSearch provides links to FOSS torrent 
 ### Browse
 
 - Explore **top** and **latest** torrents from your enabled providers
-- Filter by category and sort order — changing either instantly refreshes results
+- Filter by category and sort order
 - Filter out dead or already-viewed torrents
 - Filter torrents by name or provider
 
@@ -115,9 +114,9 @@ If no torrent client is installed, TorrentSearch provides links to FOSS torrent 
 - Save torrents for later
 - Export and import bookmarks
 
-### Safe Mode
+### Safe mode
 
-When enabled, Safe Mode automatically:
+When enabled, safe mode automatically:
 
 - Disables unsafe and NSFW providers
 - Hides NSFW categories and torrents
@@ -132,22 +131,22 @@ Connect your own indexer via the [Torznab API](https://torznab.github.io/spec-1.
 
 See the [wiki](https://github.com/prajwalch/TorrentSearch/wiki) for setup instructions.
 
-### Material 3 Design
+### Material 3 design
 
 - Clean, easy-to-use interface
 - Adapts to your wallpaper and system theme, with full light/dark mode support
 
-## Building from Source
+## Building from source
 
-The easiest way is to open the project in [Android Studio](https://developer.android.com/studio) — 
-it handles all setup and lets you run the app in a single click.
+The easiest way is to open the project in [Android Studio](https://developer.android.com/studio).
+It handles all setup and lets you run the app in a single click.
 
-### Command Line
+### Command line
 
 **Requirements:**
 
 - JDK 17+ with `JAVA_HOME` set ([Adoptium](https://adoptium.net/) recommended)
-- Android SDK — version depends on project configuration. If you have Android Studio installed, it
+- Android SDK (version depends on project configuration). If you have Android Studio installed, it
   has already downloaded, set up, and configured the SDK location for you. Otherwise, install it
   manually and set `ANDROID_HOME`, or add `sdk.dir` to `local.properties` in the project root.
 
@@ -167,38 +166,38 @@ opening a pull request.
 
 ### Translation
 
-Translations are managed on [Weblate](https://hosted.weblate.org/projects/torrentsearch/) — 
-no local setup needed, contribute directly from your browser.
+Translations are managed on [Weblate](https://hosted.weblate.org/projects/torrentsearch/).
+No local setup needed, contribute directly from your browser.
 
 [![Translation status](https://hosted.weblate.org/widget/torrentsearch/multi-auto.svg)](https://hosted.weblate.org/engage/torrentsearch/)
 
 ## Contributors
 
 <a href="https://github.com/prajwalch/TorrentSearch/graphs/contributors">
-  <img src="https://contrib.rocks/image?repo=prajwalch/TorrentSearch" alt="TorrentSearch Contributors"/>
+  <img src="https://contrib.rocks/image?repo=prajwalch/TorrentSearch" alt="TorrentSearch contributors"/>
 </a>
 
-## Tech Stack and Open Source Libraries
+## Tech stack and open source libraries
 
 - **Language:** [Kotlin](https://kotlinlang.org/)
 - **UI:** [Jetpack Compose](https://developer.android.com/compose), [Material 3](https://m3.material.io/)
 - **Architecture:** [Modern App Architecture](https://developer.android.com/topic/architecture)
 - **Async:** [Coroutines](https://kotlinlang.org/docs/coroutines-overview.html), [Flow](https://kotlinlang.org/docs/flow.html)
-- **Networking:** [Ktor](https://ktor.io/)
+- **Networking:** [Ktor](https://ktor.io/) + [OkHttp](https://github.com/lysine-dev/okhttp)
 - **Storage:** [Room](https://developer.android.com/training/data-storage/room), [Jetpack DataStore](https://developer.android.com/topic/libraries/architecture/datastore)
-- **Dependency injection:** [Hilt](https://developer.android.com/training/dependency-injection/hilt-android)
+- **Dependency injection:** [Koin](https://insert-koin.io/), previously [Hilt](https://developer.android.com/training/dependency-injection/hilt-android)
 - **Image loading:** [Coil](https://coil-kt.github.io/coil/)
 - **HTML parsing**: [Jsoup](https://github.com/jhy/jsoup)
 - **Immutable collections**: [Kotlinx immutable collections](https://github.com/Kotlin/kotlinx.collections.immutable)
 - **Markdown rendering**: [ComposeMarkdown](https://github.com/jeziellago/compose-markdown)
 - **Scrollbar**: [LazyColumnScrollbar](https://github.com/nanihadesuka/LazyColumnScrollbar)
-- **Image Blurring**: [BlurTransformation](https://github.com/T8RIN/BlurTransformation)
+- **Image blurring**: [BlurTransformation](https://github.com/T8RIN/BlurTransformation)
 
 ## Acknowledgements
 
+- [Weblate](https://weblate.org/en/) for free libre hosting plan
 - [IconKitchen](https://icon.kitchen/) — app icon
-- [Metrolist](https://github.com/MetrolistGroup/Metrolist) and [Canta](https://github.com/samolego/Canta) — referenced for architecture and implementation
-  patterns during development
+- [Metrolist](https://github.com/MetrolistGroup/Metrolist) and [Canta](https://github.com/samolego/Canta) — referenced for architecture and implementation patterns during development
 
 ## Disclaimer
 
