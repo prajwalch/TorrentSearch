@@ -39,13 +39,13 @@ sealed interface MagnetUriUiState {
     data class Ready(val magnetUri: String) : MagnetUriUiState
 }
 
-sealed interface TorrentFileUiState {
-    data object Downloading : TorrentFileUiState
-    data class DownloadComplete(val fileName: String) : TorrentFileUiState
-    data object DownloadFailed : TorrentFileUiState
-    data object FileNotFound : TorrentFileUiState
-    data object WritingContent : TorrentFileUiState
-    data object WriteComplete : TorrentFileUiState
+sealed interface TorrentFileState {
+    data object Downloading : TorrentFileState
+    data class DownloadComplete(val fileName: String) : TorrentFileState
+    data object DownloadFailed : TorrentFileState
+    data object FileNotFound : TorrentFileState
+    data object WritingContent : TorrentFileState
+    data object WriteComplete : TorrentFileState
 }
 
 @KoinViewModel
@@ -83,8 +83,8 @@ class TorrentActionsViewModel(
         initialValue = MagnetUriUiState.Loading,
     )
 
-    private val _torrentFileState = MutableStateFlow<TorrentFileUiState?>(null)
-    val torrentFileUiState = _torrentFileState.asStateFlow()
+    private val _torrentFileState = MutableStateFlow<TorrentFileState?>(null)
+    val torrentFileState = _torrentFileState.asStateFlow()
 
     val isTorrentBookmarked: StateFlow<Boolean> =
         bookmarkRepository.getBookmarkIds()
@@ -136,7 +136,7 @@ class TorrentActionsViewModel(
 
 
     fun downloadTorrentFile(magnetUri: String) {
-        _torrentFileState.value = TorrentFileUiState.Downloading
+        _torrentFileState.value = TorrentFileState.Downloading
 
         viewModelScope.launch {
             val downloadResult = if (torrent.fileDownloadLink != null) {
@@ -148,18 +148,18 @@ class TorrentActionsViewModel(
 
             when (downloadResult) {
                 TorrentFileDownloadResult.Failed -> {
-                    _torrentFileState.value = TorrentFileUiState.DownloadFailed
+                    _torrentFileState.value = TorrentFileState.DownloadFailed
                 }
 
                 TorrentFileDownloadResult.FileNotFound -> {
-                    _torrentFileState.value = TorrentFileUiState.FileNotFound
+                    _torrentFileState.value = TorrentFileState.FileNotFound
                 }
 
                 is TorrentFileDownloadResult.Success -> {
                     pendingTorrentFile = downloadResult.content
 
                     val fileName = torrent.name.replace(" ", "_")
-                    _torrentFileState.value = TorrentFileUiState.DownloadComplete(fileName)
+                    _torrentFileState.value = TorrentFileState.DownloadComplete(fileName)
                 }
             }
         }
@@ -167,7 +167,7 @@ class TorrentActionsViewModel(
 
     fun writeTorrentFileContent(outputStream: OutputStream) {
         viewModelScope.launch {
-            _torrentFileState.value = TorrentFileUiState.WritingContent
+            _torrentFileState.value = TorrentFileState.WritingContent
 
             outputStream.use {
                 val currentPendingFile = pendingTorrentFile ?: return@use
@@ -177,7 +177,7 @@ class TorrentActionsViewModel(
                 }
             }
 
-            _torrentFileState.value = TorrentFileUiState.WriteComplete
+            _torrentFileState.value = TorrentFileState.WriteComplete
         }
     }
 

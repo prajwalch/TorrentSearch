@@ -45,7 +45,7 @@ fun TorrentActionsBottomSheet(
     ),
 ) {
     val magnetUriUiState by viewModel.magnetUriUiState.collectAsStateWithLifecycle()
-    val torrentFileUiState by viewModel.torrentFileUiState.collectAsStateWithLifecycle()
+    val torrentFileState by viewModel.torrentFileState.collectAsStateWithLifecycle()
     val isTorrentBookmarked by viewModel.isTorrentBookmarked.collectAsStateWithLifecycle()
     val openTorrentDetailsInApp by viewModel.openTorrentDetailsInApp.collectAsStateWithLifecycle()
 
@@ -77,10 +77,10 @@ fun TorrentActionsBottomSheet(
         sheetState = sheetState,
     ) {
         AnimatedContent(
-            targetState = torrentFileUiState,
-            contentKey = { it?.let { TorrentFileUiState::class } },
-        ) { targetTorrentFileUiState ->
-            if (targetTorrentFileUiState == null) {
+            targetState = torrentFileState,
+            contentKey = { it?.let { TorrentFileState::class } },
+        ) { targetTorrentFileState ->
+            if (targetTorrentFileState == null) {
                 TorrentActionsContent(
                     modifier = Modifier.animateEnterExit(
                         enter = slideInHorizontally { fullWidth -> -fullWidth },
@@ -134,7 +134,7 @@ fun TorrentActionsBottomSheet(
                         enter = slideInHorizontally { fullWidth -> fullWidth },
                         exit = slideOutHorizontally { fullWidth -> fullWidth },
                     ),
-                    uiState = targetTorrentFileUiState,
+                    state = targetTorrentFileState,
                     onWriteFileContent = { viewModel.writeTorrentFileContent(it) },
                     onCloseSheet = { closeSheet() },
                     onGoBack = { viewModel.resetTorrentFileState() },
