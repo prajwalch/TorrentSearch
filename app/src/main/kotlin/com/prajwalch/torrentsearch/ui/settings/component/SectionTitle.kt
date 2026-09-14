@@ -11,7 +11,7 @@ import androidx.compose.ui.text.TextStyle
 fun SectionTitle(
     title: String,
     modifier: Modifier = Modifier,
-    color: Color = MaterialTheme.colorScheme.onSurface,
+    color: Color = MaterialTheme.colorScheme.primary,
     style: TextStyle = MaterialTheme.typography.titleMedium,
 ) {
     Text(
