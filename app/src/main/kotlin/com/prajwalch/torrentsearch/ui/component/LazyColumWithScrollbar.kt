@@ -10,6 +10,7 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 
 import com.prajwalch.torrentsearch.ui.theme.spaces
@@ -25,17 +26,14 @@ fun LazyColumnWithScrollbar(
     verticalArrangement: Arrangement.Vertical = Arrangement.Top,
     content: LazyListScope.() -> Unit,
 ) {
-    val scrollbarUnselectedColor = MaterialTheme.colorScheme.primary
-    val scrollbarSelectedColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.5f)
-
     LazyColumnScrollbar(
         state = state,
         settings = ScrollbarSettings.Default.copy(
             scrollbarPadding = MaterialTheme.spaces.extraSmall,
-            thumbThickness = 8.dp,
+            thumbThickness = 4.dp,
             thumbMinLength = 0.07f,
-            thumbUnselectedColor = scrollbarUnselectedColor,
-            thumbSelectedColor = scrollbarSelectedColor,
+            thumbUnselectedColor = Color.Gray,
+            thumbSelectedColor = Color.DarkGray,
             hideDelayMillis = 3000,
         ),
     ) {
