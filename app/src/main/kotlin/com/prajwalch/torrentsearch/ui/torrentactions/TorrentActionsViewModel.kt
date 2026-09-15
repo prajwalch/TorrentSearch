@@ -6,9 +6,9 @@ import androidx.lifecycle.viewModelScope
 import com.prajwalch.torrentsearch.data.repository.BookmarkRepository
 import com.prajwalch.torrentsearch.data.repository.SettingsRepository
 import com.prajwalch.torrentsearch.domain.GetMagnetUriResult
-import com.prajwalch.torrentsearch.domain.SearchProvidersGateway
 import com.prajwalch.torrentsearch.domain.TorrentFileDownloadResult
 import com.prajwalch.torrentsearch.domain.TorrentFileDownloader
+import com.prajwalch.torrentsearch.domain.TorrentQueryService
 import com.prajwalch.torrentsearch.domain.model.MagnetUriState
 import com.prajwalch.torrentsearch.domain.model.Torrent
 import com.prajwalch.torrentsearch.util.TorrentUtils
@@ -51,7 +51,7 @@ sealed interface TorrentFileState {
 @KoinViewModel
 class TorrentActionsViewModel(
     @InjectedParam private val torrent: Torrent,
-    private val searchProvidersGateway: SearchProvidersGateway,
+    private val torrentQueryService: TorrentQueryService,
     private val bookmarkRepository: BookmarkRepository,
     private val torrentFileDownloader: TorrentFileDownloader,
     settingsRepository: SettingsRepository,
@@ -65,7 +65,7 @@ class TorrentActionsViewModel(
             is MagnetUriState.FetchRequired -> {
                 emit(MagnetUriUiState.Fetching)
 
-                val result = searchProvidersGateway.getMagnetUri(
+                val result = torrentQueryService.getMagnetUri(
                     torrentId = torrent.id,
                     sourceUrl = magnetUriState.url,
                     providerName = torrent.providerName

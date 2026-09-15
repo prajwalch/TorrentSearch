@@ -30,10 +30,7 @@ import kotlinx.coroutines.flow.runningFold
 import kotlinx.coroutines.flow.transformWhile
 import kotlinx.coroutines.launch
 
-/**
- * A primary class for interacting with different search providers.
- */
-class SearchProvidersGateway(
+class TorrentQueryService(
     private val searchProvidersManager: SearchProvidersManager,
     private val settingsRepository: SettingsRepository,
 ) {

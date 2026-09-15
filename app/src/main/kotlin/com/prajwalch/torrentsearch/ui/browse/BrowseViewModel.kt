@@ -7,7 +7,7 @@ import androidx.lifecycle.viewModelScope
 
 import com.prajwalch.torrentsearch.data.repository.SettingsRepository
 import com.prajwalch.torrentsearch.data.repository.ViewedTorrentRepository
-import com.prajwalch.torrentsearch.domain.SearchProvidersGateway
+import com.prajwalch.torrentsearch.domain.TorrentQueryService
 import com.prajwalch.torrentsearch.domain.model.Category
 import com.prajwalch.torrentsearch.domain.model.Torrent
 import com.prajwalch.torrentsearch.domain.model.filterIfAll
@@ -89,17 +89,17 @@ enum class BrowseSort {
 class BrowseViewModel(
     connectivityChecker: ConnectivityChecker,
     settingsRepository: SettingsRepository,
+    torrentQueryService: TorrentQueryService,
     savedStateHandle: SavedStateHandle,
-    private val searchProvidersGateway: SearchProvidersGateway,
     private val viewedTorrentRepository: ViewedTorrentRepository,
 ) : ViewModel() {
     /**
-     * A torrents' loader.
+     * Torrents loader.
      */
     private val torrentsLoader = TorrentsLoader(
         category = savedStateHandle["category"] ?: Category.All,
         scope = viewModelScope,
-        searchProvidersGateway = searchProvidersGateway,
+        torrentQueryService = torrentQueryService,
         connectivityChecker = connectivityChecker,
     )
 
@@ -218,13 +218,13 @@ class BrowseViewModel(
  *
  * @param category The initial search [Category]
  * @param scope The [CoroutineScope] in which the load is performed.
- * @param searchProvidersGateway The gateway for interacting with providers.
+ * @param torrentQueryService The service for querying torrents.
  * @param connectivityChecker The helper class for checking internet connection.
  */
 private class TorrentsLoader(
     category: Category,
     private val scope: CoroutineScope,
-    private val searchProvidersGateway: SearchProvidersGateway,
+    private val torrentQueryService: TorrentQueryService,
     private val connectivityChecker: ConnectivityChecker,
 ) {
     /**
@@ -327,8 +327,8 @@ private class TorrentsLoader(
     private suspend fun loadTorrents() {
         val queryParams = _queryParams.value
         val torrentsFlow = when (queryParams.sort) {
-            BrowseSort.Latest -> searchProvidersGateway.getLatestTorrents(queryParams.category)
-            BrowseSort.Top -> searchProvidersGateway.getTopTorrents(queryParams.category)
+            BrowseSort.Latest -> torrentQueryService.getLatestTorrents(queryParams.category)
+            BrowseSort.Top -> torrentQueryService.getTopTorrents(queryParams.category)
         }
 
         torrentsFlow

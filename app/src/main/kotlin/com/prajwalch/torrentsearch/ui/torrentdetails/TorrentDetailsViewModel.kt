@@ -8,9 +8,9 @@ import androidx.lifecycle.viewModelScope
 
 import com.prajwalch.torrentsearch.data.repository.BookmarkRepository
 import com.prajwalch.torrentsearch.data.repository.SettingsRepository
-import com.prajwalch.torrentsearch.domain.SearchProvidersGateway
 import com.prajwalch.torrentsearch.domain.TorrentFileDownloadResult
 import com.prajwalch.torrentsearch.domain.TorrentFileDownloader
+import com.prajwalch.torrentsearch.domain.TorrentQueryService
 import com.prajwalch.torrentsearch.domain.model.GetTorrentDetailsResponse
 import com.prajwalch.torrentsearch.domain.model.TorrentDetails
 import com.prajwalch.torrentsearch.network.ConnectivityChecker
@@ -64,7 +64,7 @@ sealed interface TorrentFileState {
 
 @KoinViewModel
 class TorrentDetailsViewModel(
-    private val searchProvidersGateway: SearchProvidersGateway,
+    private val torrentQueryService: TorrentQueryService,
     private val bookmarkRepository: BookmarkRepository,
     private val torrentFileDownloader: TorrentFileDownloader,
     private val connectivityChecker: ConnectivityChecker,
@@ -125,7 +125,7 @@ class TorrentDetailsViewModel(
     }
 
     private suspend fun getTorrentDetails(): TorrentDetailsState = try {
-        val response = searchProvidersGateway.getTorrentDetails(
+        val response = torrentQueryService.getTorrentDetails(
             detailsPageUrl = detailsPageUrl,
             providerName = providerName,
         )

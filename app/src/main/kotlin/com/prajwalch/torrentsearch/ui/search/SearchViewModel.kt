@@ -7,7 +7,7 @@ import androidx.lifecycle.viewModelScope
 import com.prajwalch.torrentsearch.data.repository.SearchHistoryRepository
 import com.prajwalch.torrentsearch.data.repository.SettingsRepository
 import com.prajwalch.torrentsearch.data.repository.ViewedTorrentRepository
-import com.prajwalch.torrentsearch.domain.SearchProvidersGateway
+import com.prajwalch.torrentsearch.domain.TorrentQueryService
 import com.prajwalch.torrentsearch.domain.model.Category
 import com.prajwalch.torrentsearch.domain.model.SearchResults
 import com.prajwalch.torrentsearch.domain.model.SortCriteria
@@ -86,7 +86,7 @@ data class TorrentFilter(
  */
 @KoinViewModel
 class SearchViewModel(
-    private val searchProvidersGateway: SearchProvidersGateway,
+    private val torrentQueryService: TorrentQueryService,
     private val searchHistoryRepository: SearchHistoryRepository,
     private val settingsRepository: SettingsRepository,
     private val viewedTorrentRepository: ViewedTorrentRepository,
@@ -109,7 +109,7 @@ class SearchViewModel(
      */
     private val resultsLoader = SearchResultsLoader(
         scope = viewModelScope,
-        searchProvidersGateway = searchProvidersGateway,
+        torrentQueryService = torrentQueryService,
         connectivityChecker = connectivityChecker,
     )
 
@@ -269,12 +269,12 @@ class SearchViewModel(
  * it doesn't perform any pre-processing on the results.
  *
  * @param scope The [CoroutineScope] in which the search is performed.
- * @param searchProvidersGateway The gateway that performs the search.
+ * @param torrentQueryService The service which queries the torrents.
  * @param connectivityChecker The helper class for checking network connection.
  */
 private class SearchResultsLoader(
     private val scope: CoroutineScope,
-    private val searchProvidersGateway: SearchProvidersGateway,
+    private val torrentQueryService: TorrentQueryService,
     private val connectivityChecker: ConnectivityChecker,
 ) {
     /**
@@ -352,7 +352,7 @@ private class SearchResultsLoader(
      * Executes a new search for the given query and category.
      */
     private suspend fun executeSearch(query: String, category: Category) {
-        searchProvidersGateway.searchTorrents(query = query, category = category)
+        torrentQueryService.searchTorrents(query = query, category = category)
             .conflate()
             .onCompletion {
                 _searchState.value = if (_searchResults.value.torrents.isEmpty()) {
