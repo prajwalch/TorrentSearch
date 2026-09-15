@@ -2,7 +2,7 @@ package com.prajwalch.torrentsearch.providers
 
 import com.prajwalch.torrentsearch.domain.model.Category
 import com.prajwalch.torrentsearch.domain.model.MagnetUriState
-import com.prajwalch.torrentsearch.domain.model.SearchProviderSafetyStatus
+import com.prajwalch.torrentsearch.domain.model.SearchProviderSafety
 import com.prajwalch.torrentsearch.domain.model.Torrent
 import com.prajwalch.torrentsearch.domain.model.TorrentDetails
 import com.prajwalch.torrentsearch.network.NetworkClient
@@ -29,7 +29,7 @@ class AudioBookBay(private val networkClient: NetworkClient) :
     override val name = "AudioBookBay"
     override val url = "https://audiobookbay.lu"
     override val supportedCategories = setOf(Category.Books)
-    override val safetyStatus = SearchProviderSafetyStatus.Safe
+    override val safety = SearchProviderSafety.Safe
     override val enabledByDefault = false
 
     private val resultsPageParser = AudioBookBayResultsPageParser(id, name)

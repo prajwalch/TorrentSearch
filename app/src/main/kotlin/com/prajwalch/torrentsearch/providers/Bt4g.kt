@@ -2,7 +2,7 @@ package com.prajwalch.torrentsearch.providers
 
 import com.prajwalch.torrentsearch.domain.model.Category
 import com.prajwalch.torrentsearch.domain.model.MagnetUriState
-import com.prajwalch.torrentsearch.domain.model.SearchProviderSafetyStatus
+import com.prajwalch.torrentsearch.domain.model.SearchProviderSafety
 import com.prajwalch.torrentsearch.domain.model.Torrent
 import com.prajwalch.torrentsearch.domain.model.TorrentDetails
 import com.prajwalch.torrentsearch.network.NetworkClient
@@ -41,7 +41,7 @@ class Bt4g(private val networkClient: NetworkClient) :
         Category.Music,
         Category.Other,
     )
-    override val safetyStatus = SearchProviderSafetyStatus.Safe
+    override val safety = SearchProviderSafety.Safe
     override val isCloudflareProtected = true
     override val enabledByDefault = false
 

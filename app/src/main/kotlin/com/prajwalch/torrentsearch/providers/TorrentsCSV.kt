@@ -2,7 +2,7 @@ package com.prajwalch.torrentsearch.providers
 
 import com.prajwalch.torrentsearch.domain.model.Category
 import com.prajwalch.torrentsearch.domain.model.MagnetUriState
-import com.prajwalch.torrentsearch.domain.model.SearchProviderSafetyStatus
+import com.prajwalch.torrentsearch.domain.model.SearchProviderSafety
 import com.prajwalch.torrentsearch.domain.model.Torrent
 import com.prajwalch.torrentsearch.extension.asObject
 import com.prajwalch.torrentsearch.extension.getArray
@@ -24,7 +24,7 @@ class TorrentsCSV(private val networkClient: NetworkClient) : SearchProvider {
     override val name = "TorrentsCSV"
     override val url = "https://torrents-csv.com"
     override val supportedCategories = setOf(Category.Other)
-    override val safetyStatus = SearchProviderSafetyStatus.Safe
+    override val safety = SearchProviderSafety.Safe
     override val enabledByDefault = true
 
     override suspend fun search(query: String, category: Category): List<Torrent> {

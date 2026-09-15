@@ -2,7 +2,7 @@ package com.prajwalch.torrentsearch.providers
 
 import com.prajwalch.torrentsearch.domain.model.Category
 import com.prajwalch.torrentsearch.domain.model.MagnetUriState
-import com.prajwalch.torrentsearch.domain.model.SearchProviderSafetyStatus
+import com.prajwalch.torrentsearch.domain.model.SearchProviderSafety
 import com.prajwalch.torrentsearch.domain.model.Torrent
 import com.prajwalch.torrentsearch.extension.asArray
 import com.prajwalch.torrentsearch.extension.asObject
@@ -34,7 +34,7 @@ class AniLibria(private val networkClient: NetworkClient) : SearchProvider {
     override val name = "AniLibria"
     override val url = "https://www.anilibria.top"
     override val supportedCategories = setOf(Category.Anime)
-    override val safetyStatus = SearchProviderSafetyStatus.Safe
+    override val safety = SearchProviderSafety.Safe
     override val enabledByDefault = false
 
     override suspend fun search(query: String, category: Category): List<Torrent> {

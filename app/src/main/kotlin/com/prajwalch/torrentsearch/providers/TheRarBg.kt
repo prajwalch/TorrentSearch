@@ -3,7 +3,7 @@ package com.prajwalch.torrentsearch.providers
 import com.prajwalch.torrentsearch.R
 import com.prajwalch.torrentsearch.domain.model.Category
 import com.prajwalch.torrentsearch.domain.model.MagnetUriState
-import com.prajwalch.torrentsearch.domain.model.SearchProviderSafetyStatus
+import com.prajwalch.torrentsearch.domain.model.SearchProviderSafety
 import com.prajwalch.torrentsearch.domain.model.Torrent
 import com.prajwalch.torrentsearch.domain.model.TorrentDetails
 import com.prajwalch.torrentsearch.network.NetworkClient
@@ -43,7 +43,7 @@ class TheRarBg(private val networkClient: NetworkClient) :
         Category.Series,
         Category.Other,
     )
-    override val safetyStatus = SearchProviderSafetyStatus.Unsafe(
+    override val safety = SearchProviderSafety.Unsafe(
         reason = R.string.therarbg_unsafe_reason
     )
     override val enabledByDefault = false

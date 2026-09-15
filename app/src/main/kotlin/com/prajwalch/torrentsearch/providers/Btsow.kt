@@ -2,7 +2,7 @@ package com.prajwalch.torrentsearch.providers
 
 import com.prajwalch.torrentsearch.domain.model.Category
 import com.prajwalch.torrentsearch.domain.model.MagnetUriState
-import com.prajwalch.torrentsearch.domain.model.SearchProviderSafetyStatus
+import com.prajwalch.torrentsearch.domain.model.SearchProviderSafety
 import com.prajwalch.torrentsearch.domain.model.Torrent
 import com.prajwalch.torrentsearch.domain.model.TorrentDetails
 import com.prajwalch.torrentsearch.extension.asObject
@@ -30,7 +30,7 @@ class Btsow(private val networkClient: NetworkClient) : SearchProvider, TorrentD
     override val name = "Btsow"
     override val url = "https://btsow.live"
     override val supportedCategories = setOf(Category.Other)
-    override val safetyStatus = SearchProviderSafetyStatus.Safe
+    override val safety = SearchProviderSafety.Safe
     override val enabledByDefault = false
 
     private val resultsJsonParser = BtsowResultsJsonParser(id, name, url)

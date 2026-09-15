@@ -2,7 +2,7 @@ package com.prajwalch.torrentsearch.providers
 
 import com.prajwalch.torrentsearch.domain.model.Category
 import com.prajwalch.torrentsearch.domain.model.MagnetUriState
-import com.prajwalch.torrentsearch.domain.model.SearchProviderSafetyStatus
+import com.prajwalch.torrentsearch.domain.model.SearchProviderSafety
 import com.prajwalch.torrentsearch.domain.model.Torrent
 import com.prajwalch.torrentsearch.extension.asObject
 import com.prajwalch.torrentsearch.extension.getArray
@@ -48,7 +48,7 @@ class Knaben(private val networkClient: NetworkClient) :
         Category.Porn,
         Category.Series,
     )
-    override val safetyStatus = SearchProviderSafetyStatus.Safe
+    override val safety = SearchProviderSafety.Safe
     override val enabledByDefault = true
 
     private val resultsJsonParser = KnabenResultsJsonParser(id, name)

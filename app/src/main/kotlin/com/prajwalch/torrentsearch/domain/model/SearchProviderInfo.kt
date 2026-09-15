@@ -29,7 +29,7 @@ data class SearchProviderInfo(
     /**
      * Safety flag of the provider.
      */
-    val safetyStatus: SearchProviderSafetyStatus,
+    val safety: SearchProviderSafety,
     /**
      * Origin of the provider.
      */

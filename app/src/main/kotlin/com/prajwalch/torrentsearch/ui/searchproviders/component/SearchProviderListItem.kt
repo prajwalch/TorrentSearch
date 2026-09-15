@@ -40,7 +40,7 @@ import com.prajwalch.torrentsearch.R
 import com.prajwalch.torrentsearch.domain.model.Category
 import com.prajwalch.torrentsearch.domain.model.CloudflareProtectionStatus
 import com.prajwalch.torrentsearch.domain.model.SearchProviderOrigin
-import com.prajwalch.torrentsearch.domain.model.SearchProviderSafetyStatus
+import com.prajwalch.torrentsearch.domain.model.SearchProviderSafety
 import com.prajwalch.torrentsearch.ui.component.BadgeRow
 import com.prajwalch.torrentsearch.ui.component.CategoryBadge
 import com.prajwalch.torrentsearch.ui.component.TextUrl
@@ -54,7 +54,7 @@ fun SearchProviderListItem(
     url: String,
     supportedCategories: Set<Category>,
     origin: SearchProviderOrigin,
-    safetyStatus: SearchProviderSafetyStatus,
+    safety: SearchProviderSafety,
     protectionStatus: CloudflareProtectionStatus,
     enabled: Boolean,
     onEnable: (Boolean) -> Unit,
@@ -88,7 +88,7 @@ fun SearchProviderListItem(
                 )
                 BadgeRow {
                     if (origin == SearchProviderOrigin.Torznab) TorznabBadge()
-                    if (safetyStatus.isUnsafe()) UnsafeBadge()
+                    if (safety.isUnsafe()) UnsafeBadge()
                 }
             }
         },
@@ -98,9 +98,9 @@ fun SearchProviderListItem(
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 if ((origin == SearchProviderOrigin.Builtin) &&
-                    (safetyStatus is SearchProviderSafetyStatus.Unsafe)
+                    (safety is SearchProviderSafety.Unsafe)
                 ) {
-                    QuestionMarkButton(onClick = { onShowUnsafeReason(safetyStatus.reason) })
+                    QuestionMarkButton(onClick = { onShowUnsafeReason(safety.reason) })
                 }
 
                 Crossfade(protectionStatus) { providerProtectionStatus ->
@@ -241,7 +241,7 @@ private fun SearchProviderListItemPreview() {
         url = "https://thepiratebay.org",
         supportedCategories = Category.entries.toSet(),
         origin = SearchProviderOrigin.Builtin,
-        safetyStatus = SearchProviderSafetyStatus.Unsafe(R.string.tpb_unsafe_reason),
+        safety = SearchProviderSafety.Unsafe(R.string.tpb_unsafe_reason),
         protectionStatus = CloudflareProtectionStatus.UnProtected,
         enabled = true,
         onEnable = {},

@@ -90,7 +90,7 @@ fun SearchProviderList(
                     url = provider.url,
                     supportedCategories = provider.supportedCategories,
                     origin = provider.origin,
-                    safetyStatus = provider.safetyStatus,
+                    safety = provider.safety,
                     protectionStatus = provider.cloudflareProtectionStatus,
                     enabled = provider.isEnabled,
                     onEnable = { enable -> onEnableSearchProvider(provider.id, enable) },

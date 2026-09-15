@@ -5,19 +5,19 @@ import androidx.annotation.StringRes
 /**
  * Provider safety indication.
  */
-sealed class SearchProviderSafetyStatus {
+sealed class SearchProviderSafety {
     /**
      * Provider is safe and trustworthy.
      */
-    data object Safe : SearchProviderSafetyStatus()
+    data object Safe : SearchProviderSafety()
 
     /**
      * Provider is not safe and should be used carefully.
      */
-    data class Unsafe(@StringRes val reason: Int) : SearchProviderSafetyStatus()
+    data class Unsafe(@StringRes val reason: Int) : SearchProviderSafety()
 
     /**
-     * Returns `true` if the status is [SearchProviderSafetyStatus.Unsafe].
+     * Returns `true` if the status is [SearchProviderSafety.Unsafe].
      */
     fun isUnsafe(): Boolean = this is Unsafe
 }

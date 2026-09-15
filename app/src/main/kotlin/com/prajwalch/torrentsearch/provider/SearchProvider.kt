@@ -2,7 +2,7 @@ package com.prajwalch.torrentsearch.provider
 
 import com.prajwalch.torrentsearch.domain.model.Category
 import com.prajwalch.torrentsearch.domain.model.SearchProviderOrigin
-import com.prajwalch.torrentsearch.domain.model.SearchProviderSafetyStatus
+import com.prajwalch.torrentsearch.domain.model.SearchProviderSafety
 import com.prajwalch.torrentsearch.domain.model.Torrent
 
 /**
@@ -58,11 +58,11 @@ interface SearchProvider {
     /**
      * Safety flag of the provider.
      *
-     * Providers marked with [SearchProviderSafetyStatus.Unsafe] will
+     * Providers marked with [SearchProviderSafety.Unsafe] will
      * automatically be disabled when disabling NSFW mode and a special
      * badge will be shown on the UI to warn users.
      */
-    val safetyStatus: SearchProviderSafetyStatus
+    val safety: SearchProviderSafety
 
     /**
      * Indicates where the provider comes from.

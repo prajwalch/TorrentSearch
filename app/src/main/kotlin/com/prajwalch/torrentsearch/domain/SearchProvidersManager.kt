@@ -8,7 +8,7 @@ import com.prajwalch.torrentsearch.domain.model.Category
 import com.prajwalch.torrentsearch.domain.model.CloudflareProtectionStatus
 import com.prajwalch.torrentsearch.domain.model.SearchProviderInfo
 import com.prajwalch.torrentsearch.domain.model.SearchProviderOrigin
-import com.prajwalch.torrentsearch.domain.model.SearchProviderSafetyStatus
+import com.prajwalch.torrentsearch.domain.model.SearchProviderSafety
 import com.prajwalch.torrentsearch.domain.model.TorznabConfig
 import com.prajwalch.torrentsearch.network.NetworkClient
 import com.prajwalch.torrentsearch.provider.LatestTorrentsProvider
@@ -269,9 +269,7 @@ class SearchProvidersManager(
         val nsfwCategories = Category.entries.filter { it.isNSFW }
         val enabledUnsafeProviderIds = builtinProviders
             .filter { it.id in enabledProviderIds }
-            .filter {
-                it.supportedCategories.containsAll(nsfwCategories) || it.safetyStatus.isUnsafe()
-            }
+            .filter { it.supportedCategories.containsAll(nsfwCategories) || it.safety.isUnsafe() }
             .map { it.id }
             .toSet()
         val updatedIds = enabledProviderIds - enabledUnsafeProviderIds
@@ -408,7 +406,7 @@ private fun SearchProvider.getInfo(
     url = this.url,
     cloudflareSolverUrl = this.cloudflareSolverUrl,
     supportedCategories = this.supportedCategories,
-    safetyStatus = this.safetyStatus,
+    safety = this.safety,
     origin = this.origin,
     cloudflareProtectionStatus = protectionStatus,
     isEnabled = isEnabled,
@@ -420,7 +418,7 @@ private fun TorznabConfig.toSearchProviderInfo(isEnabled: Boolean) =
         name = this.searchProviderName,
         url = this.url,
         supportedCategories = this.supportedCategories,
-        safetyStatus = SearchProviderSafetyStatus.Safe,
+        safety = SearchProviderSafety.Safe,
         origin = SearchProviderOrigin.Torznab,
         cloudflareProtectionStatus = CloudflareProtectionStatus.UnProtected,
         isEnabled = isEnabled,

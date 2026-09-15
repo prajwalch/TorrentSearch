@@ -2,7 +2,7 @@ package com.prajwalch.torrentsearch.providers
 
 import com.prajwalch.torrentsearch.domain.model.Category
 import com.prajwalch.torrentsearch.domain.model.MagnetUriState
-import com.prajwalch.torrentsearch.domain.model.SearchProviderSafetyStatus
+import com.prajwalch.torrentsearch.domain.model.SearchProviderSafety
 import com.prajwalch.torrentsearch.domain.model.Torrent
 import com.prajwalch.torrentsearch.domain.model.TorrentDetails
 import com.prajwalch.torrentsearch.network.NetworkClient
@@ -31,7 +31,7 @@ class TorrentDownloads(private val networkClient: NetworkClient) :
     override val name = "TorrentDownloads"
     override val url = "https://torrentdownloads.pro"
     override val cloudflareSolverUrl = "$url/search/?s_cat=0&search=ubuntu"
-    override val safetyStatus = SearchProviderSafetyStatus.Safe
+    override val safety = SearchProviderSafety.Safe
     override val supportedCategories = setOf(
         Category.Anime,
         Category.Apps,
