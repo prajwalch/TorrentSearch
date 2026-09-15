@@ -7,8 +7,8 @@ import com.prajwalch.torrentsearch.data.repository.TorznabConfigRepository
 import com.prajwalch.torrentsearch.domain.model.Category
 import com.prajwalch.torrentsearch.domain.model.CloudflareProtectionStatus
 import com.prajwalch.torrentsearch.domain.model.SearchProviderInfo
+import com.prajwalch.torrentsearch.domain.model.SearchProviderOrigin
 import com.prajwalch.torrentsearch.domain.model.SearchProviderSafetyStatus
-import com.prajwalch.torrentsearch.domain.model.SearchProviderType
 import com.prajwalch.torrentsearch.domain.model.TorznabConfig
 import com.prajwalch.torrentsearch.network.NetworkClient
 import com.prajwalch.torrentsearch.provider.LatestTorrentsProvider
@@ -409,7 +409,7 @@ private fun SearchProvider.getInfo(
     cloudflareSolverUrl = this.cloudflareSolverUrl,
     supportedCategories = this.supportedCategories,
     safetyStatus = this.safetyStatus,
-    type = this.type,
+    origin = this.origin,
     cloudflareProtectionStatus = protectionStatus,
     isEnabled = isEnabled,
 )
@@ -421,7 +421,7 @@ private fun TorznabConfig.toSearchProviderInfo(isEnabled: Boolean) =
         url = this.url,
         supportedCategories = this.supportedCategories,
         safetyStatus = SearchProviderSafetyStatus.Safe,
-        type = SearchProviderType.Torznab,
+        origin = SearchProviderOrigin.Torznab,
         cloudflareProtectionStatus = CloudflareProtectionStatus.UnProtected,
         isEnabled = isEnabled,
     )

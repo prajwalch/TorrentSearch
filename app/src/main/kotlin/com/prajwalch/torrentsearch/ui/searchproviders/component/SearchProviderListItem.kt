@@ -1,6 +1,7 @@
 package com.prajwalch.torrentsearch.ui.searchproviders.component
 
 import android.content.res.Configuration
+
 import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.background
 import androidx.compose.foundation.horizontalScroll
@@ -38,8 +39,8 @@ import androidx.compose.ui.unit.dp
 import com.prajwalch.torrentsearch.R
 import com.prajwalch.torrentsearch.domain.model.Category
 import com.prajwalch.torrentsearch.domain.model.CloudflareProtectionStatus
+import com.prajwalch.torrentsearch.domain.model.SearchProviderOrigin
 import com.prajwalch.torrentsearch.domain.model.SearchProviderSafetyStatus
-import com.prajwalch.torrentsearch.domain.model.SearchProviderType
 import com.prajwalch.torrentsearch.ui.component.BadgeRow
 import com.prajwalch.torrentsearch.ui.component.CategoryBadge
 import com.prajwalch.torrentsearch.ui.component.TextUrl
@@ -52,7 +53,7 @@ fun SearchProviderListItem(
     name: String,
     url: String,
     supportedCategories: Set<Category>,
-    type: SearchProviderType,
+    origin: SearchProviderOrigin,
     safetyStatus: SearchProviderSafetyStatus,
     protectionStatus: CloudflareProtectionStatus,
     enabled: Boolean,
@@ -86,7 +87,7 @@ fun SearchProviderListItem(
                     containerColor = colors.containerColor,
                 )
                 BadgeRow {
-                    if (type == SearchProviderType.Torznab) TorznabBadge()
+                    if (origin == SearchProviderOrigin.Torznab) TorznabBadge()
                     if (safetyStatus.isUnsafe()) UnsafeBadge()
                 }
             }
@@ -96,7 +97,7 @@ fun SearchProviderListItem(
                 horizontalArrangement = Arrangement.spacedBy(MaterialTheme.spaces.extraSmall),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
-                if ((type == SearchProviderType.Builtin) &&
+                if ((origin == SearchProviderOrigin.Builtin) &&
                     (safetyStatus is SearchProviderSafetyStatus.Unsafe)
                 ) {
                     QuestionMarkButton(onClick = { onShowUnsafeReason(safetyStatus.reason) })
@@ -239,7 +240,7 @@ private fun SearchProviderListItemPreview() {
         name = "ThePirateBay",
         url = "https://thepiratebay.org",
         supportedCategories = Category.entries.toSet(),
-        type = SearchProviderType.Builtin,
+        origin = SearchProviderOrigin.Builtin,
         safetyStatus = SearchProviderSafetyStatus.Unsafe(R.string.tpb_unsafe_reason),
         protectionStatus = CloudflareProtectionStatus.UnProtected,
         enabled = true,

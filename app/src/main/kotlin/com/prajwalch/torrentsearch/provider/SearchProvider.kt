@@ -1,8 +1,8 @@
 package com.prajwalch.torrentsearch.provider
 
 import com.prajwalch.torrentsearch.domain.model.Category
+import com.prajwalch.torrentsearch.domain.model.SearchProviderOrigin
 import com.prajwalch.torrentsearch.domain.model.SearchProviderSafetyStatus
-import com.prajwalch.torrentsearch.domain.model.SearchProviderType
 import com.prajwalch.torrentsearch.domain.model.Torrent
 
 /**
@@ -65,20 +65,20 @@ interface SearchProvider {
     val safetyStatus: SearchProviderSafetyStatus
 
     /**
-     * Indicates whether the provider should be enabled when initializing
-     * providers for the very first time.
-     */
-    val enabledByDefault: Boolean
-
-    /**
      * Indicates where the provider comes from.
      */
-    val type: SearchProviderType get() = SearchProviderType.Builtin
+    val origin: SearchProviderOrigin get() = SearchProviderOrigin.Builtin
 
     /**
      * Indicates whether the provider is Cloudflare-protected.
      */
     val isCloudflareProtected: Boolean get() = false
+
+    /**
+     * Indicates whether the provider should be enabled when initializing
+     * providers for the very first time.
+     */
+    val enabledByDefault: Boolean
 
     /**
      * Searches torrents for a given query and category.

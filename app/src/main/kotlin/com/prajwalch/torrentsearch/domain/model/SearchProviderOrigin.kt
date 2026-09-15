@@ -1,9 +1,9 @@
 package com.prajwalch.torrentsearch.domain.model
 
 /**
- * Specifies from where the provider comes from.
+ * Specifies where the provider comes from.
  */
-enum class SearchProviderType {
+enum class SearchProviderOrigin {
     /**
      * Provider is bundled with the app.
      */
@@ -12,5 +12,5 @@ enum class SearchProviderType {
     /**
      * Provider is added by the user and is Torznab compatible.
      */
-    Torznab
+    Torznab,
 }

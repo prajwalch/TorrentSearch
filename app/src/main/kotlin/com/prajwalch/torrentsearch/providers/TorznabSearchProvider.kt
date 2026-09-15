@@ -3,8 +3,8 @@ package com.prajwalch.torrentsearch.providers
 import android.util.Log
 
 import com.prajwalch.torrentsearch.domain.model.Category
+import com.prajwalch.torrentsearch.domain.model.SearchProviderOrigin
 import com.prajwalch.torrentsearch.domain.model.SearchProviderSafetyStatus
-import com.prajwalch.torrentsearch.domain.model.SearchProviderType
 import com.prajwalch.torrentsearch.domain.model.Torrent
 import com.prajwalch.torrentsearch.domain.model.TorznabConfig
 import com.prajwalch.torrentsearch.network.NetworkClient
@@ -27,8 +27,8 @@ class TorznabSearchProvider(
     override val url = config.url
     override val supportedCategories = config.supportedCategories
     override val safetyStatus = SearchProviderSafetyStatus.Safe
+    override val origin = SearchProviderOrigin.Torznab
     override val enabledByDefault = false
-    override val type = SearchProviderType.Torznab
 
     /** Log tag for the current config. */
     private val tag = "$BASE_TAG($name)"

@@ -22,7 +22,7 @@ import androidx.compose.ui.unit.dp
 
 import com.prajwalch.torrentsearch.domain.model.CloudflareProtectionStatus
 import com.prajwalch.torrentsearch.domain.model.SearchProviderInfo
-import com.prajwalch.torrentsearch.domain.model.SearchProviderType
+import com.prajwalch.torrentsearch.domain.model.SearchProviderOrigin
 import com.prajwalch.torrentsearch.provider.SearchProviderId
 import com.prajwalch.torrentsearch.ui.theme.spaces
 
@@ -65,10 +65,10 @@ fun SearchProviderList(
                 }
             }
             // Long click handler for showing Torznab context menu.
-            val longClickHandler: (() -> Unit)? = when (provider.type) {
+            val longClickHandler: (() -> Unit)? = when (provider.origin) {
                 // Disable it for builtin providers.
-                SearchProviderType.Builtin -> null
-                SearchProviderType.Torznab -> ({ showTorznabContextMenu = true })
+                SearchProviderOrigin.Builtin -> null
+                SearchProviderOrigin.Torznab -> ({ showTorznabContextMenu = true })
             }
             val clickableModifier = Modifier.combinedClickable(
                 interactionSource = null,
@@ -89,7 +89,7 @@ fun SearchProviderList(
                     name = provider.name,
                     url = provider.url,
                     supportedCategories = provider.supportedCategories,
-                    type = provider.type,
+                    origin = provider.origin,
                     safetyStatus = provider.safetyStatus,
                     protectionStatus = provider.cloudflareProtectionStatus,
                     enabled = provider.isEnabled,

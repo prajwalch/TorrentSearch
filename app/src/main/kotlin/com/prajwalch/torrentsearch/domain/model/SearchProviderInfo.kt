@@ -31,9 +31,9 @@ data class SearchProviderInfo(
      */
     val safetyStatus: SearchProviderSafetyStatus,
     /**
-     * Origin from where the provider comes from.
+     * Origin of the provider.
      */
-    val type: SearchProviderType,
+    val origin: SearchProviderOrigin,
     /**
      * Current protection status of the provider.
      */

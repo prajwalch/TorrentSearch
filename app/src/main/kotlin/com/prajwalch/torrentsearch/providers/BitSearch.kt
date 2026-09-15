@@ -2,8 +2,8 @@ package com.prajwalch.torrentsearch.providers
 
 import com.prajwalch.torrentsearch.domain.model.Category
 import com.prajwalch.torrentsearch.domain.model.MagnetUriState
+import com.prajwalch.torrentsearch.domain.model.SearchProviderOrigin
 import com.prajwalch.torrentsearch.domain.model.SearchProviderSafetyStatus
-import com.prajwalch.torrentsearch.domain.model.SearchProviderType
 import com.prajwalch.torrentsearch.domain.model.Torrent
 import com.prajwalch.torrentsearch.domain.model.TorrentDetails
 import com.prajwalch.torrentsearch.network.NetworkClient
@@ -47,7 +47,7 @@ class BitSearch(private val networkClient: NetworkClient) :
     )
     override val safetyStatus = SearchProviderSafetyStatus.Safe
     override val enabledByDefault = false
-    override val type = SearchProviderType.Builtin
+    override val origin = SearchProviderOrigin.Builtin
 
     private val resultsPageParser = BitSearchResultsPageParser(id, name)
 
