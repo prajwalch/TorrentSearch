@@ -24,6 +24,7 @@ import com.prajwalch.torrentsearch.providers.MegaPeer
 import com.prajwalch.torrentsearch.providers.Mikan
 import com.prajwalch.torrentsearch.providers.MyPornClub
 import com.prajwalch.torrentsearch.providers.NekoBT
+import com.prajwalch.torrentsearch.providers.NoNameClub
 import com.prajwalch.torrentsearch.providers.Nyaa
 import com.prajwalch.torrentsearch.providers.OxTorrent
 import com.prajwalch.torrentsearch.providers.Rutor
@@ -72,6 +73,7 @@ private fun provideBuiltinSearchProviders(networkClient: NetworkClient): List<Se
         Mikan(networkClient),
         MyPornClub(networkClient),
         NekoBT(networkClient),
+        NoNameClub(networkClient),
         Nyaa(networkClient),
         OxTorrent(networkClient),
         Rutor(networkClient),
