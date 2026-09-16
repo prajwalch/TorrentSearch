@@ -247,4 +247,9 @@
     <string name="bookmarks_no_bookmarks_matched">Brak pasujących zakładek</string>
     <string name="settings_group_content_and_privacy">Treść i prywatność</string>
     <string name="settings_group_network">Sieć</string>
+    <string name="torrent_message_getting_magnet_link">Pobieranie linku magnet…</string>
+    <string name="torrent_message_failed_to_get_magnet_link">Nie udało się pobrać linku magnet</string>
+    <string name="torrent_message_file_download_complete">Pobieranie zakończone</string>
+    <string name="torrent_button_save_to_file">Zapisz do pliku</string>
+    <string name="torrent_details_button_bookmark_torrent">Dodaj torrent do zakładek</string>
 </resources>
