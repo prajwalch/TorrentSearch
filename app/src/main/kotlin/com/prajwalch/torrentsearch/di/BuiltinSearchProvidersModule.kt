@@ -13,6 +13,7 @@ import com.prajwalch.torrentsearch.providers.BlueRoms
 import com.prajwalch.torrentsearch.providers.Bt4g
 import com.prajwalch.torrentsearch.providers.Btsow
 import com.prajwalch.torrentsearch.providers.Dmhy
+import com.prajwalch.torrentsearch.providers.EpubLibre
 import com.prajwalch.torrentsearch.providers.Ext
 import com.prajwalch.torrentsearch.providers.Eztv
 import com.prajwalch.torrentsearch.providers.FileMood
@@ -63,6 +64,7 @@ private fun provideBuiltinSearchProviders(networkClient: NetworkClient): List<Se
         Bt4g(networkClient),
         Btsow(networkClient),
         Dmhy(networkClient),
+        EpubLibre(networkClient),
         Ext(networkClient),
         Eztv(networkClient),
         FileMood(networkClient),

@@ -194,6 +194,29 @@ class NetworkClient(private val settingsRepository: SettingsRepository) {
     }
 
     /**
+     * Makes a POST request with the given headers and returns the response
+     * parsed as JSON or `null` if parsing fails or response is empty.
+     */
+    suspend fun postJson(url: String, headers: Map<String, String> = emptyMap()): JsonElement? {
+        Log.d(LOG_TAG, "postText() [url=$url, headers=$headers]")
+
+        val response = ktorClient.post(urlString = url) {
+            headers.forEach { (key, value) -> header(key, value) }
+        }
+
+        if (isResponseChallenged(response)) {
+            Log.w(LOG_TAG, "Response is challenged by Cloudflare")
+            throw CloudflareChallengeException(url)
+        }
+
+        if (response.contentLength() == 0L) {
+            return null
+        }
+
+        return parseJson(response.bodyAsText())
+    }
+
+    /**
      * Makes a POST request with the given JSON payload and returns the
      * response parsed as JSON or `null` if parsing fails or response is empty.
      */
