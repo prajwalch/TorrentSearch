@@ -5,16 +5,16 @@ import androidx.annotation.StringRes
 /**
  * Provider safety indication.
  */
-sealed class SearchProviderSafety {
+sealed interface SearchProviderSafety {
     /**
      * Provider is safe and trustworthy.
      */
-    data object Safe : SearchProviderSafety()
+    data object Safe : SearchProviderSafety
 
     /**
      * Provider is not safe and should be used carefully.
      */
-    data class Unsafe(@StringRes val reason: Int) : SearchProviderSafety()
+    data class Unsafe(@StringRes val reason: Int) : SearchProviderSafety
 }
 
 /**
