@@ -39,12 +39,12 @@ import com.prajwalch.torrentsearch.ui.component.TorrentMetadata
 import com.prajwalch.torrentsearch.ui.extension.toRelativeTimeSpanString
 import com.prajwalch.torrentsearch.ui.iconResId
 import com.prajwalch.torrentsearch.ui.theme.spaces
-import com.prajwalch.torrentsearch.ui.torrentactions.MagnetUriUiState
+import com.prajwalch.torrentsearch.ui.torrentactions.MagnetUriState
 
 @Composable
 fun TorrentActionsContent(
     torrent: Torrent,
-    magnetUriUiState: MagnetUriUiState,
+    magnetUriState: MagnetUriState,
     isTorrentBookmarked: Boolean,
     onToggleBookmark: (Boolean) -> Unit,
     onOpenMagnetLink: (String) -> Unit,
@@ -68,13 +68,13 @@ fun TorrentActionsContent(
             torrent = torrent,
             isBookmarked = isTorrentBookmarked,
             onToggleBookmark = onToggleBookmark,
-            enableBookmarkAction = magnetUriUiState is MagnetUriUiState.Ready,
+            enableBookmarkAction = magnetUriState is MagnetUriState.Ready,
         )
 
         HorizontalDivider()
 
         TorrentActionColumn(
-            magnetUriUiState = magnetUriUiState,
+            magnetUriState = magnetUriState,
             onOpenMagnetLink = onOpenMagnetLink,
             onDownloadTorrentFile = onDownloadTorrentFile,
             onCopyMagnetLink = onCopyMagnetLink,
@@ -166,7 +166,7 @@ private fun BottomSheetHeader(
 
 @Composable
 private fun TorrentActionColumn(
-    magnetUriUiState: MagnetUriUiState,
+    magnetUriState: MagnetUriState,
     onOpenMagnetLink: (String) -> Unit,
     onDownloadTorrentFile: (String) -> Unit,
     onCopyMagnetLink: (String) -> Unit,
@@ -181,14 +181,14 @@ private fun TorrentActionColumn(
         modifier = modifier,
         verticalArrangement = Arrangement.spacedBy(MaterialTheme.spaces.large),
     ) {
-        Crossfade(magnetUriUiState) { targetMagnetUriUiState ->
-            when (targetMagnetUriUiState) {
-                MagnetUriUiState.Loading -> MagnetUriLoadingState()
-                MagnetUriUiState.Fetching -> MagnetUriFetchingState()
-                MagnetUriUiState.Error -> MagnetUriErrorState()
+        Crossfade(magnetUriState) { targetMagnetUriState ->
+            when (targetMagnetUriState) {
+                MagnetUriState.Loading -> MagnetUriLoadingState()
+                MagnetUriState.Fetching -> MagnetUriFetchingState()
+                MagnetUriState.Error -> MagnetUriErrorState()
 
-                is MagnetUriUiState.Ready -> {
-                    val magnetUri = targetMagnetUriUiState.magnetUri
+                is MagnetUriState.Ready -> {
+                    val magnetUri = targetMagnetUriState.value
 
                     Column(modifier = Modifier.clip(MaterialTheme.shapes.large)) {
                         ActionListItem(

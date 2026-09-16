@@ -44,7 +44,7 @@ fun TorrentActionsBottomSheet(
         parameters = { parametersOf(torrent) },
     ),
 ) {
-    val magnetUriUiState by viewModel.magnetUriUiState.collectAsStateWithLifecycle()
+    val magnetUriState by viewModel.magnetUriState.collectAsStateWithLifecycle()
     val torrentFileState by viewModel.torrentFileState.collectAsStateWithLifecycle()
     val isTorrentBookmarked by viewModel.isTorrentBookmarked.collectAsStateWithLifecycle()
     val openTorrentDetailsInApp by viewModel.openTorrentDetailsInApp.collectAsStateWithLifecycle()
@@ -87,7 +87,7 @@ fun TorrentActionsBottomSheet(
                         exit = slideOutHorizontally { fullWidth -> -fullWidth }
                     ),
                     torrent = torrent,
-                    magnetUriUiState = magnetUriUiState,
+                    magnetUriState = magnetUriState,
                     isTorrentBookmarked = isTorrentBookmarked,
                     onToggleBookmark = { viewModel.toggleBookmark(it) },
                     onOpenMagnetLink = { magnetUri ->

@@ -29,14 +29,14 @@ import org.koin.core.annotation.KoinViewModel
 
 import java.io.OutputStream
 
-sealed interface MagnetUriUiState {
-    data object Loading : MagnetUriUiState
+sealed interface MagnetUriState {
+    data object Loading : MagnetUriState
 
-    data object Fetching : MagnetUriUiState
+    data object Fetching : MagnetUriState
 
-    data object Error : MagnetUriUiState
+    data object Error : MagnetUriState
 
-    data class Ready(val magnetUri: String) : MagnetUriUiState
+    data class Ready(val value: String) : MagnetUriState
 }
 
 sealed interface TorrentFileState {
@@ -56,14 +56,14 @@ class TorrentActionsViewModel(
     private val torrentFileDownloader: TorrentFileDownloader,
     settingsRepository: SettingsRepository,
 ) : ViewModel() {
-    val magnetUriUiState: StateFlow<MagnetUriUiState> = flow {
+    val magnetUriState: StateFlow<MagnetUriState> = flow {
         when (val magnetUri = torrent.magnetUri) {
             is MagnetUri.Available -> {
-                emit(MagnetUriUiState.Ready(magnetUri.value))
+                emit(MagnetUriState.Ready(magnetUri.value))
             }
 
             is MagnetUri.RequiresFetch -> {
-                emit(MagnetUriUiState.Fetching)
+                emit(MagnetUriState.Fetching)
 
                 val result = torrentQueryService.getMagnetUri(
                     torrentId = torrent.id,
@@ -72,15 +72,15 @@ class TorrentActionsViewModel(
                 )
 
                 when (result) {
-                    is GetMagnetUriResult.Success -> emit(MagnetUriUiState.Ready(result.magnetUri))
-                    is GetMagnetUriResult.Error -> emit(MagnetUriUiState.Error)
+                    is GetMagnetUriResult.Success -> emit(MagnetUriState.Ready(result.magnetUri))
+                    is GetMagnetUriResult.Error -> emit(MagnetUriState.Error)
                 }
             }
         }
     }.stateIn(
         scope = viewModelScope,
         started = SharingStarted.Eagerly,
-        initialValue = MagnetUriUiState.Loading,
+        initialValue = MagnetUriState.Loading,
     )
 
     private val _torrentFileState = MutableStateFlow<TorrentFileState?>(null)
@@ -106,13 +106,13 @@ class TorrentActionsViewModel(
     private var pendingTorrentFile: ByteArray? = null
 
     fun toggleBookmark(bookmark: Boolean) {
-        val currentMagnetUriUiState = magnetUriUiState.value
-        if (currentMagnetUriUiState !is MagnetUriUiState.Ready) {
+        val currentMagnetUriState = magnetUriState.value
+        if (currentMagnetUriState !is MagnetUriState.Ready) {
             return
         }
 
         viewModelScope.launch {
-            val magnetUri = currentMagnetUriUiState.magnetUri
+            val magnetUri = currentMagnetUriState.value
 
             if (bookmark) {
                 bookmarkRepository.createAndAddBookmark(
