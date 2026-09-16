@@ -16,6 +16,7 @@ import com.prajwalch.torrentsearch.providers.Dmhy
 import com.prajwalch.torrentsearch.providers.Ext
 import com.prajwalch.torrentsearch.providers.Eztv
 import com.prajwalch.torrentsearch.providers.FileMood
+import com.prajwalch.torrentsearch.providers.FitGirlRepacks
 import com.prajwalch.torrentsearch.providers.InternetArchive
 import com.prajwalch.torrentsearch.providers.Knaben
 import com.prajwalch.torrentsearch.providers.LimeTorrents
@@ -65,6 +66,7 @@ private fun provideBuiltinSearchProviders(networkClient: NetworkClient): List<Se
         Ext(networkClient),
         Eztv(networkClient),
         FileMood(networkClient),
+        FitGirlRepacks(networkClient),
         InternetArchive(networkClient),
         Knaben(networkClient),
         LimeTorrents(networkClient),
