@@ -10,6 +10,7 @@ import com.prajwalch.torrentsearch.domain.model.SearchProviderInfo
 import com.prajwalch.torrentsearch.domain.model.SearchProviderOrigin
 import com.prajwalch.torrentsearch.domain.model.SearchProviderSafety
 import com.prajwalch.torrentsearch.domain.model.TorznabConfig
+import com.prajwalch.torrentsearch.domain.model.isUnsafe
 import com.prajwalch.torrentsearch.network.NetworkClient
 import com.prajwalch.torrentsearch.provider.LatestTorrentsProvider
 import com.prajwalch.torrentsearch.provider.MagnetUriProvider

@@ -15,9 +15,9 @@ sealed class SearchProviderSafety {
      * Provider is not safe and should be used carefully.
      */
     data class Unsafe(@StringRes val reason: Int) : SearchProviderSafety()
-
-    /**
-     * Returns `true` if the status is [SearchProviderSafety.Unsafe].
-     */
-    fun isUnsafe(): Boolean = this is Unsafe
 }
+
+/**
+ * Returns `true` if the status is [SearchProviderSafety.Unsafe].
+ */
+fun SearchProviderSafety.isUnsafe(): Boolean = this is SearchProviderSafety.Unsafe
