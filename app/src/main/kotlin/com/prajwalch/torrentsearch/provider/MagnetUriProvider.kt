@@ -10,7 +10,7 @@ import com.prajwalch.torrentsearch.domain.model.MagnetUri
  */
 interface MagnetUriProvider : SearchProvider {
     /**
-     * Fetches the magnet URI from the [sourceUrl].
+     * Resolves and returns the magnet URI from the given [url].
      */
-    suspend fun getMagnetUri(sourceUrl: String): String
+    suspend fun getMagnetUri(url: String): String
 }

@@ -82,10 +82,10 @@ class Bt4g(private val networkClient: NetworkClient) :
         return resultsPageParser.parse(html = responseHtml, pageUrl = requestUrl)
     }
 
-    override suspend fun getMagnetUri(sourceUrl: String): String {
-        val detailsPageHtml = networkClient.getText(sourceUrl)
+    override suspend fun getMagnetUri(url: String): String {
+        val detailsPageHtml = networkClient.getText(url)
         val infoHash = Bt4gDetailsPageParser.extractInfoHash(detailsPageHtml)
-            ?: error("Failed to retrieve info hash from '$sourceUrl'")
+            ?: error("Failed to retrieve info hash from '$url'")
 
         return TorrentUtils.createMagnetUri(infoHash)
     }

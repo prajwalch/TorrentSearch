@@ -172,7 +172,7 @@ class TorrentQueryService(
 
     suspend fun getMagnetUri(
         torrentId: String,
-        sourceUrl: String,
+        url: String,
         providerName: String,
     ): GetMagnetUriResult {
         val cachedMagnetUri = torrentIdToMagnetUri[torrentId]
@@ -183,7 +183,7 @@ class TorrentQueryService(
         val magnetUriProvider = searchProvidersManager.findMagnetUriProviderByName(providerName)
             ?: error("Couldn't find magnet URI provider named '$providerName'")
 
-        return runCatching { magnetUriProvider.getMagnetUri(sourceUrl) }
+        return runCatching { magnetUriProvider.getMagnetUri(url) }
             .fold(
                 onSuccess = {
                     torrentIdToMagnetUri[torrentId] = it

@@ -67,7 +67,7 @@ class TorrentActionsViewModel(
 
                 val result = torrentQueryService.getMagnetUri(
                     torrentId = torrent.id,
-                    sourceUrl = magnetUri.url,
+                    url = magnetUri.url,
                     providerName = torrent.providerName
                 )
 

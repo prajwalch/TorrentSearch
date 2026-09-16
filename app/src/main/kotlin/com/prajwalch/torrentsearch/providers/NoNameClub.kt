@@ -126,10 +126,10 @@ class NoNameClub(private val networkClient: NetworkClient) :
         put("submit", "Поиск")
     }
 
-    override suspend fun getMagnetUri(sourceUrl: String): String {
-        val detailsPageHtml = networkClient.getText(sourceUrl)
+    override suspend fun getMagnetUri(url: String): String {
+        val detailsPageHtml = networkClient.getText(url)
         return NnmClubDetailsPageParser.extractMagnetUri(detailsPageHtml)
-            ?: error("Failed to retrieve magnet URI from '$sourceUrl'")
+            ?: error("Failed to retrieve magnet URI from '$url'")
     }
 
     override suspend fun getDetails(detailsPageUrl: String): TorrentDetails? {

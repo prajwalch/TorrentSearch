@@ -83,9 +83,9 @@ class AniRena(private val networkClient: NetworkClient) :
         return detailsPageParser.parse(html = responseHtml, pageUrl = detailsPageUrl)
     }
 
-    override suspend fun getMagnetUri(sourceUrl: String): String {
-        return networkClient.get(sourceUrl).let { it.headers["Location"] }
-            ?: error("Failed to retrieve magnet URI from '$sourceUrl'")
+    override suspend fun getMagnetUri(url: String): String {
+        return networkClient.get(url).let { it.headers["Location"] }
+            ?: error("Failed to retrieve magnet URI from '$url'")
     }
 }
 

@@ -43,9 +43,9 @@ class BlueRoms(private val networkClient: NetworkClient) :
         return resultsPageParser.parse(html = responseHtml, pageUrl = requestUrl)
     }
 
-    override suspend fun getMagnetUri(sourceUrl: String): String {
-        return getMagnetUri(sourceUrl, networkClient)
-            ?: error("Failed to retrieve magnet URI from '$sourceUrl'")
+    override suspend fun getMagnetUri(url: String): String {
+        return getMagnetUri(url, networkClient)
+            ?: error("Failed to retrieve magnet URI from '$url'")
     }
 
     override suspend fun getDetails(detailsPageUrl: String): TorrentDetails? {

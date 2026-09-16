@@ -106,10 +106,10 @@ class Torrentz(private val networkClient: NetworkClient) :
         return resultsPageParser.parse(html = responseHtml, pageUrl = requestUrl)
     }
 
-    override suspend fun getMagnetUri(sourceUrl: String): String {
-        val detailsPageHtml = networkClient.getText(sourceUrl)
+    override suspend fun getMagnetUri(url: String): String {
+        val detailsPageHtml = networkClient.getText(url)
         return TorrentzDetailsPageParser.extractMagnetUri(detailsPageHtml)
-            ?: error("Failed to retrieve magnet URI from '$sourceUrl'")
+            ?: error("Failed to retrieve magnet URI from '$url'")
     }
 
     override suspend fun getDetails(detailsPageUrl: String): TorrentDetails? {
