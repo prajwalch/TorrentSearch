@@ -3,10 +3,10 @@ package com.prajwalch.torrentsearch.provider
 import com.prajwalch.torrentsearch.domain.model.MagnetUri
 
 /**
- * A [SearchProvider] that can provide the magnet URI.
+ * A [SearchProvider] capable of resolving magnet URIs.
  *
- * This interface must be implemented for a provider which returns
- * torrents with [MagnetUri.RequiresFetch].
+ * Must be implemented by providers that return torrents with
+ * [MagnetUri.RequiresFetch].
  */
 interface MagnetUriProvider : SearchProvider {
     /**
