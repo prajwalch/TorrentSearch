@@ -1,7 +1,6 @@
 package com.prajwalch.torrentsearch.provider
 
 import com.prajwalch.torrentsearch.domain.model.Category
-import com.prajwalch.torrentsearch.domain.model.SearchProviderOrigin
 import com.prajwalch.torrentsearch.domain.model.SearchProviderSafety
 import com.prajwalch.torrentsearch.domain.model.Torrent
 
@@ -63,11 +62,6 @@ interface SearchProvider {
      * badge will be shown on the UI to warn users.
      */
     val safety: SearchProviderSafety
-
-    /**
-     * Indicates where the provider comes from.
-     */
-    val origin: SearchProviderOrigin get() = SearchProviderOrigin.Builtin
 
     /**
      * Indicates whether the provider is Cloudflare-protected.

@@ -408,7 +408,7 @@ private fun SearchProvider.getInfo(
     cloudflareSolverUrl = this.cloudflareSolverUrl,
     supportedCategories = this.supportedCategories,
     safety = this.safety,
-    origin = this.origin,
+    origin = SearchProviderOrigin.Builtin,
     cloudflareProtectionStatus = protectionStatus,
     isEnabled = isEnabled,
 )
