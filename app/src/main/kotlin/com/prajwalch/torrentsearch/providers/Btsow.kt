@@ -1,7 +1,7 @@
 package com.prajwalch.torrentsearch.providers
 
 import com.prajwalch.torrentsearch.domain.model.Category
-import com.prajwalch.torrentsearch.domain.model.MagnetUriState
+import com.prajwalch.torrentsearch.domain.model.MagnetUri
 import com.prajwalch.torrentsearch.domain.model.SearchProviderSafety
 import com.prajwalch.torrentsearch.domain.model.Torrent
 import com.prajwalch.torrentsearch.domain.model.TorrentDetails
@@ -95,7 +95,7 @@ private class BtsowResultsJsonParser(
                     name = torrentName,
                     size = size,
                     providerName = providerName,
-                    magnetUriState = MagnetUriState.Available(magnetUri),
+                    magnetUri = MagnetUri.Available(magnetUri),
                     descriptionPageUrl = "$providerUrl/magnet/detail/$infoHash",
                 )
             }

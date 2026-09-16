@@ -2,7 +2,7 @@ package com.prajwalch.torrentsearch.providers
 
 import com.prajwalch.torrentsearch.R
 import com.prajwalch.torrentsearch.domain.model.Category
-import com.prajwalch.torrentsearch.domain.model.MagnetUriState
+import com.prajwalch.torrentsearch.domain.model.MagnetUri
 import com.prajwalch.torrentsearch.domain.model.SearchProviderSafety
 import com.prajwalch.torrentsearch.domain.model.Torrent
 import com.prajwalch.torrentsearch.domain.model.TorrentDetails
@@ -162,7 +162,7 @@ private class TheRarBgResultsPageParser(
             providerName = providerName,
             uploadDate = uploadDate,
             category = category,
-            magnetUriState = MagnetUriState.FetchRequired(detailsPageUrl),
+            magnetUri = MagnetUri.RequiresFetch(detailsPageUrl),
             descriptionPageUrl = detailsPageUrl,
         )
     }

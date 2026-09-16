@@ -9,7 +9,7 @@ import com.prajwalch.torrentsearch.domain.GetMagnetUriResult
 import com.prajwalch.torrentsearch.domain.TorrentFileDownloadResult
 import com.prajwalch.torrentsearch.domain.TorrentFileDownloader
 import com.prajwalch.torrentsearch.domain.TorrentQueryService
-import com.prajwalch.torrentsearch.domain.model.MagnetUriState
+import com.prajwalch.torrentsearch.domain.model.MagnetUri
 import com.prajwalch.torrentsearch.domain.model.Torrent
 import com.prajwalch.torrentsearch.util.TorrentUtils
 
@@ -57,17 +57,17 @@ class TorrentActionsViewModel(
     settingsRepository: SettingsRepository,
 ) : ViewModel() {
     val magnetUriUiState: StateFlow<MagnetUriUiState> = flow {
-        when (val magnetUriState = torrent.magnetUriState) {
-            is MagnetUriState.Available -> {
-                emit(MagnetUriUiState.Ready(magnetUriState.magnetUri))
+        when (val magnetUri = torrent.magnetUri) {
+            is MagnetUri.Available -> {
+                emit(MagnetUriUiState.Ready(magnetUri.value))
             }
 
-            is MagnetUriState.FetchRequired -> {
+            is MagnetUri.RequiresFetch -> {
                 emit(MagnetUriUiState.Fetching)
 
                 val result = torrentQueryService.getMagnetUri(
                     torrentId = torrent.id,
-                    sourceUrl = magnetUriState.url,
+                    sourceUrl = magnetUri.url,
                     providerName = torrent.providerName
                 )
 

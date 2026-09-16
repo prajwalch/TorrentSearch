@@ -1,7 +1,7 @@
 package com.prajwalch.torrentsearch.providers
 
 import com.prajwalch.torrentsearch.domain.model.Category
-import com.prajwalch.torrentsearch.domain.model.MagnetUriState
+import com.prajwalch.torrentsearch.domain.model.MagnetUri
 import com.prajwalch.torrentsearch.domain.model.SearchProviderSafety
 import com.prajwalch.torrentsearch.domain.model.Torrent
 import com.prajwalch.torrentsearch.extension.asObject
@@ -90,7 +90,7 @@ class TorrentsCSV(private val networkClient: NetworkClient) : SearchProvider {
             providerName = this.name,
             uploadDate = uploadDate,
             category = Category.Other,
-            magnetUriState = MagnetUriState.Available(magnetUri),
+            magnetUri = MagnetUri.Available(magnetUri),
         )
     }
 }

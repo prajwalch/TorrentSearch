@@ -5,7 +5,7 @@ import android.util.Log
 import com.prajwalch.torrentsearch.data.local.dao.BookmarkedTorrentDao
 import com.prajwalch.torrentsearch.data.local.entities.BookmarkedTorrentEntity
 import com.prajwalch.torrentsearch.domain.model.Category
-import com.prajwalch.torrentsearch.domain.model.MagnetUriState
+import com.prajwalch.torrentsearch.domain.model.MagnetUri
 import com.prajwalch.torrentsearch.domain.model.Torrent
 import com.prajwalch.torrentsearch.util.TorrentUtils
 
@@ -126,7 +126,7 @@ private fun BookmarkedTorrentEntity.toDomain() =
         uploadDate = this.uploadDate?.let(Instant::ofEpochMilli),
         category = this.category?.let(Category::valueOf),
         descriptionPageUrl = this.descriptionPageUrl,
-        magnetUriState = MagnetUriState.Available(
+        magnetUri = MagnetUri.Available(
             this.magnetUri ?: TorrentUtils.createMagnetUri(this.infoHash)
         ),
         fileDownloadLink = this.fileDownloadLink,

@@ -1,7 +1,7 @@
 package com.prajwalch.torrentsearch.providers
 
 import com.prajwalch.torrentsearch.domain.model.Category
-import com.prajwalch.torrentsearch.domain.model.MagnetUriState
+import com.prajwalch.torrentsearch.domain.model.MagnetUri
 import com.prajwalch.torrentsearch.domain.model.SearchProviderSafety
 import com.prajwalch.torrentsearch.domain.model.Torrent
 import com.prajwalch.torrentsearch.domain.model.TorrentDetails
@@ -85,15 +85,15 @@ private class FitGirlRepacksResultsPageParser(
             ?.let(TorrentDateParser::parseIso)
         val magnetUri = listItem.selectFirst(MAGNET_URI)
             ?.attr("href")
-            ?.let { MagnetUriState.Available(it) }
-            ?: MagnetUriState.FetchRequired(detailsPageUrl)
+            ?.let { MagnetUri.Available(it) }
+            ?: MagnetUri.RequiresFetch(detailsPageUrl)
 
         return Torrent(
             id = torrentId,
             name = gameName,
             uploadDate = uploadDate,
             category = Category.Games,
-            magnetUriState = magnetUri,
+            magnetUri = magnetUri,
             providerName = providerName,
             descriptionPageUrl = detailsPageUrl,
         )

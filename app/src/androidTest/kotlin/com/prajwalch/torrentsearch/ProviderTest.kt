@@ -56,7 +56,7 @@ class ProviderTest {
             """
             ✅ First Torrent Result:
             ├── Name                : ${first.name}
-            ├── Magnet Uri State    : ${first.magnetUriState}
+            ├── Magnet Uri State    : ${first.magnetUri}
             ├── Size                : ${first.size}
             ├── Seeders             : ${first.seeders}
             ├── Peers               : ${first.peers}
@@ -99,7 +99,7 @@ class ProviderTest {
                 """
                 ✅ First Torrent Result:
                 ├── Name                : ${first.name}
-                ├── Magnet Uri State    : ${first.magnetUriState}
+                ├── Magnet Uri State    : ${first.magnetUri}
                 ├── Size                : ${first.size}
                 ├── Seeders             : ${first.seeders}
                 ├── Peers               : ${first.peers}

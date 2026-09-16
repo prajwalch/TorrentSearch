@@ -4,7 +4,7 @@ import android.util.Xml
 
 import com.prajwalch.torrentsearch.constant.TorrentSearchConstants
 import com.prajwalch.torrentsearch.domain.model.Category
-import com.prajwalch.torrentsearch.domain.model.MagnetUriState
+import com.prajwalch.torrentsearch.domain.model.MagnetUri
 import com.prajwalch.torrentsearch.domain.model.Torrent
 import com.prajwalch.torrentsearch.extension.readParentTag
 import com.prajwalch.torrentsearch.extension.skipCurrentTag
@@ -143,7 +143,7 @@ class TorznabResultsXmlParser(
             uploadDate = uploadDate,
             category = category,
             descriptionPageUrl = descriptionPageUrl,
-            magnetUriState = MagnetUriState.Available(magnetUri),
+            magnetUri = MagnetUri.Available(magnetUri),
             fileDownloadLink = fileDownloadLink,
         )
         torrents.add(torrent)

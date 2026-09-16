@@ -23,7 +23,7 @@ data class Torrent(
     /** URL of the page where the torrent details is available. */
     val descriptionPageUrl: String? = null,
     /** Magnet URI state. */
-    val magnetUriState: MagnetUriState,
+    val magnetUri: MagnetUri,
     /**
      * A URL from where .torrent file can be downloaded.
      */
@@ -36,8 +36,8 @@ data class Torrent(
     val isDead get() = (seeders == 0u && peers == 0u)
 }
 
-sealed interface MagnetUriState {
-    data class Available(val magnetUri: String) : MagnetUriState
+sealed interface MagnetUri {
+    data class Available(val value: String) : MagnetUri
 
-    data class FetchRequired(val url: String) : MagnetUriState
+    data class RequiresFetch(val url: String) : MagnetUri
 }
