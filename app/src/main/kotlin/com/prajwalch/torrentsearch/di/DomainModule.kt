@@ -1,6 +1,6 @@
 package com.prajwalch.torrentsearch.di
 
-import com.prajwalch.torrentsearch.domain.SearchProvidersManager
+import com.prajwalch.torrentsearch.domain.SearchProviderManager
 import com.prajwalch.torrentsearch.domain.TorrentFileDownloader
 import com.prajwalch.torrentsearch.domain.TorrentQueryService
 
@@ -8,7 +8,7 @@ import org.koin.dsl.module
 
 val domainModule = module {
     single {
-        SearchProvidersManager(
+        SearchProviderManager(
             builtinProviders = get(),
             torznabConfigRepository = get(),
             settingsRepository = get(),
@@ -17,7 +17,7 @@ val domainModule = module {
     }
     single {
         TorrentQueryService(
-            searchProvidersManager = get(),
+            searchProviderManager = get(),
             settingsRepository = get(),
         )
     }

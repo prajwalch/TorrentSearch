@@ -6,7 +6,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 
-import com.prajwalch.torrentsearch.domain.SearchProvidersManager
+import com.prajwalch.torrentsearch.domain.SearchProviderManager
 import com.prajwalch.torrentsearch.domain.model.Category
 import com.prajwalch.torrentsearch.domain.model.TorznabConnectionCheckResult
 import com.prajwalch.torrentsearch.network.NetworkClient
@@ -46,7 +46,7 @@ sealed interface TorznabConfigEvent {
 
 @KoinViewModel
 class TorznabConfigViewModel(
-    private val searchProvidersManager: SearchProvidersManager,
+    private val searchProviderManager: SearchProviderManager,
     private val networkClient: NetworkClient,
     savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
@@ -69,7 +69,7 @@ class TorznabConfigViewModel(
     }
 
     private fun loadConfig(id: SearchProviderId) = viewModelScope.launch {
-        val config = searchProvidersManager.findTorznabConfigById(id) ?: return@launch
+        val config = searchProviderManager.findTorznabConfigById(id) ?: return@launch
 
         _uiState.value = TorznabConfigUiState(
             searchProviderName = config.searchProviderName,
@@ -174,7 +174,7 @@ class TorznabConfigViewModel(
     private fun isUrlValid(): Boolean = Patterns.WEB_URL.matcher(_uiState.value.url).matches()
 
     private suspend fun createConfig() {
-        searchProvidersManager.createTorznabConfig(
+        searchProviderManager.createTorznabConfig(
             searchProviderName = _uiState.value.searchProviderName,
             url = _uiState.value.url,
             apiKey = _uiState.value.apiKey,
@@ -183,7 +183,7 @@ class TorznabConfigViewModel(
     }
 
     private suspend fun updateConfig(id: SearchProviderId) {
-        searchProvidersManager.updateTorznabConfig(
+        searchProviderManager.updateTorznabConfig(
             id = id,
             searchProviderName = _uiState.value.searchProviderName,
             url = _uiState.value.url,

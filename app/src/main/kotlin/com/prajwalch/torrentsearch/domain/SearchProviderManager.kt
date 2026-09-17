@@ -38,10 +38,9 @@ data class ProtectionStatusUpdateResult(
 )
 
 /**
- * A search providers manager which is responsible for managing and handling
- * all providers specific task and responsibility.
+ * A manager which is responsible for managing and handling all providers.
  */
-class SearchProvidersManager(
+class SearchProviderManager(
     private val builtinProviders: List<@JvmSuppressWildcards SearchProvider>,
     private val torznabConfigRepository: TorznabConfigRepository,
     private val settingsRepository: SettingsRepository,

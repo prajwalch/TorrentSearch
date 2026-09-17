@@ -31,7 +31,7 @@ import kotlinx.coroutines.flow.transformWhile
 import kotlinx.coroutines.launch
 
 class TorrentQueryService(
-    private val searchProvidersManager: SearchProvidersManager,
+    private val searchProviderManager: SearchProviderManager,
     private val settingsRepository: SettingsRepository,
 ) {
     private companion object {
@@ -50,7 +50,7 @@ class TorrentQueryService(
         category: Category,
         limit: MaxNumResults,
     ): Flow<SearchResults> = channelFlow {
-        val enabledProviders = searchProvidersManager.getEnabledProvidersByCategory(category)
+        val enabledProviders = searchProviderManager.getEnabledProvidersByCategory(category)
         if (enabledProviders.isEmpty()) return@channelFlow
 
         val encodedQuery = Uri.encode(query)!!
@@ -91,7 +91,7 @@ class TorrentQueryService(
         .flowOn(Dispatchers.IO)
 
     fun getLatestTorrents(category: Category): Flow<PersistentList<Torrent>> = channelFlow {
-        searchProvidersManager.getEnabledLatestTorrentsProviders(category).forEach {
+        searchProviderManager.getEnabledLatestTorrentsProviders(category).forEach {
             launch {
                 runCatchingProvider(it) { getLastestTorrents(category) }
                     .getOrNull()
@@ -106,7 +106,7 @@ class TorrentQueryService(
         .flowOn(Dispatchers.IO)
 
     fun getTopTorrents(category: Category): Flow<PersistentList<Torrent>> = channelFlow {
-        searchProvidersManager.getEnabledTopTorrentsProviders(category).forEach {
+        searchProviderManager.getEnabledTopTorrentsProviders(category).forEach {
             launch {
                 runCatchingProvider(it) { getTopTorrents(category) }
                     .getOrNull()
@@ -124,8 +124,8 @@ class TorrentQueryService(
         detailsPageUrl: String,
         providerName: String,
     ): GetTorrentDetailsResponse {
-        val detailsProvider = searchProvidersManager.findDetailsProviderByUrl(detailsPageUrl)
-            ?: searchProvidersManager.findDetailsProviderByName(providerName)
+        val detailsProvider = searchProviderManager.findDetailsProviderByUrl(detailsPageUrl)
+            ?: searchProviderManager.findDetailsProviderByName(providerName)
             ?: return GetTorrentDetailsResponse.UnsupportedUrl
 
         return detailsProvider.getDetails(detailsPageUrl)
@@ -154,7 +154,7 @@ class TorrentQueryService(
 
         val failureReason = if (cause is CloudflareChallengeException) {
             Log.i(TAG, "Locking ${provider.name} (${provider.id})")
-            searchProvidersManager.lockProvider(provider.id)
+            searchProviderManager.lockProvider(provider.id)
 
             SearchProviderFailureReason.CloudflareChallenge
         } else {
@@ -180,7 +180,7 @@ class TorrentQueryService(
             return GetMagnetUriResult.Success(cachedMagnetUri)
         }
 
-        val magnetUriProvider = searchProvidersManager.findMagnetUriProviderByName(providerName)
+        val magnetUriProvider = searchProviderManager.findMagnetUriProviderByName(providerName)
             ?: error("Couldn't find magnet URI provider named '$providerName'")
 
         return runCatching { magnetUriProvider.getMagnetUri(url) }

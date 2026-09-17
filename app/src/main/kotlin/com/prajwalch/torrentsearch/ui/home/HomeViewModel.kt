@@ -5,7 +5,7 @@ import androidx.lifecycle.viewModelScope
 
 import com.prajwalch.torrentsearch.data.repository.SearchHistoryRepository
 import com.prajwalch.torrentsearch.data.repository.SettingsRepository
-import com.prajwalch.torrentsearch.domain.SearchProvidersManager
+import com.prajwalch.torrentsearch.domain.SearchProviderManager
 import com.prajwalch.torrentsearch.domain.model.Category
 
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -44,7 +44,7 @@ data class HomeRelevantSettings(
 class HomeViewModel(
     searchHistoryRepository: SearchHistoryRepository,
     settingsRepository: SettingsRepository,
-    private val searchProvidersManager: SearchProvidersManager,
+    private val searchProviderManager: SearchProviderManager,
 ) : ViewModel() {
     /**
      * The internal source for the current search query used only for
@@ -152,13 +152,13 @@ class HomeViewModel(
 
     fun enableDefaultSearchProviders() {
         viewModelScope.launch {
-            searchProvidersManager.enableDefaultSearchProviders()
+            searchProviderManager.enableDefaultSearchProviders()
         }
     }
 
     fun skipDefaultSearchProviders() {
         viewModelScope.launch {
-            searchProvidersManager.skipDefaultSearchProviders()
+            searchProviderManager.skipDefaultSearchProviders()
         }
     }
 }

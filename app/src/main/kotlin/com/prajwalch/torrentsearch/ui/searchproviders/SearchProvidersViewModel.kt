@@ -4,7 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 
 import com.prajwalch.torrentsearch.data.repository.SettingsRepository
-import com.prajwalch.torrentsearch.domain.SearchProvidersManager
+import com.prajwalch.torrentsearch.domain.SearchProviderManager
 import com.prajwalch.torrentsearch.domain.model.Category
 import com.prajwalch.torrentsearch.domain.model.CloudflareProtectionStatus
 import com.prajwalch.torrentsearch.domain.model.SearchProviderInfo
@@ -58,11 +58,11 @@ sealed interface ProtectionUpdateState {
 /** ViewModel which handles the business logic of Search providers screen. */
 @KoinViewModel
 class SearchProvidersViewModel(
-    private val searchProvidersManager: SearchProvidersManager,
+    private val searchProviderManager: SearchProviderManager,
     settingsRepository: SettingsRepository,
 ) : ViewModel() {
     private val providerInfosProcessor =
-        SearchProviderInfosProcessor(searchProvidersManager.getProviderInfos())
+        SearchProviderInfosProcessor(searchProviderManager.getProviderInfos())
 
     private val protectionUpdateState =
         MutableStateFlow<ProtectionUpdateState>(ProtectionUpdateState.Idle)
@@ -72,7 +72,7 @@ class SearchProvidersViewModel(
             providerInfosProcessor.filteredSearchProviderInfos,
             providerInfosProcessor.filter,
             protectionUpdateState,
-            searchProvidersManager.getProvidersCount(),
+            searchProviderManager.getProvidersCount(),
             settingsRepository.enabledSearchProviderIds.map { it?.size ?: 0 },
         ) {
                 searchProviderInfos,
@@ -98,9 +98,9 @@ class SearchProvidersViewModel(
     fun enableSearchProvider(providerId: SearchProviderId, enable: Boolean) {
         viewModelScope.launch {
             if (enable) {
-                searchProvidersManager.enableProvider(providerId)
+                searchProviderManager.enableProvider(providerId)
             } else {
-                searchProvidersManager.disableProvider(providerId)
+                searchProviderManager.disableProvider(providerId)
             }
         }
     }
@@ -110,7 +110,7 @@ class SearchProvidersViewModel(
         viewModelScope.launch {
             // Respect filter.
             val providerIds = uiState.value.searchProviders.map { it.id }.toSet()
-            searchProvidersManager.enableProviderByIds(providerIds)
+            searchProviderManager.enableProviderByIds(providerIds)
         }
     }
 
@@ -119,7 +119,7 @@ class SearchProvidersViewModel(
         viewModelScope.launch {
             // Respect filter.
             val providerIds = uiState.value.searchProviders.map { it.id }.toSet()
-            searchProvidersManager.disableProviderByIds(providerIds)
+            searchProviderManager.disableProviderByIds(providerIds)
         }
     }
 
@@ -127,7 +127,7 @@ class SearchProvidersViewModel(
         protectionUpdateState.value = ProtectionUpdateState.Updating
 
         viewModelScope.launch {
-            val result = searchProvidersManager.updateProvidersProtectionStatus()
+            val result = searchProviderManager.updateProvidersProtectionStatus()
             protectionUpdateState.value = ProtectionUpdateState.Complete(
                 numLockedProviders = result.numLockedProviders,
                 numUnlockedProviders = result.numUnlockedProviders,
@@ -142,14 +142,14 @@ class SearchProvidersViewModel(
     /** Resets enabled search providers to default. */
     fun resetEnabledSearchProvidersToDefault() {
         viewModelScope.launch {
-            searchProvidersManager.resetToDefault()
+            searchProviderManager.resetToDefault()
         }
     }
 
     /** Deletes the Torznab search provider that matches the specified ID. */
     fun deleteTorznabConfig(id: String) {
         viewModelScope.launch {
-            searchProvidersManager.deleteTorznabConfig(id)
+            searchProviderManager.deleteTorznabConfig(id)
         }
     }
 
@@ -168,7 +168,7 @@ class SearchProvidersViewModel(
 
     fun markProviderAsUnlocked(id: SearchProviderId) {
         viewModelScope.launch {
-            searchProvidersManager.unlockProvider(id)
+            searchProviderManager.unlockProvider(id)
         }
     }
 }

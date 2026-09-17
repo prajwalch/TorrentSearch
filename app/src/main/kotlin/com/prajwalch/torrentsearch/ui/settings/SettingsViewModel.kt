@@ -9,7 +9,7 @@ import androidx.lifecycle.viewModelScope
 import com.prajwalch.torrentsearch.BuildConfig
 import com.prajwalch.torrentsearch.data.repository.SettingsRepository
 import com.prajwalch.torrentsearch.data.repository.ViewedTorrentRepository
-import com.prajwalch.torrentsearch.domain.SearchProvidersManager
+import com.prajwalch.torrentsearch.domain.SearchProviderManager
 import com.prajwalch.torrentsearch.domain.model.DarkTheme
 import com.prajwalch.torrentsearch.domain.model.DohProvider
 import com.prajwalch.torrentsearch.domain.model.MaxNumResults
@@ -74,7 +74,7 @@ data class NetworkSettingsUiState(
 @KoinViewModel
 class SettingsViewModel(
     private val settingsRepository: SettingsRepository,
-    private val searchProvidersManager: SearchProvidersManager,
+    private val searchProvidersManager: SearchProviderManager,
     private val viewedTorrentRepository: ViewedTorrentRepository,
 ) : ViewModel() {
     val uiState = combine(
