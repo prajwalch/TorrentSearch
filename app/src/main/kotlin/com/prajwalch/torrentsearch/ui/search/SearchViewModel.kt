@@ -13,6 +13,7 @@ import com.prajwalch.torrentsearch.domain.model.SearchResults
 import com.prajwalch.torrentsearch.domain.model.SortCriteria
 import com.prajwalch.torrentsearch.domain.model.SortOptions
 import com.prajwalch.torrentsearch.domain.model.SortOrder
+import com.prajwalch.torrentsearch.domain.model.Torrent
 import com.prajwalch.torrentsearch.filter.TorrentFilters
 import com.prajwalch.torrentsearch.network.ConnectivityChecker
 import com.prajwalch.torrentsearch.util.createSortComparator
@@ -34,7 +35,6 @@ import kotlinx.coroutines.flow.conflate
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flowOn
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
@@ -123,7 +123,7 @@ class SearchViewModel(
         searchResults = resultsLoader.searchResults,
         settingsRepository = settingsRepository,
         viewedTorrentIds = viewedTorrentRepository.getAllViewedIds(),
-        initialSelectedCategory = searchParams.category,
+        searchCategory = searchParams.category,
     )
 
     /**
@@ -132,23 +132,15 @@ class SearchViewModel(
     val uiState: StateFlow<SearchUiState> =
         combine(
             resultsLoader.searchState,
-            resultsProcessor.processedSearchResults,
-            resultsProcessor.sortOptions,
-            resultsProcessor.torrentFilter,
+            resultsProcessor.result,
             viewedTorrentRepository.getAllViewedIds(),
-        ) {
-                searchState,
-                processedResults,
-                sortOptions,
-                viewFilters,
-                viewedTorrentIds,
-            ->
+        ) { searchState, processResult, viewedTorrentIds ->
             SearchUiState(
                 searchParams = searchParams,
                 searchState = searchState,
-                searchResults = processedResults,
-                sortOptions = sortOptions,
-                torrentFilter = viewFilters,
+                searchResults = processResult.searchResults,
+                sortOptions = processResult.sortOptions,
+                torrentFilter = processResult.filter,
                 viewedTorrentIds = viewedTorrentIds,
             )
         }.stateIn(
@@ -373,20 +365,25 @@ private class SearchResultsLoader(
  * operations on the [searchResults].
  *
  * It's the second stage in the search pipeline, responsible for performing
- * post-processing on the [searchResults], maintaining and producing
- * related states and processed search results.
+ * post-processing on the [searchResults].
  *
  * @param searchResults The flow that emits the [SearchResults].
  * @param settingsRepository The repository from where user-define filter options are fetched.
  * @param viewedTorrentIds The flow that emits the viewed torrent IDs.
- * @param initialSelectedCategory The [Category] to use as an initial value for filter.
+ * @param searchCategory The search [Category].
  */
 private class SearchResultsProcessor(
     searchResults: Flow<SearchResults>,
     settingsRepository: SettingsRepository,
-    viewedTorrentIds: Flow<Set<String>>,
-    initialSelectedCategory: Category = Category.All,
+    searchCategory: Category = Category.All,
+    private val viewedTorrentIds: Flow<Set<String>>,
 ) {
+    data class ProcessResult(
+        val searchResults: SearchResults,
+        val filter: TorrentFilter,
+        val sortOptions: SortOptions,
+    )
+
     /**
      * A snapshot of the current configuration of [TorrentFilter].
      */
@@ -401,101 +398,46 @@ private class SearchResultsProcessor(
     /**
      * The internal, mutable state of [TorrentFilterConfig].
      */
-    private val torrentFilterConfig =
-        MutableStateFlow(TorrentFilterConfig(category = initialSelectedCategory))
-
-    /**
-     * Names of search provider that are completed successfully.
-     */
-    private val completedSearchProviders: Flow<Set<String>> =
-        searchResults.map {
-            it.torrents.map { torrent -> torrent.providerName }.toSet()
-        }
-
-    /**
-     * The flow that emits the [TorrentFilter].
-     */
-    val torrentFilter: Flow<TorrentFilter> =
-        combine(
-            torrentFilterConfig,
-            completedSearchProviders,
-            ::createTorrentFilter,
-        )
+    private val filterConfig = MutableStateFlow(TorrentFilterConfig(category = searchCategory))
 
     /**
      * The internal, mutable state of sort options.
      */
-    private val _sortOptions = MutableStateFlow(SortOptions())
+    private val sortOptions = MutableStateFlow(SortOptions())
 
     /**
-     * The public, read-only state of sort options.
+     * The flow that emits the [ProcessResult].
      */
-    val sortOptions: StateFlow<SortOptions> = _sortOptions.asStateFlow()
-
-    /**
-     * IDs of currently viewed torrents that should be hidden when
-     * 'hide viewed' filter is turned on.
-     *
-     * The IDs are captured only when 'hide viewed' filter is enabled to avoid
-     * instant hiding.
-     */
-    private val currentlyViewedTorrentIds: Flow<Set<String>> =
-        torrentFilterConfig
-            .map { it.hideViewed }
-            .map { if (it) viewedTorrentIds.firstOrNull().orEmpty() else emptySet() }
-
-    /**
-     * The flow that emits the processed [SearchResults].
-     */
-    val processedSearchResults: Flow<SearchResults> =
+    val result: Flow<ProcessResult> =
         combine(
             searchResults,
-            torrentFilterConfig,
-            _sortOptions,
+            filterConfig,
+            sortOptions,
             settingsRepository.enableNSFWMode,
-            currentlyViewedTorrentIds,
-            ::processSearchResults
+            ::processSearchResults,
         ).flowOn(Dispatchers.Default)
 
     /**
-     * Creates a [TorrentFilter] from the given snapshot of filter config.
+     * Processes the given [searchResults] using given configurations and
+     * returns a [ProcessResult].
      */
-    private fun createTorrentFilter(
-        filterConfig: TorrentFilterConfig,
-        completedSearchProviders: Set<String>,
-    ): TorrentFilter {
-        val providerFilters = completedSearchProviders.map {
-            TorrentFilter.SearchProviderOption(
-                provider = it,
-                selected = it !in filterConfig.excludedProviders,
-            )
-        }
-
-        return TorrentFilter(
-            providers = providerFilters.toImmutableList(),
-            showDeadTorrents = filterConfig.showDeadTorrents,
-            category = filterConfig.category,
-            hideViewed = filterConfig.hideViewed,
-        )
-    }
-
-    /**
-     * Processes the [searchResults] using given configurations and returns a
-     * new [SearchResults].
-     */
-    private fun processSearchResults(
+    private suspend fun processSearchResults(
         searchResults: SearchResults,
         filterConfig: TorrentFilterConfig,
         sortOptions: SortOptions,
         nsfwModeEnabled: Boolean,
-        viewedTorrentIds: Set<String>,
-    ): SearchResults {
+    ): ProcessResult {
         val sortComparator = createSortComparator(
             criteria = sortOptions.criteria,
             order = sortOptions.order,
         )
+        val viewedTorrentIds = if (filterConfig.hideViewed) {
+            getCurrentViewedTorrentIds()
+        } else {
+            emptySet()
+        }
 
-        return searchResults.filterTorrents {
+        val processedResults = searchResults.filterTorrents {
             add(TorrentFilters.notExcludedProvider(filterConfig.excludedProviders))
 
             if (!nsfwModeEnabled) add(TorrentFilters.isSfw())
@@ -506,20 +448,56 @@ private class SearchResultsProcessor(
             if (filterConfig.category != Category.All)
                 add(TorrentFilters.matchesCategory(filterConfig.category))
         }.sortTorrentsWith(sortComparator)
+        val torrentFilter = createTorrentFilter(filterConfig, searchResults.torrents)
+
+        return ProcessResult(
+            searchResults = processedResults,
+            filter = torrentFilter,
+            sortOptions = sortOptions,
+        )
+    }
+
+    private suspend fun getCurrentViewedTorrentIds(): Set<String> {
+        return viewedTorrentIds.firstOrNull().orEmpty()
+    }
+
+    /**
+     * Creates a [TorrentFilter] from the given snapshot of filter config.
+     */
+    private fun createTorrentFilter(
+        filterConfig: TorrentFilterConfig,
+        torrents: ImmutableList<Torrent>,
+    ): TorrentFilter {
+        val providerFilters = torrents
+            .map { it.providerName }
+            .distinct()
+            .map {
+                TorrentFilter.SearchProviderOption(
+                    provider = it,
+                    selected = it !in filterConfig.excludedProviders,
+                )
+            }
+
+        return TorrentFilter(
+            providers = providerFilters.toImmutableList(),
+            showDeadTorrents = filterConfig.showDeadTorrents,
+            category = filterConfig.category,
+            hideViewed = filterConfig.hideViewed,
+        )
     }
 
     /**
      * Shows only those search results that contains the given query.
      */
     fun updateFilterQuery(query: String) {
-        torrentFilterConfig.update { it.copy(query = query.trim()) }
+        filterConfig.update { it.copy(query = query.trim()) }
     }
 
     /**
      * Shows or hides search results associated with the given provider name.
      */
     fun toggleSearchProviderResults(providerName: String) {
-        torrentFilterConfig.update {
+        filterConfig.update {
             val newExclusions = if (providerName in it.excludedProviders) {
                 // Remove from exclusion list.
                 it.excludedProviders - providerName
@@ -535,41 +513,41 @@ private class SearchResultsProcessor(
      * Updates the current search providers exclusion list with the given one.
      */
     fun updateExcludedSearchProviders(providers: Set<String>) {
-        torrentFilterConfig.update { it.copy(excludedProviders = providers) }
+        filterConfig.update { it.copy(excludedProviders = providers) }
     }
 
     /**
      * Shows or hides dead torrents from search results.
      */
     fun toggleShowDeadTorrents() {
-        torrentFilterConfig.update { it.copy(showDeadTorrents = !it.showDeadTorrents) }
+        filterConfig.update { it.copy(showDeadTorrents = !it.showDeadTorrents) }
     }
 
     /**
      * Updates the current category with the given one.
      */
     fun updateCategory(category: Category) {
-        torrentFilterConfig.update { it.copy(category = category) }
+        filterConfig.update { it.copy(category = category) }
     }
 
     /**
      * Toggles the hide viewed filter.
      */
     fun toggleHideViewed() {
-        torrentFilterConfig.update { it.copy(hideViewed = !it.hideViewed) }
+        filterConfig.update { it.copy(hideViewed = !it.hideViewed) }
     }
 
     /**
      * Updates the current sort criteria with the given one.
      */
     fun updateSortCriteria(criteria: SortCriteria) {
-        _sortOptions.update { it.copy(criteria = criteria) }
+        sortOptions.update { it.copy(criteria = criteria) }
     }
 
     /**
      * Updates the current sort order with the given one.
      */
     fun updateSortOrder(order: SortOrder) {
-        _sortOptions.update { it.copy(order = order) }
+        sortOptions.update { it.copy(order = order) }
     }
 }
