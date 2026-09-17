@@ -47,139 +47,116 @@ class SearchProviderManager(
     private val networkClient: NetworkClient,
 ) {
     /**
-     * Returns instances of enabled providers, filtering them by their
-     * specialized category.
-     */
-    suspend fun getEnabledProvidersByCategory(category: Category): List<SearchProvider> {
-        val enabledProviders = getEnabledProviders()
-
-        return if (category == Category.All) {
-            enabledProviders
-        } else {
-            enabledProviders.filter { category in it.supportedCategories }
-        }
-    }
-
-    /**
-     * Returns instances of enabled providers.
-     */
-    suspend fun getEnabledProviders(): List<SearchProvider> {
-        val enabledProviderIds = settingsRepository.currentEnabledProviderIds()
-            ?: return emptyList()
-        val enabledBuiltinProviders = builtinProviders.filter { it.id in enabledProviderIds }
-        val enabledTorznabProviders = getEnabledTorznabProviders(enabledProviderIds)
-
-        return enabledBuiltinProviders + enabledTorznabProviders
-    }
-
-    /**
-     * Returns instances of enabled Torznab providers.
-     */
-    private suspend fun getEnabledTorznabProviders(
-        enabledProviderIds: Set<SearchProviderId>,
-    ): List<TorznabSearchProvider> =
-        torznabConfigRepository.getCurrentConfigsByIds(enabledProviderIds)
-            .map { config -> TorznabSearchProvider(config, networkClient) }
-
-    fun findMagnetUriProviderByName(name: String): MagnetUriProvider? {
-        return builtinProviders
-            .filterIsInstance<MagnetUriProvider>()
-            .find { it.name == name }
-    }
-
-    /**
-     * Finds a torrent details provider associated with the given name.
-     */
-    fun findDetailsProviderByName(name: String): TorrentDetailsProvider? {
-        return getTorrentDetailsProviders().find { it.name == name }
-    }
-
-    /**
-     * Finds a torrent details provider associated with the given URL.
-     */
-    fun findDetailsProviderByUrl(url: String): TorrentDetailsProvider? {
-        return getTorrentDetailsProviders().find { detailsProvider ->
-            url.startsWith(detailsProvider.url) ||
-                    detailsProvider.alternateUrlDomains.any { url.startsWith(it) }
-        }
-    }
-
-    private fun getTorrentDetailsProviders(): List<TorrentDetailsProvider> =
-        builtinProviders.filterIsInstance<TorrentDetailsProvider>()
-
-    /**
-     * Returns a list containing instances of latest torrents providers that
-     * are currently enabled.
-     */
-    suspend fun getEnabledLatestTorrentsProviders(category: Category): List<LatestTorrentsProvider> {
-        val enabledProviderIds = settingsRepository.currentEnabledProviderIds()
-            ?: return emptyList()
-        val enabledProviders = builtinProviders.filterIsInstance<LatestTorrentsProvider>()
-            .filter { it.id in enabledProviderIds }
-
-        return if (category == Category.All) {
-            enabledProviders
-        } else {
-            enabledProviders.filter { category in it.supportedCategories }
-        }
-    }
-
-    /**
-     * Returns a list containing instances of top torrents providers that are
-     * currently enabled.
-     */
-    suspend fun getEnabledTopTorrentsProviders(category: Category): List<TopTorrentsProvider> {
-        val enabledProviderIds = settingsRepository.currentEnabledProviderIds()
-            ?: return emptyList()
-        val enabledProviders = builtinProviders.filterIsInstance<TopTorrentsProvider>()
-            .filter { it.id in enabledProviderIds }
-
-        return if (category == Category.All) {
-            enabledProviders
-        } else {
-            enabledProviders.filter { category in it.supportedCategories }
-        }
-    }
-
-    /**
-     * Returns [SearchProviderInfo]s of all search providers.
+     * Returns a [Flow] of [SearchProviderInfo]s of all providers.
      */
     fun getProviderInfos(): Flow<List<SearchProviderInfo>> =
         combine(
             torznabConfigRepository.getAllConfigs(),
             settingsRepository.enabledSearchProviderIds,
             settingsRepository.protectionUnlockedProviderIds,
-        ) {
-                torznabConfigs,
-                enabledProviderIds,
-                protectionUnlockedProviderIds,
-            ->
-            val builtinProviderInfos = builtinProviders.map {
-                val cloudflareProtectionStatus = when {
-                    !it.isCloudflareProtected -> CloudflareProtectionStatus.UnProtected
-                    it.id in protectionUnlockedProviderIds -> CloudflareProtectionStatus.Unlocked
-                    else -> CloudflareProtectionStatus.Locked
-                }
-                it.getInfo(
-                    isEnabled = !enabledProviderIds.isNullOrEmpty() && it.id in enabledProviderIds,
-                    protectionStatus = cloudflareProtectionStatus,
-                )
-            }
+        ) { torznabConfigs, enabledProviderIds, unlockedProviderIds ->
+            val enabledProviderIds = enabledProviderIds.orEmpty()
 
-            val torznabProviderInfos = torznabConfigs.map {
-                it.toSearchProviderInfo(
-                    isEnabled = !enabledProviderIds.isNullOrEmpty() && it.id in enabledProviderIds,
-                )
-            }
+            val builtinProviderInfos = builtinProviders
+                .toSearchProviderInfos(enabledProviderIds, unlockedProviderIds)
+            val torznabProviderInfos = torznabConfigs.toSearchProviderInfos(enabledProviderIds)
 
             builtinProviderInfos + torznabProviderInfos
         }
 
     /**
-     * Returns providers count as [Flow].
+     * Returns a [Flow] of providers count.
      */
     fun getProvidersCount(): Flow<Int> = torznabConfigRepository.getConfigsCount()
         .map { torznabConfigCount -> builtinProviders.size + torznabConfigCount }
+
+    /**
+     * Returns instances of enabled providers, filtering them by their
+     * specialized category.
+     */
+    suspend fun getEnabledProviders(category: Category = Category.All): List<SearchProvider> {
+        val enabledProviders = getCurrentEnabledProviders()
+
+        return if (category == Category.All) {
+            enabledProviders
+        } else {
+            enabledProviders.filter { category in it.supportedCategories }
+        }
+    }
+
+    /**
+     * Returns a list of [LatestTorrentsProvider]s that are currently enabled.
+     */
+    suspend fun getEnabledLatestTorrentsProviders(
+        category: Category = Category.All,
+    ): List<LatestTorrentsProvider> {
+        val enabledProviders = getCurrentEnabledProviders()
+            .filterIsInstance<LatestTorrentsProvider>()
+
+        return if (category == Category.All) {
+            enabledProviders
+        } else {
+            enabledProviders.filter { category in it.supportedCategories }
+        }
+    }
+
+    /**
+     * Returns a list of [TopTorrentsProvider]s that are currently enabled.
+     */
+    suspend fun getEnabledTopTorrentsProviders(
+        category: Category = Category.All,
+    ): List<TopTorrentsProvider> {
+        val enabledProviders = getCurrentEnabledProviders()
+            .filterIsInstance<TopTorrentsProvider>()
+
+        return if (category == Category.All) {
+            enabledProviders
+        } else {
+            enabledProviders.filter { category in it.supportedCategories }
+        }
+    }
+
+    /**
+     * Returns a list of providers that are currently enabled.
+     */
+    private suspend fun getCurrentEnabledProviders(): List<SearchProvider> {
+        val enabledProviderIds = settingsRepository.currentEnabledProviderIds()
+            ?: return emptyList()
+
+        val enabledBuiltinProviders = builtinProviders.filter { it.id in enabledProviderIds }
+        val enabledTorznabProviders = torznabConfigRepository
+            .getCurrentConfigsByIds(enabledProviderIds)
+            .map { config -> TorznabSearchProvider(config, networkClient) }
+
+        return enabledBuiltinProviders + enabledTorznabProviders
+    }
+
+    /**
+     * Finds a [MagnetUriProvider] associated with the given name.
+     */
+    fun findMagnetUriProviderByName(name: String): MagnetUriProvider? {
+        return builtinProviders.filterIsInstance<MagnetUriProvider>()
+            .find { it.name == name }
+    }
+
+    /**
+     * Finds a [TorrentDetailsProvider] associated with the given name.
+     */
+    fun findDetailsProviderByName(name: String): TorrentDetailsProvider? {
+        return builtinProviders.filterIsInstance<TorrentDetailsProvider>()
+            .find { it.name == name }
+    }
+
+    /**
+     * Finds a [TorrentDetailsProvider] associated with the given URL.
+     */
+    fun findDetailsProviderByUrl(url: String): TorrentDetailsProvider? {
+        return builtinProviders.filterIsInstance<TorrentDetailsProvider>()
+            .find { detailsProvider ->
+                url.startsWith(detailsProvider.url) ||
+                        detailsProvider.alternateUrlDomains.any { url.startsWith(it) }
+            }
+    }
 
     /**
      * Enables the provider associated with the given ID.
@@ -188,33 +165,34 @@ class SearchProviderManager(
         settingsRepository.addEnabledSearchProviderId(id)
     }
 
-    /**
-     * Enables all providers.
-     */
-    suspend fun enableAllProviders() {
-        val builtinProviderIds = builtinProviders.map { it.id }.toSet()
-        val torznabProviderIds = torznabConfigRepository.getConfigIds()
-        val allIds = filterLockedProviderIds(builtinProviderIds) union torznabProviderIds
-
-        settingsRepository.setEnabledSearchProviderIds(allIds)
-    }
+//    /**
+//     * Enables all providers.
+//     */
+//    suspend fun enableAllProviders() {
+//        val builtinProviderIds = builtinProviders.map { it.id }.toSet()
+//        val torznabProviderIds = torznabConfigRepository.getConfigIds()
+//        val allIds = filterLockedProviderIds(builtinProviderIds) union torznabProviderIds
+//
+//        settingsRepository.setEnabledSearchProviderIds(allIds)
+//    }
 
     /**
      * Enables providers associated with the given IDs.
      */
-    suspend fun enableProviderByIds(ids: Set<SearchProviderId>) {
+    suspend fun enableProvidersByIds(ids: Set<SearchProviderId>) {
         val filteredIds = filterLockedProviderIds(ids)
         settingsRepository.addEnabledSearchProviderIds(filteredIds)
     }
 
-    private suspend fun filterLockedProviderIds(ids: Set<SearchProviderId>): Set<SearchProviderId> {
-        val protectionUnlockedProviderIds =
-            settingsRepository.currentProtectionUnlockedProviderIds()
+    private suspend fun filterLockedProviderIds(
+        ids: Set<SearchProviderId>,
+    ): Set<SearchProviderId> {
+        val unlockedProviderIds = settingsRepository.currentProtectionUnlockedProviderIds()
 
         // Torznab providers can't be locked, only built-ins can be.
         return builtinProviders
             .filter { it.id in ids }
-            .filter { !it.isCloudflareProtected || it.id in protectionUnlockedProviderIds }
+            .filter { !it.isCloudflareProtected || it.id in unlockedProviderIds }
             .map { it.id }
             .toSet()
     }
@@ -246,13 +224,6 @@ class SearchProviderManager(
     }
 
     /**
-     * Disables all providers.
-     */
-    suspend fun disableAllProviders() {
-        settingsRepository.setEnabledSearchProviderIds(emptySet())
-    }
-
-    /**
      * Disable providers associated with the given IDs.
      */
     suspend fun disableProviderByIds(ids: Set<SearchProviderId>) {
@@ -260,21 +231,21 @@ class SearchProviderManager(
     }
 
     /**
-     * Disables NSFW and unsafe providers.
+     * Disables all unsafe providers which are currently enabled.
      */
-    suspend fun disableNsfwAndUnsafeProviders() {
-        val enabledProviderIds = settingsRepository.currentEnabledProviderIds()
-        if (enabledProviderIds.isNullOrEmpty()) return
-
+    suspend fun disableUnsafeProviders() {
+        val enabledProviders = getCurrentEnabledProviders()
         val nsfwCategories = Category.entries.filter { it.isNSFW }
-        val enabledUnsafeProviderIds = builtinProviders
-            .filter { it.id in enabledProviderIds }
-            .filter { it.supportedCategories.containsAll(nsfwCategories) || it.safety.isUnsafe() }
+
+        val unsafeProviderIds = enabledProviders
+            .filter { enabledProvider ->
+                nsfwCategories.any { it in enabledProvider.supportedCategories }
+                        || enabledProvider.safety.isUnsafe()
+            }
             .map { it.id }
             .toSet()
-        val updatedIds = enabledProviderIds - enabledUnsafeProviderIds
 
-        settingsRepository.setEnabledSearchProviderIds(updatedIds)
+        settingsRepository.removeEnabledSearchProviderIds(unsafeProviderIds)
     }
 
     /**
@@ -297,46 +268,50 @@ class SearchProviderManager(
         disableProvider(id)
     }
 
+    /**
+     * Updates the protection status of all protected providers.
+     */
     @OptIn(ExperimentalAtomicApi::class)
-    suspend fun updateProvidersProtectionStatus() = withContext(Dispatchers.IO) {
-        val cloudflareProtectedProviders = builtinProviders.filter { it.isCloudflareProtected }
-        val numLockedProviders = AtomicInt(0)
+    suspend fun updateProtectionStatus(): ProtectionStatusUpdateResult =
+        withContext(Dispatchers.IO) {
+            val protectedProviders = builtinProviders.filter { it.isCloudflareProtected }
+            val numLockedProviders = AtomicInt(0)
 
-        supervisorScope {
-            for (provider in cloudflareProtectedProviders) {
-                val cloudflareSolverUrl = provider.cloudflareSolverUrl ?: provider.url
+            supervisorScope {
+                for (provider in protectedProviders) {
+                    val cloudflareSolverUrl = provider.cloudflareSolverUrl ?: provider.url
 
-                launch {
-                    try {
-                        if (networkClient.isUrlChallenged(cloudflareSolverUrl)) {
-                            settingsRepository.removeProtectionUnlockedProviderId(provider.id)
-                            NetworkClient.removeCookie(cloudflareSolverUrl)
+                    launch {
+                        try {
+                            if (networkClient.isUrlChallenged(cloudflareSolverUrl)) {
+                                settingsRepository.removeProtectionUnlockedProviderId(provider.id)
+                                NetworkClient.removeCookie(cloudflareSolverUrl)
 
-                            numLockedProviders.incrementAndFetch()
+                                numLockedProviders.incrementAndFetch()
+                            }
+                        } catch (e: CancellationException) {
+                            throw e
+                        } catch (e: Exception) {
+                            Log.e(
+                                "SearchProvidersManager",
+                                "Couldn't check ${provider.name} protection status",
+                                e
+                            )
                         }
-                    } catch (e: CancellationException) {
-                        throw e
-                    } catch (e: Exception) {
-                        Log.e(
-                            "SearchProvidersManager",
-                            "Couldn't check ${provider.name} protection status",
-                            e
-                        )
                     }
                 }
             }
-        }
 
-        numLockedProviders.load().let {
-            ProtectionStatusUpdateResult(
-                numLockedProviders = it,
-                numUnlockedProviders = cloudflareProtectedProviders.size - it,
-            )
+            numLockedProviders.load().let {
+                ProtectionStatusUpdateResult(
+                    numLockedProviders = it,
+                    numUnlockedProviders = protectedProviders.size - it,
+                )
+            }
         }
-    }
 
     /**
-     * Resets current providers setting to default.
+     * Resets current providers settings to default.
      */
     suspend fun resetToDefault() {
         settingsRepository.setEnabledSearchProviderIds(emptySet())
@@ -345,7 +320,7 @@ class SearchProviderManager(
     }
 
     /**
-     * Creates and stores a new Torznab config using the given values.
+     * Creates and stores a new Torznab configuration.
      */
     suspend fun createTorznabConfig(
         searchProviderName: String,
@@ -362,15 +337,15 @@ class SearchProviderManager(
     }
 
     /**
-     * Attempts to find the existing Torznab config associated with the given ID.
+     * Finds the Torznab configuration associated with the given ID.
      */
     suspend fun findTorznabConfigById(id: String): TorznabConfig? {
         return torznabConfigRepository.findConfigById(id)
     }
 
     /**
-     * Updates the Torznab config associated with the given ID with the
-     * given new values.
+     * Updates the configuration values of Torznab associated with the given
+     * ID.
      */
     suspend fun updateTorznabConfig(
         id: String,
@@ -389,7 +364,7 @@ class SearchProviderManager(
     }
 
     /**
-     * Deletes the existing Torznab config associated with the given ID.
+     * Deletes the Torznab configuration associated with the given ID.
      */
     suspend fun deleteTorznabConfig(id: String) {
         torznabConfigRepository.deleteConfigById(id)
@@ -397,7 +372,24 @@ class SearchProviderManager(
     }
 }
 
-private fun SearchProvider.getInfo(
+private fun List<SearchProvider>.toSearchProviderInfos(
+    enabledProviderIds: Set<SearchProviderId>,
+    unlockedProviderIds: Set<SearchProviderId>,
+): List<SearchProviderInfo> = map {
+    val isEnabled = it.id in enabledProviderIds
+    val protectionStatus = when {
+        !it.isCloudflareProtected -> CloudflareProtectionStatus.UnProtected
+        it.id in unlockedProviderIds -> CloudflareProtectionStatus.Unlocked
+        else -> CloudflareProtectionStatus.Locked
+    }
+
+    it.toSearchProviderInfo(
+        isEnabled = isEnabled,
+        protectionStatus = protectionStatus,
+    )
+}
+
+private fun SearchProvider.toSearchProviderInfo(
     isEnabled: Boolean,
     protectionStatus: CloudflareProtectionStatus,
 ) = SearchProviderInfo(
@@ -411,6 +403,12 @@ private fun SearchProvider.getInfo(
     cloudflareProtectionStatus = protectionStatus,
     isEnabled = isEnabled,
 )
+
+private fun List<TorznabConfig>.toSearchProviderInfos(
+    enabledProviderIds: Set<SearchProviderId>,
+): List<SearchProviderInfo> = map {
+    it.toSearchProviderInfo(it.id in enabledProviderIds)
+}
 
 private fun TorznabConfig.toSearchProviderInfo(isEnabled: Boolean) =
     SearchProviderInfo(

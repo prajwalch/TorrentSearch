@@ -110,7 +110,7 @@ class SearchProvidersViewModel(
         viewModelScope.launch {
             // Respect filter.
             val providerIds = uiState.value.searchProviders.map { it.id }.toSet()
-            searchProviderManager.enableProviderByIds(providerIds)
+            searchProviderManager.enableProvidersByIds(providerIds)
         }
     }
 
@@ -127,7 +127,7 @@ class SearchProvidersViewModel(
         protectionUpdateState.value = ProtectionUpdateState.Updating
 
         viewModelScope.launch {
-            val result = searchProviderManager.updateProvidersProtectionStatus()
+            val result = searchProviderManager.updateProtectionStatus()
             protectionUpdateState.value = ProtectionUpdateState.Complete(
                 numLockedProviders = result.numLockedProviders,
                 numUnlockedProviders = result.numUnlockedProviders,

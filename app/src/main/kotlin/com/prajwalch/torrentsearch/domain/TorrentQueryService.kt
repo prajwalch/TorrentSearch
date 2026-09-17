@@ -50,7 +50,7 @@ class TorrentQueryService(
         category: Category,
         limit: MaxNumResults,
     ): Flow<SearchResults> = channelFlow {
-        val enabledProviders = searchProviderManager.getEnabledProvidersByCategory(category)
+        val enabledProviders = searchProviderManager.getEnabledProviders(category)
         if (enabledProviders.isEmpty()) return@channelFlow
 
         val encodedQuery = Uri.encode(query)!!

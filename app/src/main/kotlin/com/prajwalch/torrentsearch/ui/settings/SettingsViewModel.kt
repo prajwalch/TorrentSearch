@@ -111,7 +111,7 @@ class SettingsViewModel(
     fun enableNSFWMode(enable: Boolean) {
         viewModelScope.launch {
             settingsRepository.enableNSFWMode(enable = enable)
-            if (!enable) searchProvidersManager.disableNsfwAndUnsafeProviders()
+            if (!enable) searchProvidersManager.disableUnsafeProviders()
         }
     }
 
