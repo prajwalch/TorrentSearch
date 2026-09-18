@@ -53,6 +53,7 @@ data class ContentAndPrivacySettingsUiState(
     val blurNSFWImages: Boolean = true,
     val saveSearchHistory: Boolean = true,
     val showSearchHistory: Boolean = true,
+    val viewedTorrentsCount: Int = 0,
 )
 
 data class SearchSettingsUiState(
@@ -80,7 +81,7 @@ class SettingsViewModel(
     val uiState = combine(
         settingsRepository.getAppearanceSettings(),
         settingsRepository.getGeneralSettings(),
-        settingsRepository.getContentAndPrivacySettings(),
+        getContentAndPrivacySettings(settingsRepository, viewedTorrentRepository),
         settingsRepository.getSearchSettings(searchProvidersManager.getProvidersCount()),
         settingsRepository.getNetworkSettings(),
         ::SettingsUiState,
@@ -223,12 +224,16 @@ private fun SettingsRepository.getGeneralSettings() =
         ::GeneralSettingsUiState,
     )
 
-private fun SettingsRepository.getContentAndPrivacySettings() =
+private fun getContentAndPrivacySettings(
+    settingsRepository: SettingsRepository,
+    viewedTorrentRepository: ViewedTorrentRepository,
+): Flow<ContentAndPrivacySettingsUiState> =
     combine(
-        this.enableNSFWMode,
-        this.blurNSFWImages,
-        this.saveSearchHistory,
-        this.showSearchHistory,
+        settingsRepository.enableNSFWMode,
+        settingsRepository.blurNSFWImages,
+        settingsRepository.saveSearchHistory,
+        settingsRepository.showSearchHistory,
+        viewedTorrentRepository.getViewedTorrentsCount(),
         ::ContentAndPrivacySettingsUiState,
     )
 

@@ -18,6 +18,8 @@ class ViewedTorrentRepository(private val dao: ViewedTorrentDao) {
      */
     fun getAllViewedIds(): Flow<Set<String>> = dao.getAllViewedIds().map { it.toSet() }
 
+    fun getViewedTorrentsCount(): Flow<Int> = dao.getViewedTorrentsCount()
+
     /**
      * Marks a torrent as viewed by storing its ID.
      */

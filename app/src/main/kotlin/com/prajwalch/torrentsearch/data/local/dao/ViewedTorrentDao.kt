@@ -16,6 +16,9 @@ interface ViewedTorrentDao {
     @Query("SELECT id FROM viewed_torrents")
     fun getAllViewedIds(): Flow<List<String>>
 
+    @Query("SELECT COUNT(*) FROM viewed_torrents")
+    fun getViewedTorrentsCount(): Flow<Int>
+
     @Query("DELETE FROM viewed_torrents")
     suspend fun deleteAllViewedTorrents()
 }

@@ -388,6 +388,7 @@ private fun ContentAndPrivacySection(
                 leadingIcon = painterResource(R.drawable.ic_history),
                 title = stringResource(R.string.settings_clear_viewed_torrents),
                 subtitle = stringResource(R.string.settings_clear_viewed_torrents_summary),
+                trailingContent = { Text("${uiState.viewedTorrentsCount}") },
             )
 
             SettingsListItem(
