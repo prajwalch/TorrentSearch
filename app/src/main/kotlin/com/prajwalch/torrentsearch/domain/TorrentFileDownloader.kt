@@ -2,12 +2,10 @@ package com.prajwalch.torrentsearch.domain
 
 import com.prajwalch.torrentsearch.network.NetworkClient
 
-import io.ktor.client.statement.bodyAsChannel
+import io.ktor.client.statement.bodyAsBytes
 import io.ktor.http.isSuccess
-import io.ktor.utils.io.readRemaining
 
 import kotlinx.coroutines.CancellationException
-import kotlinx.io.readByteArray
 
 sealed interface TorrentFileDownloadResult {
     data class Success(val content: ByteArray) : TorrentFileDownloadResult
@@ -48,7 +46,7 @@ class TorrentFileDownloader(private val networkClient: NetworkClient) {
             return TorrentFileDownloadResult.FileNotFound
         }
 
-        val content = response.bodyAsChannel().readRemaining().readByteArray()
+        val content = response.bodyAsBytes()
         contentCache[url] = content
 
         TorrentFileDownloadResult.Success(content)
