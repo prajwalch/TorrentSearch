@@ -53,8 +53,18 @@ android {
                 "proguard-rules.pro"
             )
         }
+
+        create("staging") {
+            initWith(getByName("release"))
+
+            applicationIdSuffix = ".staging"
+            versionNameSuffix = "-staging"
+            signingConfig = signingConfigs.getByName("debug")
+        }
+
         debug {
             applicationIdSuffix = ".debug"
+            versionNameSuffix = "-debug"
             isDebuggable = true
             signingConfig = signingConfigs.getByName("debug")
         }
