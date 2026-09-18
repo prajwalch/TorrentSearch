@@ -29,9 +29,9 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.WhileSubscribed
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flowOn
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
@@ -116,31 +116,25 @@ class BrowseViewModel(
     /**
      * The primary, read-only UI state.
      */
-    val uiState = combine(
-        torrentsLoader.queryParams,
-        torrentsLoader.state,
-        torrentsProcessor.processedTorrents,
-        torrentsProcessor.viewFilters,
-        viewedTorrentRepository.getAllViewedIds(),
-    ) {
-            queryParams,
-            contentState,
-            torrents,
-            viewFilters,
-            viewedTorrentIds,
-        ->
-        BrowseUiState(
-            contentState = contentState,
-            torrents = torrents,
-            queryParams = queryParams,
-            viewFilters = viewFilters,
-            viewedTorrentIds = viewedTorrentIds,
+    val uiState: StateFlow<BrowseUiState> =
+        combine(
+            torrentsLoader.queryParams,
+            torrentsLoader.state,
+            torrentsProcessor.result,
+            viewedTorrentRepository.getAllViewedIds(),
+        ) { queryParams, contentState, processResult, viewedTorrentIds ->
+            BrowseUiState(
+                contentState = contentState,
+                torrents = processResult.torrents,
+                queryParams = queryParams,
+                viewFilters = processResult.filters,
+                viewedTorrentIds = viewedTorrentIds,
+            )
+        }.stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5.seconds),
+            initialValue = BrowseUiState(),
         )
-    }.stateIn(
-        scope = viewModelScope,
-        started = SharingStarted.WhileSubscribed(5.seconds),
-        initialValue = BrowseUiState(),
-    )
 
     init {
         loadTorrents()
@@ -361,120 +355,114 @@ private class TorrentsLoader(
  */
 private class TorrentsProcessor(
     torrents: Flow<PersistentList<Torrent>>,
-    queryParams: Flow<BrowseQueryParams>,
-    viewedTorrentIds: Flow<Set<String>>,
     settingsRepository: SettingsRepository,
+    private val queryParams: Flow<BrowseQueryParams>,
+    private val viewedTorrentIds: Flow<Set<String>>,
 ) {
-    private data class TorrentFilter(
+    data class ProcessResult(
+        val torrents: ImmutableList<Torrent>,
+        val filters: BrowseViewFilters,
+    )
+
+    private data class FilterConfig(
         val searchQuery: String = "",
         val excludedProviders: Set<String> = emptySet(),
         val deadTorrents: Boolean = true,
         val hideViewed: Boolean = false,
     )
 
-    private val torrentFilter = MutableStateFlow(TorrentFilter())
-
-    /**
-     * Names of search provider that are completed successfully.
-     */
-    private val completedSearchProviders: Flow<Set<String>> =
-        torrents.map { it.map { torrent -> torrent.providerName }.toSet() }
-
-    /**
-     * The publicly observable, read-only state of the view filters.
-     */
-    val viewFilters: Flow<BrowseViewFilters> =
-        combine(
-            torrentFilter,
-            completedSearchProviders,
-            ::createBrowseViewFilters,
-        )
-
-    /**
-     * IDs of currently viewed torrents that should be hidden when filter is active.
-     *
-     * The IDs are captured only when 'hide viewed' filter is enabled to avoid
-     * instant hiding.
-     */
-    private val currentViewedTorrentIds: Flow<Set<String>> =
-        torrentFilter
-            .map { it.hideViewed }
-            .map { if (it) viewedTorrentIds.firstOrNull().orEmpty() else emptySet() }
+    private val filterConfig = MutableStateFlow(FilterConfig())
 
     /**
      * The output stream of processed torrents.
      */
-    val processedTorrents: Flow<ImmutableList<Torrent>> =
+    val result: Flow<ProcessResult> =
         combine(
             torrents,
-            queryParams,
-            torrentFilter,
-            currentViewedTorrentIds,
+            filterConfig,
             settingsRepository.enableNSFWMode,
             ::processTorrents,
         ).flowOn(Dispatchers.Default)
 
     /**
-     * Creates a [BrowseViewFilters] from the given snapshot of filter config.
+     * Processes the given torrents with given configurations and returns
+     * a [ProcessResult].
      */
-    private fun createBrowseViewFilters(
-        torrentFilter: TorrentFilter,
-        completedSearchProviders: Set<String>,
-    ): BrowseViewFilters {
-        val providerFilters = completedSearchProviders.map {
-            BrowseViewFilters.ProviderOption(
-                provider = it,
-                selected = it !in torrentFilter.excludedProviders,
-            )
-        }
-
-        return BrowseViewFilters(
-            providers = providerFilters.toImmutableList(),
-            deadTorrents = torrentFilter.deadTorrents,
-            hideViewed = torrentFilter.hideViewed,
-        )
-    }
-
-    /**
-     * Processes and returns a new list containing processed torrents based
-     * on the given filters and other options.
-     */
-    private fun processTorrents(
+    private suspend fun processTorrents(
         torrents: PersistentList<Torrent>,
-        queryParams: BrowseQueryParams,
-        torrentFilter: TorrentFilter,
-        viewedTorrentIds: Set<String>,
+        filterConfig: FilterConfig,
         nsfwModeEnabled: Boolean,
-    ): ImmutableList<Torrent> {
+    ): ProcessResult {
+        val queryParams = getCurrentQueryParams()
         val sortComparator: Comparator<Torrent> = when (queryParams.sort) {
             BrowseSort.Latest -> compareByDescending { torrent -> torrent.uploadDate }
             BrowseSort.Top -> compareByDescending { torrent -> torrent.seeders }
         }
+        val viewedTorrentIds = if (filterConfig.hideViewed) {
+            getCurrentViewedTorrentIds()
+        } else {
+            emptySet()
+        }
 
-        return torrents.filterIfAll {
-            add(TorrentFilters.notExcludedProvider(torrentFilter.excludedProviders))
+        val processedTorrents = torrents.filterIfAll {
+            add(TorrentFilters.notExcludedProvider(filterConfig.excludedProviders))
 
             if (!nsfwModeEnabled) add(TorrentFilters.isSfw())
-            if (!torrentFilter.deadTorrents) add(TorrentFilters.isAlive())
-            if (torrentFilter.hideViewed) add(TorrentFilters.notViewed(viewedTorrentIds))
-            if (torrentFilter.searchQuery.isNotBlank())
-                add(TorrentFilters.matchesQuery(torrentFilter.searchQuery))
+            if (!filterConfig.deadTorrents) add(TorrentFilters.isAlive())
+            if (filterConfig.hideViewed) add(TorrentFilters.notViewed(viewedTorrentIds))
+            if (filterConfig.searchQuery.isNotBlank())
+                add(TorrentFilters.matchesQuery(filterConfig.searchQuery))
             if (queryParams.category != Category.All)
                 add(TorrentFilters.matchesCategory(queryParams.category))
         }
             .sortedWithComparator(sortComparator)
             .toImmutableList()
+        val torrentFilter = createBrowseViewFilters(filterConfig, torrents)
+
+        return ProcessResult(processedTorrents, torrentFilter)
+    }
+
+    suspend fun getCurrentQueryParams(): BrowseQueryParams {
+        return queryParams.first()
+    }
+
+    suspend fun getCurrentViewedTorrentIds(): Set<String> {
+        return viewedTorrentIds.firstOrNull().orEmpty()
+    }
+
+    /**
+     * Creates a [BrowseViewFilters] from the given snapshot of filter config.
+     */
+    private fun createBrowseViewFilters(
+        filterConfig: FilterConfig,
+        torrents: ImmutableList<Torrent>,
+    ): BrowseViewFilters {
+        val providerFilters = torrents
+            .map { it.providerName }
+            .distinct()
+            .map {
+                BrowseViewFilters.ProviderOption(
+                    provider = it,
+                    selected = it !in filterConfig.excludedProviders,
+                )
+            }
+
+        return BrowseViewFilters(
+            providers = providerFilters.toImmutableList(),
+            deadTorrents = filterConfig.deadTorrents,
+            hideViewed = filterConfig.hideViewed,
+        )
     }
 
     fun searchTorrents(query: String) {
-        torrentFilter.update { it.copy(searchQuery = query) }
+        filterConfig.update { it.copy(searchQuery = query) }
     }
 
     /**
      * Shows or hides search results associated with the given provider name.
      */
     fun toggleSearchProviderResults(providerName: String) {
-        torrentFilter.update {
+        filterConfig.update {
             val newExclusions = if (providerName in it.excludedProviders) {
                 // Remove from exclusion list.
                 it.excludedProviders - providerName
@@ -490,20 +478,20 @@ private class TorrentsProcessor(
      * Updates the current search providers exclusion list with the given one.
      */
     fun updateExcludedSearchProviders(providers: Set<String>) {
-        torrentFilter.update { it.copy(excludedProviders = providers) }
+        filterConfig.update { it.copy(excludedProviders = providers) }
     }
 
     /**
      * Shows or hides dead torrents.
      */
     fun toggleDeadTorrents() {
-        torrentFilter.update { it.copy(deadTorrents = !it.deadTorrents) }
+        filterConfig.update { it.copy(deadTorrents = !it.deadTorrents) }
     }
 
     /**
      * Toggles the "hide viewed" filter.
      */
     fun toggleHideViewed() {
-        torrentFilter.update { it.copy(hideViewed = !it.hideViewed) }
+        filterConfig.update { it.copy(hideViewed = !it.hideViewed) }
     }
 }
