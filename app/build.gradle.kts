@@ -1,3 +1,5 @@
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.compose)
@@ -5,6 +7,13 @@ plugins {
     alias(libs.plugins.ksp)
     alias(libs.plugins.androidx.room)
     alias(libs.plugins.koin.compiler)
+}
+
+val releaseProperties = Properties()
+val releasePropertiesFile = rootProject.file("release.properties")
+
+if (releasePropertiesFile.exists()) {
+    releaseProperties.load(releasePropertiesFile.inputStream())
 }
 
 android {
@@ -24,10 +33,20 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
+    signingConfigs {
+        create("release") {
+            storeFile = file(releaseProperties["storeFile"].toString())
+            storePassword = releaseProperties["storePassword"].toString()
+            keyAlias = releaseProperties["keyAlias"].toString()
+            keyPassword = releaseProperties["keyPassword"].toString()
+        }
+    }
+
     buildTypes {
         release {
             isMinifyEnabled = true
             isShrinkResources = true
+            signingConfig = signingConfigs.getByName("release")
 
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
