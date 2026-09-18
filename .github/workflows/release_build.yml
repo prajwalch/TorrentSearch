@@ -24,7 +24,7 @@ jobs:
         cache: gradle
 
     - name: Create keystore file
-      uses: timheuer/base64-to-file@2
+      uses: timheuer/base64-to-file@v2
       with:
         fileName: "release-keystore.jks"
         fileDir: "${{ github.workspace }}/"
