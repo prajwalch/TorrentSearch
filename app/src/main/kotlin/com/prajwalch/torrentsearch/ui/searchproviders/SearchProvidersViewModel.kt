@@ -16,7 +16,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.WhileSubscribed
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
@@ -69,21 +68,19 @@ class SearchProvidersViewModel(
 
     val uiState: StateFlow<SearchProvidersUiState> =
         combine(
-            providerInfosProcessor.filteredSearchProviderInfos,
-            providerInfosProcessor.filter,
+            providerInfosProcessor.result,
             protectionUpdateState,
             searchProviderManager.getProvidersCount(),
             settingsRepository.enabledSearchProviderIds.map { it?.size ?: 0 },
         ) {
-                searchProviderInfos,
-                filter,
+                processorResult,
                 protectionUpdateState,
                 totalNumProviders,
                 enabledProvidersCount,
             ->
             SearchProvidersUiState(
-                filter = filter,
-                searchProviders = searchProviderInfos,
+                filter = processorResult.filter,
+                searchProviders = processorResult.infos,
                 totalNumProviders = totalNumProviders,
                 enabledProvidersCount = enabledProvidersCount,
                 protectionUpdateState = protectionUpdateState,
@@ -176,29 +173,33 @@ class SearchProvidersViewModel(
 private class SearchProviderInfosProcessor(
     searchProviderInfos: Flow<List<SearchProviderInfo>>,
 ) {
+    data class ProcessResult(
+        val infos: List<SearchProviderInfo>,
+        val filter: SearchProviderFilter,
+    )
+
     private val query = MutableStateFlow("")
+    private val filter = MutableStateFlow(SearchProviderFilter())
 
-    private val _filter = MutableStateFlow(SearchProviderFilter())
-    val filter = _filter.asStateFlow()
-
-    val filteredSearchProviderInfos =
+    val result: Flow<ProcessResult> =
         combine(
             searchProviderInfos,
             query,
-            _filter,
-            ::filterSearchProviderInfos
+            filter,
+            ::processProviderInfos,
         ).flowOn(Dispatchers.Default)
 
-    private fun filterSearchProviderInfos(
+    private fun processProviderInfos(
         infos: List<SearchProviderInfo>,
         query: String,
         filter: SearchProviderFilter,
-    ): List<SearchProviderInfo> {
+    ): ProcessResult {
         val predicates = buildFilterPredicates(query, filter)
-
-        return infos.filter { info ->
+        val filteredInfos = infos.filter { info ->
             predicates.all { predicate -> predicate(info) }
         }
+
+        return ProcessResult(filteredInfos, filter)
     }
 
     private fun buildFilterPredicates(
@@ -235,11 +236,11 @@ private class SearchProviderInfosProcessor(
     }
 
     fun toggleCategory(category: Category) {
-        _filter.update { it.copy(category = category) }
+        filter.update { it.copy(category = category) }
     }
 
     fun toggleProviderProtection(protection: SearchProviderProtection) {
-        _filter.update {
+        filter.update {
             it.copy(protection = if (it.protection == protection) null else protection)
         }
     }
