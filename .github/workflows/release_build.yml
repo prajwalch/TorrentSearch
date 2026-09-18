@@ -60,7 +60,7 @@ jobs:
         subject-path: 'app/build/outputs/apk/release/app-release.apk'
 
     - name: Upload APK, R8 mapping, checksum & attestation
-      uses: actions/upload-artifact@7.0.1
+      uses: actions/upload-artifact@v7.0.1
       with:
         name: torrentsearch-release-aritifacts
         path: |
