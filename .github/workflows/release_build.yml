@@ -30,23 +30,15 @@ jobs:
         fileDir: "${{ github.workspace }}/"
         encodedString: ${{ secrets.KEYSTORE_FILE_BASE64 }}
 
-    - name: Create release.properties file
-      env:
-        RELEASE_PROPERTIES_PATH: ${{ github.workspace }}/release.properties
-        KEYSTORE_FILE: ${{ github.workspace }}/release-keystore.jks
-        KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
-        KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
-        KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
-      run: |
-        echo "storeFile=$KEYSTORE_FILE" > $RELEASE_PROPERTIES_PATH
-        echo "storePassword=$KEYSTORE_PASSWORD" >> $RELEASE_PROPERTIES_PATH
-        echo "keyAlias=$KEY_ALIAS" >> $RELEASE_PROPERTIES_PATH
-        echo "keyPassword=$KEY_PASSWORD" >> $RELEASE_PROPERTIES_PATH
-
     - name: Grant execute permission for gradlew
       run: chmod +x gradlew
 
     - name: Assemble release APK with gradlew
+      env:
+        SIGNING_STORE_FILE: ${{ github.workspace }}/release-keystore.jks
+        SIGNING_STORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+        SIGNING_KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+        SIGNING_KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
       run: ./gradlew app:assembleRelease
 
     - name: Generate SHA-256 checksum
@@ -75,4 +67,4 @@ jobs:
 
     - name: Post-cleanup
       if: always()
-      run: rm -rf release.properties release-keystore.jks
+      run: rm -rf release-keystore.jks

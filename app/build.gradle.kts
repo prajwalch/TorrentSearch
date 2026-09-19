@@ -1,5 +1,3 @@
-import java.util.Properties
-
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.compose)
@@ -7,13 +5,6 @@ plugins {
     alias(libs.plugins.ksp)
     alias(libs.plugins.androidx.room)
     alias(libs.plugins.koin.compiler)
-}
-
-val releaseProperties = Properties()
-val releasePropertiesFile = rootProject.file("release.properties")
-
-if (releasePropertiesFile.exists()) {
-    releaseProperties.load(releasePropertiesFile.inputStream())
 }
 
 android {
@@ -35,10 +26,10 @@ android {
 
     signingConfigs {
         create("release") {
-            storeFile = releaseProperties["storeFile"]?.toString()?.let(::file)
-            storePassword = releaseProperties["storePassword"]?.toString()
-            keyAlias = releaseProperties["keyAlias"]?.toString()
-            keyPassword = releaseProperties["keyPassword"]?.toString()
+            storeFile = System.getenv("SIGNING_STORE_FILE")?.let(::file)
+            storePassword = System.getenv("SIGNING_STORE_PASSWORD")
+            keyAlias = System.getenv("SIGNING_KEY_ALIAS")
+            keyPassword = System.getenv("SIGNING_KEY_PASSWORD")
         }
     }
 
