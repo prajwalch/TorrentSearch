@@ -1,0 +1,43 @@
+name: Build staging APK
+
+on:
+  push:
+    branches: [ "main" ]
+    paths-ignore:
+      - 'README.md'
+      - 'CHANGELOG.md'
+      - 'fastlane/*'
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v7.0.1
+        
+    - name: Set up JDK 17
+      uses: actions/setup-java@v6.0.1
+      with:
+        java-version: '17'
+        distribution: 'temurin'
+        cache: gradle
+
+    - name: Grant execute permission for gradlew
+      run: chmod +x gradlew
+
+    - name: Assemble staging APK with gradlew
+      run: ./gradlew app:assembleStaging
+
+    - name: Rename APK file to torrentsearch-staging.apk
+      run: |
+        cd app/build/outputs/apk/staging
+        mv app-staging.apk torrentsearch-staging.apk
+
+    - name: Upload staging APK
+      uses: actions/upload-artifact@v7.0.1
+      with:
+        path: app/build/outputs/apk/staging/torrentsearch-staging.apk
+        archive: false
