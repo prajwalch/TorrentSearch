@@ -35,10 +35,10 @@ android {
 
     signingConfigs {
         create("release") {
-            storeFile = file(releaseProperties["storeFile"].toString())
-            storePassword = releaseProperties["storePassword"].toString()
-            keyAlias = releaseProperties["keyAlias"].toString()
-            keyPassword = releaseProperties["keyPassword"].toString()
+            storeFile = releaseProperties["storeFile"]?.toString()?.let(::file)
+            storePassword = releaseProperties["storePassword"]?.toString()
+            keyAlias = releaseProperties["keyAlias"]?.toString()
+            keyPassword = releaseProperties["keyPassword"]?.toString()
         }
     }
 
@@ -46,7 +46,7 @@ android {
         release {
             isMinifyEnabled = true
             isShrinkResources = true
-            signingConfig = signingConfigs.getByName("release")
+            signingConfig = signingConfigs.getByName("release").takeIf { it.storeFile != null }
 
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
