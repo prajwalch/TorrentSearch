@@ -85,6 +85,7 @@ android {
 
     packaging {
         resources.excludes += "DebugProbesKt.bin"
+        jniLibs.keepDebugSymbols.add("**/*.so")
     }
 }
 
