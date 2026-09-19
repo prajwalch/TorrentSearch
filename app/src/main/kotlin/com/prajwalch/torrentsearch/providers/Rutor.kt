@@ -113,11 +113,16 @@ private class RutorResultsPageParser(
             .select(LIST_ITEM)
             .drop(1)
             .mapNotNull { parseListItem(it, searchCategory) }
+            .distinctBy { it.id }
     }
 
     private fun parseListItem(listItem: Element, searchCategory: Category): Torrent? {
         val torrentName = listItem.selectFirst(TORRENT_NAME)?.ownText() ?: return null
         val magnetUri = listItem.selectFirst(MAGNET_URI)?.attr("href") ?: return null
+        val torrentId = TorrentUtils.createTorrentId(
+            providerId = providerId,
+            sourceId = TorrentUtils.getInfoHashFromMagnetUri(magnetUri),
+        )
         val size = listItem.selectFirst(SIZE)?.ownText()
         val seeders = listItem.selectFirst(SEEDERS)?.ownText()?.toUIntOrNull()
         val peers = listItem.selectFirst(PEERS)?.ownText()?.toUIntOrNull()
@@ -127,11 +132,6 @@ private class RutorResultsPageParser(
             ?.let { TorrentDateParser.parse(date = it, format = "dd MMM yy") }
         val fileDownloadLink = listItem.selectFirst(FILE_DOWNLOAD_LINK)?.attr("abs:href")
         val detailsPageUrl = listItem.selectFirst(DETAILS_PAGE_URL)?.attr("abs:href")
-
-        val torrentId = TorrentUtils.createTorrentId(
-            providerId = providerId,
-            sourceId = detailsPageUrl ?: TorrentUtils.getInfoHashFromMagnetUri(magnetUri),
-        )
 
         return Torrent(
             id = torrentId,
