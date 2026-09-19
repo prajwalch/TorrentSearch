@@ -20,12 +20,13 @@ class TorrentSearchExceptionHandler(
     }
 
     private fun startGivenActivity(exception: Throwable) {
-        val crashIntent = Intent(context, activityToLaunch).apply {
-            addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK)
-            putExtra(EXTRA_CRASH_STACKTRACE, exception.stackTraceToString())
-        }
-        context.startActivity(crashIntent)
+        val targetActivityIntent = Intent(context, activityToLaunch)
+        val restartIntent = Intent.makeRestartActivityTask(targetActivityIntent.component)
+            .apply {
+                putExtra(EXTRA_CRASH_STACKTRACE, exception.stackTraceToString())
+            }
 
+        context.startActivity(restartIntent)
         Log.d(TAG, "${activityToLaunch.simpleName} started successfully")
     }
 
