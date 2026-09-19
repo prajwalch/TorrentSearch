@@ -1,6 +1,6 @@
 [versions]
 activityCompose = "1.13.0"
-agp = "9.4.0"
+agp = "9.4.1"
 coil = "3.6.2"
 composeBom = "2026.09.00"
 composeMarkdown = "0.7.0"
