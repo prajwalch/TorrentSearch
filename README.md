@@ -53,8 +53,7 @@ with fast search speed, detailed results, category filters, a full set of torren
 > [!NOTE]
 > TorrentSearch requires Android 7.1 or newer.
 >
-> Nightly builds are available in the artifacts section of GitHub
-> [Actions](https://github.com/prajwalch/TorrentSearch/actions) workflow runs.
+> Nightly builds are available in the [Actions workflow](https://github.com/prajwalch/TorrentSearch/actions/workflows/staging_build.yml) runs.
 > They are generated automatically for each commit and may be unstable.
 
 [<img src="https://gitlab.com/IzzyOnDroid/repo/-/raw/master/assets/IzzyOnDroid.png" alt="Get it on IzzyOnDroid" height="80">](https://apt.izzysoft.de/fdroid/index/apk/com.prajwalch.torrentsearch)
