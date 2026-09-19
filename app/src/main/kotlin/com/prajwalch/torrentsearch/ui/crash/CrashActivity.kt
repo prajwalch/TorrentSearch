@@ -52,9 +52,10 @@ class CrashActivity : ComponentActivity() {
     }
 
     private fun restartApplication() {
-        finishAffinity()
-
         val mainActivityIntent = Intent(this, MainActivity::class.java)
-        startActivity(mainActivityIntent)
+        val restartIntent = Intent.makeRestartActivityTask(mainActivityIntent.component)
+
+        startActivity(restartIntent)
+        finishAffinity()
     }
 }
