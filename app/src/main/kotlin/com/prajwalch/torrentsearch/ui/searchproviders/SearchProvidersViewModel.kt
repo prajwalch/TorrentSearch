@@ -163,9 +163,10 @@ class SearchProvidersViewModel(
         providerInfosProcessor.toggleProviderProtection(protection)
     }
 
-    fun markProviderAsUnlocked(id: SearchProviderId) {
+    fun unlockAndEnableProvider(id: SearchProviderId) {
         viewModelScope.launch {
             searchProviderManager.unlockProvider(id)
+            searchProviderManager.enableProvider(id)
         }
     }
 }

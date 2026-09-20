@@ -113,7 +113,7 @@ fun SearchProvidersScreen(
             onDismiss = { protectedProvider = null },
             solverUrl = solverUrl,
             onChallengeSolved = {
-                viewModel.markProviderAsUnlocked(searchProviderId)
+                viewModel.unlockAndEnableProvider(searchProviderId)
 
                 coroutineScope.launch {
                     delay(1.seconds)
