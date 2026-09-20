@@ -39,6 +39,7 @@ class OxTorrent(private val networkClient: NetworkClient) :
         Category.Series,
     )
     override val safety = SearchProviderSafety.Safe
+    override val isCloudflareProtected = true
     override val enabledByDefault = false
 
     private val categoryMap = mapOf(
