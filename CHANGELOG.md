@@ -1,5 +1,33 @@
 # Unreleased
 
+- TokyoToshokan provider is now marked as Cloudflare-protected
+- OxTorrent provider is now marked as Cloudflare-protected
+- Fixed an issue where restarting application from the Crash screen did not work properly
+- Viewed torrents count is now displayed on the Settings screen
+- Improved performance when applying filters on the Search, Browse, and Search providers screens
+- Added [EpubLibre](https://epublibre.org) provider
+- Added [FitGirl Repacks](https://fitgirl-repacks.site) provider
+- Added [NoNameClub](https://nnmclub.to) provider
+- Improved Details screen UI
+- Added support for bookmarking torrent from the Details screen
+- Bookmarked state is now reflected on both the Search and Browse screens
+- Magnet links for torrents **that require an extra request to the details page** are now retrieved 
+only after clicking a torrent
+- `Default category` setting is now removed
+- Polished Settings screen UI and reorganized settings
+- Moved the filter search bar from the top bar to the content section on the Search, Bookmarks,
+Browse, and Search Providers screens.
+- Improved and polished app icon
+- A dialog is now shown instead of a message box on the Home screen when search providers are not
+initialized
+- Fixed a screen transition issue when initiating a search by sharing or opening text with the app.
+- Revamped search errors card UI on the Search screen
+- Last 5 recent searches are now display directly on the Home screen
+- Search histories are now grouped and displayed by creation date
+- Fixed card flashing issue on Home screen
+
+# v0.5.1
+
 ### What's new
 
 - Added support for using torrent providers that are protected by Cloudflare.
