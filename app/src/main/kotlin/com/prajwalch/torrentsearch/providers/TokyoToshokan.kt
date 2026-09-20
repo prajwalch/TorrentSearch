@@ -30,6 +30,7 @@ class TokyoToshokan(private val networkClient: NetworkClient) :
     override val id = "tokyotoshokan"
     override val name = "TokyoToshokan"
     override val url = "https://tokyotosho.info"
+    override val cloudflareSolverUrl = "$url/search.php?terms=one"
     override val supportedCategories = setOf(
         Category.Anime,
         Category.Books,
@@ -38,6 +39,7 @@ class TokyoToshokan(private val networkClient: NetworkClient) :
         Category.Other,
     )
     override val safety = SearchProviderSafety.Safe
+    override val isCloudflareProtected = true
     override val enabledByDefault = true
 
     private val categoryMap = mapOf(
