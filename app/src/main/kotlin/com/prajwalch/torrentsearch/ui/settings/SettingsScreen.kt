@@ -384,14 +384,6 @@ private fun ContentAndPrivacySection(
             )
 
             SettingsListItem(
-                onClick = { showClearViewedTorrentsDialog = true },
-                leadingIcon = painterResource(R.drawable.ic_history),
-                title = stringResource(R.string.settings_clear_viewed_torrents),
-                subtitle = stringResource(R.string.settings_clear_viewed_torrents_summary),
-                trailingContent = { Text("${uiState.viewedTorrentsCount}") },
-            )
-
-            SettingsListItem(
                 onClick = { onEnableSaveSearchHistory(!uiState.saveSearchHistory) },
                 leadingIcon = painterResource(R.drawable.ic_search_activity),
                 title = stringResource(R.string.settings_save_search_history),
@@ -415,6 +407,14 @@ private fun ContentAndPrivacySection(
                         onCheckedChange = onEnableShowSearchHistory,
                     )
                 },
+            )
+
+            SettingsListItem(
+                onClick = { showClearViewedTorrentsDialog = true },
+                leadingIcon = painterResource(R.drawable.ic_history),
+                title = stringResource(R.string.settings_clear_viewed_torrents),
+                subtitle = stringResource(R.string.settings_clear_viewed_torrents_summary),
+                trailingContent = { Text("${uiState.viewedTorrentsCount}") },
             )
         }
     }
