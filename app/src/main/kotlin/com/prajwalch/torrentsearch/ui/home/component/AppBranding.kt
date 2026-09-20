@@ -24,7 +24,7 @@ import com.prajwalch.torrentsearch.ui.theme.spaces
 @Composable
 fun AppBranding(modifier: Modifier = Modifier) {
     val originalIconSize = 108.dp
-    val finalIconSize = originalIconSize * 1.5f
+    val finalIconSize = originalIconSize * 1.3f
     // NOTE: Workaround to remove extra vertical spacing from an icon.
     val imageHeightWithoutExtraVerticalSpace = finalIconSize / 2
 
