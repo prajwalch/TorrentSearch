@@ -1,7 +1,7 @@
 package com.prajwalch.torrentsearch.ui.home
 
-import android.content.res.Configuration
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -16,15 +16,12 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 
@@ -32,7 +29,7 @@ import com.prajwalch.torrentsearch.R
 import com.prajwalch.torrentsearch.domain.model.Category
 import com.prajwalch.torrentsearch.ui.home.component.AppBranding
 import com.prajwalch.torrentsearch.ui.home.component.EnableSearchProvidersDialog
-import com.prajwalch.torrentsearch.ui.home.component.RecentSearchList
+import com.prajwalch.torrentsearch.ui.home.component.RecentSearchesCard
 import com.prajwalch.torrentsearch.ui.home.component.SearchBox
 import com.prajwalch.torrentsearch.ui.theme.spaces
 
@@ -80,9 +77,17 @@ fun HomeScreen(
                 .padding(innerPadding)
                 .fillMaxSize()
                 .verticalScroll(rememberScrollState()),
-            verticalArrangement = Arrangement.spacedBy(48.dp),
+            verticalArrangement = Arrangement.spacedBy(36.dp),
         ) {
-            Spacer(Modifier.height(MaterialTheme.spaces.extraLarge))
+            val topSpace by animateDpAsState(
+                if (uiState.recentSearches.isEmpty()) {
+                    50.dp
+                } else {
+                    MaterialTheme.spaces.large
+                }
+            )
+
+            Spacer(Modifier.height(topSpace))
 
             Column(
                 modifier = Modifier.fillMaxWidth(),
@@ -102,30 +107,19 @@ fun HomeScreen(
             }
 
             AnimatedVisibility(uiState.recentSearches.isNotEmpty()) {
-                Column(
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalArrangement = Arrangement.spacedBy(MaterialTheme.spaces.small),
-                ) {
-                    Text(
-                        modifier = Modifier.padding(horizontal = MaterialTheme.spaces.large),
-                        text = stringResource(R.string.home_title_recent_searches),
-                        color = MaterialTheme.colorScheme.primary,
-                        style = MaterialTheme.typography.titleMedium,
-                    )
-
-                    RecentSearchList(
-                        queries = uiState.recentSearches,
-                        onQueryClick = { onSearch(it, uiState.selectedCategory) },
-                    )
-                }
+                RecentSearchesCard(
+                    modifier = Modifier.padding(horizontal = MaterialTheme.spaces.large),
+                    queries = uiState.recentSearches,
+                    onQueryClick = { query -> onSearch(query, uiState.selectedCategory) },
+                )
             }
 
-            val configuration = LocalConfiguration.current
-            val isInLandscapeMode = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
+//            val configuration = LocalConfiguration.current
+//            val isInLandscapeMode = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
 
-            if (isInLandscapeMode) {
-                Spacer(Modifier.height(MaterialTheme.spaces.large))
-            }
+//            if (isInLandscapeMode) {
+            Spacer(Modifier.height(MaterialTheme.spaces.large))
+//            }
         }
     }
 }
