@@ -3,7 +3,6 @@ package com.prajwalch.torrentsearch.ui.home.component
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -17,7 +16,6 @@ import com.prajwalch.torrentsearch.R
 fun RecentSearchList(
     queries: List<String>,
     onQueryClick: (String) -> Unit,
-    onInsertQuery: (String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Column(modifier = modifier) {
@@ -25,18 +23,13 @@ fun RecentSearchList(
             RecentSearchListItem(
                 modifier = Modifier.clickable { onQueryClick(it) },
                 query = it,
-                onInsertQuery = { onInsertQuery(it) },
             )
         }
     }
 }
 
 @Composable
-private fun RecentSearchListItem(
-    query: String,
-    onInsertQuery: () -> Unit,
-    modifier: Modifier = Modifier,
-) {
+private fun RecentSearchListItem(query: String, modifier: Modifier = Modifier) {
     ListItem(
         modifier = modifier,
         leadingContent = {
@@ -46,14 +39,6 @@ private fun RecentSearchListItem(
             )
         },
         headlineContent = { Text(query) },
-        trailingContent = {
-            IconButton(onClick = onInsertQuery) {
-                Icon(
-                    painter = painterResource(R.drawable.ic_arrow_insert),
-                    contentDescription = null,
-                )
-            }
-        },
     )
 }
 
@@ -72,6 +57,5 @@ private fun RecentSearchListPreview() {
             "The hunting house on the hill",
         ),
         onQueryClick = {},
-        onInsertQuery = {},
     )
 }

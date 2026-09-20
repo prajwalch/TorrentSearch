@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.foundation.text.input.setTextAndPlaceCursorAtEnd
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -48,10 +47,10 @@ fun SearchBox(
     suggestions: List<String>,
     onFilterSuggestions: (String) -> Unit,
     modifier: Modifier = Modifier,
-    textFieldState: TextFieldState = rememberTextFieldState(),
 ) {
     val coroutineScope = rememberCoroutineScope()
     val searchBarState = rememberSearchBarState()
+    val textFieldState = rememberTextFieldState()
     val enableSearchButton by remember {
         derivedStateOf {
             textFieldState.text.isNotBlank()
