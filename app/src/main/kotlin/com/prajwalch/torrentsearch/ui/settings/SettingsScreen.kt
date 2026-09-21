@@ -426,7 +426,7 @@ private fun ContentAndPrivacySection(
 
             SettingsListItem(
                 onClick = { showClearViewedTorrentsDialog = true },
-                leadingIcon = painterResource(R.drawable.ic_history),
+                leadingIcon = painterResource(R.drawable.ic_remove_done),
                 title = stringResource(R.string.settings_clear_viewed_torrents),
                 subtitle = stringResource(R.string.settings_clear_viewed_torrents_summary),
                 trailingContent = { Text("${uiState.viewedTorrentsCount}") },
