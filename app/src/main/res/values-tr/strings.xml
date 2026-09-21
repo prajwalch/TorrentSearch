@@ -253,4 +253,6 @@
     <string name="torrent_message_file_download_complete">İndirme tamamlandı</string>
     <string name="torrent_button_save_to_file">Dosyaya kaydet</string>
     <string name="torrent_details_button_bookmark_torrent">Torrenti yer imlerine ekle</string>
+    <string name="settings_show_recent_searches">Son aramaları göster</string>
+    <string name="settings_show_recent_searches_summary">Ana ekranda son 5 aramanızı görün</string>
 </resources>
