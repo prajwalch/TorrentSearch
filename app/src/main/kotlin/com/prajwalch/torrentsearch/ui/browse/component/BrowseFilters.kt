@@ -195,7 +195,7 @@ fun BrowseFilters(
                 leadingIcon = {
                     Icon(
                         modifier = Modifier.size(FilterChipDefaults.IconSize),
-                        painter = painterResource(R.drawable.ic_travel_explore),
+                        painter = painterResource(R.drawable.ic_hub),
                         contentDescription = null,
                     )
                 },
