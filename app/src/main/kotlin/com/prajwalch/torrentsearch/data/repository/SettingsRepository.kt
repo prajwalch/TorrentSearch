@@ -65,6 +65,9 @@ class SettingsRepository(private val dataStore: DataStore<Preferences>) {
     val showSearchHistory: Flow<Boolean> =
         dataStore.getOrDefault(SHOW_SEARCH_HISTORY, true)
 
+    val showRecentSearches: Flow<Boolean> =
+        dataStore.getOrDefault(SHOW_RECENT_SEARCHES, false)
+
     /*
      * Search settings
      */
@@ -163,6 +166,10 @@ class SettingsRepository(private val dataStore: DataStore<Preferences>) {
 
     suspend fun enableShowSearchHistory(show: Boolean) {
         dataStore.setOrUpdate(SHOW_SEARCH_HISTORY, show)
+    }
+
+    suspend fun enableShowRecentSearches(show: Boolean) {
+        dataStore.setOrUpdate(SHOW_RECENT_SEARCHES, show)
     }
 
     suspend fun currentEnabledProviderIds(): Set<SearchProviderId>? =
@@ -267,6 +274,7 @@ class SettingsRepository(private val dataStore: DataStore<Preferences>) {
         val BLUR_NSFW_IMAGES = booleanPreferencesKey("blur_nsfw_images")
         val SAVE_SEARCH_HISTORY = booleanPreferencesKey("save_search_history")
         val SHOW_SEARCH_HISTORY = booleanPreferencesKey("show_search_history")
+        val SHOW_RECENT_SEARCHES = booleanPreferencesKey("show_recent_searches")
 
         // Search
         val ENABLED_SEARCH_PROVIDER_IDS = stringSetPreferencesKey("enabled_search_providers_id")

@@ -22,7 +22,7 @@ Browse, and Search Providers screens.
 initialized
 - Fixed a screen transition issue when initiating a search by sharing or opening text with the app.
 - Revamped search errors card UI on the Search screen
-- Last 5 recent searches are now display directly on the Home screen
+- Added an option to show last 5 recent searches directly on the Home screen
 - Search histories are now grouped and displayed by creation date
 - Fixed card flashing issue on Home screen
 

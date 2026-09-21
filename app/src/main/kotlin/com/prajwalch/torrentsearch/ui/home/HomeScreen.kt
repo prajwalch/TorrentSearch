@@ -47,6 +47,8 @@ fun HomeScreen(
     viewModel: HomeViewModel = koinViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val showRecentSearches =
+        uiState.settings.showRecentSearches && uiState.recentSearches.isNotEmpty()
 
     if (uiState.settings.searchProvidersInitialized == false) {
         EnableSearchProvidersDialog(
@@ -80,7 +82,7 @@ fun HomeScreen(
             verticalArrangement = Arrangement.spacedBy(36.dp),
         ) {
             val topSpace by animateDpAsState(
-                if (uiState.recentSearches.isEmpty()) {
+                if (!showRecentSearches) {
                     50.dp
                 } else {
                     MaterialTheme.spaces.large
@@ -106,11 +108,12 @@ fun HomeScreen(
                 )
             }
 
-            AnimatedVisibility(uiState.recentSearches.isNotEmpty()) {
+            AnimatedVisibility(showRecentSearches) {
                 RecentSearchesCard(
                     modifier = Modifier.padding(horizontal = MaterialTheme.spaces.large),
                     queries = uiState.recentSearches,
                     onQueryClick = { query -> onSearch(query, uiState.selectedCategory) },
+                    onClose = { viewModel.disableShowRecentSearches() },
                 )
             }
 

@@ -53,6 +53,7 @@ data class ContentAndPrivacySettingsUiState(
     val blurNSFWImages: Boolean = true,
     val saveSearchHistory: Boolean = true,
     val showSearchHistory: Boolean = true,
+    val showRecentSearches: Boolean = false,
     val viewedTorrentsCount: Int = 0,
 )
 
@@ -137,6 +138,12 @@ class SettingsViewModel(
     fun enableShowSearchHistory(show: Boolean) {
         viewModelScope.launch {
             settingsRepository.enableShowSearchHistory(show = show)
+        }
+    }
+
+    fun enableShowRecentSearches(enable: Boolean) {
+        viewModelScope.launch {
+            settingsRepository.enableShowRecentSearches(enable)
         }
     }
 
@@ -233,9 +240,18 @@ private fun getContentAndPrivacySettings(
         settingsRepository.blurNSFWImages,
         settingsRepository.saveSearchHistory,
         settingsRepository.showSearchHistory,
+        settingsRepository.showRecentSearches,
         viewedTorrentRepository.getViewedTorrentsCount(),
-        ::ContentAndPrivacySettingsUiState,
-    )
+    ) { args: Array<Any> ->
+        ContentAndPrivacySettingsUiState(
+            enableNSFWMode = args[0] as Boolean,
+            blurNSFWImages = args[1] as Boolean,
+            saveSearchHistory = args[2] as Boolean,
+            showSearchHistory = args[3] as Boolean,
+            showRecentSearches = args[4] as Boolean,
+            viewedTorrentsCount = args[5] as Int,
+        )
+    }
 
 private fun SettingsRepository.getSearchSettings(
     searchProvidersCount: Flow<Int>,

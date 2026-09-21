@@ -35,6 +35,7 @@ data class HomeUiState(
 data class HomeRelevantSettings(
     val searchHistoryEnabled: Boolean = true,
     val searchProvidersInitialized: Boolean? = null,
+    val showRecentSearches: Boolean = false,
 )
 
 /**
@@ -43,8 +44,8 @@ data class HomeRelevantSettings(
 @KoinViewModel
 class HomeViewModel(
     searchHistoryRepository: SearchHistoryRepository,
-    settingsRepository: SettingsRepository,
     private val searchProviderManager: SearchProviderManager,
+    private val settingsRepository: SettingsRepository,
 ) : ViewModel() {
     /**
      * The internal source for the current search query used only for
@@ -94,12 +95,9 @@ class HomeViewModel(
         combine(
             settingsRepository.saveSearchHistory,
             settingsRepository.searchProvidersInitialized,
-        ) { searchHistoryEnabled, searchProvidersInitialized ->
-            HomeRelevantSettings(
-                searchHistoryEnabled = searchHistoryEnabled,
-                searchProvidersInitialized = searchProvidersInitialized,
-            )
-        }
+            settingsRepository.showRecentSearches,
+            ::HomeRelevantSettings,
+        )
 
     /**
      * The primary read-only UI state.
@@ -159,6 +157,12 @@ class HomeViewModel(
     fun skipDefaultSearchProviders() {
         viewModelScope.launch {
             searchProviderManager.skipDefaultSearchProviders()
+        }
+    }
+
+    fun disableShowRecentSearches() {
+        viewModelScope.launch {
+            settingsRepository.enableShowRecentSearches(false)
         }
     }
 }

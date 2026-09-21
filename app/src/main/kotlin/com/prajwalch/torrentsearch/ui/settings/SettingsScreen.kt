@@ -123,9 +123,10 @@ fun SettingsScreen(
                 uiState = uiState.contentAndPrivacySettings,
                 onEnableNSFWMode = viewModel::enableNSFWMode,
                 onEnableBlurNSFWImages = viewModel::enableBlurNSFWImages,
-                onClearViewedTorrents = viewModel::clearViewedTorrents,
                 onEnableSaveSearchHistory = viewModel::enableSaveSearchHistory,
                 onEnableShowSearchHistory = viewModel::enableShowSearchHistory,
+                onEnableShowRecentSearches = viewModel::enableShowRecentSearches,
+                onClearViewedTorrents = viewModel::clearViewedTorrents,
             )
 
             SearchSection(
@@ -334,9 +335,10 @@ private fun ContentAndPrivacySection(
     uiState: ContentAndPrivacySettingsUiState,
     onEnableNSFWMode: (Boolean) -> Unit,
     onEnableBlurNSFWImages: (Boolean) -> Unit,
-    onClearViewedTorrents: () -> Unit,
     onEnableSaveSearchHistory: (Boolean) -> Unit,
     onEnableShowSearchHistory: (Boolean) -> Unit,
+    onEnableShowRecentSearches: (Boolean) -> Unit,
+    onClearViewedTorrents: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     var showClearViewedTorrentsDialog by rememberSaveable { mutableStateOf(false) }
@@ -405,6 +407,19 @@ private fun ContentAndPrivacySection(
                     Switch(
                         checked = uiState.showSearchHistory,
                         onCheckedChange = onEnableShowSearchHistory,
+                    )
+                },
+            )
+
+            SettingsListItem(
+                onClick = { onEnableShowRecentSearches(!uiState.showRecentSearches) },
+                leadingIcon = painterResource(R.drawable.ic_history),
+                title = stringResource(R.string.settings_show_recent_searches),
+                subtitle = stringResource(R.string.settings_show_recent_searches_summary),
+                trailingContent = {
+                    Switch(
+                        checked = uiState.showRecentSearches,
+                        onCheckedChange = onEnableShowRecentSearches,
                     )
                 },
             )
