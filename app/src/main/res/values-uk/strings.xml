@@ -54,9 +54,9 @@
     <string name="settings_show_search_history">Показати історію пошуку</string>
     <string name="settings_show_search_history_summary">Показати історію в панелі пошуку</string>
     <string name="settings_enable_share_integration">Інтеграція поширення</string>
-    <string name="settings_enable_share_integration_summary">Додає програму в меню поширення.</string>
+    <string name="settings_enable_share_integration_summary">Додає програму в меню поширення</string>
     <string name="settings_enable_quick_search">Швидкий пошук</string>
-    <string name="settings_enable_quick_search_summary">Додає програму до меню вибору тексту (поруч із «Копіювати» й «Вирізати»).</string>
+    <string name="settings_enable_quick_search_summary">Додає програму до меню вибору тексту (поруч із «Копіювати» й «Вирізати»)</string>
     <string name="settings_version">Версія</string>
     <string name="settings_source_code">Вихідний код</string>
     <string name="search_providers_screen_title">Пошукові системи</string>
@@ -103,7 +103,7 @@
     <string name="settings_dark_theme_on">Увімкнена</string>
     <string name="settings_dark_theme_off">Вимкнена</string>
     <string name="settings_dark_theme_follow_system">Системна</string>
-    <string name="settings_enable_nsfw_mode_summary">Вимкніть, щоб сховати чутливі категорії й результати пошуку.</string>
+    <string name="settings_enable_nsfw_mode_summary">Вимкніть, щоб сховати чутливі категорії й результати пошуку</string>
     <string name="search_history_query_copied_message">Запит скопійовано в буфер обміну!</string>
     <string name="bookmarks_dialog_title_delete_all">Видалити всі закладки?</string>
     <string name="bookmarks_dialog_message_delete_all">Закладки будуть вилучені назавжди</string>
@@ -241,4 +241,20 @@
     <string name="search_history_today">Сьогодні</string>
     <string name="search_history_yesterday">Учора</string>
     <string name="search_providers_search_hint">Пошукові системи</string>
+    <string name="torrent_message_getting_magnet_link">Отримання magnet-посилання…</string>
+    <string name="torrent_message_failed_to_get_magnet_link">Не вдалось отримати magnet-посилання</string>
+    <string name="torrent_message_file_download_complete">Завантаження завершено</string>
+    <string name="torrent_button_save_to_file">Зберегти до файлу</string>
+    <string name="home_title_enable_search_providers">Увімкнути пошукові системи</string>
+    <string name="home_title_recent_searches">Недавні пошуки</string>
+    <string name="search_error_crashed">Збій</string>
+    <string name="search_error_cloudflare_challenge_encountered">CloudFlare вимагає перевірки</string>
+    <string name="search_title_stack_trace">Трасування стеку</string>
+    <string name="search_message_no_stack_trace">Трасування стеку не знайдено</string>
+    <string name="torrent_details_button_bookmark_torrent">Уподобати торент</string>
+    <string name="bookmarks_no_bookmarks_matched">Уподобань не знайдено</string>
+    <string name="settings_group_content_and_privacy">Вміст і приватність</string>
+    <string name="settings_show_recent_searches">Недавні пошуки</string>
+    <string name="settings_show_recent_searches_summary">Показати останні 5 пошуків на головному екрані</string>
+    <string name="settings_group_network">Мережа</string>
 </resources>
