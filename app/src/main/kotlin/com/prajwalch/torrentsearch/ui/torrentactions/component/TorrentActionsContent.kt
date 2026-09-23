@@ -233,21 +233,13 @@ private fun MagnetLinkActionItem(
         },
         supportingContent = {
             Crossfade(magnetUriState) { targetState ->
-                val textResId = when (targetState) {
-                    MagnetUriState.Loading -> R.string.torrent_message_getting_magnet_link
-                    MagnetUriState.Error -> R.string.torrent_message_failed_to_get_magnet_link
-                    is MagnetUriState.Ready -> R.string.torrent_message_tap_to_open_magnet_link
-                }
-
-                val textColor = if (targetState == MagnetUriState.Error) {
-                    MaterialTheme.colorScheme.error
-                } else {
-                    LocalContentColor.current
-                }
-
                 Text(
-                    text = stringResource(textResId),
-                    color = textColor,
+                    text = targetState.displayName(),
+                    color = if (targetState == MagnetUriState.Error) {
+                        MaterialTheme.colorScheme.error
+                    } else {
+                        LocalContentColor.current
+                    },
                     style = MaterialTheme.typography.bodySmall,
                 )
             }
@@ -279,6 +271,17 @@ private fun MagnetLinkActionItem(
         },
         colors = ListItemDefaults.colors(enabled = true),
     )
+}
+
+@Composable
+private fun MagnetUriState.displayName(): String {
+    val resId = when (this) {
+        MagnetUriState.Loading -> R.string.torrent_message_getting_magnet_link
+        MagnetUriState.Error -> R.string.torrent_message_failed_to_get_magnet_link
+        is MagnetUriState.Ready -> R.string.torrent_message_tap_to_open_magnet_link
+    }
+
+    return stringResource(resId)
 }
 
 @Composable
