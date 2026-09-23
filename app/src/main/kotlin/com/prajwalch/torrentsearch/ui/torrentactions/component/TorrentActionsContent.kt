@@ -226,7 +226,6 @@ private fun MagnetLinkActionItem(
                         Icon(
                             painter = painterResource(R.drawable.ic_magnet),
                             contentDescription = null,
-                            tint = MaterialTheme.colorScheme.primary,
                         )
                     }
                 }
@@ -288,6 +287,7 @@ private fun MagnetLinkActionItem(
                 }
             }
         },
+        colors = ListItemDefaults.colors(enabled = true),
     )
 }
 
@@ -322,11 +322,6 @@ private fun TorrentFileActionItem(
                         Icon(
                             painter = painterResource(R.drawable.ic_download),
                             contentDescription = null,
-                            tint = if (targetState is TorrentFileLinkState.Ready) {
-                                MaterialTheme.colorScheme.primary
-                            } else {
-                                LocalContentColor.current
-                            },
                         )
                     }
                 }
@@ -347,7 +342,9 @@ private fun TorrentFileActionItem(
                 )
             }
         },
-        colors = ListItemDefaults.colors(linkState != TorrentFileLinkState.Unavailable),
+        colors = ListItemDefaults.colors(
+            enabled = linkState != TorrentFileLinkState.Unavailable,
+        ),
     )
 }
 
@@ -379,11 +376,6 @@ private fun DetailsPageActionItem(
             Icon(
                 painter = painterResource(R.drawable.ic_link),
                 contentDescription = null,
-                tint = if (enabled) {
-                    MaterialTheme.colorScheme.primary
-                } else {
-                    LocalContentColor.current
-                },
             )
         },
         headlineContent = {
@@ -424,14 +416,16 @@ private fun DetailsPageActionItem(
                 }
             }
         },
-        colors = ListItemDefaults.colors(enabled = enabled),
+        colors = ListItemDefaults.colors(enabled),
     )
 }
 
 @Composable
 private fun ListItemDefaults.colors(enabled: Boolean): ListItemColors {
     return if (enabled) {
-        colors()
+        colors(
+            leadingIconColor = MaterialTheme.colorScheme.primary,
+        )
     } else {
         with(colors()) {
             copy(
