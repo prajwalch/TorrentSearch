@@ -257,4 +257,13 @@
     <string name="settings_show_recent_searches">Недавні пошуки</string>
     <string name="settings_show_recent_searches_summary">Показати останні 5 пошуків на головному екрані</string>
     <string name="settings_group_network">Мережа</string>
+    <string name="torrent_title_magnet_link">Magnet-посилання</string>
+    <string name="torrent_title_torrent_file">Торент-файл</string>
+    <string name="torrent_title_details_page">Сторінка подробиць</string>
+    <string name="torrent_message_tap_to_open_magnet_link">Натисніть, щоб відкрити в торент-клієнті</string>
+    <string name="torrent_message_preparing_download_link">Підготовка посилання для завантаження…</string>
+    <string name="torrent_message_waiting_magnet_link">Очікування на magnet-посилання…</string>
+    <string name="torrent_message_tap_to_download_file">Натисніть, щоб почати завантаження</string>
+    <string name="torrent_message_tap_to_open_details">Натисніть, щоб дізнатися більше</string>
+    <string name="torrent_message_not_available">Недоступно</string>
 </resources>
