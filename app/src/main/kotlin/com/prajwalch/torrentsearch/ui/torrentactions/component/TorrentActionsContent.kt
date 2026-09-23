@@ -206,12 +206,7 @@ private fun MagnetLinkActionItem(
             Crossfade(magnetUriState) { targetState ->
                 when (targetState) {
                     MagnetUriState.Loading, MagnetUriState.Fetching -> {
-                        CircularProgressIndicator(
-                            modifier = Modifier.size(24.dp),
-                            color = MaterialTheme.colorScheme.onPrimaryContainer,
-                            trackColor = MaterialTheme.colorScheme.primaryContainer,
-                            strokeWidth = 2.0.dp,
-                        )
+                        LoadingIndicator()
                     }
 
                     MagnetUriState.Error -> {
@@ -309,14 +304,7 @@ private fun TorrentFileActionItem(
                 when (targetState) {
                     TorrentFileLinkState.Preparing,
                     TorrentFileLinkState.WaitingForMagnetUri,
-                        -> {
-                        CircularProgressIndicator(
-                            modifier = Modifier.size(24.dp),
-                            color = MaterialTheme.colorScheme.onPrimaryContainer,
-                            trackColor = MaterialTheme.colorScheme.primaryContainer,
-                            strokeWidth = 2.0.dp,
-                        )
-                    }
+                        -> LoadingIndicator()
 
                     else -> {
                         Icon(
@@ -417,6 +405,16 @@ private fun DetailsPageActionItem(
             }
         },
         colors = ListItemDefaults.colors(enabled),
+    )
+}
+
+@Composable
+private fun LoadingIndicator(modifier: Modifier = Modifier) {
+    CircularProgressIndicator(
+        modifier = modifier.size(24.dp),
+        color = MaterialTheme.colorScheme.onPrimaryContainer,
+        trackColor = MaterialTheme.colorScheme.primaryContainer,
+        strokeWidth = 2.0.dp,
     )
 }
 
