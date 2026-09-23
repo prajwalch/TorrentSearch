@@ -36,13 +36,13 @@ import com.prajwalch.torrentsearch.constant.TorrentSearchConstants
 import com.prajwalch.torrentsearch.ui.component.ContentState
 import com.prajwalch.torrentsearch.ui.component.ContentStateDefaults
 import com.prajwalch.torrentsearch.ui.theme.spaces
-import com.prajwalch.torrentsearch.ui.torrentactions.TorrentFileState
+import com.prajwalch.torrentsearch.ui.torrentactions.TorrentFileDownloadState
 
 import java.io.OutputStream
 
 @Composable
 fun TorrentFileDownloadContent(
-    state: TorrentFileState,
+    state: TorrentFileDownloadState,
     onWriteFileContent: (OutputStream) -> Unit,
     onCloseSheet: () -> Unit,
     onGoBack: () -> Unit,
@@ -58,7 +58,7 @@ fun TorrentFileDownloadContent(
     }
 
     SideEffect(state) {
-        if (state is TorrentFileState.DownloadComplete) {
+        if (state is TorrentFileDownloadState.DownloadComplete) {
             createTorrentFileLauncher.launch(state.fileName)
         }
     }
@@ -92,18 +92,18 @@ fun TorrentFileDownloadContent(
 
         Crossfade(modifier = Modifier.height(400.dp), targetState = state) { targetState ->
             when (targetState) {
-                is TorrentFileState.DownloadComplete -> {
+                is TorrentFileDownloadState.DownloadComplete -> {
                     FileDownloadCompleteState(
                         modifier = Modifier.fillMaxSize(),
                         onSaveFile = { createTorrentFileLauncher.launch(targetState.fileName) },
                     )
                 }
 
-                TorrentFileState.Downloading -> DownloadingState(Modifier.fillMaxSize())
-                TorrentFileState.DownloadFailed -> DownloadFailedState(Modifier.fillMaxSize())
-                TorrentFileState.FileNotFound -> FileNotFoundState(Modifier.fillMaxSize())
-                TorrentFileState.WritingContent -> FileSavingState(Modifier.fillMaxSize())
-                TorrentFileState.WriteComplete -> SaveCompleteState(Modifier.fillMaxSize())
+                TorrentFileDownloadState.Downloading -> DownloadingState(Modifier.fillMaxSize())
+                TorrentFileDownloadState.DownloadFailed -> DownloadFailedState(Modifier.fillMaxSize())
+                TorrentFileDownloadState.FileNotFound -> FileNotFoundState(Modifier.fillMaxSize())
+                TorrentFileDownloadState.WritingContent -> FileSavingState(Modifier.fillMaxSize())
+                TorrentFileDownloadState.WriteComplete -> SaveCompleteState(Modifier.fillMaxSize())
             }
         }
     }

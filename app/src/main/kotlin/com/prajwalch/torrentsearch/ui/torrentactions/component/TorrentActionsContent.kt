@@ -45,15 +45,17 @@ import com.prajwalch.torrentsearch.ui.extension.toRelativeTimeSpanString
 import com.prajwalch.torrentsearch.ui.iconResId
 import com.prajwalch.torrentsearch.ui.theme.spaces
 import com.prajwalch.torrentsearch.ui.torrentactions.MagnetUriState
+import com.prajwalch.torrentsearch.ui.torrentactions.TorrentFileLinkState
 
 @Composable
 fun TorrentActionsContent(
     torrent: Torrent,
     magnetUriState: MagnetUriState,
+    torrentFileLinkState: TorrentFileLinkState,
     isTorrentBookmarked: Boolean,
     onToggleBookmark: (Boolean) -> Unit,
     onOpenMagnetLink: (String) -> Unit,
-    onDownloadTorrentFile: (String?) -> Unit,
+    onDownloadTorrentFile: (String) -> Unit,
     onCopyMagnetLink: (String) -> Unit,
     onShareMagnetLink: (String) -> Unit,
     onOpenTorrentDetails: () -> Unit,
@@ -89,8 +91,7 @@ fun TorrentActionsContent(
             )
 
             TorrentFileActionItem(
-                hasFileDownloadLink = !torrent.fileDownloadLink.isNullOrBlank(),
-                magnetUriState = magnetUriState,
+                linkState = torrentFileLinkState,
                 onDownloadTorrentFile = onDownloadTorrentFile,
             )
 
@@ -292,56 +293,41 @@ private fun MagnetLinkActionItem(
 
 @Composable
 private fun TorrentFileActionItem(
-    hasFileDownloadLink: Boolean,
-    magnetUriState: MagnetUriState,
-    onDownloadTorrentFile: (String?) -> Unit,
+    linkState: TorrentFileLinkState,
+    onDownloadTorrentFile: (String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     ListItem(
         modifier = modifier
             .clip(MaterialTheme.shapes.large)
-            .clickable(enabled = hasFileDownloadLink || magnetUriState is MagnetUriState.Ready) {
-                if (hasFileDownloadLink) {
-                    onDownloadTorrentFile(null)
-                } else {
-                    require(magnetUriState is MagnetUriState.Ready)
-                    onDownloadTorrentFile(magnetUriState.value)
-                }
+            .clickable(enabled = linkState is TorrentFileLinkState.Ready) {
+                require(linkState is TorrentFileLinkState.Ready)
+                onDownloadTorrentFile(linkState.value)
             },
         leadingContent = {
-            if (hasFileDownloadLink) {
-                Icon(
-                    painter = painterResource(R.drawable.ic_magnet),
-                    contentDescription = null,
-                    tint = MaterialTheme.colorScheme.primary,
-                )
-            } else {
-                Crossfade(magnetUriState) { targetState ->
-                    when (targetState) {
-                        MagnetUriState.Loading, MagnetUriState.Fetching -> {
-                            CircularProgressIndicator(
-                                modifier = Modifier.size(24.dp),
-                                color = MaterialTheme.colorScheme.onPrimaryContainer,
-                                trackColor = MaterialTheme.colorScheme.primaryContainer,
-                                strokeWidth = 2.0.dp,
-                            )
-                        }
+            Crossfade(linkState) { targetState ->
+                when (targetState) {
+                    TorrentFileLinkState.Preparing,
+                    TorrentFileLinkState.WaitingForMagnetUri,
+                        -> {
+                        CircularProgressIndicator(
+                            modifier = Modifier.size(24.dp),
+                            color = MaterialTheme.colorScheme.onPrimaryContainer,
+                            trackColor = MaterialTheme.colorScheme.primaryContainer,
+                            strokeWidth = 2.0.dp,
+                        )
+                    }
 
-                        MagnetUriState.Error -> {
-                            Icon(
-                                painter = painterResource(R.drawable.ic_error),
-                                contentDescription = null,
-                                tint = MaterialTheme.colorScheme.error,
-                            )
-                        }
-
-                        is MagnetUriState.Ready -> {
-                            Icon(
-                                painter = painterResource(R.drawable.ic_download),
-                                contentDescription = null,
-                                tint = MaterialTheme.colorScheme.primary,
-                            )
-                        }
+                    else -> {
+                        Icon(
+                            painter = painterResource(R.drawable.ic_download),
+                            contentDescription = null,
+                            tint = if (targetState is TorrentFileLinkState.Ready) {
+                                MaterialTheme.colorScheme.primary
+                            } else {
+                                LocalContentColor.current
+                            },
+                        )
                     }
                 }
             }
@@ -354,40 +340,27 @@ private fun TorrentFileActionItem(
             )
         },
         supportingContent = {
-            if (hasFileDownloadLink) {
+            Crossfade(linkState) { targetState ->
                 Text(
-                    text = stringResource(R.string.torrent_message_tap_to_download_file),
+                    text = targetState.displayName(),
                     style = MaterialTheme.typography.bodySmall,
                 )
-            } else {
-                Crossfade(magnetUriState) { targetState ->
-                    when (targetState) {
-                        MagnetUriState.Loading, MagnetUriState.Fetching -> {
-                            Text(
-                                text = stringResource(R.string.torrent_message_getting_magnet_link),
-                                style = MaterialTheme.typography.bodySmall,
-                            )
-                        }
-
-                        MagnetUriState.Error -> {
-                            Text(
-                                text = stringResource(R.string.torrent_message_failed_to_get_magnet_link),
-                                color = MaterialTheme.colorScheme.error,
-                                style = MaterialTheme.typography.bodySmall,
-                            )
-                        }
-
-                        is MagnetUriState.Ready -> {
-                            Text(
-                                text = stringResource(R.string.torrent_message_tap_to_download_file),
-                                style = MaterialTheme.typography.bodySmall,
-                            )
-                        }
-                    }
-                }
             }
         },
+        colors = ListItemDefaults.colors(linkState != TorrentFileLinkState.Unavailable),
     )
+}
+
+@Composable
+private fun TorrentFileLinkState.displayName(): String {
+    val resId = when (this) {
+        TorrentFileLinkState.Preparing -> R.string.torrent_message_preparing_download_link
+        TorrentFileLinkState.WaitingForMagnetUri -> R.string.torrent_message_waiting_magnet_link
+        TorrentFileLinkState.Unavailable -> R.string.torrent_message_not_available
+        is TorrentFileLinkState.Ready -> R.string.torrent_message_tap_to_download_file
+    }
+
+    return stringResource(resId)
 }
 
 @Composable
@@ -424,7 +397,7 @@ private fun DetailsPageActionItem(
             val textResId = if (enabled) {
                 R.string.torrent_message_tap_to_open_details
             } else {
-                R.string.torrent_message_details_page_not_available
+                R.string.torrent_message_not_available
             }
 
             Text(

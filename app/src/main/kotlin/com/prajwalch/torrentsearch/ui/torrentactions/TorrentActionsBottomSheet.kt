@@ -45,7 +45,8 @@ fun TorrentActionsBottomSheet(
     ),
 ) {
     val magnetUriState by viewModel.magnetUriState.collectAsStateWithLifecycle()
-    val torrentFileState by viewModel.torrentFileState.collectAsStateWithLifecycle()
+    val torrentFileLinkState by viewModel.torrentFileLinkState.collectAsStateWithLifecycle()
+    val torrentFileDownloadState by viewModel.torrentFileDownloadState.collectAsStateWithLifecycle()
     val isTorrentBookmarked by viewModel.isTorrentBookmarked.collectAsStateWithLifecycle()
     val openTorrentDetailsInApp by viewModel.openTorrentDetailsInApp.collectAsStateWithLifecycle()
 
@@ -77,10 +78,10 @@ fun TorrentActionsBottomSheet(
         sheetState = sheetState,
     ) {
         AnimatedContent(
-            targetState = torrentFileState,
-            contentKey = { it?.let { TorrentFileState::class } },
-        ) { targetTorrentFileState ->
-            if (targetTorrentFileState == null) {
+            targetState = torrentFileDownloadState,
+            contentKey = { it?.let { TorrentFileDownloadState::class } },
+        ) { targetTorrentFileDownloadState ->
+            if (targetTorrentFileDownloadState == null) {
                 TorrentActionsContent(
                     modifier = Modifier.animateEnterExit(
                         enter = slideInHorizontally { fullWidth -> -fullWidth },
@@ -88,6 +89,7 @@ fun TorrentActionsBottomSheet(
                     ),
                     torrent = torrent,
                     magnetUriState = magnetUriState,
+                    torrentFileLinkState = torrentFileLinkState,
                     isTorrentBookmarked = isTorrentBookmarked,
                     onToggleBookmark = { viewModel.toggleBookmark(it) },
                     onOpenMagnetLink = { magnetUri ->
@@ -134,7 +136,7 @@ fun TorrentActionsBottomSheet(
                         enter = slideInHorizontally { fullWidth -> fullWidth },
                         exit = slideOutHorizontally { fullWidth -> fullWidth },
                     ),
-                    state = targetTorrentFileState,
+                    state = targetTorrentFileDownloadState,
                     onWriteFileContent = { viewModel.writeTorrentFileContent(it) },
                     onCloseSheet = { closeSheet() },
                     onGoBack = { viewModel.resetTorrentFileState() },
