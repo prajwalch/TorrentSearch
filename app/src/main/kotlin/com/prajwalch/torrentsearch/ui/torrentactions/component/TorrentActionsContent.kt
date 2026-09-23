@@ -205,9 +205,7 @@ private fun MagnetLinkActionItem(
         leadingContent = {
             Crossfade(magnetUriState) { targetState ->
                 when (targetState) {
-                    MagnetUriState.Loading, MagnetUriState.Fetching -> {
-                        LoadingIndicator()
-                    }
+                    MagnetUriState.Loading -> LoadingIndicator()
 
                     MagnetUriState.Error -> {
                         Icon(
@@ -236,10 +234,7 @@ private fun MagnetLinkActionItem(
         supportingContent = {
             Crossfade(magnetUriState) { targetState ->
                 val textResId = when (targetState) {
-                    MagnetUriState.Loading,
-                    MagnetUriState.Fetching,
-                        -> R.string.torrent_message_getting_magnet_link
-
+                    MagnetUriState.Loading -> R.string.torrent_message_getting_magnet_link
                     MagnetUriState.Error -> R.string.torrent_message_failed_to_get_magnet_link
                     is MagnetUriState.Ready -> R.string.torrent_message_tap_to_open_magnet_link
                 }

@@ -35,11 +35,7 @@ import kotlin.time.Duration.Companion.seconds
 
 sealed interface MagnetUriState {
     data object Loading : MagnetUriState
-
-    data object Fetching : MagnetUriState
-
     data object Error : MagnetUriState
-
     data class Ready(val value: String) : MagnetUriState
 }
 
@@ -76,8 +72,6 @@ class TorrentActionsViewModel(
             }
 
             is MagnetUri.RequiresFetch -> {
-                emit(MagnetUriState.Fetching)
-
                 val result = torrentQueryService.getMagnetUri(
                     torrentId = torrent.id,
                     url = magnetUri.url,
@@ -102,12 +96,8 @@ class TorrentActionsViewModel(
         } else {
             val fromMagnetUri = magnetUriState.map {
                 when (it) {
-                    MagnetUriState.Loading, MagnetUriState.Fetching -> {
-                        TorrentFileLinkState.WaitingForMagnetUri
-                    }
-
+                    MagnetUriState.Loading -> TorrentFileLinkState.WaitingForMagnetUri
                     MagnetUriState.Error -> TorrentFileLinkState.Unavailable
-
                     is MagnetUriState.Ready -> {
                         TorrentFileLinkState.Ready(createFallbackFileDownloadLink(it.value))
                     }
