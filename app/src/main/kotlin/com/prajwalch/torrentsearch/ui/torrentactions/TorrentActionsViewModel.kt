@@ -86,7 +86,7 @@ class TorrentActionsViewModel(
         }
     }.stateIn(
         scope = viewModelScope,
-        started = SharingStarted.Eagerly,
+        started = SharingStarted.WhileSubscribed(5.seconds),
         initialValue = MagnetUriState.Loading,
     )
 
@@ -120,7 +120,7 @@ class TorrentActionsViewModel(
             .map { torrent.id in it }
             .stateIn(
                 scope = viewModelScope,
-                started = SharingStarted.Eagerly,
+                started = SharingStarted.WhileSubscribed(5.seconds),
                 initialValue = false,
             )
 
@@ -128,7 +128,7 @@ class TorrentActionsViewModel(
         settingsRepository.openTorrentDetailsInApp
             .stateIn(
                 scope = viewModelScope,
-                started = SharingStarted.Eagerly,
+                started = SharingStarted.WhileSubscribed(5.seconds),
                 initialValue = true,
             )
 
