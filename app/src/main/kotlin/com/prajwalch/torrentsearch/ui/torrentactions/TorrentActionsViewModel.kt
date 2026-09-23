@@ -135,13 +135,14 @@ class TorrentActionsViewModel(
     }
 
 
-    fun downloadTorrentFile(magnetUri: String) {
+    fun downloadTorrentFile(magnetUri: String?) {
         _torrentFileState.value = TorrentFileState.Downloading
 
         viewModelScope.launch {
             val downloadResult = if (torrent.fileDownloadLink != null) {
                 torrentFileDownloader.download(torrent.fileDownloadLink)
             } else {
+                val magnetUri = requireNotNull(magnetUri)
                 val infoHash = TorrentUtils.getInfoHashFromMagnetUri(magnetUri)
                 torrentFileDownloader.tryDownloadUsingInfoHash(infoHash)
             }

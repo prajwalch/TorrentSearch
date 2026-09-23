@@ -1,39 +1,44 @@
 package com.prajwalch.torrentsearch.ui.torrentactions.component
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.Crossfade
 import androidx.compose.animation.animateContentSize
-import androidx.compose.foundation.background
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.FilledTonalIconToggleButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconToggleButton
+import androidx.compose.material3.ListItem
+import androidx.compose.material3.ListItemColors
+import androidx.compose.material3.ListItemDefaults
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 
 import com.prajwalch.torrentsearch.R
 import com.prajwalch.torrentsearch.domain.model.Torrent
 import com.prajwalch.torrentsearch.ui.categoryStringResource
-import com.prajwalch.torrentsearch.ui.component.ContentState
-import com.prajwalch.torrentsearch.ui.component.ContentStateDefaults
 import com.prajwalch.torrentsearch.ui.component.NSFWBadge
 import com.prajwalch.torrentsearch.ui.component.TorrentMetadata
 import com.prajwalch.torrentsearch.ui.extension.toRelativeTimeSpanString
@@ -48,7 +53,7 @@ fun TorrentActionsContent(
     isTorrentBookmarked: Boolean,
     onToggleBookmark: (Boolean) -> Unit,
     onOpenMagnetLink: (String) -> Unit,
-    onDownloadTorrentFile: (String) -> Unit,
+    onDownloadTorrentFile: (String?) -> Unit,
     onCopyMagnetLink: (String) -> Unit,
     onShareMagnetLink: (String) -> Unit,
     onOpenTorrentDetails: () -> Unit,
@@ -73,17 +78,29 @@ fun TorrentActionsContent(
 
         HorizontalDivider()
 
-        TorrentActionColumn(
-            magnetUriState = magnetUriState,
-            onOpenMagnetLink = onOpenMagnetLink,
-            onDownloadTorrentFile = onDownloadTorrentFile,
-            onCopyMagnetLink = onCopyMagnetLink,
-            onShareMagnetLink = onShareMagnetLink,
-            onOpenTorrentDetails = onOpenTorrentDetails,
-            onCopyDetailsPageLink = onCopyDetailsPageLink,
-            onShareDetailsPageLink = onShareDetailsPageLink,
-            enableDetailsAction = torrent.descriptionPageUrl != null,
-        )
+        Column(
+            verticalArrangement = Arrangement.spacedBy(MaterialTheme.spaces.small),
+        ) {
+            MagnetLinkActionItem(
+                magnetUriState = magnetUriState,
+                onOpenMagnetLink = onOpenMagnetLink,
+                onCopyMagnetLink = onCopyMagnetLink,
+                onShareMagnetLink = onShareMagnetLink,
+            )
+
+            TorrentFileActionItem(
+                hasFileDownloadLink = !torrent.fileDownloadLink.isNullOrBlank(),
+                magnetUriState = magnetUriState,
+                onDownloadTorrentFile = onDownloadTorrentFile,
+            )
+
+            DetailsPageActionItem(
+                onOpenTorrentDetails = onOpenTorrentDetails,
+                onCopyDetailsPageLink = onCopyDetailsPageLink,
+                onShareDetailsPageLink = onShareDetailsPageLink,
+                enabled = !torrent.descriptionPageUrl.isNullOrBlank(),
+            )
+        }
     }
 }
 
@@ -102,16 +119,15 @@ private fun BottomSheetHeader(
         Icon(
             painter = painterResource(torrent.category.iconResId()),
             contentDescription = torrent.category?.let { categoryStringResource(it) },
+            tint = MaterialTheme.colorScheme.onSurfaceVariant,
         )
 
-        Column(
-            modifier = Modifier.weight(1f),
-            verticalArrangement = Arrangement.spacedBy(MaterialTheme.spaces.extraSmall),
-        ) {
+        Column(modifier = Modifier.weight(1f)) {
             Row(horizontalArrangement = Arrangement.spacedBy(MaterialTheme.spaces.small)) {
                 torrent.uploadDate?.let {
                     Text(
                         text = it.toRelativeTimeSpanString(),
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
                         style = MaterialTheme.typography.labelSmall,
                     )
                 }
@@ -121,25 +137,31 @@ private fun BottomSheetHeader(
 
                 Text(
                     text = torrent.providerName,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                     style = MaterialTheme.typography.labelSmall,
                 )
             }
 
             Text(
                 text = torrent.name,
-                maxLines = 3,
+                maxLines = 2,
                 overflow = TextOverflow.Ellipsis,
-                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.SemiBold,
+                style = MaterialTheme.typography.bodyMedium,
             )
 
-            TorrentMetadata(
-                size = torrent.size,
-                seeders = torrent.seeders,
-                peers = torrent.peers,
-            )
+            CompositionLocalProvider(
+                LocalContentColor provides MaterialTheme.colorScheme.onSurfaceVariant,
+            ) {
+                TorrentMetadata(
+                    size = torrent.size,
+                    seeders = torrent.seeders,
+                    peers = torrent.peers,
+                )
+            }
         }
 
-        FilledTonalIconToggleButton(
+        IconToggleButton(
             checked = isBookmarked,
             onCheckedChange = onToggleBookmark,
             enabled = enableBookmarkAction,
@@ -165,132 +187,284 @@ private fun BottomSheetHeader(
 }
 
 @Composable
-private fun TorrentActionColumn(
+private fun MagnetLinkActionItem(
     magnetUriState: MagnetUriState,
     onOpenMagnetLink: (String) -> Unit,
-    onDownloadTorrentFile: (String) -> Unit,
     onCopyMagnetLink: (String) -> Unit,
     onShareMagnetLink: (String) -> Unit,
-    onOpenTorrentDetails: () -> Unit,
-    onCopyDetailsPageLink: () -> Unit,
-    onShareDetailsPageLink: () -> Unit,
-    enableDetailsAction: Boolean,
     modifier: Modifier = Modifier,
 ) {
-    Column(
-        modifier = modifier,
-        verticalArrangement = Arrangement.spacedBy(MaterialTheme.spaces.large),
-    ) {
-        Crossfade(magnetUriState) { targetMagnetUriState ->
-            when (targetMagnetUriState) {
-                MagnetUriState.Loading -> MagnetUriLoadingState()
-                MagnetUriState.Fetching -> MagnetUriFetchingState()
-                MagnetUriState.Error -> MagnetUriErrorState()
+    ListItem(
+        modifier = modifier
+            .clip(MaterialTheme.shapes.large)
+            .clickable(enabled = magnetUriState is MagnetUriState.Ready) {
+                require(magnetUriState is MagnetUriState.Ready)
+                onOpenMagnetLink(magnetUriState.value)
+            },
+        leadingContent = {
+            Crossfade(magnetUriState) { targetState ->
+                when (targetState) {
+                    MagnetUriState.Loading, MagnetUriState.Fetching -> {
+                        CircularProgressIndicator(
+                            modifier = Modifier.size(24.dp),
+                            color = MaterialTheme.colorScheme.onPrimaryContainer,
+                            trackColor = MaterialTheme.colorScheme.primaryContainer,
+                            strokeWidth = 2.0.dp,
+                        )
+                    }
 
-                is MagnetUriState.Ready -> {
-                    val magnetUri = targetMagnetUriState.value
+                    MagnetUriState.Error -> {
+                        Icon(
+                            painter = painterResource(R.drawable.ic_error),
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.error,
+                        )
+                    }
 
-                    Column(modifier = Modifier.clip(MaterialTheme.shapes.large)) {
-                        ActionListItem(
-                            onClick = { onOpenMagnetLink(magnetUri) },
-                            icon = painterResource(R.drawable.ic_magnet),
-                            label = stringResource(R.string.torrent_action_open_magnet_link),
-                        )
-                        ActionListItem(
-                            onClick = { onDownloadTorrentFile(magnetUri) },
-                            icon = painterResource(R.drawable.ic_download),
-                            label = stringResource(R.string.torrent_action_download_torrent_file),
-                        )
-                        ActionListItem(
-                            onClick = { onCopyMagnetLink(magnetUri) },
-                            icon = painterResource(R.drawable.ic_copy),
-                            label = stringResource(R.string.torrent_action_copy_magnet_link),
-                        )
-                        ActionListItem(
-                            onClick = { onShareMagnetLink(magnetUri) },
-                            icon = painterResource(R.drawable.ic_share),
-                            label = stringResource(R.string.torrent_action_share_magnet_link),
+                    is MagnetUriState.Ready -> {
+                        Icon(
+                            painter = painterResource(R.drawable.ic_magnet),
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.primary,
                         )
                     }
                 }
             }
-        }
-
-        Column(modifier = modifier.clip(MaterialTheme.shapes.large)) {
-            ActionListItem(
-                onClick = onOpenTorrentDetails,
-                icon = painterResource(R.drawable.ic_link),
-                label = stringResource(R.string.torrent_action_open_description_page),
-                enabled = enableDetailsAction,
-            )
-            ActionListItem(
-                onClick = onCopyDetailsPageLink,
-                icon = painterResource(R.drawable.ic_copy),
-                label = stringResource(R.string.torrent_action_copy_description_page_url),
-                enabled = enableDetailsAction,
-            )
-            ActionListItem(
-                onClick = onShareDetailsPageLink,
-                icon = painterResource(R.drawable.ic_share),
-                label = stringResource(R.string.torrent_action_share_description_page_url),
-                enabled = enableDetailsAction,
-            )
-        }
-    }
-}
-
-@Composable
-private fun MagnetUriLoadingState(modifier: Modifier = Modifier) {
-    Box(
-        modifier = modifier
-            .fillMaxWidth()
-            .height(224.dp)
-            .clip(MaterialTheme.shapes.large)
-            .background(
-                color = MaterialTheme.colorScheme.surfaceContainerHigh,
-                shape = MaterialTheme.shapes.large,
-            ),
-        contentAlignment = Alignment.CenterStart,
-    ) {
-        CircularProgressIndicator()
-    }
-}
-
-@Composable
-private fun MagnetUriFetchingState(modifier: Modifier = Modifier) {
-    ContentState(
-        modifier = modifier
-            .fillMaxWidth()
-            .height(224.dp)
-            .clip(MaterialTheme.shapes.large)
-            .background(
-                color = MaterialTheme.colorScheme.surfaceContainerHigh,
-                shape = MaterialTheme.shapes.large,
-            ),
-        icon = { CircularProgressIndicator() },
-        title = { Text(stringResource(R.string.torrent_message_getting_magnet_link)) },
-    )
-}
-
-@Composable
-private fun MagnetUriErrorState(modifier: Modifier = Modifier) {
-    ContentState(
-        modifier = modifier
-            .fillMaxWidth()
-            .height(224.dp)
-            .clip(MaterialTheme.shapes.large)
-            .background(
-                color = MaterialTheme.colorScheme.surfaceContainerHigh,
-                shape = MaterialTheme.shapes.large,
-            ),
-        icon = {
-            Icon(
-                modifier = Modifier.size(ContentStateDefaults.SmallIconSize),
-                painter = painterResource(R.drawable.ic_error),
-                contentDescription = null,
-                tint = MaterialTheme.colorScheme.error,
+        },
+        headlineContent = {
+            Text(
+                text = stringResource(R.string.torrent_title_magnet_link),
+                fontWeight = FontWeight.SemiBold,
+                style = MaterialTheme.typography.bodyMedium,
             )
         },
-        title = { Text(stringResource(R.string.torrent_message_failed_to_get_magnet_link)) },
+        supportingContent = {
+            Crossfade(magnetUriState) { targetState ->
+                val textResId = when (targetState) {
+                    MagnetUriState.Loading,
+                    MagnetUriState.Fetching,
+                        -> R.string.torrent_message_getting_magnet_link
+
+                    MagnetUriState.Error -> R.string.torrent_message_failed_to_get_magnet_link
+                    is MagnetUriState.Ready -> R.string.torrent_message_tap_to_open_magnet_link
+                }
+
+                val textColor = if (targetState == MagnetUriState.Error) {
+                    MaterialTheme.colorScheme.error
+                } else {
+                    LocalContentColor.current
+                }
+
+                Text(
+                    text = stringResource(textResId),
+                    color = textColor,
+                    style = MaterialTheme.typography.bodySmall,
+                )
+            }
+        },
+        trailingContent = {
+            AnimatedVisibility(
+                visible = magnetUriState is MagnetUriState.Ready,
+                enter = fadeIn(),
+                exit = fadeOut(),
+            ) {
+                require(magnetUriState is MagnetUriState.Ready)
+                val magnetUri = magnetUriState.value
+
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    IconButton(onClick = { onCopyMagnetLink(magnetUri) }) {
+                        Icon(
+                            painter = painterResource(R.drawable.ic_copy),
+                            contentDescription = null,
+                        )
+                    }
+                    IconButton(onClick = { onShareMagnetLink(magnetUri) }) {
+                        Icon(
+                            painter = painterResource(R.drawable.ic_share),
+                            contentDescription = null,
+                        )
+                    }
+                }
+            }
+        },
     )
+}
+
+@Composable
+private fun TorrentFileActionItem(
+    hasFileDownloadLink: Boolean,
+    magnetUriState: MagnetUriState,
+    onDownloadTorrentFile: (String?) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    ListItem(
+        modifier = modifier
+            .clip(MaterialTheme.shapes.large)
+            .clickable(enabled = hasFileDownloadLink || magnetUriState is MagnetUriState.Ready) {
+                if (hasFileDownloadLink) {
+                    onDownloadTorrentFile(null)
+                } else {
+                    require(magnetUriState is MagnetUriState.Ready)
+                    onDownloadTorrentFile(magnetUriState.value)
+                }
+            },
+        leadingContent = {
+            if (hasFileDownloadLink) {
+                Icon(
+                    painter = painterResource(R.drawable.ic_magnet),
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.primary,
+                )
+            } else {
+                Crossfade(magnetUriState) { targetState ->
+                    when (targetState) {
+                        MagnetUriState.Loading, MagnetUriState.Fetching -> {
+                            CircularProgressIndicator(
+                                modifier = Modifier.size(24.dp),
+                                color = MaterialTheme.colorScheme.onPrimaryContainer,
+                                trackColor = MaterialTheme.colorScheme.primaryContainer,
+                                strokeWidth = 2.0.dp,
+                            )
+                        }
+
+                        MagnetUriState.Error -> {
+                            Icon(
+                                painter = painterResource(R.drawable.ic_error),
+                                contentDescription = null,
+                                tint = MaterialTheme.colorScheme.error,
+                            )
+                        }
+
+                        is MagnetUriState.Ready -> {
+                            Icon(
+                                painter = painterResource(R.drawable.ic_download),
+                                contentDescription = null,
+                                tint = MaterialTheme.colorScheme.primary,
+                            )
+                        }
+                    }
+                }
+            }
+        },
+        headlineContent = {
+            Text(
+                text = stringResource(R.string.torrent_title_torrent_file),
+                fontWeight = FontWeight.SemiBold,
+                style = MaterialTheme.typography.bodyMedium,
+            )
+        },
+        supportingContent = {
+            if (hasFileDownloadLink) {
+                Text(
+                    text = stringResource(R.string.torrent_message_tap_to_download_file),
+                    style = MaterialTheme.typography.bodySmall,
+                )
+            } else {
+                Crossfade(magnetUriState) { targetState ->
+                    when (targetState) {
+                        MagnetUriState.Loading, MagnetUriState.Fetching -> {
+                            Text(
+                                text = stringResource(R.string.torrent_message_getting_magnet_link),
+                                style = MaterialTheme.typography.bodySmall,
+                            )
+                        }
+
+                        MagnetUriState.Error -> {
+                            Text(
+                                text = stringResource(R.string.torrent_message_failed_to_get_magnet_link),
+                                color = MaterialTheme.colorScheme.error,
+                                style = MaterialTheme.typography.bodySmall,
+                            )
+                        }
+
+                        is MagnetUriState.Ready -> {
+                            Text(
+                                text = stringResource(R.string.torrent_message_tap_to_download_file),
+                                style = MaterialTheme.typography.bodySmall,
+                            )
+                        }
+                    }
+                }
+            }
+        },
+    )
+}
+
+@Composable
+private fun DetailsPageActionItem(
+    onOpenTorrentDetails: () -> Unit,
+    onCopyDetailsPageLink: () -> Unit,
+    onShareDetailsPageLink: () -> Unit,
+    enabled: Boolean,
+    modifier: Modifier = Modifier,
+) {
+    ListItem(
+        modifier = modifier
+            .clip(MaterialTheme.shapes.large)
+            .clickable(onClick = onOpenTorrentDetails, enabled = enabled),
+        leadingContent = {
+            Icon(
+                painter = painterResource(R.drawable.ic_link),
+                contentDescription = null,
+                tint = if (enabled) {
+                    MaterialTheme.colorScheme.primary
+                } else {
+                    LocalContentColor.current
+                },
+            )
+        },
+        headlineContent = {
+            Text(
+                text = stringResource(R.string.torrent_title_details_page),
+                fontWeight = FontWeight.SemiBold,
+                style = MaterialTheme.typography.bodyMedium,
+            )
+        },
+        supportingContent = {
+            val textResId = if (enabled) {
+                R.string.torrent_message_tap_to_open_details
+            } else {
+                R.string.torrent_message_details_page_not_available
+            }
+
+            Text(
+                text = stringResource(textResId),
+                style = MaterialTheme.typography.bodySmall,
+            )
+        },
+        trailingContent = {
+            if (enabled) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    IconButton(onClick = onCopyDetailsPageLink) {
+                        Icon(
+                            painter = painterResource(R.drawable.ic_copy),
+                            contentDescription = null,
+                        )
+                    }
+
+                    IconButton(onClick = onShareDetailsPageLink) {
+                        Icon(
+                            painter = painterResource(R.drawable.ic_share),
+                            contentDescription = null,
+                        )
+                    }
+                }
+            }
+        },
+        colors = ListItemDefaults.colors(enabled = enabled),
+    )
+}
+
+@Composable
+private fun ListItemDefaults.colors(enabled: Boolean): ListItemColors {
+    return if (enabled) {
+        colors()
+    } else {
+        with(colors()) {
+            copy(
+                headlineColor = disabledHeadlineColor,
+                leadingIconColor = disabledLeadingIconColor,
+            )
+        }
+    }
 }
