@@ -255,4 +255,13 @@
     <string name="torrent_details_button_bookmark_torrent">Torrenti yer imlerine ekle</string>
     <string name="settings_show_recent_searches">Son aramaları göster</string>
     <string name="settings_show_recent_searches_summary">Ana ekranda son 5 aramanızı görün</string>
+    <string name="torrent_title_magnet_link">Magnet bağlantısı</string>
+    <string name="torrent_title_torrent_file">Torrent dosyası</string>
+    <string name="torrent_title_details_page">Ayrıntılar sayfası</string>
+    <string name="torrent_message_tap_to_open_magnet_link">Torrent istemcisinde açmak için dokunun</string>
+    <string name="torrent_message_preparing_download_link">İndirme bağlantısı hazırlanıyor…</string>
+    <string name="torrent_message_waiting_magnet_link">Magnet bağlantısı bekleniyor…</string>
+    <string name="torrent_message_tap_to_download_file">İndirmeyi başlatmak için dokunun</string>
+    <string name="torrent_message_tap_to_open_details">Ayrıntıları açmak için dokunun</string>
+    <string name="torrent_message_not_available">Kullanılabilir değil</string>
 </resources>
