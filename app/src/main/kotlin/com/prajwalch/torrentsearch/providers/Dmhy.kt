@@ -139,7 +139,7 @@ private class DmhyResultsPageParser(
         private const val PEERS = "td:nth-child(7)"
         private const val UPLOAD_DATE = "td:nth-child(1) > span"
         private const val CATEGORY = "td:nth-child(2) > a"
-        private const val MAGNET_URI = "td:nth-child(4) > a:nth-child(1)"
+        private const val MAGNET_URI = """td:nth-child(4) > a[href^="magnet:?xt="]"""
         private const val DETAILS_PAGE_URL = TORRENT_NAME
     }
 }
