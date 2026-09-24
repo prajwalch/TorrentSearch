@@ -15,6 +15,7 @@ import com.prajwalch.torrentsearch.domain.model.Torrent
 import com.prajwalch.torrentsearch.util.TorrentUtils
 
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -33,6 +34,7 @@ import org.koin.core.annotation.KoinViewModel
 import java.io.OutputStream
 import kotlin.time.Duration.Companion.seconds
 
+@Stable
 sealed interface MagnetUriState {
     data object Loading : MagnetUriState
     data object Error : MagnetUriState
@@ -40,21 +42,19 @@ sealed interface MagnetUriState {
 }
 
 @Stable
-sealed interface TorrentFileLinkState {
-    data object Preparing : TorrentFileLinkState
-    data object WaitingForMagnetUri : TorrentFileLinkState
-    data object Unavailable : TorrentFileLinkState
-    data class Ready(val value: String) : TorrentFileLinkState
-}
+sealed interface TorrentFileState {
+    data object PreparingLink : TorrentFileState
+    data object WaitingForMagnetUri : TorrentFileState
+    data object LinkUnavailable : TorrentFileState
+    data class LinkReady(val value: String) : TorrentFileState
 
-@Stable
-sealed interface TorrentFileDownloadState {
-    data object Downloading : TorrentFileDownloadState
-    data class DownloadComplete(val fileName: String) : TorrentFileDownloadState
-    data object DownloadFailed : TorrentFileDownloadState
-    data object FileNotFound : TorrentFileDownloadState
-    data object WritingContent : TorrentFileDownloadState
-    data object WriteComplete : TorrentFileDownloadState
+    data object Downloading : TorrentFileState
+    data object DownloadError : TorrentFileState
+    data object FileNotFound : TorrentFileState
+    data class DownloadComplete(val fileName: String) : TorrentFileState
+
+    data object WritingContent : TorrentFileState
+    data object ContentWriteComplete : TorrentFileState
 }
 
 @KoinViewModel
@@ -65,17 +65,16 @@ class TorrentActionsViewModel(
     private val torrentFileDownloader: TorrentFileDownloader,
     settingsRepository: SettingsRepository,
 ) : ViewModel() {
+    private val torrentFileName = torrent.name.replace(" ", "_")
+
     val magnetUriState: StateFlow<MagnetUriState> = flow {
         when (val magnetUri = torrent.magnetUri) {
-            is MagnetUri.Available -> {
-                emit(MagnetUriState.Ready(magnetUri.value))
-            }
-
+            is MagnetUri.Available -> emit(MagnetUriState.Ready(magnetUri.value))
             is MagnetUri.RequiresFetch -> {
                 val result = torrentQueryService.getMagnetUri(
                     torrentId = torrent.id,
                     url = magnetUri.url,
-                    providerName = torrent.providerName
+                    providerName = torrent.providerName,
                 )
 
                 when (result) {
@@ -90,30 +89,9 @@ class TorrentActionsViewModel(
         initialValue = MagnetUriState.Loading,
     )
 
-    val torrentFileLinkState: StateFlow<TorrentFileLinkState> = flow {
-        if (torrent.fileDownloadLink != null) {
-            emit(TorrentFileLinkState.Ready(torrent.fileDownloadLink))
-        } else {
-            val fromMagnetUri = magnetUriState.map {
-                when (it) {
-                    MagnetUriState.Loading -> TorrentFileLinkState.WaitingForMagnetUri
-                    MagnetUriState.Error -> TorrentFileLinkState.Unavailable
-                    is MagnetUriState.Ready -> {
-                        TorrentFileLinkState.Ready(createFallbackFileDownloadLink(it.value))
-                    }
-                }
-            }
-
-            emitAll(fromMagnetUri)
-        }
-    }.stateIn(
-        scope = viewModelScope,
-        started = SharingStarted.WhileSubscribed(5.seconds),
-        initialValue = TorrentFileLinkState.Preparing,
-    )
-
-    private val _torrentFileDownloadState = MutableStateFlow<TorrentFileDownloadState?>(null)
-    val torrentFileDownloadState = _torrentFileDownloadState.asStateFlow()
+    private val _torrentFileState =
+        MutableStateFlow<TorrentFileState>(TorrentFileState.PreparingLink)
+    val torrentFileState: StateFlow<TorrentFileState> = _torrentFileState.asStateFlow()
 
     val isTorrentBookmarked: StateFlow<Boolean> =
         bookmarkRepository.getBookmarkIds()
@@ -132,7 +110,33 @@ class TorrentActionsViewModel(
                 initialValue = true,
             )
 
-    private var pendingTorrentFile: ByteArray? = null
+    private var downloadedTorrentFileContent: ByteArray? = null
+
+    init {
+        prepareTorrentFileDownloadLink()
+    }
+
+    private fun prepareTorrentFileDownloadLink() {
+        viewModelScope.launch {
+            if (torrent.fileDownloadLink != null) {
+                _torrentFileState.value = TorrentFileState.LinkReady(torrent.fileDownloadLink)
+                return@launch
+            }
+
+            // Depend on magnet URI
+            _torrentFileState.emitAll(
+                magnetUriState.map {
+                    when (it) {
+                        MagnetUriState.Loading -> TorrentFileState.WaitingForMagnetUri
+                        MagnetUriState.Error -> TorrentFileState.LinkUnavailable
+                        is MagnetUriState.Ready -> {
+                            TorrentFileState.LinkReady(createFallbackFileDownloadLink(it.value))
+                        }
+                    }
+                }
+            )
+        }
+    }
 
     private fun createFallbackFileDownloadLink(magnetUri: String): String {
         val infoHash = TorrentUtils.getInfoHashFromMagnetUri(magnetUri)
@@ -168,48 +172,36 @@ class TorrentActionsViewModel(
         }
     }
 
-
     fun downloadTorrentFile(url: String) {
-        _torrentFileDownloadState.value = TorrentFileDownloadState.Downloading
+        _torrentFileState.value = TorrentFileState.Downloading
 
         viewModelScope.launch {
-            when (val downloadResult = torrentFileDownloader.download(url)) {
-                TorrentFileDownloadResult.Failed -> {
-                    _torrentFileDownloadState.value = TorrentFileDownloadState.DownloadFailed
-                }
-
-                TorrentFileDownloadResult.FileNotFound -> {
-                    _torrentFileDownloadState.value = TorrentFileDownloadState.FileNotFound
-                }
+            _torrentFileState.value = when (val result = torrentFileDownloader.download(url)) {
+                TorrentFileDownloadResult.Failed -> TorrentFileState.DownloadError
+                TorrentFileDownloadResult.FileNotFound -> TorrentFileState.FileNotFound
 
                 is TorrentFileDownloadResult.Success -> {
-                    pendingTorrentFile = downloadResult.content
-
-                    val fileName = torrent.name.replace(" ", "_")
-                    _torrentFileDownloadState.value =
-                        TorrentFileDownloadState.DownloadComplete(fileName)
+                    downloadedTorrentFileContent = result.content
+                    TorrentFileState.DownloadComplete(torrentFileName)
                 }
             }
         }
     }
 
     fun writeTorrentFileContent(outputStream: OutputStream) {
+        _torrentFileState.value = TorrentFileState.WritingContent
+
         viewModelScope.launch {
-            _torrentFileDownloadState.value = TorrentFileDownloadState.WritingContent
-
-            outputStream.use {
-                val currentPendingFile = pendingTorrentFile ?: return@use
-
-                withContext(Dispatchers.IO) {
+            withContext(Dispatchers.IO) {
+                outputStream.use {
+                    val currentPendingFile = downloadedTorrentFileContent ?: return@use
                     currentPendingFile.let(it::write)
                 }
             }
 
-            _torrentFileDownloadState.value = TorrentFileDownloadState.WriteComplete
+            _torrentFileState.value = TorrentFileState.ContentWriteComplete
+            delay(1.seconds)
+            _torrentFileState.value = TorrentFileState.DownloadComplete(torrentFileName)
         }
-    }
-
-    fun resetTorrentFileState() {
-        _torrentFileDownloadState.value = null
     }
 }
