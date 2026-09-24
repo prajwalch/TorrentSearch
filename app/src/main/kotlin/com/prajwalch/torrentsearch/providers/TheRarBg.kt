@@ -232,7 +232,20 @@ private object TheRarBgDetailsPageParser {
             .split(' ', limit = 5)
             .let { (month, day, year, time, amPm) ->
                 val fixedTime = if (time.contains(':')) time else "$time:00"
-                "$month $day $year $fixedTime $amPm"
+                val fixedMonth = month
+                    .replace("Jan.", "Jan")
+                    .replace("Feb.", "Feb")
+                    .replace("March", "Mar")
+                    .replace("April", "Apr")
+                    .replace("May", "May")
+                    .replace("June", "Jun")
+                    .replace("July", "Jul")
+                    .replace("Aug.", "Aug")
+                    .replace("Sept.", "Sep")
+                    .replace("Oct.", "Oct")
+                    .replace("Nov.", "Nov")
+                    .replace("Dec.", "Dec")
+                "$fixedMonth $day $year $fixedTime $amPm"
             }
 
     suspend fun extractMagnetUri(detailsPageHtml: String): String? =
