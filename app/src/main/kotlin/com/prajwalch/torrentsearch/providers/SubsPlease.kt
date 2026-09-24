@@ -74,15 +74,15 @@ private class SubsPleaseResultsJsonParser(
     private val providerUrl: String,
 ) {
     suspend fun parse(json: JsonElement): List<Torrent> = withContext(Dispatchers.Default) {
-        json.asObject()
-            .entries
-            .mapNotNull { (showName, animeObject) ->
-                parseAnimeObject(
-                    showName = showName,
-                    animeObject = animeObject.asObject(),
-                )
+        // SubsPlease returns empty array "[]" for empty results and object
+        // when results are found.
+        runCatching { json.asObject() }.getOrNull()
+            ?.entries
+            ?.mapNotNull { (showName, animeObject) ->
+                parseAnimeObject(showName, animeObject.asObject())
             }
-            .flatten()
+            ?.flatten()
+            .orEmpty()
     }
 
     private fun parseAnimeObject(showName: String, animeObject: JsonObject): List<Torrent>? {
