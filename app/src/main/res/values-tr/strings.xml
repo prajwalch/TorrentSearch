@@ -124,12 +124,12 @@
     <string name="torznab_conn_check_result_app_error">Uygulama hatası (%1$d)</string>
     <string name="torznab_conn_check_result_unexpected_response">Beklenmeyen yanıt (%1$d)</string>
     <string name="torznab_conn_check_result_unexpected_error">Beklenmeyen hata</string>
-    <string name="torrent_message_file_downloading">Torrent dosyası indiriliyor…</string>
-    <string name="torrent_message_file_download_failed">İndirme başarısız oldu</string>
-    <string name="torrent_message_file_not_found">Torrent dosyası hiçbir kaynakta bulunamadı</string>
-    <string name="torrent_message_file_saving">Torrent dosyası kaydediliyor…</string>
-    <string name="torrent_message_file_saved">Torrent dosyası kaydedildi</string>
-    <string name="torrent_message_file_save_failed">Torrent dosyası kaydetme başarısız oldu</string>
+    <string name="torrent_status_file_downloading">Torrent dosyası indiriliyor…</string>
+    <string name="torrent_status_file_download_failed">İndirme başarısız oldu</string>
+    <string name="torrent_status_file_not_found">Torrent dosyası hiçbir kaynakta bulunamadı</string>
+    <string name="torrent_status_file_saving">Torrent dosyası kaydediliyor…</string>
+    <string name="torrent_status_file_saved">Torrent dosyası kaydedildi</string>
+    <string name="torrent_status_file_save_failed">Torrent dosyası kaydetme başarısız oldu</string>
     <string name="crash_screen_title">Oops!</string>
     <string name="crash_screen_subtitle">%1$s beklenmedik bir hatayla karşılaştı. Lütfen günlükleri dışa aktarın ve günlükleri ekleyerek bir GitHub sorunu oluşturun.</string>
     <string name="crash_button_export_crash_logs">Çökme günlüklerini dosyaya dışa aktar</string>
@@ -248,13 +248,14 @@
     <string name="bookmarks_no_bookmarks_matched">Yer imi eşleşmedi</string>
     <string name="settings_group_content_and_privacy">İçerik ve gizlilik</string>
     <string name="settings_group_network">Ağ</string>
-    <string name="torrent_message_getting_magnet_link">Magnet bağlantısı alınıyor…</string>
-    <string name="torrent_message_failed_to_get_magnet_link">Magnet bağlantısı alınamadı</string>
-    <string name="torrent_message_file_download_complete">İndirme tamamlandı</string>
+    <string name="torrent_status_magnet_link_loading">Magnet bağlantısı alınıyor…</string>
+    <string name="torrent_status_magnet_link_error">Magnet bağlantısı alınamadı</string>
+    <string name="torrent_status_file_download_complete">İndirme tamamlandı</string>
     <string name="torrent_button_save_to_file">Dosyaya kaydet</string>
     <string name="torrent_details_button_bookmark_torrent">Torrenti yer imlerine ekle</string>
     <string name="settings_show_recent_searches">Son aramaları göster</string>
     <string name="settings_show_recent_searches_summary">Ana ekranda son 5 aramanızı görün</string>
+<<<<<<< HEAD
     <string name="torrent_title_magnet_link">Magnet bağlantısı</string>
     <string name="torrent_title_torrent_file">Torrent dosyası</string>
     <string name="torrent_title_details_page">Ayrıntılar sayfası</string>
@@ -265,3 +266,6 @@
     <string name="torrent_message_tap_to_open_details">Ayrıntıları açmak için dokunun</string>
     <string name="torrent_message_not_available">Kullanılabilir değil</string>
 </resources>
+=======
+</resources>
+>>>>>>> f8d07c53 (feat: Improve torrent actions status strings)

@@ -60,22 +60,22 @@
     <string name="torrent_title_details_page">Details page</string>
     <string name="torrent_message_magnet_link_copied">Magnet link copied to clipboard!</string>
     <string name="torrent_message_url_copied">Url copied to clipboard!</string>
-    <string name="torrent_message_getting_magnet_link">Getting magnet link…</string>
-    <string name="torrent_message_failed_to_get_magnet_link">Failed to get magnet link</string>
-    <string name="torrent_message_tap_to_open_magnet_link">Tap to open in torrent client</string>
-    <string name="torrent_message_preparing_download_link">Preparing download link…</string>
-    <string name="torrent_message_waiting_magnet_link">Waiting for magnet link…</string>
-    <string name="torrent_message_tap_to_download_file">Tap to start download</string>
-    <string name="torrent_message_file_downloading">Downloading torrent file…</string>
-    <string name="torrent_message_file_download_complete">Download complete</string>
-    <string name="torrent_message_tap_to_open_details">Tap to open details</string>
-    <string name="torrent_message_not_available">Not available</string>
+    <string name="torrent_status_magnet_link_loading">Getting link…</string>
+    <string name="torrent_status_magnet_link_error">Couldn\'t get link</string>
+    <string name="torrent_status_magnet_link_ready">Tap to open in torrent client</string>
+    <string name="torrent_status_file_preparing_link">Preparing download link…</string>
+    <string name="torrent_status_file_waiting_magnet_link">Waiting for magnet link…</string>
+    <string name="torrent_status_file_link_ready">Tap to start download</string>
+    <string name="torrent_status_file_downloading">Downloading…</string>
+    <string name="torrent_status_file_download_complete">Download complete</string>
+    <string name="torrent_status_file_download_failed">Download failed</string>
+    <string name="torrent_status_file_not_found">Not found on any source</string>
+    <string name="torrent_status_file_saving">Saving…</string>
+    <string name="torrent_status_file_saved">File saved</string>
+    <string name="torrent_status_file_save_failed">Save failed</string>
+    <string name="torrent_status_details_ready">Tap to view details</string>
+    <string name="torrent_status_unavailable">Not available</string>
     <string name="torrent_button_save_to_file">Save to file</string>
-    <string name="torrent_message_file_download_failed">Download failed</string>
-    <string name="torrent_message_file_not_found">Torrent file not found on any source</string>
-    <string name="torrent_message_file_saving">Saving torrent file…</string>
-    <string name="torrent_message_file_saved">Torrent file saved</string>
-    <string name="torrent_message_file_save_failed">Torrent file save failed</string>
 
     <!-- MainActivity -->
     <string name="main_cannot_search_using_url_message">Cannot search using a URL</string>

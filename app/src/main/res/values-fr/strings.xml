@@ -29,11 +29,11 @@
     <string name="torznab_conn_check_result_app_error">Erreur d\'application (%1$d)</string>
     <string name="torznab_conn_check_result_unexpected_response">Réponse inattendue (%1$d)</string>
     <string name="torznab_conn_check_result_unexpected_error">Erreur inattendue</string>
-    <string name="torrent_message_file_downloading">Téléchargement du fichier torrent…</string>
-    <string name="torrent_message_file_download_failed">Échec de téléchargement</string>
-    <string name="torrent_message_file_saving">Enregistrement du fichier torrent…</string>
-    <string name="torrent_message_file_saved">Fichier torrent enregistré</string>
-    <string name="torrent_message_file_save_failed">Échec d\'enregistrement du fichier torrent</string>
+    <string name="torrent_status_file_downloading">Téléchargement du fichier torrent…</string>
+    <string name="torrent_status_file_download_failed">Échec de téléchargement</string>
+    <string name="torrent_status_file_saving">Enregistrement du fichier torrent…</string>
+    <string name="torrent_status_file_saved">Fichier torrent enregistré</string>
+    <string name="torrent_status_file_save_failed">Échec d\'enregistrement du fichier torrent</string>
     <string name="crash_screen_title">Oups !</string>
     <string name="crash_button_restart_application">Redémarrer l\'application</string>
     <string name="torrent_client_not_found_title">Client torrent non trouvé</string>

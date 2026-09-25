@@ -126,7 +126,7 @@ fun TorrentDetailsScreen(
                 val fileName = torrentFileState.fileName
                 createTorrentFileLauncher.launch(fileName)
 
-                val message = resources.getString(R.string.torrent_message_file_download_complete)
+                val message = resources.getString(R.string.torrent_status_file_download_complete)
                 val saveToFileLabel = resources.getString(R.string.torrent_button_save_to_file)
 
                 val result = snackbarHostState.showSnackbar(
@@ -142,7 +142,7 @@ fun TorrentDetailsScreen(
             }
 
             TorrentFileState.Downloading -> {
-                val message = resources.getString(R.string.torrent_message_file_downloading)
+                val message = resources.getString(R.string.torrent_status_file_downloading)
                 snackbarHostState.showSnackbar(
                     message = message,
                     duration = SnackbarDuration.Long,
@@ -150,22 +150,22 @@ fun TorrentDetailsScreen(
             }
 
             TorrentFileState.DownloadFailed -> {
-                val message = resources.getString(R.string.torrent_message_file_download_failed)
+                val message = resources.getString(R.string.torrent_status_file_download_failed)
                 snackbarHostState.showSnackbar(message)
             }
 
             TorrentFileState.FileNotFound -> {
-                val message = resources.getString(R.string.torrent_message_file_not_found)
+                val message = resources.getString(R.string.torrent_status_file_not_found)
                 snackbarHostState.showSnackbar(message)
             }
 
             TorrentFileState.WritingContent -> {
-                val message = resources.getString(R.string.torrent_message_file_saving)
+                val message = resources.getString(R.string.torrent_status_file_saving)
                 snackbarHostState.showSnackbar(message)
             }
 
             TorrentFileState.WriteComplete -> {
-                val message = resources.getString(R.string.torrent_message_file_saved)
+                val message = resources.getString(R.string.torrent_status_file_saved)
                 snackbarHostState.showSnackbar(message)
 
                 viewModel.resetTorrentFileState()

@@ -128,11 +128,11 @@
     <string name="torrent_details_label_file_size">文件大小</string>
     <string name="torrent_details_label_upload_date">上传日期</string>
     <string name="crash_button_restart_application">重启程序</string>
-    <string name="torrent_message_file_download_failed">下载失败</string>
-    <string name="torrent_message_file_downloading">正在下载种子文件…</string>
-    <string name="torrent_message_file_saving">正在保存种子文件…</string>
-    <string name="torrent_message_file_saved">种子文件已保存</string>
-    <string name="torrent_message_file_save_failed">种子文件保存失败</string>
+    <string name="torrent_status_file_download_failed">下载失败</string>
+    <string name="torrent_status_file_downloading">正在下载种子文件…</string>
+    <string name="torrent_status_file_saving">正在保存种子文件…</string>
+    <string name="torrent_status_file_saved">种子文件已保存</string>
+    <string name="torrent_status_file_save_failed">种子文件保存失败</string>
     <string name="torrent_details_message_link_copied">链接已复制到剪贴板！</string>
     <string name="torrent_details_button_open_magnet_link">打开磁力链接</string>
     <string name="torrent_details_button_download_torrent_file">下载种子文件</string>
@@ -149,7 +149,7 @@
     <string name="home_button_browse">浏览</string>
     <string name="settings_export_logs_to_file">导出日志到文件</string>
     <string name="bookmarked_message">已标记</string>
-    <string name="torrent_message_file_not_found">在各个源上都找不到种子文件</string>
+    <string name="torrent_status_file_not_found">在各个源上都找不到种子文件</string>
     <string name="torznab_conn_check_result_unexpected_error">意外错误</string>
     <string name="torznab_conn_check_result_app_error">应用程序错误（%1$d）</string>
     <string name="torznab_conn_check_result_unexpected_response">意外响应（%1$d）</string>

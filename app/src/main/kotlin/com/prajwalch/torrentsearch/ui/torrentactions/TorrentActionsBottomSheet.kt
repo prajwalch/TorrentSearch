@@ -415,9 +415,9 @@ private fun MagnetLinkActionItem(
 @Composable
 private fun MagnetUriState.displayName(): String {
     val resId = when (this) {
-        MagnetUriState.Loading -> R.string.torrent_message_getting_magnet_link
-        MagnetUriState.Error -> R.string.torrent_message_failed_to_get_magnet_link
-        is MagnetUriState.Ready -> R.string.torrent_message_tap_to_open_magnet_link
+        MagnetUriState.Loading -> R.string.torrent_status_magnet_link_loading
+        MagnetUriState.Error -> R.string.torrent_status_magnet_link_error
+        is MagnetUriState.Ready -> R.string.torrent_status_magnet_link_ready
     }
 
     return stringResource(resId)
@@ -545,16 +545,16 @@ private fun TorrentFileActionItem(
 @Composable
 private fun TorrentFileState.displayName(): String {
     val resId = when (this) {
-        TorrentFileState.PreparingLink -> R.string.torrent_message_preparing_download_link
-        TorrentFileState.WaitingForMagnetUri -> R.string.torrent_message_waiting_magnet_link
-        TorrentFileState.LinkUnavailable -> R.string.torrent_message_not_available
-        is TorrentFileState.LinkReady -> R.string.torrent_message_tap_to_download_file
-        TorrentFileState.Downloading -> R.string.torrent_message_file_downloading
-        TorrentFileState.DownloadError -> R.string.torrent_message_file_download_failed
-        TorrentFileState.FileNotFound -> R.string.torrent_message_file_not_found
-        is TorrentFileState.DownloadComplete -> R.string.torrent_message_file_download_complete
-        TorrentFileState.WritingContent -> R.string.torrent_message_file_saving
-        TorrentFileState.ContentWriteComplete -> R.string.torrent_message_file_saved
+        TorrentFileState.PreparingLink -> R.string.torrent_status_file_preparing_link
+        TorrentFileState.WaitingForMagnetUri -> R.string.torrent_status_file_waiting_magnet_link
+        TorrentFileState.LinkUnavailable -> R.string.torrent_status_unavailable
+        is TorrentFileState.LinkReady -> R.string.torrent_status_file_link_ready
+        TorrentFileState.Downloading -> R.string.torrent_status_file_downloading
+        TorrentFileState.DownloadError -> R.string.torrent_status_file_download_failed
+        TorrentFileState.FileNotFound -> R.string.torrent_status_file_not_found
+        is TorrentFileState.DownloadComplete -> R.string.torrent_status_file_download_complete
+        TorrentFileState.WritingContent -> R.string.torrent_status_file_saving
+        TorrentFileState.ContentWriteComplete -> R.string.torrent_status_file_saved
     }
 
     return stringResource(resId)
@@ -591,9 +591,9 @@ private fun DetailsPageActionItem(
         },
         supportingContent = {
             val textResId = if (enabled) {
-                R.string.torrent_message_tap_to_open_details
+                R.string.torrent_status_details_ready
             } else {
-                R.string.torrent_message_not_available
+                R.string.torrent_status_unavailable
             }
 
             Text(

@@ -31,12 +31,12 @@
     <string name="torznab_conn_check_result_app_error">Błąd aplikacji (%1$d)</string>
     <string name="torznab_conn_check_result_unexpected_response">Nieoczekiwana odpowiedź (%1$d)</string>
     <string name="torznab_conn_check_result_unexpected_error">Nieoczekiwany błąd</string>
-    <string name="torrent_message_file_downloading">Pobieranie pliku torrent…</string>
-    <string name="torrent_message_file_download_failed">Pobieranie nie powiodło się</string>
-    <string name="torrent_message_file_not_found">Plik torrent nie został znaleziony w żadnym źródle</string>
-    <string name="torrent_message_file_saving">Zapisywanie pliku torrent…</string>
-    <string name="torrent_message_file_saved">Plik torrent został zapisany</string>
-    <string name="torrent_message_file_save_failed">Zapisanie pliku torrent nie powiodło się</string>
+    <string name="torrent_status_file_downloading">Pobieranie pliku torrent…</string>
+    <string name="torrent_status_file_download_failed">Pobieranie nie powiodło się</string>
+    <string name="torrent_status_file_not_found">Plik torrent nie został znaleziony w żadnym źródle</string>
+    <string name="torrent_status_file_saving">Zapisywanie pliku torrent…</string>
+    <string name="torrent_status_file_saved">Plik torrent został zapisany</string>
+    <string name="torrent_status_file_save_failed">Zapisanie pliku torrent nie powiodło się</string>
     <string name="torrent_client_not_found_title">Nie znaleziono klienta torrent</string>
     <string name="torrent_client_not_found_content">Zainstaluj klienta torrent, aby otwierać linki magnet.</string>
     <string name="torrent_client_not_found_recommended_client_hint">Polecany klient</string>
@@ -247,9 +247,9 @@
     <string name="bookmarks_no_bookmarks_matched">Brak pasujących zakładek</string>
     <string name="settings_group_content_and_privacy">Treść i prywatność</string>
     <string name="settings_group_network">Sieć</string>
-    <string name="torrent_message_getting_magnet_link">Pobieranie linku magnet…</string>
-    <string name="torrent_message_failed_to_get_magnet_link">Nie udało się pobrać linku magnet</string>
-    <string name="torrent_message_file_download_complete">Pobieranie zakończone</string>
+    <string name="torrent_status_magnet_link_loading">Pobieranie linku magnet…</string>
+    <string name="torrent_status_magnet_link_error">Nie udało się pobrać linku magnet</string>
+    <string name="torrent_status_file_download_complete">Pobieranie zakończone</string>
     <string name="torrent_button_save_to_file">Zapisz do pliku</string>
     <string name="torrent_details_button_bookmark_torrent">Dodaj torrent do zakładek</string>
 </resources>
