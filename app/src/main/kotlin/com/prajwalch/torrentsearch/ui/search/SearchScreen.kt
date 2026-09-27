@@ -56,8 +56,8 @@ import com.prajwalch.torrentsearch.ui.component.TorrentClientNotFoundDialog
 import com.prajwalch.torrentsearch.ui.rememberTorrentListState
 import com.prajwalch.torrentsearch.ui.search.component.ResultsNotFoundState
 import com.prajwalch.torrentsearch.ui.search.component.SearchErrorsBottomSheet
-import com.prajwalch.torrentsearch.ui.search.component.SearchResults
 import com.prajwalch.torrentsearch.ui.search.component.TorrentFilter
+import com.prajwalch.torrentsearch.ui.search.component.TorrentList
 import com.prajwalch.torrentsearch.ui.theme.spaces
 import com.prajwalch.torrentsearch.ui.torrentactions.TorrentActionsBottomSheet
 
@@ -82,7 +82,7 @@ fun SearchScreen(
     val coroutineScope = rememberCoroutineScope()
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
     val torrentListState = rememberTorrentListState(
-        itemsCount = { uiState.searchResults.torrents.size },
+        itemsCount = { uiState.torrents.size },
     )
 
     var showTorrentClientNotFoundDialog by rememberSaveable { mutableStateOf(false) }
@@ -112,7 +112,8 @@ fun SearchScreen(
     if (showSearchErrors) {
         SearchErrorsBottomSheet(
             onDismiss = { showSearchErrors = false },
-            errors = uiState.searchResults.errors,
+            errorItems = uiState.errors,
+            onRetryError = { error -> viewModel.retryError(error) },
         )
     }
 
@@ -146,7 +147,7 @@ fun SearchScreen(
                 onNavigateToSettings = onNavigateToSettings,
                 searchState = uiState.searchState,
                 enableSearchResultsAction = uiState.searchState is SearchState.ResultsAvailable,
-                enableSearchErrorsAction = uiState.searchResults.errors.isNotEmpty(),
+                enableViewErrorsAction = uiState.errors.isNotEmpty(),
                 scrollBehavior = scrollBehavior,
             )
         },
@@ -232,12 +233,12 @@ fun SearchScreen(
                             )
                         }
 
-                        SearchResults(
+                        TorrentList(
                             modifier = Modifier
                                 .weight(1f)
                                 .clipToBounds(),
-                            searchResults = uiState.searchResults.torrents,
-                            onResultClick = {
+                            torrents = uiState.torrents,
+                            onTorrentClick = {
                                 selectedResult = it
                                 viewModel.markAsViewed(it.id)
                             },
@@ -278,7 +279,7 @@ private fun SearchScreenTopBar(
     searchState: SearchState,
     modifier: Modifier = Modifier,
     enableSearchResultsAction: Boolean = true,
-    enableSearchErrorsAction: Boolean = true,
+    enableViewErrorsAction: Boolean = true,
     scrollBehavior: TopAppBarScrollBehavior? = null,
 ) {
     var showSortOptions by rememberSaveable(sortOptions) { mutableStateOf(false) }
@@ -347,7 +348,7 @@ private fun SearchScreenTopBar(
                     onShowSearchErrors = onShowSearchErrors,
                     onNavigateToSettings = onNavigateToSettings,
                     searchState = searchState,
-                    enableSearchErrorsAction = enableSearchErrorsAction,
+                    enableViewErrorsAction = enableViewErrorsAction,
                 )
             }
         },
@@ -365,7 +366,7 @@ private fun TopBarOverflowMenu(
     onNavigateToSettings: () -> Unit,
     searchState: SearchState,
     modifier: Modifier = Modifier,
-    enableSearchErrorsAction: Boolean = true,
+    enableViewErrorsAction: Boolean = true,
 ) {
     val refreshAction: @Composable (enable: Boolean) -> Unit = @Composable { enable ->
         DropdownMenuItem(
@@ -426,7 +427,7 @@ private fun TopBarOverflowMenu(
                     contentDescription = null,
                 )
             },
-            enabled = enableSearchErrorsAction,
+            enabled = enableViewErrorsAction,
         )
         DropdownMenuItem(
             text = { Text(stringResource(R.string.search_action_settings)) },

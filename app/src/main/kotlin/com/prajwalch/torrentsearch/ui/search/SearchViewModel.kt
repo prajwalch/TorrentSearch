@@ -9,18 +9,26 @@ import com.prajwalch.torrentsearch.data.repository.SettingsRepository
 import com.prajwalch.torrentsearch.data.repository.ViewedTorrentRepository
 import com.prajwalch.torrentsearch.domain.TorrentQueryService
 import com.prajwalch.torrentsearch.domain.model.Category
-import com.prajwalch.torrentsearch.domain.model.SearchResults
+import com.prajwalch.torrentsearch.domain.model.SearchProviderError
+import com.prajwalch.torrentsearch.domain.model.SearchProviderResult
 import com.prajwalch.torrentsearch.domain.model.SortCriteria
 import com.prajwalch.torrentsearch.domain.model.SortOptions
 import com.prajwalch.torrentsearch.domain.model.SortOrder
 import com.prajwalch.torrentsearch.domain.model.Torrent
+import com.prajwalch.torrentsearch.domain.model.filterIfAll
+import com.prajwalch.torrentsearch.domain.model.sortedWithComparator
 import com.prajwalch.torrentsearch.filter.TorrentFilters
 import com.prajwalch.torrentsearch.network.ConnectivityChecker
 import com.prajwalch.torrentsearch.util.createSortComparator
 
 import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.PersistentList
+import kotlinx.collections.immutable.PersistentMap
 import kotlinx.collections.immutable.persistentListOf
+import kotlinx.collections.immutable.persistentMapOf
 import kotlinx.collections.immutable.toImmutableList
+import kotlinx.collections.immutable.toPersistentList
+import kotlinx.collections.immutable.toPersistentMap
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -46,7 +54,8 @@ import kotlin.time.Duration.Companion.seconds
 data class SearchUiState(
     val searchParams: SearchParams = SearchParams(),
     val searchState: SearchState = SearchState.Loading,
-    val searchResults: SearchResults = SearchResults(),
+    val torrents: PersistentList<Torrent> = persistentListOf(),
+    val errors: PersistentList<ErrorItem> = persistentListOf(),
     val sortOptions: SortOptions = SortOptions(),
     val torrentFilter: TorrentFilter = TorrentFilter(),
     val viewedTorrentIds: Set<String> = emptySet(),
@@ -66,6 +75,17 @@ sealed interface SearchState {
         data object Complete : ResultsAvailable
         data object Searching : ResultsAvailable
         data object Refreshing : ResultsAvailable
+    }
+}
+
+data class ErrorItem(
+    val state: State = State.Active,
+    val providerError: SearchProviderError,
+) {
+    sealed interface State {
+        data object Active : State
+        data object Retrying : State
+        data object Resolved : State
     }
 }
 
@@ -114,13 +134,14 @@ class SearchViewModel(
     )
 
     /**
-     * The search results processor.
+     * The torrents' processor.
      *
-     * It pulls search results from the given flow, does some post-processing
-     * and produces another results, which are finally sent to the UI.
+     * It pulls torrents from the given flow, does some post-processing
+     * and produces a result containing processed torrents, and different
+     * filter configurations which are directly send to UI.
      */
-    private val resultsProcessor = SearchResultsProcessor(
-        searchResults = resultsLoader.searchResults,
+    private val torrentsProcessor = TorrentsProcessor(
+        torrents = resultsLoader.torrents,
         settingsRepository = settingsRepository,
         viewedTorrentIds = viewedTorrentRepository.getAllViewedIds(),
         searchCategory = searchParams.category,
@@ -132,13 +153,15 @@ class SearchViewModel(
     val uiState: StateFlow<SearchUiState> =
         combine(
             resultsLoader.searchState,
-            resultsProcessor.result,
+            resultsLoader.errors,
+            torrentsProcessor.result,
             viewedTorrentRepository.getAllViewedIds(),
-        ) { searchState, processResult, viewedTorrentIds ->
+        ) { searchState, errors, processResult, viewedTorrentIds ->
             SearchUiState(
                 searchParams = searchParams,
                 searchState = searchState,
-                searchResults = processResult.searchResults,
+                torrents = processResult.torrents,
+                errors = errors.values.toPersistentList(),
                 sortOptions = processResult.sortOptions,
                 torrentFilter = processResult.filter,
                 viewedTorrentIds = viewedTorrentIds,
@@ -154,8 +177,8 @@ class SearchViewModel(
         // Initiate search.
         viewModelScope.launch {
             val defaultSortOptions = settingsRepository.defaultSortOptions.first()
-            resultsProcessor.updateSortCriteria(defaultSortOptions.criteria)
-            resultsProcessor.updateSortOrder(defaultSortOptions.order)
+            torrentsProcessor.updateSortCriteria(defaultSortOptions.criteria)
+            torrentsProcessor.updateSortOrder(defaultSortOptions.order)
 
             search()
         }
@@ -193,24 +216,28 @@ class SearchViewModel(
         resultsLoader.refresh(searchParams.query, searchParams.category)
     }
 
+    fun retryError(errorItem: ErrorItem) {
+        resultsLoader.retryError(errorItem, searchParams.query, searchParams.category)
+    }
+
     fun filterSearchResultsByName(query: String) {
-        resultsProcessor.updateFilterQuery(query)
+        torrentsProcessor.updateFilterQuery(query)
     }
 
     fun updateSortCriteria(criteria: SortCriteria) {
-        resultsProcessor.updateSortCriteria(criteria)
+        torrentsProcessor.updateSortCriteria(criteria)
     }
 
     fun updateSortOrder(order: SortOrder) {
-        resultsProcessor.updateSortOrder(order)
+        torrentsProcessor.updateSortOrder(order)
     }
 
     fun toggleSearchProviderResults(providerName: String) {
-        resultsProcessor.toggleSearchProviderResults(providerName)
+        torrentsProcessor.toggleSearchProviderResults(providerName)
     }
 
     fun selectAllSearchProviders() {
-        resultsProcessor.updateExcludedSearchProviders(emptySet())
+        torrentsProcessor.updateExcludedSearchProviders(emptySet())
     }
 
     fun deselectAllSearchProviders() {
@@ -220,7 +247,7 @@ class SearchViewModel(
             .providers
             .map { it.provider }
             .toSet()
-            .let(resultsProcessor::updateExcludedSearchProviders)
+            .let(torrentsProcessor::updateExcludedSearchProviders)
     }
 
     fun invertSearchProvidersSelection() {
@@ -231,19 +258,19 @@ class SearchViewModel(
             .filter { it.selected }
             .map { it.provider }
             .toSet()
-            .let(resultsProcessor::updateExcludedSearchProviders)
+            .let(torrentsProcessor::updateExcludedSearchProviders)
     }
 
     fun toggleDeadTorrents() {
-        resultsProcessor.toggleShowDeadTorrents()
+        torrentsProcessor.toggleShowDeadTorrents()
     }
 
     fun updateCategoryFilter(category: Category) {
-        resultsProcessor.updateCategory(category)
+        torrentsProcessor.updateCategory(category)
     }
 
     fun toggleHideViewedTorrents() {
-        resultsProcessor.toggleHideViewed()
+        torrentsProcessor.toggleHideViewed()
     }
 
     fun markAsViewed(infoHash: String) {
@@ -280,15 +307,11 @@ private class SearchResultsLoader(
      */
     val searchState: StateFlow<SearchState> = _searchState.asStateFlow()
 
-    /**
-     * The internal, mutable state of current search results.
-     */
-    private val _searchResults = MutableStateFlow(SearchResults())
+    private val _torrents = MutableStateFlow(persistentListOf<Torrent>())
+    val torrents: StateFlow<PersistentList<Torrent>> = _torrents.asStateFlow()
 
-    /**
-     * The public, read-only state of unprocessed search results.
-     */
-    val searchResults: StateFlow<SearchResults> = _searchResults.asStateFlow()
+    private val _errors = MutableStateFlow(persistentMapOf<String, ErrorItem>())
+    val errors: StateFlow<PersistentMap<String, ErrorItem>> = _errors.asStateFlow()
 
     /**
      * The ongoing background search job.
@@ -340,6 +363,7 @@ private class SearchResultsLoader(
         }
     }
 
+
     /**
      * Executes a new search for the given query and category.
      */
@@ -347,39 +371,89 @@ private class SearchResultsLoader(
         torrentQueryService.searchTorrents(query = query, category = category)
             .conflate()
             .onCompletion {
-                _searchState.value = if (_searchResults.value.torrents.isEmpty()) {
+                _searchState.value = if (_torrents.value.isEmpty()) {
                     SearchState.ResultsNotFound
                 } else {
                     SearchState.ResultsAvailable.Complete
                 }
             }
-            .collect {
-                _searchResults.value = it
+            .collect { searchResults ->
+                // Unfold
+                _torrents.value = searchResults.torrents
+                _errors.value = searchResults.errors
+                    .map { ErrorItem(providerError = it) }
+                    .associateBy { it.providerError.providerId }
+                    .toPersistentMap()
+
                 _searchState.value = SearchState.ResultsAvailable.Searching
             }
+    }
+
+    fun retryError(errorItem: ErrorItem, query: String, category: Category) {
+        scope.launch {
+            val providerId = errorItem.providerError.providerId
+
+            _errors.update {
+                it.putting(
+                    key = providerId,
+                    value = errorItem.copy(state = ErrorItem.State.Retrying),
+                )
+            }
+
+            val result = torrentQueryService.searchTorrents(
+                providerId = providerId,
+                query = query,
+                category = category,
+            )
+
+            when (result) {
+                is SearchProviderResult.Error -> {
+                    // Mark the given error as active.
+                    _errors.update {
+                        // Since the given error item is not modified,
+                        // we can directly use that instead of making a new copy.
+                        it.putting(key = providerId, value = errorItem)
+                    }
+                }
+
+                is SearchProviderResult.Success<ImmutableList<Torrent>> -> {
+                    // Push torrents
+                    val newTorrents = result.value
+                    _torrents.update { it.addingAll(newTorrents) }
+
+                    // Mark the given error as resolved.
+                    _errors.update {
+                        it.putting(
+                            key = providerId,
+                            value = errorItem.copy(state = ErrorItem.State.Resolved),
+                        )
+                    }
+                }
+            }
+        }
     }
 }
 
 /**
  * Setups and manages the execution of different transformation
- * operations on the [searchResults].
+ * operations on the [torrents].
  *
  * It's the second stage in the search pipeline, responsible for performing
- * post-processing on the [searchResults].
+ * post-processing on the [torrents].
  *
- * @param searchResults The flow that emits the [SearchResults].
+ * @param torrents The flow that emits the torrents.
  * @param settingsRepository The repository from where user-define filter options are fetched.
  * @param viewedTorrentIds The flow that emits the viewed torrent IDs.
  * @param searchCategory The search [Category].
  */
-private class SearchResultsProcessor(
-    searchResults: Flow<SearchResults>,
+private class TorrentsProcessor(
+    torrents: Flow<PersistentList<Torrent>>,
     settingsRepository: SettingsRepository,
     searchCategory: Category = Category.All,
     private val viewedTorrentIds: Flow<Set<String>>,
 ) {
     data class ProcessResult(
-        val searchResults: SearchResults,
+        val torrents: PersistentList<Torrent>,
         val filter: TorrentFilter,
         val sortOptions: SortOptions,
     )
@@ -410,19 +484,19 @@ private class SearchResultsProcessor(
      */
     val result: Flow<ProcessResult> =
         combine(
-            searchResults,
+            torrents,
             filterConfig,
             sortOptions,
             settingsRepository.enableNSFWMode,
-            ::processSearchResults,
+            ::processTorrents,
         ).flowOn(Dispatchers.Default)
 
     /**
-     * Processes the given [searchResults] using given configurations and
+     * Processes the given [torrents] using given configurations and
      * returns a [ProcessResult].
      */
-    private suspend fun processSearchResults(
-        searchResults: SearchResults,
+    private suspend fun processTorrents(
+        torrents: PersistentList<Torrent>,
         filterConfig: TorrentFilterConfig,
         sortOptions: SortOptions,
         nsfwModeEnabled: Boolean,
@@ -437,7 +511,7 @@ private class SearchResultsProcessor(
             emptySet()
         }
 
-        val processedResults = searchResults.filterTorrents {
+        val processedTorrents = torrents.filterIfAll {
             add(TorrentFilters.notExcludedProvider(filterConfig.excludedProviders))
 
             if (!nsfwModeEnabled) add(TorrentFilters.isSfw())
@@ -447,11 +521,11 @@ private class SearchResultsProcessor(
                 add(TorrentFilters.matchesQuery(filterConfig.query))
             if (filterConfig.category != Category.All)
                 add(TorrentFilters.matchesCategory(filterConfig.category))
-        }.sortTorrentsWith(sortComparator)
-        val torrentFilter = createTorrentFilter(filterConfig, searchResults.torrents)
+        }.sortedWithComparator(sortComparator)
+        val torrentFilter = createTorrentFilter(filterConfig, torrents)
 
         return ProcessResult(
-            searchResults = processedResults,
+            torrents = processedTorrents,
             filter = torrentFilter,
             sortOptions = sortOptions,
         )

@@ -8,15 +8,17 @@ import com.prajwalch.torrentsearch.domain.model.Category
 import com.prajwalch.torrentsearch.domain.model.GetTorrentDetailsResponse
 import com.prajwalch.torrentsearch.domain.model.MaxNumResults
 import com.prajwalch.torrentsearch.domain.model.SearchProviderError
-import com.prajwalch.torrentsearch.domain.model.SearchProviderFailureReason
 import com.prajwalch.torrentsearch.domain.model.SearchProviderResult
 import com.prajwalch.torrentsearch.domain.model.SearchResults
 import com.prajwalch.torrentsearch.domain.model.Torrent
 import com.prajwalch.torrentsearch.network.CloudflareChallengeException
 import com.prajwalch.torrentsearch.provider.SearchProvider
+import com.prajwalch.torrentsearch.provider.SearchProviderId
 
+import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.persistentListOf
+import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
@@ -90,6 +92,19 @@ class TorrentQueryService(
         }
         .flowOn(Dispatchers.IO)
 
+    suspend fun searchTorrents(
+        providerId: SearchProviderId,
+        query: String,
+        category: Category,
+    ): SearchProviderResult<ImmutableList<Torrent>> {
+        val searchProvider = searchProviderManager.findEnabledProvider(providerId)
+            ?: error("Couldn't find a provider with an id '$providerId'")
+
+        return runCatchingProvider(searchProvider) {
+            search(query, category).toImmutableList()
+        }
+    }
+
     fun getLatestTorrents(category: Category): Flow<PersistentList<Torrent>> = channelFlow {
         searchProviderManager.getEnabledLatestTorrentsProviders(category).forEach {
             launch {
@@ -152,19 +167,20 @@ class TorrentQueryService(
     } catch (cause: Exception) {
         Log.e(TAG, "${provider.name} crashed", cause)
 
-        val failureReason = if (cause is CloudflareChallengeException) {
+        val errorKind = if (cause is CloudflareChallengeException) {
             Log.i(TAG, "Locking ${provider.name} (${provider.id})")
             searchProviderManager.lockProvider(provider.id)
 
-            SearchProviderFailureReason.CloudflareChallenge
+            SearchProviderError.Kind.CloudflareChallenge
         } else {
-            SearchProviderFailureReason.Crash
+            SearchProviderError.Kind.Crash
         }
 
         val error = SearchProviderError(
+            providerId = provider.id,
             providerName = provider.name,
             providerUrl = provider.url,
-            failureReason = failureReason,
+            kind = errorKind,
             cause = cause,
         )
         SearchProviderResult.Error(error)

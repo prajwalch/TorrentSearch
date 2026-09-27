@@ -85,7 +85,7 @@
     <string name="search_results_count_format">%1$s wyników dla \'%2$s\' (%3$s)</string>
     <string name="search_errors_bottom_sheet_title">Nieudani dostawcy wyszukiwania</string>
     <string name="search_unexpected_error">Nieoczekiwany błąd</string>
-    <string name="search_error_cloudflare_challenge_encountered">Napotkano wyzwanie Cloudflare</string>
+    <string name="search_error_kind_cloudflare_challenge">Napotkano wyzwanie Cloudflare</string>
     <string name="search_info_troubleshoot_help">Aby ułatwić rozwiązywanie problemów, wyeksportuj dzienniki z ekranu ustawień i utwórz zgłoszenie w serwisie GitHub z załączonymi dziennikami.</string>
     <string name="torrent_details_screen_title">Szczegóły</string>
     <string name="torrent_details_action_open_link">Otwórz link w przeglądarce</string>

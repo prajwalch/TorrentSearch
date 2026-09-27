@@ -179,8 +179,8 @@
     <string name="search_button_go_to_providers">Параметры поисковых систем</string>
     <string name="search_errors_bottom_sheet_title">Не удалось найти поисковые системы</string>
     <string name="search_unexpected_error">Непредвиденная ошибка</string>
-    <string name="search_error_crashed">Сломалось</string>
-    <string name="search_error_cloudflare_challenge_encountered">Нужно пройти капчу Cloudflare</string>
+    <string name="search_error_kind_crash">Сломалось</string>
+    <string name="search_error_kind_cloudflare_challenge">Нужно пройти капчу Cloudflare</string>
     <string name="search_title_stack_trace">Путь стека (Stack trace)</string>
     <string name="search_message_no_stack_trace">Путь стека (Stack trace) не найден</string>
     <string name="search_info_troubleshoot_help">Чтобы помочь чинить ошибки, экспортируйте логи в настройках и создайте ошибку на GitHub с этими логами.</string>

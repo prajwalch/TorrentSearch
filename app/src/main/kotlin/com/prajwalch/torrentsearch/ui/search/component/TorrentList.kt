@@ -26,9 +26,9 @@ import com.prajwalch.torrentsearch.ui.theme.spaces
 import kotlinx.collections.immutable.ImmutableList
 
 @Composable
-fun SearchResults(
-    searchResults: ImmutableList<Torrent>,
-    onResultClick: (Torrent) -> Unit,
+fun TorrentList(
+    torrents: ImmutableList<Torrent>,
+    onTorrentClick: (Torrent) -> Unit,
     searchQuery: String,
     searchCategory: Category,
     isRefreshing: Boolean,
@@ -49,20 +49,20 @@ fun SearchResults(
         ) {
             item {
                 SearchResultsCount(
-                    searchResultsSize = searchResults.size,
+                    searchResultsSize = torrents.size,
                     searchQuery = searchQuery,
                     searchCategory = searchCategory,
                 )
             }
 
-            items(items = searchResults, key = { it.id }, contentType = { it.category }) {
+            items(items = torrents, key = { it.id }, contentType = { it.category }) {
                 val isViewed = remember(viewedTorrentIds) { it.id in viewedTorrentIds }
                 val listItemAlpha = if (isViewed) 0.6f else 1f
 
                 TorrentListItem(
                     modifier = Modifier
                         .animateItem()
-                        .clickable { onResultClick(it) }
+                        .clickable { onTorrentClick(it) }
                         .graphicsLayer { alpha = listItemAlpha },
                     name = it.name,
                     size = it.size,

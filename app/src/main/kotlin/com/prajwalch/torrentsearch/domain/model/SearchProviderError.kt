@@ -1,28 +1,47 @@
 package com.prajwalch.torrentsearch.domain.model
 
+import com.prajwalch.torrentsearch.provider.SearchProvider
+import com.prajwalch.torrentsearch.provider.SearchProviderId
+
 /**
- * Represents an error that happened when launching a search provider.
+ * Represents an error occurred when using [SearchProvider].
  */
 data class SearchProviderError(
     /**
-     * Name of the search provider for which this error belongs.
+     * ID of the provider.
+     */
+    val providerId: SearchProviderId,
+    /**
+     * Name of the provider.
      */
     val providerName: String,
     /**
-     * Search provider base URL.
+     * Homepage URl of the provider.
      */
     val providerUrl: String,
     /**
-     * What was the reason for failure?
+     * Category of the error.
      */
-    val failureReason: SearchProviderFailureReason,
+    val kind: Kind,
     /**
-     * What caused the error?.
+     * Exception which caused this error to happen.
      */
     val cause: Throwable?,
-)
+) {
+    /**
+     * Represents an error category.
+     */
+    enum class Kind {
+        Crash,
+        CloudflareChallenge,
+    }
 
-enum class SearchProviderFailureReason {
-    Crash,
-    CloudflareChallenge,
+    /**
+     * Indicates whether the error is retryable.
+     */
+    val isRetryable: Boolean
+        get() = when (kind) {
+            Kind.Crash -> true
+            Kind.CloudflareChallenge -> false
+        }
 }

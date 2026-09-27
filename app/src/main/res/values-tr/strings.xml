@@ -242,8 +242,8 @@
     <string name="home_title_recent_searches">Son aramalar</string>
     <string name="search_title_stack_trace">Yığın izleme</string>
     <string name="search_message_no_stack_trace">Yığın izleme bulunamadı</string>
-    <string name="search_error_crashed">Çöktü</string>
-    <string name="search_error_cloudflare_challenge_encountered">Cloudflare göreviyle karşılaşıldı</string>
+    <string name="search_error_kind_crash">Çöktü</string>
+    <string name="search_error_kind_cloudflare_challenge">Cloudflare göreviyle karşılaşıldı</string>
     <string name="home_title_enable_search_providers">Arama sağlayıcılarını etkinleştir</string>
     <string name="bookmarks_no_bookmarks_matched">Yer imi eşleşmedi</string>
     <string name="settings_group_content_and_privacy">İçerik ve gizlilik</string>

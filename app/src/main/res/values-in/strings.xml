@@ -209,8 +209,8 @@
     <string name="home_button_enable">Aktifkan</string>
     <string name="home_button_i_will_choose_myself">Saya akan memilih sendiri</string>
     <string name="home_title_recent_searches">Pencarian terbaru</string>
-    <string name="search_error_crashed">Macet</string>
-    <string name="search_error_cloudflare_challenge_encountered">Tantangan Cloudflare ditemui</string>
+    <string name="search_error_kind_crash">Macet</string>
+    <string name="search_error_kind_cloudflare_challenge">Tantangan Cloudflare ditemui</string>
     <string name="search_title_stack_trace">Jejak tumpukan</string>
     <string name="search_message_no_stack_trace">Tidak ada jejak tumpukan yang ditemukan</string>
     <string name="torrent_details_label_provider">Penyedia</string>

@@ -247,8 +247,8 @@
     <string name="torrent_button_save_to_file">Зберегти до файлу</string>
     <string name="home_title_enable_search_providers">Увімкнути пошукові системи</string>
     <string name="home_title_recent_searches">Недавні пошуки</string>
-    <string name="search_error_crashed">Збій</string>
-    <string name="search_error_cloudflare_challenge_encountered">CloudFlare вимагає перевірки</string>
+    <string name="search_error_kind_crash">Збій</string>
+    <string name="search_error_kind_cloudflare_challenge">CloudFlare вимагає перевірки</string>
     <string name="search_title_stack_trace">Трасування стеку</string>
     <string name="search_message_no_stack_trace">Трасування стеку не знайдено</string>
     <string name="torrent_details_button_bookmark_torrent">Уподобати торент</string>
