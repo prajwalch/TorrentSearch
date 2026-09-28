@@ -264,4 +264,6 @@
     <string name="torrent_status_file_link_ready">İndirmeyi başlatmak için dokunun</string>
     <string name="torrent_status_details_ready">Ayrıntıları açmak için dokunun</string>
     <string name="torrent_status_unavailable">Kullanılabilir değil</string>
+    <string name="search_error_status_retrying">Yeniden deneniyor…</string>
+    <string name="search_error_status_resolved">Çözüldü</string>
 </resources>
