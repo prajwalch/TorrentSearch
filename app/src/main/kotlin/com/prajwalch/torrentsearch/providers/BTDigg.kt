@@ -73,7 +73,7 @@ private class BTDiggResultsPageParser(
             name = torrentName,
             size = size,
             uploadDate = uploadDate,
-            descriptionPageUrl = detailsPageUrl,
+            detailsPageUrl = detailsPageUrl,
             providerName = providerName,
             magnetUri = MagnetUri.Available(magnetUri),
         )

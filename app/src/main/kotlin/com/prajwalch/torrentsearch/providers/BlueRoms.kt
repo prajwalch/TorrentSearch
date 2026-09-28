@@ -97,7 +97,7 @@ private class BlueRomsResultsPageParser(
             category = Category.Games,
             providerName = providerName,
             magnetUri = MagnetUri.RequiresFetch(downloadPageLink),
-            descriptionPageUrl = detailsPageUrl,
+            detailsPageUrl = detailsPageUrl,
         )
     }
 

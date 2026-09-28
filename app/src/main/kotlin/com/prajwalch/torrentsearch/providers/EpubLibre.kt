@@ -116,7 +116,7 @@ private class EpubLibreResultsPageParser(
             providerName = providerName,
             category = Category.Books,
             magnetUri = MagnetUri.RequiresFetch(detailsPageUrl),
-            descriptionPageUrl = detailsPageUrl,
+            detailsPageUrl = detailsPageUrl,
         )
     }
 

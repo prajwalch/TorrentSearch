@@ -180,7 +180,7 @@ private class YtsResultsJsonParser(
             uploadDate = uploadDate,
             category = Category.Movies,
             magnetUri = MagnetUri.Available(magnetUri),
-            descriptionPageUrl = detailsPageUrl,
+            detailsPageUrl = detailsPageUrl,
         )
     }
 }

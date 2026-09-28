@@ -170,7 +170,7 @@ private class BitSearchResultsPageParser(
             category = category,
             magnetUri = MagnetUri.Available(magnetUri),
             fileDownloadLink = fileDownloadLink,
-            descriptionPageUrl = detailsPageUrl,
+            detailsPageUrl = detailsPageUrl,
         )
     }
 

@@ -102,7 +102,7 @@ private class LinuxTrackerResultsPageParser(
             providerName = providerName,
             magnetUri = MagnetUri.Available(magnetUri),
             fileDownloadLink = fileDownloadLink,
-            descriptionPageUrl = detailsPageUrl,
+            detailsPageUrl = detailsPageUrl,
         )
     }
 

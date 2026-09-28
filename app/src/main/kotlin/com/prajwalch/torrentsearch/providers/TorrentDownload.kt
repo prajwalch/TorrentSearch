@@ -121,7 +121,7 @@ private class TorrentDownloadResultsParser(
             category = category,
             providerName = providerName,
             magnetUri = MagnetUri.Available(magnetUri),
-            descriptionPageUrl = detailsPageUrl,
+            detailsPageUrl = detailsPageUrl,
         )
     }
 

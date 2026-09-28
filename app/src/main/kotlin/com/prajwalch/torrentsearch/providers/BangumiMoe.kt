@@ -129,7 +129,7 @@ private class BangumiMoeResultsJsonParser(
             providerName = providerName,
             category = Category.Anime,
             magnetUri = MagnetUri.Available(magnetUri),
-            descriptionPageUrl = detailsPageUrl,
+            detailsPageUrl = detailsPageUrl,
         )
     }
 }

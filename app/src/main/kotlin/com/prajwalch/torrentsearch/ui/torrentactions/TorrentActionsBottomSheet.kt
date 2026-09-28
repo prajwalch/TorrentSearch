@@ -111,7 +111,7 @@ fun TorrentActionsBottomSheet(
     }
 
     fun withDetailsPageUrl(action: (String) -> Unit): () -> Unit = {
-        torrent.descriptionPageUrl?.let(action)
+        torrent.detailsPageUrl?.let(action)
     }
 
     ModalBottomSheet(
@@ -226,7 +226,7 @@ private fun BottomSheetContent(
                 onOpenTorrentDetails = onOpenTorrentDetails,
                 onCopyDetailsPageLink = onCopyDetailsPageLink,
                 onShareDetailsPageLink = onShareDetailsPageLink,
-                enabled = !torrent.descriptionPageUrl.isNullOrBlank(),
+                enabled = !torrent.detailsPageUrl.isNullOrBlank(),
             )
         }
     }

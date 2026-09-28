@@ -186,7 +186,7 @@ private class ExtResultsPageParser(
             category = category,
             providerName = providerName,
             magnetUri = MagnetUri.RequiresFetch(detailsPageUrl),
-            descriptionPageUrl = detailsPageUrl,
+            detailsPageUrl = detailsPageUrl,
         )
     }
 

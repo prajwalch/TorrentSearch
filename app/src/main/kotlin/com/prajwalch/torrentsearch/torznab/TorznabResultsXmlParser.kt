@@ -67,7 +67,7 @@ class TorznabResultsXmlParser(
         var seeders: String? = null
         var peers: String? = null
         var uploadDate: Instant? = null
-        var descriptionPageUrl: String? = null
+        var detailsPageUrl: String? = null
         var magnetUri: String? = null
         var infoHash: String? = null
         var fileDownloadLink: String? = null
@@ -77,7 +77,7 @@ class TorznabResultsXmlParser(
         parser.readParentTag(tagName = "item") {
             when (parser.name) {
                 "title" -> torrentName = readTitle()
-                "comments" -> descriptionPageUrl = readComments()
+                "comments" -> detailsPageUrl = readComments()
                 "pubDate" -> uploadDate = readPubDate()
                 "size" -> size = readSize()
                 "enclosure" if (fileDownloadLink == null) -> {
@@ -142,7 +142,7 @@ class TorznabResultsXmlParser(
             providerName = providerName,
             uploadDate = uploadDate,
             category = category,
-            descriptionPageUrl = descriptionPageUrl,
+            detailsPageUrl = detailsPageUrl,
             magnetUri = MagnetUri.Available(magnetUri),
             fileDownloadLink = fileDownloadLink,
         )

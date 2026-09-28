@@ -163,7 +163,7 @@ private class TheRarBgResultsPageParser(
             uploadDate = uploadDate,
             category = category,
             magnetUri = MagnetUri.RequiresFetch(detailsPageUrl),
-            descriptionPageUrl = detailsPageUrl,
+            detailsPageUrl = detailsPageUrl,
         )
     }
 

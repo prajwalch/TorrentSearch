@@ -171,7 +171,7 @@ class TorrentDetailsViewModel(
                     providerName = providerName,
                     uploadDate = torrentDetails.uploadDate,
                     category = torrentDetails.category,
-                    descriptionPageUrl = detailsPageUrl,
+                    detailsPageUrl = detailsPageUrl,
                     fileDownloadLink = torrentDetails.fileDownloadLink,
                 )
             }

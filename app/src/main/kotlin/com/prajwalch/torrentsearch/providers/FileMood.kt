@@ -84,7 +84,7 @@ private class FileMoodResultsPageParser(
             category = Category.Other,
             providerName = providerName,
             magnetUri = MagnetUri.Available(magnetUri),
-            descriptionPageUrl = descriptionPageUrl,
+            detailsPageUrl = descriptionPageUrl,
         )
     }
 

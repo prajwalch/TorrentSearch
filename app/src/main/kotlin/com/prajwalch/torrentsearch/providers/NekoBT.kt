@@ -106,7 +106,7 @@ private class NekoBTResultsPageParser(
             providerName = providerName,
             uploadDate = uploadDate,
             category = Category.Anime,
-            descriptionPageUrl = detailsPageUrl,
+            detailsPageUrl = detailsPageUrl,
             magnetUri = MagnetUri.Available(magnetUri),
             fileDownloadLink = fileDownloadLink,
         )

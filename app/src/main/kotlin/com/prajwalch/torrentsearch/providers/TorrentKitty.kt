@@ -75,7 +75,7 @@ private class TorrentKittyResultsPageParser(
             size = size,
             uploadDate = uploadDate,
             providerName = providerName,
-            descriptionPageUrl = detailsPageUrl,
+            detailsPageUrl = detailsPageUrl,
             magnetUri = MagnetUri.Available(magnetUri),
             fileDownloadLink = fileDownloadLink,
         )

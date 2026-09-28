@@ -123,7 +123,7 @@ class AniLibria(private val networkClient: NetworkClient) : SearchProvider {
             providerName = this.name,
             uploadDate = uploadDate,
             category = Category.Anime,
-            descriptionPageUrl = descriptionPageUrl,
+            detailsPageUrl = descriptionPageUrl,
             magnetUri = MagnetUri.Available(magnetUri),
         )
     }

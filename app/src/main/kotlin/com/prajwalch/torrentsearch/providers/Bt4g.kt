@@ -140,7 +140,7 @@ private class Bt4gResultsPageParser(
             category = category,
             providerName = providerName,
             magnetUri = MagnetUri.RequiresFetch(detailsPageUrl),
-            descriptionPageUrl = detailsPageUrl,
+            detailsPageUrl = detailsPageUrl,
         )
     }
 

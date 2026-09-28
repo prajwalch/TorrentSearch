@@ -141,7 +141,7 @@ private class TokyoToshokanResultsPageParser(
             providerName = providerName,
             uploadDate = uploadDate,
             category = category,
-            descriptionPageUrl = detailsPageUrl,
+            detailsPageUrl = detailsPageUrl,
             magnetUri = MagnetUri.Available(magnetUri),
             fileDownloadLink = fileDownloadLink,
         )

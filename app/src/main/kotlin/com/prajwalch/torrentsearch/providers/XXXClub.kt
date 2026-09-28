@@ -108,7 +108,7 @@ private class XXXClubResultsPageParser(
             uploadDate = uploadDate,
             category = Category.Porn,
             magnetUri = MagnetUri.RequiresFetch(detailsPageUrl),
-            descriptionPageUrl = detailsPageUrl,
+            detailsPageUrl = detailsPageUrl,
         )
     }
 

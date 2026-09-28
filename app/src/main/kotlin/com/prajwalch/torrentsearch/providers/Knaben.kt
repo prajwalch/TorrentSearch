@@ -173,7 +173,7 @@ private class KnabenResultsJsonParser(
             peers = peers,
             providerName = providerName,
             uploadDate = uploadDate,
-            descriptionPageUrl = descriptionPageUrl,
+            detailsPageUrl = descriptionPageUrl,
             magnetUri = MagnetUri.Available(magnetUri),
             category = category,
         )

@@ -185,7 +185,7 @@ private class TBPResultsJsonParser(
             uploadDate = uploadDate,
             category = category,
             magnetUri = MagnetUri.Available(magnetUri),
-            descriptionPageUrl = detailsPageUrl,
+            detailsPageUrl = detailsPageUrl,
         )
     }
 }

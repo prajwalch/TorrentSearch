@@ -96,7 +96,7 @@ private class BtsowResultsJsonParser(
                     size = size,
                     providerName = providerName,
                     magnetUri = MagnetUri.Available(magnetUri),
-                    descriptionPageUrl = "$providerUrl/magnet/detail/$infoHash",
+                    detailsPageUrl = "$providerUrl/magnet/detail/$infoHash",
                 )
             }
             .orEmpty()

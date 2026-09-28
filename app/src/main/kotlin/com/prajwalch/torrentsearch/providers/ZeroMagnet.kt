@@ -90,7 +90,7 @@ private class ZeroMagnetResultsPageParser(
             providerName = providerName,
             category = Category.Porn,
             magnetUri = MagnetUri.RequiresFetch(detailsPageUrl),
-            descriptionPageUrl = detailsPageUrl,
+            detailsPageUrl = detailsPageUrl,
         )
     }
 }

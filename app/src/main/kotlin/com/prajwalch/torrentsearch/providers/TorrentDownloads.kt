@@ -173,7 +173,7 @@ private class TorrentDownloadsResultsPageParser(
             providerName = providerName,
             category = category,
             magnetUri = MagnetUri.RequiresFetch(detailsPageUrl),
-            descriptionPageUrl = detailsPageUrl,
+            detailsPageUrl = detailsPageUrl,
         )
     }
 }

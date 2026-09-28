@@ -127,7 +127,7 @@ private class DmhyResultsPageParser(
             category = category,
             providerName = providerName,
             magnetUri = MagnetUri.Available(magnetUri),
-            descriptionPageUrl = detailsPageUrl,
+            detailsPageUrl = detailsPageUrl,
         )
     }
 

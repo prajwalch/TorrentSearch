@@ -144,7 +144,7 @@ private class UIndexResultsPageParser(
             uploadDate = uploadDate,
             category = category,
             magnetUri = MagnetUri.Available(magnetUri),
-            descriptionPageUrl = detailsPageUrl,
+            detailsPageUrl = detailsPageUrl,
         )
     }
 

@@ -62,7 +62,7 @@ class ProviderTest {
             ├── Peers               : ${first.peers}
             ├── Upload Date         : ${first.uploadDate}
             ├── Category            : ${first.category}
-            └── Page URL            : ${first.descriptionPageUrl}
+            └── Page URL            : ${first.detailsPageUrl}
             └── Provider Name       : ${first.providerName}
             """.trimIndent()
         )
@@ -105,7 +105,7 @@ class ProviderTest {
                 ├── Peers               : ${first.peers}
                 ├── Upload Date         : ${first.uploadDate}
                 ├── Category            : ${first.category}
-                └── Page URL            : ${first.descriptionPageUrl}
+                └── Page URL            : ${first.detailsPageUrl}
                 └── Provider Name       : ${first.providerName}
                 """.trimIndent()
             )

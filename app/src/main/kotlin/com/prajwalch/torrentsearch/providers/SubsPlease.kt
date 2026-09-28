@@ -124,7 +124,7 @@ private class SubsPleaseResultsJsonParser(
             size = size,
             uploadDate = uploadDate,
             category = Category.Anime,
-            descriptionPageUrl = detailsPageUrl,
+            detailsPageUrl = detailsPageUrl,
             providerName = providerName,
             magnetUri = MagnetUri.Available(magnetUri),
         )

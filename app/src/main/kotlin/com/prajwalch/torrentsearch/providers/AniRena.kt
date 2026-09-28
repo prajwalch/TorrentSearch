@@ -142,7 +142,7 @@ private class AniRenaResultsPageParser(
             providerName = providerName,
             magnetUri = MagnetUri.RequiresFetch(magnetUriSourceUrl),
             fileDownloadLink = fileDownloadLink,
-            descriptionPageUrl = detailsPageUrl,
+            detailsPageUrl = detailsPageUrl,
         )
     }
 

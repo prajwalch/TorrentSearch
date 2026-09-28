@@ -98,7 +98,7 @@ private class AudioBookBayResultsPageParser(
             category = Category.Books,
             providerName = providerName,
             magnetUri = MagnetUri.RequiresFetch(detailsPageUrl),
-            descriptionPageUrl = detailsPageUrl,
+            detailsPageUrl = detailsPageUrl,
         )
     }
 

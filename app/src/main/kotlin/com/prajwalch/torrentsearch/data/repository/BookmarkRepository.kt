@@ -51,7 +51,7 @@ class BookmarkRepository(private val dao: BookmarkedTorrentDao) {
         providerName: String,
         uploadDate: Instant?,
         category: Category?,
-        descriptionPageUrl: String?,
+        detailsPageUrl: String?,
         fileDownloadLink: String?,
     ) {
         val bookmarkedTorrentEntity = BookmarkedTorrentEntity(
@@ -64,7 +64,7 @@ class BookmarkRepository(private val dao: BookmarkedTorrentDao) {
             providerName = providerName,
             uploadDate = uploadDate?.toEpochMilli(),
             category = category?.name,
-            descriptionPageUrl = descriptionPageUrl,
+            descriptionPageUrl = detailsPageUrl,
             magnetUri = magnetUri,
             fileDownloadLink = fileDownloadLink,
         )
@@ -125,7 +125,7 @@ private fun BookmarkedTorrentEntity.toDomain() =
         providerName = this.providerName,
         uploadDate = this.uploadDate?.let(Instant::ofEpochMilli),
         category = this.category?.let(Category::valueOf),
-        descriptionPageUrl = this.descriptionPageUrl,
+        detailsPageUrl = this.descriptionPageUrl,
         magnetUri = MagnetUri.Available(
             this.magnetUri ?: TorrentUtils.createMagnetUri(this.infoHash)
         ),

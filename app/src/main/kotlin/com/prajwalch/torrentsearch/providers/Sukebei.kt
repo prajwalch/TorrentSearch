@@ -107,7 +107,7 @@ private class SukebeiResultsPageParser(
             uploadDate = uploadDate,
             category = Category.Porn,
             magnetUri = MagnetUri.Available(magnetUri),
-            descriptionPageUrl = detailsPageUrl,
+            detailsPageUrl = detailsPageUrl,
             fileDownloadLink = fileDownloadLink,
         )
     }

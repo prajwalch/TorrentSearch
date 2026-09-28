@@ -125,7 +125,7 @@ private class IAResultsJsonParser(
             category = category,
             providerName = providerName,
             magnetUri = MagnetUri.Available(magnetUri),
-            descriptionPageUrl = descriptionPageUrl,
+            detailsPageUrl = descriptionPageUrl,
         )
     }
 }

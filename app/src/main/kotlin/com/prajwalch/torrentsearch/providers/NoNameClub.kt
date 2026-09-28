@@ -223,7 +223,7 @@ private class NnmClubResultsPageParser(
             providerName = providerName,
             magnetUri = MagnetUri.RequiresFetch(detailsPageUrl),
             fileDownloadLink = fileDownloadLink,
-            descriptionPageUrl = detailsPageUrl,
+            detailsPageUrl = detailsPageUrl,
         )
     }
 }

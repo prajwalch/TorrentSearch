@@ -131,7 +131,7 @@ private class XXXTrackerResultsPageParser(
             peers = peers,
             uploadDate = uploadDate,
             category = Category.Porn,
-            descriptionPageUrl = detailsPageUrl,
+            detailsPageUrl = detailsPageUrl,
             providerName = providerName,
             magnetUri = MagnetUri.Available(magnetUri),
             fileDownloadLink = fileDownloadLink,

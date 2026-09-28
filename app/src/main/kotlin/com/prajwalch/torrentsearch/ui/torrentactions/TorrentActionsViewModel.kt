@@ -163,7 +163,7 @@ class TorrentActionsViewModel(
                     providerName = torrent.providerName,
                     uploadDate = torrent.uploadDate,
                     category = torrent.category,
-                    descriptionPageUrl = torrent.descriptionPageUrl,
+                    detailsPageUrl = torrent.detailsPageUrl,
                     fileDownloadLink = torrent.fileDownloadLink,
                 )
             } else {

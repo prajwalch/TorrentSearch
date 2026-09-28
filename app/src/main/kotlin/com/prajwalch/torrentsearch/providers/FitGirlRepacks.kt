@@ -95,7 +95,7 @@ private class FitGirlRepacksResultsPageParser(
             category = Category.Games,
             magnetUri = magnetUri,
             providerName = providerName,
-            descriptionPageUrl = detailsPageUrl,
+            detailsPageUrl = detailsPageUrl,
         )
     }
 

@@ -152,7 +152,7 @@ private class TdResultsPageParser(
             category = category,
             providerName = providerName,
             magnetUri = MagnetUri.Available(magnetUri),
-            descriptionPageUrl = descriptionPageUrl,
+            detailsPageUrl = descriptionPageUrl,
         )
     }
 

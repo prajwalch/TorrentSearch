@@ -128,7 +128,7 @@ private class ThirteenThirtySevenXResultsPageParser(
             uploadDate = uploadDate,
             providerName = providerName,
             category = category,
-            descriptionPageUrl = detailsPageUrl,
+            detailsPageUrl = detailsPageUrl,
             magnetUri = MagnetUri.RequiresFetch(detailsPageUrl),
         )
     }
