@@ -153,19 +153,7 @@ class TorrentActionsViewModel(
             val magnetUri = currentMagnetUriState.value
 
             if (bookmark) {
-                bookmarkRepository.createAndAddBookmark(
-                    torrentId = torrent.id,
-                    name = torrent.name,
-                    magnetUri = magnetUri,
-                    size = torrent.size,
-                    seeders = torrent.seeders,
-                    peers = torrent.peers,
-                    providerName = torrent.providerName,
-                    uploadDate = torrent.uploadDate,
-                    category = torrent.category,
-                    detailsPageUrl = torrent.detailsPageUrl,
-                    fileDownloadLink = torrent.fileDownloadLink,
-                )
+                bookmarkRepository.bookmarkTorrent(torrent, magnetUri)
             } else {
                 bookmarkRepository.deleteBookmarkById(torrent.id)
             }

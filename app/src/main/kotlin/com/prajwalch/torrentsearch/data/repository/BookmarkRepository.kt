@@ -37,39 +37,8 @@ class BookmarkRepository(private val dao: BookmarkedTorrentDao) {
         return dao.getBookmarkIds().map { it.toSet() }
     }
 
-//    suspend fun bookmarkTorrent(torrent: Torrent) {
-//        dao.insertBookmark(torrent.toEntity())
-//    }
-
-    suspend fun createAndAddBookmark(
-        torrentId: String,
-        name: String,
-        magnetUri: String,
-        size: String?,
-        seeders: UInt?,
-        peers: UInt?,
-        providerName: String,
-        uploadDate: Instant?,
-        category: Category?,
-        detailsPageUrl: String?,
-        fileDownloadLink: String?,
-    ) {
-        val bookmarkedTorrentEntity = BookmarkedTorrentEntity(
-            id = torrentId,
-            name = name,
-            infoHash = TorrentUtils.getInfoHashFromMagnetUri(magnetUri),
-            size = size,
-            seeders = seeders?.toInt(),
-            peers = peers?.toInt(),
-            providerName = providerName,
-            uploadDate = uploadDate?.toEpochMilli(),
-            category = category?.name,
-            descriptionPageUrl = detailsPageUrl,
-            magnetUri = magnetUri,
-            fileDownloadLink = fileDownloadLink,
-        )
-
-        dao.insertBookmark(bookmarkedTorrentEntity)
+    suspend fun bookmarkTorrent(torrent: Torrent, resolvedMagnetUri: String) {
+        dao.insertBookmark(torrent.toEntity(resolvedMagnetUri))
     }
 
     suspend fun deleteBookmarkById(id: String) {
@@ -114,6 +83,22 @@ class BookmarkRepository(private val dao: BookmarkedTorrentDao) {
         private const val TAG = "BookmarkRepository"
     }
 }
+
+private fun Torrent.toEntity(resolvedMagnetUri: String) =
+    BookmarkedTorrentEntity(
+        id = id,
+        infoHash = TorrentUtils.getInfoHashFromMagnetUri(resolvedMagnetUri),
+        name = name,
+        size = size,
+        seeders = seeders?.toInt(),
+        peers = peers?.toInt(),
+        providerName = providerName,
+        uploadDate = uploadDate?.toEpochMilli(),
+        category = category?.name,
+        descriptionPageUrl = detailsPageUrl,
+        magnetUri = resolvedMagnetUri,
+        fileDownloadLink = fileDownloadLink,
+    )
 
 private fun BookmarkedTorrentEntity.toDomain() =
     Torrent(

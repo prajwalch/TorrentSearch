@@ -12,6 +12,8 @@ import com.prajwalch.torrentsearch.domain.TorrentFileDownloadResult
 import com.prajwalch.torrentsearch.domain.TorrentFileDownloader
 import com.prajwalch.torrentsearch.domain.TorrentQueryService
 import com.prajwalch.torrentsearch.domain.model.GetTorrentDetailsResponse
+import com.prajwalch.torrentsearch.domain.model.MagnetUri
+import com.prajwalch.torrentsearch.domain.model.Torrent
 import com.prajwalch.torrentsearch.domain.model.TorrentDetails
 import com.prajwalch.torrentsearch.network.ConnectivityChecker
 
@@ -160,21 +162,11 @@ class TorrentDetailsViewModel(
         viewModelScope.launch {
             if (!bookmark) {
                 bookmarkRepository.deleteBookmarkById(torrentId)
-            } else {
-                bookmarkRepository.createAndAddBookmark(
-                    torrentId = torrentId,
-                    name = torrentDetails.name,
-                    magnetUri = torrentDetails.magnetUri,
-                    size = torrentDetails.size,
-                    seeders = torrentDetails.seeders,
-                    peers = torrentDetails.peers,
-                    providerName = providerName,
-                    uploadDate = torrentDetails.uploadDate,
-                    category = torrentDetails.category,
-                    detailsPageUrl = detailsPageUrl,
-                    fileDownloadLink = torrentDetails.fileDownloadLink,
-                )
+                return@launch
             }
+
+            val torrent = torrentDetails.asTorrent(torrentId, providerName, detailsPageUrl)
+            bookmarkRepository.bookmarkTorrent(torrent, torrentDetails.magnetUri)
         }
     }
 
@@ -228,3 +220,21 @@ class TorrentDetailsViewModel(
         pendingTorrentFile = null
     }
 }
+
+private fun TorrentDetails.asTorrent(
+    id: String,
+    providerName: String,
+    detailsPageUrl: String,
+) = Torrent(
+    id = id,
+    name = name,
+    size = size,
+    seeders = seeders,
+    peers = peers,
+    providerName = providerName,
+    uploadDate = uploadDate,
+    category = category,
+    detailsPageUrl = detailsPageUrl,
+    magnetUri = MagnetUri.Available(magnetUri),
+    fileDownloadLink = fileDownloadLink,
+)
