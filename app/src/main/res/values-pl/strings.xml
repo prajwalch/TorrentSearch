@@ -252,4 +252,17 @@
     <string name="torrent_status_file_download_complete">Pobieranie zakończone</string>
     <string name="torrent_button_save_to_file">Zapisz do pliku</string>
     <string name="torrent_details_button_bookmark_torrent">Dodaj torrent do zakładek</string>
+    <string name="torrent_title_magnet_link">Link magnet</string>
+    <string name="torrent_title_torrent_file">Plik torrent</string>
+    <string name="torrent_title_details_page">Strona szczegółów</string>
+    <string name="torrent_status_magnet_link_ready">Dotknij, aby otworzyć w kliencie torrent</string>
+    <string name="torrent_status_file_preparing_link">Przygotowywanie linku do pobrania…</string>
+    <string name="torrent_status_file_waiting_magnet_link">Oczekiwanie na link magnet…</string>
+    <string name="torrent_status_file_link_ready">Dotknij, aby rozpocząć pobieranie</string>
+    <string name="torrent_status_details_ready">Dotknij, aby wyświetlić szczegóły</string>
+    <string name="torrent_status_unavailable">Niedostępne</string>
+    <string name="search_error_status_retrying">Ponawianie próby…</string>
+    <string name="search_error_status_resolved">Rozwiązany</string>
+    <string name="settings_show_recent_searches">Pokaż ostatnie wyszukiwania</string>
+    <string name="settings_show_recent_searches_summary">Zobacz 5 ostatnich wyszukiwań na ekranie głównym</string>
 </resources>
