@@ -239,13 +239,20 @@ private object TdDetailsPageParser {
         }
 }
 
-private fun categoryFromRawString(raw: String) = when (raw) {
-    "Software" -> Category.Apps
-    "E-Books", "AudioBooks" -> Category.Books
-    "Games" -> Category.Games
-    "Movies" -> Category.Movies
-    "Music" -> Category.Music
-    "Porn" -> Category.Porn
-    "TV" -> Category.Series
-    else -> Category.Other
+private fun categoryFromRawString(raw: String) = when (raw.lowercase()) {
+    "software" -> Category.Apps
+    "e-books", "ebooks", "audiobooks" -> Category.Books
+    "games" -> Category.Games
+    "movies" -> Category.Movies
+    "music" -> Category.Music
+    "porn", "xxx" -> Category.Porn
+    "tv" -> Category.Series
+    else -> when {
+        raw.startsWith("games") -> Category.Games
+        raw.startsWith("movies") -> Category.Movies
+        raw.startsWith("music") -> Category.Music
+        raw.startsWith("software") -> Category.Apps
+        raw.startsWith("tv") -> Category.Series
+        else -> Category.Other
+    }
 }
