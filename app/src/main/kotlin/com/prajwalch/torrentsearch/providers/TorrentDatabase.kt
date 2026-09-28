@@ -159,8 +159,6 @@ private class TdResultsPageParser(
 
     private companion object {
         private const val TORRENT_DATABASE_TRACKER_URL = "https%3A%2F%2Fdevelopify.ca%2Fannounce"
-
-        // Selectors
         private const val RESULT_LIST_ITEM = "table.torrent-table > tbody > tr"
         private const val TORRENT_NAME = "td:nth-child(1) > a:nth-child(2)"
         private const val SIZE = "td.size-cell"
@@ -173,70 +171,65 @@ private class TdResultsPageParser(
 }
 
 private object TdDetailsPageParser {
-    private const val TORRENT_NAME =
-        "div.torrent-detail-card > div.card-header.torrent-cat-header > h4"
-    private const val SIZE =
-        "div.torrent-detail-card > div.card-body ul.torrent-info-list > li:nth-child(2) > strong.db-value"
-    private const val SEEDERS =
-        "div.torrent-detail-card > div.card-body ul.torrent-stats-list > li:nth-child(1) > strong.text-success"
-    private const val PEERS =
-        "div.torrent-detail-card > div.card-body ul.torrent-stats-list > li:nth-child(2) > strong.text-danger"
-    private const val UPLOAD_DATE =
-        "div.torrent-detail-card > div.card-body ul.torrent-info-list > li:nth-child(3) > strong.db-value"
-    private const val CATEGORY = ".cat-badge"
-    private const val UPLOADER =
-        "div.torrent-detail-card > div.card-body ul.torrent-info-list > li:nth-child(4) > a"
-    private const val LAST_CHECKED =
-        "div.torrent-detail-card > div.card-body ul.torrent-info-list li:nth-child(5) > strong.db-value"
-    private const val DESCRIPTION = "div.torrent-info-card > div.torrent-info-content"
+    private const val TORRENT_NAME = "article.torrent-detail-card > header > h1"
+    private const val SIZE = "div.detail-stat-grid > div:nth-child(1) > strong"
+    private const val SEEDERS = "div.detail-stat-grid > div:nth-child(2) > strong"
+    private const val PEERS = "div.detail-stat-grid > div:nth-child(3) > strong"
+    private const val UPLOAD_DATE = "dl.detail-metadata > div:nth-child(1) > dd"
+    private const val CATEGORY = "span.category-bubble"
+    private const val UPLOADER = "div.detail-uploader > a"
+    private const val LAST_CHECKED = "dl.detail-metadata > div:nth-child(2) > dd"
+    private const val DESCRIPTION = "div.torrent-info-content"
     private const val MAGNET_URI = "#downloadMagnetBtn"
 
-    suspend fun parse(html: String): TorrentDetails? =
-        withContext(Dispatchers.Default) {
-            val html = Jsoup.parse(html)
+    suspend fun parse(html: String): TorrentDetails? = withContext(Dispatchers.Default) {
+        val dom = Jsoup.parse(html)
 
-            val name = html.selectFirst(TORRENT_NAME)?.ownText() ?: return@withContext null
-            val magnetUri = html.selectFirst(MAGNET_URI)?.attr("href") ?: return@withContext null
-            val infoHash = TorrentUtils.getInfoHashFromMagnetUri(magnetUri)
+        val name = dom.selectFirst(TORRENT_NAME)?.ownText() ?: return@withContext null
+        val magnetUri = dom.selectFirst(MAGNET_URI)?.attr("href") ?: return@withContext null
+        val infoHash = TorrentUtils.getInfoHashFromMagnetUri(magnetUri)
 
-            val size = html.selectFirst(SIZE)?.ownText()?.let(FileSizeUtils::normalizeSize)
-            val seeders = html.selectFirst(SEEDERS)?.ownText()?.toUIntOrNull()
-            val peers = html.selectFirst(PEERS)?.ownText()?.toUIntOrNull()
-            val uploadDate = html.selectFirst(UPLOAD_DATE)?.ownText()
-                ?.let { rawDate ->
-                    runCatching {
-                        TorrentDateParser.parse(date = rawDate, format = "yyyy-MM-dd HH:mm:ssxxx")
-                    }.recoverCatching {
-                        TorrentDateParser.parse(date = rawDate, format = "yyyy-MM-dd HH:mm:ss")
-                    }
+        val size = dom.selectFirst(SIZE)?.ownText()?.let(FileSizeUtils::normalizeSize)
+        val seeders = dom.selectFirst(SEEDERS)?.ownText()?.toUIntOrNull()
+        val peers = dom.selectFirst(PEERS)?.ownText()?.toUIntOrNull()
+        val uploadDate = dom.selectFirst(UPLOAD_DATE)
+            ?.ownText()
+            ?.let { rawDate ->
+                runCatching {
+                    TorrentDateParser.parse(date = rawDate, format = "yyyy-MM-dd HH:mm:ssxxx")
+                }.recoverCatching {
+                    TorrentDateParser.parse(date = rawDate, format = "yyyy-MM-dd HH:mm:ss")
                 }
-                ?.getOrNull()
-            val category = html.selectFirst(CATEGORY)?.ownText()?.let(::categoryFromRawString)
-            val uploader = html.selectFirst(UPLOADER)?.ownText()
-            val lastChecked = html.selectFirst(LAST_CHECKED)
-                ?.ownText()
-                ?.let {
-                    runCatching {
-                        TorrentDateParser.parse(date = it, format = "yyyy-MM-dd HH:mm:ss")
-                    }
+            }
+            ?.getOrNull()
+        val category = dom.selectFirst(CATEGORY)
+            ?.attr("data-category")
+            ?.let(::categoryFromRawString)
+        val uploader = dom.selectFirst(UPLOADER)?.ownText()
+        val lastChecked = dom.selectFirst(LAST_CHECKED)
+            ?.ownText()
+            ?.let {
+                runCatching {
+                    TorrentDateParser.parse(date = it, format = "yyyy-MM-dd HH:mm:ss")
                 }
-                ?.getOrNull()
-            val description = html.selectFirst(DESCRIPTION)?.html()
+            }
+            ?.getOrNull()
+        val description = dom.selectFirst(DESCRIPTION)?.html()
 
-            TorrentDetails(
-                infoHash = infoHash,
-                name = name,
-                size = size,
-                seeders = seeders,
-                peers = peers,
-                uploadDate = uploadDate,
-                category = category,
-                uploader = uploader,
-                lastChecked = lastChecked,
-                magnetUri = magnetUri,
-                description = description,
-            )
-        }
+        TorrentDetails(
+            infoHash = infoHash,
+            name = name,
+            size = size,
+            seeders = seeders,
+            peers = peers,
+            uploadDate = uploadDate,
+            category = category,
+            uploader = uploader,
+            lastChecked = lastChecked,
+            magnetUri = magnetUri,
+            description = description,
+        )
+    }
 }
 
 private fun categoryFromRawString(raw: String) = when (raw.lowercase()) {
