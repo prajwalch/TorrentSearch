@@ -111,8 +111,7 @@ private class TdResultsPageParser(
 ) {
     suspend fun parse(html: String, pageUrl: String): List<Torrent> =
         withContext(Dispatchers.Default) {
-            Jsoup
-                .parse(html, pageUrl)
+            Jsoup.parse(html, pageUrl)
                 .select(RESULT_LIST_ITEM)
                 .mapNotNull(::parseListItem)
         }
@@ -163,7 +162,7 @@ private class TdResultsPageParser(
         private const val TORRENT_NAME = "td:nth-child(1) > a:nth-child(2)"
         private const val SIZE = "td.size-cell"
         private const val SEEDERS = "td:nth-child(5) > div > span:nth-child(1)"
-        private const val PEERS = "td:nth-child(5) > div > span:nth-child(2)"
+        private const val PEERS = "td:nth-child(5) > div > span:nth-child(3)"
         private const val UPLOAD_DATE = "td.date-cell"
         private const val CATEGORY = "td:nth-child(2) > span.category-bubble"
         private const val DESCRIPTION_PAGE_URL = "td:nth-child(1) > a:nth-child(1)"
