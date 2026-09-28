@@ -58,7 +58,7 @@ class TorrentDatabase(private val networkClient: NetworkClient) :
     override suspend fun search(query: String, category: Category): List<Torrent> {
         val requestUrl = buildString {
             append(url)
-            append("/newest")
+            append("/search")
             append("?q=$query")
 
             categoryMap[category]?.let {
