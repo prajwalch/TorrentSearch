@@ -29,6 +29,7 @@ class TorrentDatabase(private val networkClient: NetworkClient) :
     override val id = "torrentdatabase"
     override val name = "TorrentDatabase"
     override val url = "https://developify.ca"
+    override val cloudflareSolverUrl = "$url/search?q=ubuntu"
     override val supportedCategories = setOf(
         Category.Apps,
         Category.Books,
