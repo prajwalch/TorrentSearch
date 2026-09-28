@@ -266,4 +266,6 @@
     <string name="torrent_status_file_link_ready">Натисніть, щоб почати завантаження</string>
     <string name="torrent_status_details_ready">Натисніть, щоб дізнатися більше</string>
     <string name="torrent_status_unavailable">Недоступно</string>
+    <string name="search_error_status_resolved">Вирішено</string>
+    <string name="search_error_status_retrying">Повторна спроба…</string>
 </resources>
