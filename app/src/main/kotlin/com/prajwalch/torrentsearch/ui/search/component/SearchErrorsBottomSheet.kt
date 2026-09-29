@@ -158,7 +158,7 @@ private fun ErrorItemCard(
 
                         ErrorItem.State.Resolved -> {
                             Icon(
-                                painter = painterResource(R.drawable.ic_check),
+                                painter = painterResource(R.drawable.ic_check_circle),
                                 contentDescription = null,
                             )
                         }
