@@ -6,9 +6,11 @@ import com.prajwalch.torrentsearch.domain.model.SearchProviderSafety
 import com.prajwalch.torrentsearch.domain.model.Torrent
 import com.prajwalch.torrentsearch.domain.model.TorrentDetails
 import com.prajwalch.torrentsearch.network.NetworkClient
+import com.prajwalch.torrentsearch.provider.LatestTorrentsProvider
 import com.prajwalch.torrentsearch.provider.MagnetUriProvider
 import com.prajwalch.torrentsearch.provider.SearchProvider
 import com.prajwalch.torrentsearch.provider.SearchProviderId
+import com.prajwalch.torrentsearch.provider.TopTorrentsProvider
 import com.prajwalch.torrentsearch.provider.TorrentDetailsProvider
 import com.prajwalch.torrentsearch.util.TorrentDateParser
 import com.prajwalch.torrentsearch.util.TorrentUtils
@@ -24,6 +26,8 @@ import org.jsoup.nodes.Element
 class MegaPeer(private val networkClient: NetworkClient) :
     SearchProvider,
     MagnetUriProvider,
+    LatestTorrentsProvider,
+    TopTorrentsProvider,
     TorrentDetailsProvider {
     override val id = "megapeer"
     override val name = "MegaPeer"
@@ -70,6 +74,18 @@ class MegaPeer(private val networkClient: NetworkClient) :
         val detailsPageHtml = networkClient.getText(url)
         return MegaPeersDetailsPageParser.extractMagnetUri(detailsPageHtml)
             ?: error("Failed to retrieve magnet URI from '$url'")
+    }
+
+    override suspend fun getLastestTorrents(category: Category): List<Torrent> {
+        val responseHtml = networkClient.getText(url)
+        return resultsPageParser.parse(responseHtml, url)
+    }
+
+    override suspend fun getTopTorrents(category: Category): List<Torrent> {
+        val requestUrl = "$url/top"
+        val responseHtml = networkClient.getText(requestUrl)
+
+        return resultsPageParser.parse(responseHtml, requestUrl)
     }
 }
 
