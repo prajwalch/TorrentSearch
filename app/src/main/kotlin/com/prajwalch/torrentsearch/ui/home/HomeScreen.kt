@@ -124,6 +124,7 @@ fun HomeScreen(
                             onNavigateToSearchProviders()
                             viewModel.finishProvidersCheck()
                         },
+                        onRetry = { viewModel.checkProviders() },
                     )
                 }
             }

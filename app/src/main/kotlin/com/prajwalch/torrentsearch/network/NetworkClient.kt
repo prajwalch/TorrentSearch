@@ -2,8 +2,8 @@ package com.prajwalch.torrentsearch.network
 
 import android.util.Log
 import android.webkit.CookieManager
-
 import androidx.core.net.toUri
+
 import com.prajwalch.torrentsearch.data.repository.SettingsRepository
 
 import io.ktor.client.HttpClient
@@ -14,6 +14,8 @@ import io.ktor.client.plugins.UserAgent
 import io.ktor.client.plugins.cache.HttpCache
 import io.ktor.client.plugins.cookies.CookiesStorage
 import io.ktor.client.plugins.cookies.HttpCookies
+import io.ktor.client.plugins.retry
+import io.ktor.client.plugins.timeout
 import io.ktor.client.request.forms.submitForm
 import io.ktor.client.request.get
 import io.ktor.client.request.header
@@ -268,7 +270,12 @@ class NetworkClient(private val settingsRepository: SettingsRepository) {
     }
 
     suspend fun isUrlChallenged(url: String): Boolean {
-        return ktorClient.get(url).let(::isResponseChallenged)
+        return ktorClient.get(url) {
+            // Using no-retry with shorter timeout allows to fail-fast
+            // when there is no connection.
+            retry { noRetry() }
+            timeout { connectTimeoutMillis = 5000L }
+        }.let(::isResponseChallenged)
     }
 
     private fun isResponseChallenged(response: HttpResponse): Boolean {

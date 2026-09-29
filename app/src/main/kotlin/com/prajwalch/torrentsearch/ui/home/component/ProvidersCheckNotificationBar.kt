@@ -1,6 +1,5 @@
 package com.prajwalch.torrentsearch.ui.home.component
 
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.Crossfade
 import androidx.compose.animation.animateColor
 import androidx.compose.animation.core.updateTransition
@@ -11,6 +10,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -34,6 +34,7 @@ fun ProvidersCheckNotificationBar(
     state: ProvidersCheckState,
     onDismiss: () -> Unit,
     onNavigateToSearchProviders: () -> Unit,
+    onRetry: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val swipeToDismissBoxState = rememberSwipeToDismissBoxState()
@@ -43,20 +44,21 @@ fun ProvidersCheckNotificationBar(
     val containerColor by transition.animateColor {
         when (it) {
             ProvidersCheckState.Checking -> MaterialTheme.colorScheme.surfaceContainerHigh
+            ProvidersCheckState.Error -> MaterialTheme.colorScheme.errorContainer
             is ProvidersCheckState.Complete -> MaterialTheme.colorScheme.primaryContainer
         }
     }
     val contentColor by transition.animateColor {
         when (it) {
             ProvidersCheckState.Checking -> MaterialTheme.colorScheme.onSurface
+            ProvidersCheckState.Error -> MaterialTheme.colorScheme.onErrorContainer
             is ProvidersCheckState.Complete -> MaterialTheme.colorScheme.onPrimaryContainer
         }
     }
 
-    val clickable = if (state is ProvidersCheckState.Complete) {
-        state.protectionStatusResult.numLockedProviders > 0
-    } else {
-        false
+    val clickable = when (state) {
+        is ProvidersCheckState.Complete -> state.numLockedProviders > 0
+        else -> false
     }
 
     SwipeToDismissBox(
@@ -91,6 +93,13 @@ fun ProvidersCheckNotificationBar(
                             )
                         }
 
+                        ProvidersCheckState.Error -> {
+                            Icon(
+                                painter = painterResource(R.drawable.ic_error),
+                                contentDescription = null,
+                            )
+                        }
+
                         is ProvidersCheckState.Complete -> {
                             Icon(
                                 painter = painterResource(R.drawable.ic_check_circle),
@@ -105,6 +114,7 @@ fun ProvidersCheckNotificationBar(
                     Crossfade(state) { targetState ->
                         val textResId = when (targetState) {
                             ProvidersCheckState.Checking -> R.string.home_status_providers_checking
+                            ProvidersCheckState.Error -> R.string.home_status_providers_check_failed
                             is ProvidersCheckState.Complete -> R.string.home_status_providers_check_complete
                         }
 
@@ -121,13 +131,15 @@ fun ProvidersCheckNotificationBar(
                                 stringResource(R.string.home_message_please_wait)
                             }
 
-                            is ProvidersCheckState.Complete -> {
-                                val protectionStatusResult = targetState.protectionStatusResult
+                            ProvidersCheckState.Error -> {
+                                stringResource(R.string.home_status_providers_check_failed_subtitle)
+                            }
 
+                            is ProvidersCheckState.Complete -> {
                                 stringResource(
                                     R.string.search_providers_state_protection_status_update_complete,
-                                    protectionStatusResult.numUnlockedProviders,
-                                    protectionStatusResult.numLockedProviders,
+                                    targetState.numUnlockedProviders,
+                                    targetState.numLockedProviders,
                                 )
                             }
                         }
@@ -141,11 +153,25 @@ fun ProvidersCheckNotificationBar(
                 }
 
                 // Trailing icon
-                AnimatedVisibility(clickable) {
-                    Icon(
-                        painter = painterResource(R.drawable.ic_arrow_forward),
-                        contentDescription = null,
-                    )
+                Crossfade(state) { targetState ->
+                    when (targetState) {
+                        ProvidersCheckState.Checking -> {}
+                        ProvidersCheckState.Error -> {
+                            IconButton(onClick = onRetry) {
+                                Icon(
+                                    painter = painterResource(R.drawable.ic_refresh),
+                                    contentDescription = null,
+                                )
+                            }
+                        }
+
+                        is ProvidersCheckState.Complete -> {
+                            Icon(
+                                painter = painterResource(R.drawable.ic_arrow_forward),
+                                contentDescription = null,
+                            )
+                        }
+                    }
                 }
             }
         }

@@ -45,8 +45,10 @@ data class HomeRelevantSettings(
 @Stable
 sealed interface ProvidersCheckState {
     data object Checking : ProvidersCheckState
+    data object Error : ProvidersCheckState
     data class Complete(
-        val protectionStatusResult: ProtectionStatusUpdateResult,
+        val numLockedProviders: Int,
+        val numUnlockedProviders: Int,
     ) : ProvidersCheckState
 }
 
@@ -155,8 +157,18 @@ class HomeViewModel(
             if (checkProvidersOnStartup == null || !checkProvidersOnStartup) return@launch
 
             _providersCheckState.value = ProvidersCheckState.Checking
+
             val result = searchProviderManager.updateProtectionStatus()
-            _providersCheckState.value = ProvidersCheckState.Complete(result)
+            _providersCheckState.value = when (result) {
+                ProtectionStatusUpdateResult.Error -> ProvidersCheckState.Error
+
+                is ProtectionStatusUpdateResult.Success -> {
+                    ProvidersCheckState.Complete(
+                        result.numLockedProviders,
+                        result.numUnlockedProviders,
+                    )
+                }
+            }
         }
     }
 
@@ -195,8 +207,18 @@ class HomeViewModel(
     fun checkProviders() {
         viewModelScope.launch {
             _providersCheckState.value = ProvidersCheckState.Checking
+
             val result = searchProviderManager.updateProtectionStatus()
-            _providersCheckState.value = ProvidersCheckState.Complete(result)
+            _providersCheckState.value = when (result) {
+                ProtectionStatusUpdateResult.Error -> ProvidersCheckState.Error
+
+                is ProtectionStatusUpdateResult.Success -> {
+                    ProvidersCheckState.Complete(
+                        result.numLockedProviders,
+                        result.numUnlockedProviders,
+                    )
+                }
+            }
         }
     }
 

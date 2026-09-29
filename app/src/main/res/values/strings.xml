@@ -96,6 +96,8 @@
     <string name="home_button_i_will_choose_myself">I\'ll choose myself</string>
     <string name="home_title_recent_searches">Recent searches</string>
     <string name="home_status_providers_checking">Checking providers…</string>
+    <string name="home_status_providers_check_failed">Providers check failed</string>
+    <string name="home_status_providers_check_failed_subtitle">Something went wrong</string>
     <string name="home_status_providers_check_complete">Providers check complete</string>
     <string name="home_message_please_wait">Please wait</string>
 
@@ -226,6 +228,7 @@
     <string name="search_providers_state_challenge_solve_error_title">Unlock failed</string>
     <string name="search_providers_state_challenge_solve_error_description">Couldn\'t solve the challenge. Make sure the internet connection is available and try again.</string>
     <string name="search_providers_state_updating_protection_status">Updating protection status…</string>
+    <string name="search_providers_state_protection_status_update_failed">Something went wrong</string>
     <string name="search_providers_state_protection_status_update_complete">%1$d unlocked, %2$d need unlocking</string>
     <string name="search_providers_chip_category">Category</string>
     <string name="search_providers_chip_protection">Protection</string>

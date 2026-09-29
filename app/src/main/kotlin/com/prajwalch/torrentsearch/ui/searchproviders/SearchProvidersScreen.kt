@@ -15,6 +15,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberModalBottomSheetState
@@ -88,10 +89,22 @@ fun SearchProvidersScreen(
                 )
             }
 
-//            is ProtectionUpdateState.Error -> {
-//                val errorMessage = protectionUpdateState.message ?: "Unknown error occurred"
-//                snackbarHostState.showSnackbar("Couldn't update protection status: $errorMessage")
-//            }
+            ProtectionUpdateState.Error -> {
+                val result = snackbarHostState.showSnackbar(
+                    message = localResources.getString(
+                        R.string.search_providers_state_protection_status_update_failed,
+                    ),
+                    actionLabel = localResources.getString(
+                        R.string.search_providers_button_try_again,
+                    ),
+                    withDismissAction = true,
+                )
+
+                when (result) {
+                    SnackbarResult.Dismissed -> viewModel.resetProtectionUpdateState()
+                    SnackbarResult.ActionPerformed -> viewModel.updateProtectionStatus()
+                }
+            }
 
             is ProtectionUpdateState.Complete -> {
                 val message = localResources.getString(

@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 
 import com.prajwalch.torrentsearch.data.repository.SettingsRepository
+import com.prajwalch.torrentsearch.domain.ProtectionStatusUpdateResult
 import com.prajwalch.torrentsearch.domain.SearchProviderManager
 import com.prajwalch.torrentsearch.domain.model.Category
 import com.prajwalch.torrentsearch.domain.model.CloudflareProtectionStatus
@@ -48,6 +49,7 @@ enum class SearchProviderProtection {
 sealed interface ProtectionUpdateState {
     data object Idle : ProtectionUpdateState
     data object Updating : ProtectionUpdateState
+    data object Error : ProtectionUpdateState
     data class Complete(
         val numLockedProviders: Int,
         val numUnlockedProviders: Int,
@@ -125,10 +127,16 @@ class SearchProvidersViewModel(
 
         viewModelScope.launch {
             val result = searchProviderManager.updateProtectionStatus()
-            protectionUpdateState.value = ProtectionUpdateState.Complete(
-                numLockedProviders = result.numLockedProviders,
-                numUnlockedProviders = result.numUnlockedProviders,
-            )
+
+            protectionUpdateState.value = when (result) {
+                ProtectionStatusUpdateResult.Error -> ProtectionUpdateState.Error
+                is ProtectionStatusUpdateResult.Success -> {
+                    ProtectionUpdateState.Complete(
+                        result.numLockedProviders,
+                        result.numUnlockedProviders,
+                    )
+                }
+            }
         }
     }
 

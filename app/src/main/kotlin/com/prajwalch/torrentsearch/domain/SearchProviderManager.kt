@@ -1,7 +1,5 @@
 package com.prajwalch.torrentsearch.domain
 
-import android.util.Log
-
 import com.prajwalch.torrentsearch.data.repository.SettingsRepository
 import com.prajwalch.torrentsearch.data.repository.TorznabConfigRepository
 import com.prajwalch.torrentsearch.domain.model.Category
@@ -25,17 +23,16 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.supervisorScope
 import kotlinx.coroutines.withContext
-import kotlin.concurrent.atomics.AtomicInt
-import kotlin.concurrent.atomics.ExperimentalAtomicApi
-import kotlin.concurrent.atomics.incrementAndFetch
 
-data class ProtectionStatusUpdateResult(
-    val numLockedProviders: Int,
-    val numUnlockedProviders: Int,
-)
+sealed interface ProtectionStatusUpdateResult {
+    data object Error : ProtectionStatusUpdateResult
+
+    data class Success(
+        val numLockedProviders: Int,
+        val numUnlockedProviders: Int,
+    ) : ProtectionStatusUpdateResult
+}
 
 /**
  * A manager which is responsible for managing and handling all providers.
@@ -279,41 +276,47 @@ class SearchProviderManager(
     /**
      * Updates the protection status of all protected providers.
      */
-    @OptIn(ExperimentalAtomicApi::class)
     suspend fun updateProtectionStatus(): ProtectionStatusUpdateResult =
         withContext(Dispatchers.IO) {
             val protectedProviders = builtinProviders.filter { it.isCloudflareProtected }
-            val numLockedProviders = AtomicInt(0)
+            var numLockedProviders = 0
+            var numFailedProviders = 0
 
-            supervisorScope {
-                for (provider in protectedProviders) {
-                    val cloudflareSolverUrl = provider.cloudflareSolverUrl ?: provider.url
+            for (provider in protectedProviders) {
+                val providerId = provider.id
+                val cloudflareSolverUrl = provider.cloudflareSolverUrl ?: provider.url
 
-                    launch {
-                        try {
-                            if (networkClient.isUrlChallenged(cloudflareSolverUrl)) {
-                                settingsRepository.removeProtectionUnlockedProviderId(provider.id)
-                                NetworkClient.removeCookie(cloudflareSolverUrl)
-
-                                numLockedProviders.incrementAndFetch()
-                            }
-                        } catch (e: CancellationException) {
-                            throw e
-                        } catch (e: Exception) {
-                            Log.e(
-                                "SearchProvidersManager",
-                                "Couldn't check ${provider.name} protection status",
-                                e
-                            )
-                        }
-                    }
+                val isUrlChallenged = try {
+                    networkClient.isUrlChallenged(cloudflareSolverUrl)
+                } catch (e: CancellationException) {
+                    throw e
+                } catch (_: Exception) {
+                    numFailedProviders += 1
+                    continue
                 }
+
+                if (!isUrlChallenged) {
+                    // Unlock it
+                    settingsRepository.addProtectionUnlockedProviderId(providerId)
+                    continue
+                }
+
+                // Lock
+                settingsRepository.removeProtectionUnlockedProviderId(providerId)
+                // Disable
+                settingsRepository.removeEnabledSearchProviderId(providerId)
+                // Remove its cookie
+                NetworkClient.removeCookie(cloudflareSolverUrl)
+
+                numLockedProviders += 1
             }
 
-            numLockedProviders.load().let {
-                ProtectionStatusUpdateResult(
-                    numLockedProviders = it,
-                    numUnlockedProviders = protectedProviders.size - it,
+            if (numFailedProviders == protectedProviders.size) {
+                ProtectionStatusUpdateResult.Error
+            } else {
+                ProtectionStatusUpdateResult.Success(
+                    numLockedProviders = numLockedProviders,
+                    numUnlockedProviders = protectedProviders.size - numLockedProviders,
                 )
             }
         }
