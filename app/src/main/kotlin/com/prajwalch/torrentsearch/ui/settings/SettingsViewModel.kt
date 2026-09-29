@@ -70,6 +70,7 @@ data class SearchSettingsUiState(
 
 data class NetworkSettingsUiState(
     val dohProvider: DohProvider = DohProvider.Default,
+    val checkProvidersOnStartup: Boolean = true,
 )
 
 /** ViewModel that handles the business logic of Settings screen. */
@@ -208,6 +209,12 @@ class SettingsViewModel(
         }
     }
 
+    fun enableCheckProvidersOnStartup(enable: Boolean) {
+        viewModelScope.launch {
+            settingsRepository.enableCheckProvidersOnStartup(enable)
+        }
+    }
+
     fun exportLogs(outputStream: OutputStream) {
         viewModelScope.launch {
             LogsUtils.exportLogsToOutputStream(outputStream = outputStream)
@@ -217,17 +224,17 @@ class SettingsViewModel(
 
 private fun SettingsRepository.getAppearanceSettings() =
     combine(
-        this.enableDynamicTheme,
-        this.darkTheme,
-        this.pureBlack,
+        enableDynamicTheme,
+        darkTheme,
+        pureBlack,
         ::AppearanceSettingsUiState,
     )
 
 private fun SettingsRepository.getGeneralSettings() =
     combine(
-        this.openTorrentDetailsInApp,
-        this.enableShareIntegration,
-        this.enableQuickSearch,
+        openTorrentDetailsInApp,
+        enableShareIntegration,
+        enableQuickSearch,
         ::GeneralSettingsUiState,
     )
 
@@ -257,18 +264,18 @@ private fun SettingsRepository.getSearchSettings(
     searchProvidersCount: Flow<Int>,
 ): Flow<SearchSettingsUiState> {
     val searchProvidersStat = combine(
-        this.enabledSearchProviderIds.map { it?.size ?: 0 },
+        enabledSearchProviderIds.map { it?.size ?: 0 },
         searchProvidersCount,
         SearchSettingsUiState::SearchProvidersStat,
     )
 
     return combine(
         searchProvidersStat,
-        this.defaultSortOptions,
-        this.maxNumResults,
+        defaultSortOptions,
+        maxNumResults,
         ::SearchSettingsUiState,
     )
 }
 
 private fun SettingsRepository.getNetworkSettings() =
-    this.dohProvider.map(::NetworkSettingsUiState)
+    combine(dohProvider, checkProvidersOnStartup, ::NetworkSettingsUiState)

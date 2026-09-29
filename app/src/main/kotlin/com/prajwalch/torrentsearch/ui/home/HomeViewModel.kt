@@ -1,10 +1,12 @@
 package com.prajwalch.torrentsearch.ui.home
 
+import androidx.compose.runtime.Stable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 
 import com.prajwalch.torrentsearch.data.repository.SearchHistoryRepository
 import com.prajwalch.torrentsearch.data.repository.SettingsRepository
+import com.prajwalch.torrentsearch.domain.ProtectionStatusUpdateResult
 import com.prajwalch.torrentsearch.domain.SearchProviderManager
 import com.prajwalch.torrentsearch.domain.model.Category
 
@@ -14,7 +16,9 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.WhileSubscribed
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
@@ -37,6 +41,14 @@ data class HomeRelevantSettings(
     val searchProvidersInitialized: Boolean? = null,
     val showRecentSearches: Boolean = false,
 )
+
+@Stable
+sealed interface ProvidersCheckState {
+    data object Checking : ProvidersCheckState
+    data class Complete(
+        val protectionStatusResult: ProtectionStatusUpdateResult,
+    ) : ProvidersCheckState
+}
 
 /**
  * The ViewModel which handles the business logic of home screen.
@@ -99,6 +111,9 @@ class HomeViewModel(
             ::HomeRelevantSettings,
         )
 
+    private val _providersCheckState = MutableStateFlow<ProvidersCheckState?>(null)
+    val providersCheckState = _providersCheckState.asStateFlow()
+
     /**
      * The primary read-only UI state.
      */
@@ -134,6 +149,17 @@ class HomeViewModel(
             initialValue = HomeUiState(),
         )
 
+    init {
+        viewModelScope.launch {
+            val checkProvidersOnStartup = settingsRepository.checkProvidersOnStartup.firstOrNull()
+            if (checkProvidersOnStartup == null || !checkProvidersOnStartup) return@launch
+
+            _providersCheckState.value = ProvidersCheckState.Checking
+            val result = searchProviderManager.updateProtectionStatus()
+            _providersCheckState.value = ProvidersCheckState.Complete(result)
+        }
+    }
+
     /**
      * Sets the currently selected category to given one.
      */
@@ -164,5 +190,17 @@ class HomeViewModel(
         viewModelScope.launch {
             settingsRepository.enableShowRecentSearches(false)
         }
+    }
+
+    fun checkProviders() {
+        viewModelScope.launch {
+            _providersCheckState.value = ProvidersCheckState.Checking
+            val result = searchProviderManager.updateProtectionStatus()
+            _providersCheckState.value = ProvidersCheckState.Complete(result)
+        }
+    }
+
+    fun finishProvidersCheck() {
+        _providersCheckState.value = null
     }
 }

@@ -103,8 +103,11 @@ class SettingsRepository(private val dataStore: DataStore<Preferences>) {
      * Network settings
      */
 
-    val dohProvider: Flow<DohProvider> = dataStore
-        .getMapOrDefault(DOH_PROVIDER, DohProvider::fromId, DohProvider.Default)
+    val dohProvider: Flow<DohProvider> =
+        dataStore.getMapOrDefault(DOH_PROVIDER, DohProvider::fromId, DohProvider.Default)
+
+    val checkProvidersOnStartup: Flow<Boolean> =
+        dataStore.getOrDefault(CHECK_PROVIDERS_ON_STARTUP, true)
 
     /*
      * Bookmarks screen related
@@ -246,6 +249,10 @@ class SettingsRepository(private val dataStore: DataStore<Preferences>) {
         dataStore.setOrUpdate(DOH_PROVIDER, provider.id)
     }
 
+    suspend fun enableCheckProvidersOnStartup(enable: Boolean) {
+        dataStore.setOrUpdate(CHECK_PROVIDERS_ON_STARTUP, enable)
+    }
+
     suspend fun setBookmarksSortCriteria(criteria: SortCriteria) {
         dataStore.setOrUpdate(BOOKMARKS_SORT_CRITERIA, criteria.name)
     }
@@ -286,6 +293,7 @@ class SettingsRepository(private val dataStore: DataStore<Preferences>) {
 
         // Network
         val DOH_PROVIDER = stringPreferencesKey("doh_provider")
+        val CHECK_PROVIDERS_ON_STARTUP = booleanPreferencesKey("check_providers_on_startup")
 
         // Bookmarks screen.
         val BOOKMARKS_SORT_CRITERIA = stringPreferencesKey("bookmarks_sort_criteria")

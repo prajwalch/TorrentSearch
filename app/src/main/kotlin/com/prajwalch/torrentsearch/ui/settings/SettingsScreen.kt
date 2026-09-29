@@ -139,6 +139,7 @@ fun SettingsScreen(
             NetworkSection(
                 uiState = uiState.networkSettings,
                 onSetDohProvider = viewModel::setDohProvider,
+                onEnableCheckProvidersOnStartup = viewModel::enableCheckProvidersOnStartup,
             )
 
             AboutSection(
@@ -515,6 +516,7 @@ private fun SearchSection(
 private fun NetworkSection(
     uiState: NetworkSettingsUiState,
     onSetDohProvider: (DohProvider) -> Unit,
+    onEnableCheckProvidersOnStartup: (Boolean) -> Unit,
     modifier: Modifier = Modifier,
 ) {
 
@@ -541,6 +543,19 @@ private fun NetworkSection(
                     onDohProviderSelect = onSetDohProvider,
                 )
             }
+
+            SettingsListItem(
+                onClick = { onEnableCheckProvidersOnStartup(!uiState.checkProvidersOnStartup) },
+                leadingIcon = painterResource(R.drawable.ic_update),
+                title = stringResource(R.string.settings_check_providers),
+                subtitle = stringResource(R.string.settings_check_providers_summary),
+                trailingContent = {
+                    Switch(
+                        checked = uiState.checkProvidersOnStartup,
+                        onCheckedChange = onEnableCheckProvidersOnStartup,
+                    )
+                },
+            )
         }
     }
 }
