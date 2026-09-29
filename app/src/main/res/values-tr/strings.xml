@@ -266,4 +266,9 @@
     <string name="torrent_status_unavailable">Kullanılabilir değil</string>
     <string name="search_error_status_retrying">Yeniden deneniyor…</string>
     <string name="search_error_status_resolved">Çözüldü</string>
+    <string name="home_status_providers_checking">Sağlayıcılar denetleniyor…</string>
+    <string name="home_status_providers_check_complete">Sağlayıcıları denetleme tamamlandı</string>
+    <string name="home_message_please_wait">Lütfen bekleyin</string>
+    <string name="settings_check_providers">Başlangıçta sağlayıcıları denetle</string>
+    <string name="settings_check_providers_summary">Sağlayıcıların erişimini denetler ve kilidinin açılması gerekenler varsa bildirir</string>
 </resources>
