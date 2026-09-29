@@ -27,20 +27,21 @@ fun SomethingWentWrongState(
         modifier = modifier,
         icon = {
             Icon(
-                modifier = Modifier.size(ContentStateDefaults.SmallIconSize),
-                painter = painterResource(R.drawable.ic_error_filled),
+                modifier = Modifier.size(ContentStateDefaults.IconSize),
+                painter = painterResource(R.drawable.ic_error),
                 contentDescription = null,
                 tint = MaterialTheme.colorScheme.error,
             )
         },
-        title = {
-            Text(
-                text = stringResource(R.string.torrent_details_state_something_wrong_title),
-                color = MaterialTheme.colorScheme.error,
-            )
-        },
+        title = { Text(stringResource(R.string.torrent_details_state_something_wrong_title)) },
         description = message?.let {
-            { Text(text = it, textAlign = TextAlign.Center) }
+            {
+                Text(
+                    text = it,
+                    textAlign = TextAlign.Center,
+                    color = MaterialTheme.colorScheme.error,
+                )
+            }
         },
         primaryAction = { TryAgainButton(onClick = onTryAgain) },
     )
