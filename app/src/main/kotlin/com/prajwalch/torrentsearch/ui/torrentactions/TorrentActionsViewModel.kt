@@ -117,24 +117,26 @@ class TorrentActionsViewModel(
     }
 
     private fun prepareTorrentFileDownloadLink() {
-        viewModelScope.launch {
-            if (torrent.fileDownloadLink != null) {
-                _torrentFileState.value = TorrentFileState.LinkReady(torrent.fileDownloadLink)
-                return@launch
-            }
+        if (torrent.fileDownloadLink != null) {
+            _torrentFileState.value = TorrentFileState.LinkReady(torrent.fileDownloadLink)
+            return
+        }
 
+        viewModelScope.launch {
             // Depend on magnet URI
-            _torrentFileState.emitAll(
-                magnetUriState.map {
-                    when (it) {
-                        MagnetUriState.Loading -> TorrentFileState.WaitingForMagnetUri
-                        MagnetUriState.Error -> TorrentFileState.LinkUnavailable
-                        is MagnetUriState.Ready -> {
-                            TorrentFileState.LinkReady(createFallbackFileDownloadLink(it.value))
-                        }
+            val torrentFileStates = magnetUriState.map {
+                when (it) {
+                    MagnetUriState.Loading -> TorrentFileState.WaitingForMagnetUri
+                    MagnetUriState.Error -> TorrentFileState.LinkUnavailable
+
+                    is MagnetUriState.Ready -> {
+                        val downloadLink = createFallbackFileDownloadLink(it.value)
+                        TorrentFileState.LinkReady(downloadLink)
                     }
                 }
-            )
+            }
+
+            _torrentFileState.emitAll(torrentFileStates)
         }
     }
 
