@@ -268,4 +268,12 @@
     <string name="torrent_status_unavailable">Недоступно</string>
     <string name="search_error_status_resolved">Вирішено</string>
     <string name="search_error_status_retrying">Повторна спроба…</string>
+    <string name="home_status_providers_checking">Перевірка пошукових систем…</string>
+    <string name="home_status_providers_check_failed">Не вдалось перевірити пошукові системи</string>
+    <string name="home_status_providers_check_failed_subtitle">Щось пішло не так</string>
+    <string name="home_status_providers_check_complete">Пошукові системи перевірено</string>
+    <string name="home_message_please_wait">Зачекайте</string>
+    <string name="search_providers_state_protection_status_update_failed">Щось пішло не так</string>
+    <string name="settings_check_providers">Перевіряти пошукові системи при запуску</string>
+    <string name="settings_check_providers_summary">Перевіряє доступ до пошукових систем і сповіщає про потребу розблокувати</string>
 </resources>
