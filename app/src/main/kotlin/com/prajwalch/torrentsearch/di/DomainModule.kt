@@ -15,11 +15,13 @@ val domainModule = module {
             networkClient = get(),
         )
     }
+
     single {
         TorrentQueryService(
             searchProviderManager = get(),
             settingsRepository = get(),
         )
     }
-    factory { TorrentFileDownloader(networkClient = get()) }
+
+    single { TorrentFileDownloader(networkClient = get()) }
 }
