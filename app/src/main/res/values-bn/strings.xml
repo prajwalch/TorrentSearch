@@ -26,7 +26,7 @@
     <string name="category_series">ধারাবাহিক</string>
     <string name="category_other">অন্যন্য</string>
     <string name="torrent_client_not_found_title">টরেন্ট ক্লায়েন্ট খুঁজে পাওয়া যায়নি</string>
-    <string name="torrent_client_not_found_content">ডাউনলোড বৈশিষ্ট্যটি ব্যবহার করতে, একটি টরেন্ট ক্লায়েন্ট ইনস্টল করুন, এটি সেট আপ করুন এবং এই অ্যাপে ফিরে আসুন।</string>
+    <string name="torrent_client_not_found_content">ডাউনলোড বৈশিষ্ট্যটি ব্যবহার করতে, একটি টরেন্ট ক্লায়েন্ট ইনস্টল করুন, এটি সেট আপ করুন এবং এই অ্যাপে ফিরে আসুন</string>
     <string name="torrent_client_not_found_recommended_client_hint">প্রস্তাবিত ক্লায়েন্ট</string>
     <string name="torrent_action_bookmark_torrent">বুকমার্ক টরেন্ট</string>
     <string name="torrent_action_delete_bookmark">বুকমার্ক মুছুন</string>
@@ -37,7 +37,7 @@
     <string name="torrent_action_copy_description_page_url">বর্ণনা পৃষ্ঠার URL কপি করুন</string>
     <string name="torrent_action_share_description_page_url">বর্ণনা পৃষ্ঠার URL শেয়ার করুন</string>
     <string name="torrent_message_magnet_link_copied">ম্যাগনেট লিঙ্ক ক্লিপবোর্ডে কপি করা হয়েছে!</string>
-    <string name="torrent_message_url_copied">ইউআরএল ক্লিপবোর্ডে কপি করা হয়েছে!</string>
+    <string name="torrent_message_url_copied">ইউআরএল ক্লিপবোর্ডে কপি করা হয়েছে</string>
     <string name="home_search_query_hint">অনুসন্ধান করুন…</string>
     <string name="home_button_search">অনুসন্ধান করুন</string>
     <string name="search_filter_query_hint">অনুসন্ধানের ফলাফল</string>
@@ -91,7 +91,7 @@
     <string name="settings_group_general">সাধারণ</string>
     <string name="settings_language">ভাষা</string>
     <string name="settings_enable_nsfw_mode">অনিরাপদ চালু করুন</string>
-    <string name="settings_enable_nsfw_mode_summary">বন্ধ থাকলে, নগ্নতা বিভাগ এবং অনুসন্ধান ফলাফল লুকানো থাকবে।</string>
+    <string name="settings_enable_nsfw_mode_summary">বন্ধ থাকলে, নগ্নতা বিভাগ এবং অনুসন্ধান ফলাফল লুকানো থাকবে</string>
     <string name="settings_group_search">অনুসন্ধান</string>
     <string name="settings_search_providers">সরবরাহকারী অনুসন্ধান করুন</string>
     <string name="settings_search_providers_summary_format">%1$d এর %2$d চালু</string>
@@ -111,7 +111,7 @@
     <string name="settings_enable_share_integration">শেয়ার ইন্টিগ্রেশন চালু করুন</string>
     <string name="settings_enable_share_integration_summary">সক্রিয় করা হলে, শেয়ার মেনুতে এই অ্যাপটি দেখাবে</string>
     <string name="settings_enable_quick_search">দ্রুত অনুসন্ধান অন করুন</string>
-    <string name="settings_enable_quick_search_summary">সক্রিয় থাকাকালীন, এই অ্যাপটি টেক্সট নির্বাচন মেনুতে (যেমন কপি বা কাট) যোগ করবে।</string>
+    <string name="settings_enable_quick_search_summary">সক্রিয় থাকাকালীন, এই অ্যাপটি টেক্সট নির্বাচন মেনুতে (যেমন কপি বা কাট) যোগ করবে</string>
     <string name="settings_group_about">সম্পর্কে</string>
     <string name="settings_version">সংস্করণ</string>
     <string name="settings_source_code">সোর্স কোড</string>
