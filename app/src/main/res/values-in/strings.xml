@@ -37,7 +37,7 @@
     <string name="crash_button_restart_application">Mulai ulang aplikasi</string>
     <string name="crash_logs_export_success_message">Log berhasil diekspor ke file</string>
     <string name="torrent_client_not_found_title">Klien torrent tidak ditemukan</string>
-    <string name="torrent_client_not_found_content">Instal klien torrent untuk membuka tautan magnet.</string>
+    <string name="torrent_client_not_found_content">Instal klien torrent untuk membuka tautan magnet</string>
     <string name="torrent_client_not_found_recommended_client_hint">Klien yang direkomendasikan</string>
     <string name="torrent_action_bookmark_torrent">Tandai torrent</string>
     <string name="torrent_action_delete_bookmark">Hapus penanda</string>
@@ -49,7 +49,7 @@
     <string name="torrent_action_copy_description_page_url">Salin URL halaman deskripsi</string>
     <string name="torrent_action_share_description_page_url">Bagikan URL halaman deskripsi</string>
     <string name="torrent_message_magnet_link_copied">Tautan magnet disalin ke clipboard!</string>
-    <string name="torrent_message_url_copied">URL disalin ke clipboard!</string>
+    <string name="torrent_message_url_copied">URL disalin ke clipboard</string>
     <string name="home_search_query_hint">Cari…</string>
     <string name="home_button_search">Cari</string>
     <string name="search_filter_query_hint">Cari torrent</string>
@@ -241,7 +241,7 @@
     <string name="search_providers_protection_locked">Terkunci</string>
     <string name="search_providers_protection_unlocked">Terbuka</string>
     <string name="search_providers_search_hint">Penyedia pencarian</string>
-    <string name="settings_dns_over_https">DNS over HTTPS (DoH)</string>
+    <string name="settings_dns_over_https">DNS di HTTPS (DoH)</string>
     <string name="settings_dns_over_https_label_provider">Penyedia</string>
     <string name="settings_dns_over_https_summary">Menyelesaikan nama domain melalui koneksi aman alih-alih DNS bawaan jaringan Anda</string>
     <string name="torrent_status_magnet_link_loading">Mendapatkan magnet link…</string>
