@@ -147,7 +147,7 @@
     <string name="search_action_view_errors">Просмотреть ошибки</string>
     <string name="search_action_settings">Настройки</string>
     <string name="search_filter_chip_hide_viewed">Спрятать просмотренные</string>
-    <string name="search_filter_chip_search_providers">Поисковые системы</string>
+    <string name="search_filter_chip_search_providers">Провайдеры</string>
     <string name="search_filter_providers_action_select_all">Выбрать все</string>
     <string name="search_filter_providers_action_deselect_all">Отменить выбор</string>
     <string name="search_filter_providers_action_invert_selection">Инвертировать выбор</string>
@@ -273,4 +273,7 @@
     <string name="settings_show_recent_searches_summary">Позволяет увидеть на домашнем экране последние 5 запросов</string>
     <string name="settings_check_providers">Проверять провайдеров при старте</string>
     <string name="settings_check_providers_summary">Проверяет доступ к провайдерам и уведомляет, если где-то требуется разблокировка</string>
+    <string name="home_status_providers_check_failed">Проверка провайдеров не удалась</string>
+    <string name="home_status_providers_check_failed_subtitle">Что-то пошло не так</string>
+    <string name="search_providers_state_protection_status_update_failed">Что-то пошло не так</string>
 </resources>
