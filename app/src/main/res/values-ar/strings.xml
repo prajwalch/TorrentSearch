@@ -24,7 +24,7 @@
     <string name="category_series">سلاسل</string>
     <string name="category_other">أخرى</string>
     <string name="torrent_client_not_found_title">لم يتم العثور على عميل التورنت</string>
-    <string name="torrent_client_not_found_content">قم بتثبيت عميل تورنت لفتح روابط الماغنيت.</string>
+    <string name="torrent_client_not_found_content">قم بتثبيت عميل تورنت لفتح روابط الماغنيت</string>
     <string name="torrent_client_not_found_recommended_client_hint">العميل الموصى به</string>
     <string name="torrent_action_bookmark_torrent">وضع إشارة مرجعية على التورنت</string>
     <string name="torrent_action_delete_bookmark">حذف الإشارة المرجعية</string>
@@ -35,7 +35,7 @@
     <string name="torrent_action_copy_description_page_url">نسخ عنوان URL لصفحة الوصف</string>
     <string name="torrent_action_share_description_page_url">مشاركة عنوان URL لصفحة الوصف</string>
     <string name="torrent_message_magnet_link_copied">تم نسخ الرابط المغناطيسي إلى الحافظة!</string>
-    <string name="torrent_message_url_copied">تم نسخ الرابط إلى الحافظة!</string>
+    <string name="torrent_message_url_copied">تم نسخ الرابط إلى الحافظة</string>
     <string name="home_search_query_hint">البحث…</string>
     <string name="home_button_search">أبحث</string>
     <string name="search_filter_query_hint">ابحث عن ملفات التورنت</string>
@@ -93,9 +93,9 @@
     <string name="settings_group_general">عام</string>
     <string name="settings_language">اللغة</string>
     <string name="settings_enable_nsfw_mode">تمكين وضع NSFW</string>
-    <string name="settings_enable_nsfw_mode_summary">عند تعطيله، يتم إخفاء فئات NSFW ونتائج البحث.</string>
+    <string name="settings_enable_nsfw_mode_summary">عند تعطيله، يتم إخفاء فئات NSFW ونتائج البحث</string>
     <string name="settings_group_search">البحث</string>
-    <string name="settings_search_providers">مزوّدو البحث</string>
+    <string name="settings_search_providers">مزودّو البحث</string>
     <string name="settings_search_providers_summary_format">تم تمكين %1$d من %2$d</string>
     <string name="settings_default_category">الفئة الافتراضية</string>
     <string name="settings_default_sort_options">خيارات الفرز الافتراضية</string>
@@ -110,9 +110,9 @@
     <string name="settings_show_search_history_summary">إظهار سجل البحث في شريط البحث</string>
     <string name="settings_section_advanced">متقدم</string>
     <string name="settings_enable_share_integration">تمكين تكامل المشاركة</string>
-    <string name="settings_enable_share_integration_summary">عند تمكينه، تتم إضافة هذا التطبيق إلى قائمة المشاركة.</string>
+    <string name="settings_enable_share_integration_summary">عند تمكينه، تتم إضافة هذا التطبيق إلى قائمة المشاركة</string>
     <string name="settings_enable_quick_search">تمكين البحث السريع</string>
-    <string name="settings_enable_quick_search_summary">عند تمكينه، تتم إضافة هذا التطبيق إلى قائمة اختيار النص (مثل النسخ أو القص).</string>
+    <string name="settings_enable_quick_search_summary">عند تمكينه، تتم إضافة هذا التطبيق إلى قائمة اختيار النص (مثل النسخ أو القص)</string>
     <string name="settings_group_about">عن</string>
     <string name="settings_version">إصدار</string>
     <string name="settings_source_code">مصدر الكود</string>
@@ -182,7 +182,7 @@
     <string name="torrent_details_button_open_magnet_link">تنزيل التورنت</string>
     <string name="torrent_details_button_download_torrent_file">قم بتنزيل ملف التورنت</string>
     <string name="settings_blur_nsfw_images">تشويش الصور غير اللائقة</string>
-    <string name="settings_blur_nsfw_images_summary">يقوم تلقائيًا بتشويش الصور غير اللائقة.</string>
+    <string name="settings_blur_nsfw_images_summary">يقوم تلقائيًا بتشويش الصور غير اللائقة</string>
     <string name="settings_open_torrent_details_in_app">فتح تفاصيل التورنت في التطبيق</string>
     <string name="settings_open_torrent_details_in_app_summary">يفتح تفاصيل التورنت مباشرة في الشاشة الأصلية للتطبيق</string>
     <string name="home_button_browse">تصفح</string>
@@ -210,7 +210,7 @@
     <string name="search_providers_state_challenge_solving_description">قد يستغرق هذا بعض الوقت. تتطلب بعض تحديات Cloudflare أحيانًا تفاعلًا يدويًا مثل تحديد مربع، لذا إذا استغرق الأمر وقتًا طويلاً، فافتح WebView من الشريط العلوي لإكماله.</string>
     <string name="search_providers_state_challenge_solved_title">تم حل التحدي!</string>
     <string name="settings_dns_over_https">DNS عبر بروتوكول HTTPS (DoH)</string>
-    <string name="settings_dns_over_https_label_provider">المزوّد: %1$s</string>
+    <string name="settings_dns_over_https_label_provider">المزوّد</string>
     <string name="settings_dns_over_https_summary">يحل أسماء النطاقات من خلال اتصال آمن بدلاً من نظام أسماء النطاقات الافتراضي لشبكتك</string>
     <string name="search_providers_action_update_protection_status">تحديث حاله حماية المزود</string>
     <string name="search_providers_title_supported_categories">يدعم الكاتالوج</string>
