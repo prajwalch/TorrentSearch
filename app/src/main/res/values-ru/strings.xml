@@ -23,7 +23,7 @@
     <string name="category_series">Сериалы</string>
     <string name="category_other">Другое</string>
     <string name="torrent_client_not_found_title">Торрент-клиент не найден</string>
-    <string name="torrent_client_not_found_content">Чтобы открывать magnet-ссылки, установите торрент-клиент.</string>
+    <string name="torrent_client_not_found_content">Чтобы открывать magnet-ссылки, установите торрент-клиент</string>
     <string name="torrent_client_not_found_recommended_client_hint">Рекомендуемый клиент</string>
     <string name="torrent_action_bookmark_torrent">Добавить торрент в закладки</string>
     <string name="torrent_action_delete_bookmark">Удалить закладку</string>
@@ -34,7 +34,7 @@
     <string name="torrent_action_copy_description_page_url">Копировать ссылку страницы описания</string>
     <string name="torrent_action_share_description_page_url">Поделиться ссылкой страницы описания</string>
     <string name="torrent_message_magnet_link_copied">Magnet-ссылка скопирована!</string>
-    <string name="torrent_message_url_copied">Ссылка скопирована в буфер обмена!</string>
+    <string name="torrent_message_url_copied">Ссылка скопирована в буфер обмена</string>
     <string name="home_search_query_hint">Поиск…</string>
     <string name="home_button_search">Поиск</string>
     <string name="search_filter_query_hint">Поиск торрентов</string>
@@ -238,7 +238,7 @@
     <string name="settings_clear_viewed_torrents_dialog_button_cancel">Отменить</string>
     <string name="settings_open_torrent_details_in_app">Открыть детали торрента в приложении</string>
     <string name="settings_open_torrent_details_in_app_summary">Открывает детали торрента прямо на экране приложения</string>
-    <string name="settings_dns_over_https">DNS over HTTPS (DoH)</string>
+    <string name="settings_dns_over_https">DNS по HTTPS (DoH)</string>
     <string name="settings_dns_over_https_label_provider">Провайдер</string>
     <string name="settings_dns_over_https_summary">Ищет доменные имена через защищенное соединение, а не через DNS-сервер вашей сети по умолчанию</string>
     <string name="settings_export_logs_to_file">Экспорт логов в файл</string>
