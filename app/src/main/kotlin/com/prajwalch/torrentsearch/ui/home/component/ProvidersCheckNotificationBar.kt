@@ -23,10 +23,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 
 import com.prajwalch.torrentsearch.R
 import com.prajwalch.torrentsearch.ui.home.ProvidersCheckState
+import com.prajwalch.torrentsearch.ui.theme.TorrentSearchTheme
 import com.prajwalch.torrentsearch.ui.theme.spaces
 
 @Composable
@@ -75,6 +77,7 @@ fun ProvidersCheckNotificationBar(
             shape = MaterialTheme.shapes.large,
             color = containerColor,
             contentColor = contentColor,
+            shadowElevation = 6.dp,
         ) {
             Row(
                 modifier = Modifier.padding(MaterialTheme.spaces.large),
@@ -175,5 +178,19 @@ fun ProvidersCheckNotificationBar(
                 }
             }
         }
+    }
+}
+
+@Preview(showSystemUi = true)
+@Composable
+private fun ProvidersCheckNotificationBarPreview() {
+    TorrentSearchTheme {
+        ProvidersCheckNotificationBar(
+            modifier = Modifier.padding(horizontal = 16.dp, vertical = 28.dp),
+            state = ProvidersCheckState.Checking,
+            onDismiss = {},
+            onNavigateToSearchProviders = {},
+            onRetry = {},
+        )
     }
 }
