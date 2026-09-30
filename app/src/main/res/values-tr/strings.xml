@@ -55,7 +55,7 @@
     <string name="torrent_action_copy_description_page_url">Açıklama sayfasının URL\'sini kopyala</string>
     <string name="torrent_action_share_description_page_url">Açıklama sayfasının bağlantısını paylaşın</string>
     <string name="torrent_message_magnet_link_copied">Magnet bağlantısı panoya kopyalandı!</string>
-    <string name="torrent_message_url_copied">URL panoya kopyalandı!</string>
+    <string name="torrent_message_url_copied">URL panoya kopyalandı</string>
     <string name="home_search_query_hint">Ara…</string>
     <string name="home_button_search">Ara</string>
     <string name="search_filter_query_hint">Torrent ara</string>
