@@ -20,7 +20,7 @@
     <string name="category_porn">Porno</string>
     <string name="category_other">Otros</string>
     <string name="torrent_client_not_found_title">Cliente torrent no encontrado</string>
-    <string name="torrent_client_not_found_content">Para usar la opción de descarga, instala un cliente torrent, configuralo y vuelve a esta app.</string>
+    <string name="torrent_client_not_found_content">Para usar la opción de descarga, instala un cliente torrent, configuralo y vuelve a esta app</string>
     <string name="torrent_client_not_found_recommended_client_hint">Cliente recomendado</string>
     <string name="torrent_action_bookmark_torrent">Añadir torrent a marcadores</string>
     <string name="torrent_action_delete_bookmark">Eliminar marcador</string>
@@ -31,7 +31,7 @@
     <string name="torrent_action_copy_description_page_url">Copiar URL de la página de descripción</string>
     <string name="torrent_action_share_description_page_url">Compartir URL de la página de descripción</string>
     <string name="torrent_message_magnet_link_copied">¡Enlace Magnet copiado al portapapeles!</string>
-    <string name="torrent_message_url_copied">¡Url copiada al portapapeles!</string>
+    <string name="torrent_message_url_copied">¡Url copiada al portapapeles</string>
     <string name="home_search_query_hint">Buscar…</string>
     <string name="home_button_search">Buscar</string>
     <string name="search_filter_query_hint">Filtrar por nombre</string>
@@ -74,7 +74,7 @@
     <string name="settings_pure_black">Negro puro</string>
     <string name="settings_language">Idioma</string>
     <string name="settings_enable_nsfw_mode">Activar modo para adultos</string>
-    <string name="settings_enable_nsfw_mode_summary">Estando desactivado, oculta categorías y resultados de búsqueda para adultos.</string>
+    <string name="settings_enable_nsfw_mode_summary">Estando desactivado, oculta categorías y resultados de búsqueda para adultos</string>
     <string name="settings_group_search">Buscar</string>
     <string name="settings_search_providers">Buscar proveedores</string>
     <string name="settings_default_category">Categoría predeterminada</string>
@@ -105,9 +105,9 @@
     <string name="settings_search_providers_summary_format">%1$d de %2$d activados</string>
     <string name="settings_max_num_results_summary_format">%1$d resultados</string>
     <string name="settings_enable_share_integration">Activar integración de compartir</string>
-    <string name="settings_enable_share_integration_summary">Si se activa, añade esta aplicación al menú Compartir.</string>
+    <string name="settings_enable_share_integration_summary">Si se activa, añade esta aplicación al menú Compartir</string>
     <string name="settings_enable_quick_search">Activar búsqueda rápida</string>
-    <string name="settings_enable_quick_search_summary">Si se activa, añade esta aplicación al menú de selección de texto (junto a Copiar/Cortar).</string>
+    <string name="settings_enable_quick_search_summary">Si se activa, añade esta aplicación al menú de selección de texto (junto a Copiar/Cortar)</string>
     <string name="settings_group_about">Acerca de</string>
     <string name="settings_version">Versión</string>
     <string name="bookmarked_message">Marcado</string>
