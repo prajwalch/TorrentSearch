@@ -21,7 +21,7 @@
     <string name="category_series">Dizi</string>
     <string name="category_other">Diğer</string>
     <string name="torrent_client_not_found_title">Torrent istemcisi bulunamadı</string>
-    <string name="torrent_client_not_found_content">Magnet bağlantılarını açmak için bir torrent istemcisi kur.</string>
+    <string name="torrent_client_not_found_content">Magnet bağlantılarını açmak için bir torrent istemcisi kur</string>
     <string name="torrent_client_not_found_recommended_client_hint">Önerilen istemci</string>
     <string name="torrent_action_bookmark_torrent">Torrent\'i yer işaretlerine ekle</string>
     <string name="torrent_action_delete_bookmark">Yer işaretini sil</string>
@@ -139,7 +139,7 @@
     <string name="search_action_view_errors">Hataları görüntüle</string>
     <string name="search_action_settings">Ayarlar</string>
     <string name="search_filter_chip_hide_viewed">Görüntülenenleri gizle</string>
-    <string name="search_filter_chip_search_providers">Arama sağlayıcıları</string>
+    <string name="search_filter_chip_search_providers">Sağlayıcılar</string>
     <string name="search_filter_providers_action_select_all">Tümünü seç</string>
     <string name="search_filter_providers_action_deselect_all">Tüm seçimleri kaldır</string>
     <string name="search_filter_providers_action_invert_selection">Seçimi tersine çevir</string>
@@ -271,4 +271,7 @@
     <string name="home_message_please_wait">Lütfen bekleyin</string>
     <string name="settings_check_providers">Başlangıçta sağlayıcıları denetle</string>
     <string name="settings_check_providers_summary">Sağlayıcıların erişimini denetler ve kilidinin açılması gerekenler varsa bildirir</string>
+    <string name="home_status_providers_check_failed">Sağlayıcı denetimi başarısız oldu</string>
+    <string name="home_status_providers_check_failed_subtitle">Bir şeyler ters gitti</string>
+    <string name="search_providers_state_protection_status_update_failed">Bir şeyler ters gitti</string>
 </resources>
