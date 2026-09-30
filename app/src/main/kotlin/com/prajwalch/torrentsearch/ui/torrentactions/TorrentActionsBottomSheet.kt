@@ -82,7 +82,7 @@ fun TorrentActionsBottomSheet(
         parameters = { parametersOf(torrent) },
     ),
 ) {
-    val magnetUriState by viewModel.magnetUriState.collectAsStateWithLifecycle()
+    val magnetLinkState by viewModel.magnetLinkState.collectAsStateWithLifecycle()
     val torrentFileState by viewModel.torrentFileState.collectAsStateWithLifecycle()
     val isTorrentBookmarked by viewModel.isTorrentBookmarked.collectAsStateWithLifecycle()
     val openTorrentDetailsInApp by viewModel.openTorrentDetailsInApp.collectAsStateWithLifecycle()
@@ -124,7 +124,7 @@ fun TorrentActionsBottomSheet(
 
         BottomSheetContent(
             torrent = torrent,
-            magnetUriState = magnetUriState,
+            magnetLinkState = magnetLinkState,
             torrentFileState = torrentFileState,
             isTorrentBookmarked = isTorrentBookmarked,
             onToggleBookmark = { viewModel.toggleBookmark(it) },
@@ -175,7 +175,7 @@ fun TorrentActionsBottomSheet(
 @Composable
 private fun BottomSheetContent(
     torrent: Torrent,
-    magnetUriState: MagnetUriState,
+    magnetLinkState: MagnetLinkState,
     torrentFileState: TorrentFileState,
     isTorrentBookmarked: Boolean,
     onToggleBookmark: (Boolean) -> Unit,
@@ -201,7 +201,7 @@ private fun BottomSheetContent(
             torrent = torrent,
             isBookmarked = isTorrentBookmarked,
             onToggleBookmark = onToggleBookmark,
-            enableBookmarkAction = magnetUriState is MagnetUriState.Ready,
+            enableBookmarkAction = magnetLinkState is MagnetLinkState.Ready,
         )
 
         HorizontalDivider()
@@ -210,7 +210,7 @@ private fun BottomSheetContent(
             verticalArrangement = Arrangement.spacedBy(MaterialTheme.spaces.small),
         ) {
             MagnetLinkActionItem(
-                magnetUriState = magnetUriState,
+                state = magnetLinkState,
                 onOpenMagnetLink = onOpenMagnetLink,
                 onCopyMagnetLink = onCopyMagnetLink,
                 onShareMagnetLink = onShareMagnetLink,
@@ -316,7 +316,7 @@ private fun BottomSheetHeader(
 
 @Composable
 private fun MagnetLinkActionItem(
-    magnetUriState: MagnetUriState,
+    state: MagnetLinkState,
     onOpenMagnetLink: (String) -> Unit,
     onCopyMagnetLink: (String) -> Unit,
     onShareMagnetLink: (String) -> Unit,
@@ -325,23 +325,20 @@ private fun MagnetLinkActionItem(
     ListItem(
         modifier = modifier
             .clip(MaterialTheme.shapes.large)
-            .clickable(
-                enabled = magnetUriState is MagnetUriState.Ready,
-                role = Role.Button,
-            ) {
-                if (magnetUriState is MagnetUriState.Ready) {
-                    onOpenMagnetLink(magnetUriState.value)
+            .clickable(enabled = state is MagnetLinkState.Ready, role = Role.Button) {
+                if (state is MagnetLinkState.Ready) {
+                    onOpenMagnetLink(state.value)
                 }
             },
         leadingContent = {
             Crossfade(
-                targetState = magnetUriState,
+                targetState = state,
                 label = "Magnet link action leading icon animation",
             ) { targetState ->
                 when (targetState) {
-                    MagnetUriState.Loading -> LoadingIndicator()
+                    MagnetLinkState.Loading -> LoadingIndicator()
 
-                    MagnetUriState.Error -> {
+                    MagnetLinkState.Error -> {
                         Icon(
                             painter = painterResource(R.drawable.ic_error),
                             contentDescription = null,
@@ -349,7 +346,7 @@ private fun MagnetLinkActionItem(
                         )
                     }
 
-                    is MagnetUriState.Ready -> {
+                    is MagnetLinkState.Ready -> {
                         Icon(
                             painter = painterResource(R.drawable.ic_magnet),
                             contentDescription = null,
@@ -368,12 +365,12 @@ private fun MagnetLinkActionItem(
         supportingContent = {
             Crossfade(
                 modifier = Modifier.fillMaxWidth(),
-                targetState = magnetUriState,
+                targetState = state,
                 label = "Magnet link action supporting text animation",
             ) { targetState ->
                 Text(
                     text = targetState.displayName(),
-                    color = if (targetState == MagnetUriState.Error) {
+                    color = if (targetState == MagnetLinkState.Error) {
                         MaterialTheme.colorScheme.error
                     } else {
                         LocalContentColor.current
@@ -384,12 +381,12 @@ private fun MagnetLinkActionItem(
         },
         trailingContent = {
             AnimatedVisibility(
-                visible = magnetUriState is MagnetUriState.Ready,
+                visible = state is MagnetLinkState.Ready,
                 enter = fadeIn(),
                 exit = fadeOut(),
                 label = "Magnet link action copy and share buttons animation",
             ) {
-                val magnetUri = (magnetUriState as? MagnetUriState.Ready)?.value
+                val magnetUri = (state as? MagnetLinkState.Ready)?.value
 
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     IconButton(onClick = { magnetUri?.let(onCopyMagnetLink) }) {
@@ -413,11 +410,11 @@ private fun MagnetLinkActionItem(
 }
 
 @Composable
-private fun MagnetUriState.displayName(): String {
+private fun MagnetLinkState.displayName(): String {
     val resId = when (this) {
-        MagnetUriState.Loading -> R.string.torrent_status_magnet_link_loading
-        MagnetUriState.Error -> R.string.torrent_status_magnet_link_error
-        is MagnetUriState.Ready -> R.string.torrent_status_magnet_link_ready
+        MagnetLinkState.Loading -> R.string.torrent_status_magnet_link_loading
+        MagnetLinkState.Error -> R.string.torrent_status_magnet_link_error
+        is MagnetLinkState.Ready -> R.string.torrent_status_magnet_link_ready
     }
 
     return stringResource(resId)
@@ -448,7 +445,7 @@ private fun TorrentFileActionItem(
             ) { targetState ->
                 when (targetState) {
                     TorrentFileState.PreparingLink,
-                    TorrentFileState.WaitingForMagnetUri,
+                    TorrentFileState.WaitingForMagnetLink,
                     TorrentFileState.Downloading,
                     TorrentFileState.WritingContent,
                         -> {
@@ -546,7 +543,7 @@ private fun TorrentFileActionItem(
 private fun TorrentFileState.displayName(): String {
     val resId = when (this) {
         TorrentFileState.PreparingLink -> R.string.torrent_status_file_preparing_link
-        TorrentFileState.WaitingForMagnetUri -> R.string.torrent_status_file_waiting_magnet_link
+        TorrentFileState.WaitingForMagnetLink -> R.string.torrent_status_file_waiting_magnet_link
         TorrentFileState.LinkUnavailable -> R.string.torrent_status_unavailable
         is TorrentFileState.LinkReady -> R.string.torrent_status_file_link_ready
         TorrentFileState.Downloading -> R.string.torrent_status_file_downloading
