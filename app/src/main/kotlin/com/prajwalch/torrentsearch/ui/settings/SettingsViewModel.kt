@@ -20,7 +20,6 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.WhileSubscribed
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
@@ -84,7 +83,7 @@ class SettingsViewModel(
         settingsRepository.getAppearanceSettings(),
         settingsRepository.getGeneralSettings(),
         getContentAndPrivacySettings(settingsRepository, viewedTorrentRepository),
-        settingsRepository.getSearchSettings(searchProvidersManager.getProvidersCount()),
+        getSearchSettings(settingsRepository, searchProvidersManager),
         settingsRepository.getNetworkSettings(),
         ::SettingsUiState,
     ).stateIn(
@@ -260,19 +259,20 @@ private fun getContentAndPrivacySettings(
         )
     }
 
-private fun SettingsRepository.getSearchSettings(
-    searchProvidersCount: Flow<Int>,
+private fun getSearchSettings(
+    settingsRepository: SettingsRepository,
+    searchProvidersManager: SearchProviderManager,
 ): Flow<SearchSettingsUiState> {
     val searchProvidersStat = combine(
-        enabledSearchProviderIds.map { it?.size ?: 0 },
-        searchProvidersCount,
+        searchProvidersManager.getEnabledProvidersCount(),
+        searchProvidersManager.getProvidersCount(),
         SearchSettingsUiState::SearchProvidersStat,
     )
 
     return combine(
         searchProvidersStat,
-        defaultSortOptions,
-        maxNumResults,
+        settingsRepository.defaultSortOptions,
+        settingsRepository.maxNumResults,
         ::SearchSettingsUiState,
     )
 }

@@ -3,7 +3,6 @@ package com.prajwalch.torrentsearch.ui.searchproviders
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 
-import com.prajwalch.torrentsearch.data.repository.SettingsRepository
 import com.prajwalch.torrentsearch.domain.ProtectionStatusUpdateResult
 import com.prajwalch.torrentsearch.domain.SearchProviderManager
 import com.prajwalch.torrentsearch.domain.model.Category
@@ -19,7 +18,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.WhileSubscribed
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flowOn
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -60,7 +58,6 @@ sealed interface ProtectionUpdateState {
 @KoinViewModel
 class SearchProvidersViewModel(
     private val searchProviderManager: SearchProviderManager,
-    settingsRepository: SettingsRepository,
 ) : ViewModel() {
     private val providerInfosProcessor =
         SearchProviderInfosProcessor(searchProviderManager.getProviderInfos())
@@ -73,17 +70,17 @@ class SearchProvidersViewModel(
             providerInfosProcessor.result,
             protectionUpdateState,
             searchProviderManager.getProvidersCount(),
-            settingsRepository.enabledSearchProviderIds.map { it?.size ?: 0 },
+            searchProviderManager.getEnabledProvidersCount(),
         ) {
                 processorResult,
                 protectionUpdateState,
-                totalNumProviders,
+                providersCount,
                 enabledProvidersCount,
             ->
             SearchProvidersUiState(
                 filter = processorResult.filter,
                 searchProviders = processorResult.infos,
-                totalNumProviders = totalNumProviders,
+                totalNumProviders = providersCount,
                 enabledProvidersCount = enabledProvidersCount,
                 protectionUpdateState = protectionUpdateState,
             )

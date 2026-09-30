@@ -67,6 +67,11 @@ class SearchProviderManager(
     fun getProvidersCount(): Flow<Int> = torznabConfigRepository.getConfigsCount()
         .map { torznabConfigCount -> builtinProviders.size + torznabConfigCount }
 
+    /**
+     * Returns a [Flow] of enabled providers count.
+     */
+    fun getEnabledProvidersCount(): Flow<Int> =
+        getProviderInfos().map { infos -> infos.count { it.isEnabled } }
 
     /**
      * Returns instances of enabled providers, filtering them by their
