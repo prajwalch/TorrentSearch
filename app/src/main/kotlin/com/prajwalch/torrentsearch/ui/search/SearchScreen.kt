@@ -244,6 +244,8 @@ fun SearchScreen(
                             },
                             searchQuery = uiState.searchParams.query,
                             searchCategory = uiState.searchParams.category,
+                            searchErrorsCount = uiState.errors.size,
+                            onShowErrors = { showSearchErrors = true },
                             isRefreshing = searchState is SearchState.ResultsAvailable.Refreshing,
                             onRefresh = viewModel::refreshSearchResults,
                             viewedTorrentIds = uiState.viewedTorrentIds,
