@@ -38,7 +38,7 @@
     <string name="torrent_status_file_saved">Plik torrent został zapisany</string>
     <string name="torrent_status_file_save_failed">Zapisanie pliku torrent nie powiodło się</string>
     <string name="torrent_client_not_found_title">Nie znaleziono klienta torrent</string>
-    <string name="torrent_client_not_found_content">Zainstaluj klienta torrent, aby otwierać linki magnet.</string>
+    <string name="torrent_client_not_found_content">Zainstaluj klienta torrent, aby otwierać linki magnet</string>
     <string name="torrent_client_not_found_recommended_client_hint">Polecany klient</string>
     <string name="torrent_action_bookmark_torrent">Dodaj torrent do zakładek</string>
     <string name="torrent_action_delete_bookmark">Usuń zakładkę</string>
@@ -50,7 +50,7 @@
     <string name="torrent_action_copy_description_page_url">Kopiuj adres URL strony opisu</string>
     <string name="torrent_action_share_description_page_url">Udostępnij adres URL strony opisu</string>
     <string name="torrent_message_magnet_link_copied">Link magnet skopiowany do schowka!</string>
-    <string name="torrent_message_url_copied">Adres URL skopiowany do schowka!</string>
+    <string name="torrent_message_url_copied">Adres URL skopiowany do schowka</string>
     <string name="main_cannot_search_using_url_message">Nie można wyszukiwać za pomocą adresu URL</string>
     <string name="main_cannot_search_blank_query_message">Nie można wyszukiwać przy użyciu pustego zapytania</string>
     <string name="crash_screen_title">Ups!</string>
