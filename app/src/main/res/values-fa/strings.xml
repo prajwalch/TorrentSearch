@@ -29,12 +29,12 @@
     <string name="torrent_action_open_description_page">مشاهده صفحه توضیحات</string>
     <string name="torrent_action_copy_description_page_url">کپی لینک صفحه توضیحات</string>
     <string name="torrent_action_share_description_page_url">اشتراک گذاری لینک صفحه توضیحات</string>
-    <string name="torrent_message_magnet_link_copied">لینک magnet در کلیپ‌ بورد کپی شد</string>
+    <string name="torrent_message_magnet_link_copied">لینک magnet در کلیپ‌ بورد کپی شد!</string>
     <string name="torrent_message_url_copied">لینک در کلیپ‌ بورد کپی شد</string>
     <string name="home_search_query_hint">جستجو…</string>
     <string name="home_button_search">جستجو</string>
     <string name="search_filter_query_hint">جستجوی تورنت‌ ها</string>
-    <string name="search_filter_providers_title">ارائه دهندگان جستجو</string>
+    <string name="search_filter_providers_title">فیلتر توسط ارائه دهنده جستجو</string>
     <string name="search_filter_chip_dead_torrents">تورنت های مرده</string>
     <string name="internet_connection_error">بدون اتصال به اینترنت</string>
     <string name="button_try_again">دوباره امتحان کنید</string>
@@ -58,7 +58,7 @@
     <string name="search_history_screen_title">تاریخچه جستجو</string>
     <string name="search_history_action_delete_all">حذف همه</string>
     <string name="search_history_empty_message">تاریخچه جستجو موجود نیست</string>
-    <string name="search_history_query_copied_message">پرسش و پاسخ در کلیپ بورد کپی شد</string>
+    <string name="search_history_query_copied_message">پرسش و پاسخ در کلیپ بورد کپی شد!</string>
     <string name="search_history_dialog_title_clear_history">آیا تاریخچه جستجو حذف شود؟</string>
     <string name="search_history_dialog_message_clear_history">تاریخچه جستجو برای همیشه حذف خواهد شد</string>
     <string name="search_history_button_clear">پاک کردن</string>
@@ -116,13 +116,13 @@
     <string name="settings_pure_black_summary">‌حالت پس زمینه AMOLED را فعال می کند</string>
     <string name="settings_save_search_history_summary">جستجو های اخیر را به صورت محلی برای دسترسی سریع و پیشنهادات ذخیره می‌ کند</string>
     <string name="torznab_conn_check_result_conn_established">اتصال برقرار شد</string>
-    <string name="torznab_conn_check_result_conn_failed">اتصال برقرار نشد لینک و وضعیت سرور را بررسی کنید</string>
+    <string name="torznab_conn_check_result_conn_failed">اتصال برقرار نشد لینک و وضعیت سرور را بررسی کنید.</string>
     <string name="torznab_conn_check_result_invalid_api_key">کلید API نامعتبر است</string>
     <string name="torznab_conn_check_result_app_error">‏خطای برنامه (%1$d)</string>
     <string name="torznab_conn_check_result_unexpected_response">پاسخ غیرمنتظره (%1$d)</string>
     <string name="torznab_conn_check_result_unexpected_error">خطای غیرمنتظره</string>
-    <string name="crash_screen_title">اوه</string>
-    <string name="crash_screen_subtitle">%1$s با یک خطا مواجه شد لطفا گزارش‌ ها را استخراج کنید و یک مشکل در گیت هاب با گزارش‌های پیوست شده ایجاد کنید</string>
+    <string name="crash_screen_title">اوه!</string>
+    <string name="crash_screen_subtitle">%1$s با یک خطا مواجه شد لطفا گزارش‌ ها را استخراج کنید و یک مشکل در گیت هاب با گزارش‌های پیوست شده ایجاد کنید.</string>
     <string name="crash_button_export_crash_logs">ذخیره گزارش‌ های خرابی در یک فایل</string>
     <string name="crash_button_restart_application">برنامه را ببندید و سپس دوباره باز کنید</string>
     <string name="crash_logs_export_success_message">گزارش ها در یک فایل ذخیره می شوند</string>
@@ -130,7 +130,7 @@
     <string name="search_action_settings">تنظیمات</string>
     <string name="search_errors_bottom_sheet_title">ارائه دهنده جستجو ناموفق بود</string>
     <string name="search_unexpected_error">خطای غیرمنتظره</string>
-    <string name="search_info_troubleshoot_help">برای کمک به عیب‌ یابی مشکلات گزارش‌ ها را از صفحه تنظیمات استخراج کنید و یک مشکل گیت‌ هاب با گزارش‌ های پیوست شده ایجاد کنید</string>
+    <string name="search_info_troubleshoot_help">برای کمک به عیب‌ یابی مشکلات گزارش‌ ها را از صفحه تنظیمات استخراج کنید و یک مشکل گیت‌ هاب با گزارش‌ های پیوست شده ایجاد کنید.</string>
     <string name="bookmarks_action_import">وارد کردن از فایل</string>
     <string name="bookmarks_action_export">استخراج در فایل</string>
     <string name="bookmarks_action_settings">تنظیمات</string>
@@ -154,7 +154,7 @@
     <string name="search_action_refresh">تازه سازی</string>
     <string name="search_action_stop_search">توقف جستجو</string>
     <string name="search_filter_chip_hide_viewed">مخفی کردن موارد مشاهده شده</string>
-    <string name="search_state_results_not_found_description">هیچ تورنتی با عبارت «%1$s» در %2$s یافت نشد یک عبارت دیگر را برای جستجو امتحان کنید یا بررسی کنید که ارائه دهندگان جستجو فعال باشند</string>
+    <string name="search_state_results_not_found_description">هیچ تورنتی با عبارت «%1$s» در %2$s یافت نشد یک عبارت دیگر را برای جستجو امتحان کنید یا بررسی کنید که ارائه دهندگان جستجو فعال باشند.</string>
     <string name="search_button_go_to_providers">رفتن به ارائه دهندگان</string>
     <string name="torrent_details_screen_title">اطلاعات</string>
     <string name="torrent_details_action_open_link">باز کردن لینک در مرورگر</string>
@@ -162,9 +162,9 @@
     <string name="torrent_details_action_share_link">اشتراک گذاری لینک صفحه</string>
     <string name="torrent_details_tap_to_reveal_hint">برای آشکار شدن فشار دهید</string>
     <string name="torrent_details_state_unavailable_title">اطلاعات در دسترس نیست</string>
-    <string name="torrent_details_state_unavailable_description">ممکن است طرح‌ بندی صفحه تغییر کرده باشد یا میزبان به طور موقت آفلاین باشد</string>
+    <string name="torrent_details_state_unavailable_description">ممکن است طرح‌ بندی صفحه تغییر کرده باشد یا میزبان به طور موقت آفلاین باشد.</string>
     <string name="torrent_details_state_unsupported_site_title">لینک پشتیبانی نشده</string>
-    <string name="torrent_details_state_unsupported_site_description">نتوانستم اطلاعات را از %1$s بازیابی کنم ممکن است این سایت تورنت هنوز پشتیبانی نشود به جای آن صفحه اطلاعات را در مرورگر باز کنید</string>
+    <string name="torrent_details_state_unsupported_site_description">نتوانستم اطلاعات را از %1$s بازیابی کنم ممکن است این سایت تورنت هنوز پشتیبانی نشود به جای آن صفحه اطلاعات را در مرورگر باز کنید.</string>
     <string name="torrent_details_state_something_wrong_title">یک مشکل اتفاق افتاده</string>
     <string name="torrent_details_title_info">اطلاعات تورنت</string>
     <string name="torrent_details_title_screenshots">عکس های گرفته شده از صفحه</string>
@@ -177,7 +177,7 @@
     <string name="torrent_details_label_uploader">آپلود کننده</string>
     <string name="torrent_details_label_last_checked">آخرین بررسی</string>
     <string name="torrent_details_label_info_hash">هش اطلاعات</string>
-    <string name="torrent_details_message_link_copied">لینک در کلیپ بورد کپی شد</string>
+    <string name="torrent_details_message_link_copied">لینک در کلیپ بورد کپی شد!</string>
     <string name="torrent_details_button_open_magnet_link">باز کردن لینک مگنت</string>
     <string name="torrent_details_button_download_torrent_file">دانلود فایل تورنت</string>
     <string name="torrent_details_button_open_in_browser">باز کردن در مرورگر</string>
@@ -187,12 +187,12 @@
     <string name="browse_sort_top">برتر</string>
     <string name="browse_torrents_count_format">%1$d تورنت پیدا شد</string>
     <string name="browse_state_unavailable_title">تورنت‌ ها در دسترس نیستند</string>
-    <string name="browse_state_unavailable_description">تورنتی برای نمایش وجود ندارد ارائه دهندگان مورد نیاز ممکن است غیرفعال یا غیرقابل دسترسی باشند</string>
+    <string name="browse_state_unavailable_description">تورنتی برای نمایش وجود ندارد ارائه دهندگان مورد نیاز ممکن است غیرفعال یا غیرقابل دسترسی باشند.</string>
     <string name="browse_button_go_to_providers">رفتن به ارائه دهندگان</string>
     <string name="browse_button_try_again">دوباره امتحان کنید</string>
     <string name="search_providers_state_challenge_solving_title">در حال حل کردن چالش کلودفلر …</string>
     <string name="search_providers_state_challenge_solving_description">این ممکن است کمی طول بکشد لطفا صبور باشید</string>
-    <string name="search_providers_state_challenge_solved_title">چالش حل شد</string>
+    <string name="search_providers_state_challenge_solved_title">چالش حل شد!</string>
     <string name="settings_blur_nsfw_images">تار کردن تصاویر +18</string>
     <string name="settings_blur_nsfw_images_summary">تصاویر +18 را به طور خودکار تار می‌ کند</string>
     <string name="settings_clear_viewed_torrents">پاک کردن تورنت های مشاهده شده</string>
@@ -202,7 +202,7 @@
     <string name="settings_clear_viewed_torrents_dialog_button_cancel">لغو</string>
     <string name="settings_open_torrent_details_in_app">باز کردن اطلاعات تورنت در برنامه</string>
     <string name="settings_open_torrent_details_in_app_summary">اطلاعات تورنت را به طور مستقیم در صفحه اصلی برنامه باز می‌ کند</string>
-    <string name="limetorrents_unsafe_reason">از نظر فنی ناامن نیست اما انتخاب دسته را نادیده می‌ گیرد با دقت انتخاب کنید</string>
-    <string name="tpb_unsafe_reason">بسیاری از گزارش‌ های بد افزار به دلیل نظارت ناکافی است</string>
-    <string name="therarbg_unsafe_reason">کپی از RARBG اصلی به همراه تورنت‌ های جعلی فراوان نهایت احتیاط را رعایت کنید</string>
+    <string name="limetorrents_unsafe_reason">از نظر فنی ناامن نیست اما انتخاب دسته را نادیده می‌ گیرد با دقت انتخاب کنید.</string>
+    <string name="tpb_unsafe_reason">بسیاری از گزارش‌ های بد افزار به دلیل نظارت ناکافی است.</string>
+    <string name="therarbg_unsafe_reason">کپی از RARBG اصلی به همراه تورنت‌ های جعلی فراوان نهایت احتیاط را رعایت کنید.</string>
 </resources>
