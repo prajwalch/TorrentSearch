@@ -98,7 +98,9 @@ private fun ImageLoadingIndicator(modifier: Modifier = Modifier) {
         contentColor = MaterialTheme.colorScheme.onSurface,
     ) {
         Box(contentAlignment = Alignment.Center) {
-            CircularProgressIndicator()
+            CircularProgressIndicator(
+                strokeWidth = 2.0.dp,
+            )
         }
     }
 }
