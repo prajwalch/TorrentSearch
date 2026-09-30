@@ -1,16 +1,15 @@
 package com.prajwalch.torrentsearch.ui.torrentdetails.component
 
 import androidx.compose.animation.Crossfade
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -32,7 +31,6 @@ import coil3.compose.AsyncImagePainter
 
 import com.prajwalch.torrentsearch.R
 import com.prajwalch.torrentsearch.ui.theme.TorrentSearchTheme
-import com.prajwalch.torrentsearch.ui.theme.spaces
 
 private enum class ImageState {
     Loading,
@@ -54,20 +52,22 @@ fun NetworkImage(
     Box(modifier = modifier, propagateMinConstraints = true) {
         var imageState by remember { mutableStateOf(ImageState.Loading) }
 
-        AsyncImage(
-            model = model,
-            contentDescription = contentDescription,
-            onState = { state ->
-                imageState = when (state) {
-                    AsyncImagePainter.State.Empty -> ImageState.Loading
-                    is AsyncImagePainter.State.Loading -> ImageState.Loading
-                    is AsyncImagePainter.State.Error -> ImageState.Error
-                    is AsyncImagePainter.State.Success -> ImageState.Success
-                }
-            },
-            alignment = alignment,
-            contentScale = contentScale,
-        )
+        if (imageState != ImageState.Error) {
+            AsyncImage(
+                model = model,
+                contentDescription = contentDescription,
+                onState = { state ->
+                    imageState = when (state) {
+                        AsyncImagePainter.State.Empty -> ImageState.Loading
+                        is AsyncImagePainter.State.Loading -> ImageState.Loading
+                        is AsyncImagePainter.State.Error -> ImageState.Error
+                        is AsyncImagePainter.State.Success -> ImageState.Success
+                    }
+                },
+                alignment = alignment,
+                contentScale = contentScale,
+            )
+        }
 
         Crossfade(
             modifier = Modifier.matchParentSize(),
@@ -79,7 +79,10 @@ fun NetworkImage(
                 }
 
                 ImageState.Error -> {
-                    onError?.invoke() ?: ImageLoadError(Modifier.fillMaxSize())
+                    onError?.invoke() ?: ImageLoadError(
+                        modifier = Modifier.fillMaxSize(),
+                        onRetry = { imageState = ImageState.Loading },
+                    )
                 }
 
                 ImageState.Success -> {
@@ -106,23 +109,28 @@ private fun ImageLoadingIndicator(modifier: Modifier = Modifier) {
 }
 
 @Composable
-private fun ImageLoadError(modifier: Modifier = Modifier) {
-    Column(
-        modifier = modifier.background(color = MaterialTheme.colorScheme.errorContainer),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally,
+private fun ImageLoadError(onRetry: () -> Unit, modifier: Modifier = Modifier) {
+    Surface(
+        modifier = modifier,
+        color = MaterialTheme.colorScheme.surfaceContainer,
+        contentColor = MaterialTheme.colorScheme.error,
     ) {
-        Icon(
-            painter = painterResource(R.drawable.ic_error),
-            contentDescription = null,
-            tint = MaterialTheme.colorScheme.onErrorContainer,
-        )
-        Spacer(Modifier.height(MaterialTheme.spaces.small))
-        Text(
-            text = stringResource(R.string.torrent_details_error_image_load_failed),
-            color = MaterialTheme.colorScheme.onErrorContainer,
-            style = MaterialTheme.typography.labelMedium,
-        )
+        Column(
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally,
+        ) {
+            IconButton(onClick = onRetry) {
+                Icon(
+                    painter = painterResource(R.drawable.ic_refresh),
+                    contentDescription = null,
+                )
+            }
+
+            Text(
+                text = stringResource(R.string.torrent_details_error_image_load_failed),
+                style = MaterialTheme.typography.labelMedium,
+            )
+        }
     }
 }
 
