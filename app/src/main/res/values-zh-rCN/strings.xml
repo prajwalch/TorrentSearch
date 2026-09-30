@@ -22,7 +22,7 @@
     <string name="category_series">电视剧</string>
     <string name="category_other">其他</string>
     <string name="torrent_client_not_found_title">未找到种子客户端</string>
-    <string name="torrent_client_not_found_content">安装种子客户端来打开磁力链接。</string>
+    <string name="torrent_client_not_found_content">安装种子客户端来打开磁力链接</string>
     <string name="torrent_client_not_found_recommended_client_hint">推荐客户端</string>
     <string name="torrent_action_bookmark_torrent">标记种子</string>
     <string name="torrent_action_delete_bookmark">删除书签</string>
@@ -33,7 +33,7 @@
     <string name="torrent_action_copy_description_page_url">复制详细信息网址</string>
     <string name="torrent_action_share_description_page_url">分享详细信息网址</string>
     <string name="torrent_message_magnet_link_copied">已复制磁链！</string>
-    <string name="torrent_message_url_copied">已复制链接！</string>
+    <string name="torrent_message_url_copied">已复制链接</string>
     <string name="home_search_query_hint">搜索…</string>
     <string name="home_button_search">搜索</string>
     <string name="search_filter_query_hint">搜索种子</string>
