@@ -14,7 +14,7 @@
     <string name="settings_section_sort_criteria">Ознака сортування</string>
     <string name="settings_section_sort_order">Порядок сортування</string>
     <string name="torrent_client_not_found_title">Торент-клієнта не знайдено</string>
-    <string name="torrent_client_not_found_content">Щоб відкривати magnet-посилання, встановіть торент-клієнт.</string>
+    <string name="torrent_client_not_found_content">Щоб відкривати magnet-посилання, встановіть торент-клієнт</string>
     <string name="torrent_client_not_found_recommended_client_hint">Радимо клієнт</string>
     <string name="torrent_action_bookmark_torrent">Вподобати торент</string>
     <string name="torrent_action_delete_bookmark">Скасувати вподобання</string>
@@ -25,7 +25,7 @@
     <string name="torrent_action_copy_description_page_url">Копіювати URL-адресу сторінки опису</string>
     <string name="torrent_action_share_description_page_url">Поширити URL-адресу сторінки опису</string>
     <string name="torrent_message_magnet_link_copied">Magnet-посилання скопійовано!</string>
-    <string name="torrent_message_url_copied">URL-адресу скопійовано!</string>
+    <string name="torrent_message_url_copied">URL-адресу скопійовано</string>
     <string name="home_search_query_hint">Пошук…</string>
     <string name="home_button_search">Пошук</string>
     <string name="search_filter_query_hint">Пошук торентів</string>
@@ -43,7 +43,7 @@
     <string name="settings_pure_black">Чистий чорний</string>
     <string name="settings_language">Мова</string>
     <string name="settings_enable_nsfw_mode">Показувати чутливе</string>
-    <string name="settings_search_providers">Пошукові системи</string>
+    <string name="settings_search_providers">Пошук провайдерів</string>
     <string name="settings_search_providers_summary_format">Увімкнено %1$d із %2$d</string>
     <string name="settings_default_category">Типова категорія</string>
     <string name="settings_default_sort_options">Типові параметри сортування</string>
