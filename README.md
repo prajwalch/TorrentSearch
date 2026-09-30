@@ -38,8 +38,7 @@
 
 ## Intro
 
-TorrentSearch is an Android app for searching torrents across multiple providers simultaneously,
-with fast search speed, detailed results, category filters, a full set of torrent actions.
+TorrentSearch is an Android app for searching torrents across multiple providers. It offers fast search speed with different categories, detailed results, full set of torrent actions, torrent details viewing within the app, and [more](#features).
 
 ## Screenshots
 
@@ -65,12 +64,10 @@ with fast search speed, detailed results, category filters, a full set of torren
 
 ### Search
 
-- Query all providers simultaneously, with per-provider enable/disable toggles
-- Search by category: `Anime`, `Apps`, `Books`, `Games`, `Movies`, `Series`, and more
-- Results are shown progressively as providers respond
-- Sort by `torrent name`, `seeders`, `peers`, `file size`, or `upload date`
-- Filter out dead or already-viewed torrents
-- Filter results by name, provider or category
+- Per-provider enable/disable toggles
+- Multiple category: `Anime`, `Apps`, `Books`, `Games`, `Movies`, `Series`, and more
+- Parallel search across all providers with streaming results
+- Support for sorting and filtering torrents with different options
 
 ### Detailed results
 
@@ -95,23 +92,22 @@ If no torrent client is installed, TorrentSearch provides links to FOSS torrent 
 
 ### Torrent details
 
-- **Native details screen** — view torrent details inside the app without a browser or WebView; can
-  be disabled to open the page directly in your default browser instead
+- Support for viewing details directly inside the app. It can be disabled to open the page directly in your default browser instead.
 - Media poster with automatic NSFW image blurring (can be disabled)
 - Screenshot previews
 - Full description with inline image support
 
+_Note: Media poster and screenshots are shown only when available_
+
 ### Browse
 
-- Explore **top** and **latest** torrents from your enabled providers
-- Filter by category and sort order
-- Filter out dead or already-viewed torrents
-- Filter torrents by name or provider
+- A dedicated screen for browsing latest and top torrents
+- Filter torrents with different options
 
 ### Bookmarks
 
 - Save torrents for later
-- Export and import bookmarks
+- Export and import support
 
 ### Safe mode
 
@@ -145,9 +141,7 @@ It handles all setup and lets you run the app in a single click.
 **Requirements:**
 
 - JDK 17+ with `JAVA_HOME` set ([Adoptium](https://adoptium.net/) recommended)
-- Android SDK (version depends on project configuration). If you have Android Studio installed, it
-  has already downloaded, set up, and configured the SDK location for you. Otherwise, install it
-  manually and set `ANDROID_HOME`, or add `sdk.dir` to `local.properties` in the project root.
+- Android SDK: Android Studio will automatically handle downloading and setting up this but if you prefer using command-line without full Android Studio installation, download the SDK from [here](https://developer.android.com/tools/releases/platform-tools) and set `ANDROID_HOME` environment variable with SDK path, or add `sdk.dir` to `local.properties` in the project root.
 
 ```sh
 git clone https://github.com/prajwalch/TorrentSearch.git
@@ -165,8 +159,7 @@ opening a pull request.
 
 ### Translation
 
-Translations are managed on [Weblate](https://hosted.weblate.org/projects/torrentsearch/).
-No local setup needed, contribute directly from your browser.
+Translations are managed on [Weblate](https://hosted.weblate.org/projects/torrentsearch/). No local setup needed, contribute directly from your browser.
 
 [![Translation status](https://hosted.weblate.org/widget/torrentsearch/multi-auto.svg)](https://hosted.weblate.org/engage/torrentsearch/)
 
