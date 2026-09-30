@@ -38,7 +38,7 @@
     <string name="torrent_status_file_saved">Ficheiro torrent gravado</string>
     <string name="torrent_status_file_save_failed">Ficheiro torrent falhou ao gravar</string>
     <string name="torrent_client_not_found_title">Cliente torrent não encontrado</string>
-    <string name="torrent_client_not_found_content">Instale uma app de torrent para abrir ligações magnéticas.</string>
+    <string name="torrent_client_not_found_content">Instale uma app de torrent para abrir ligações magnéticas</string>
     <string name="torrent_client_not_found_recommended_client_hint">Apps Recomendadas</string>
     <string name="torrent_action_bookmark_torrent">Favoritar torrent</string>
     <string name="torrent_action_delete_bookmark">Apagar favorito</string>
@@ -49,7 +49,7 @@
     <string name="torrent_action_copy_description_page_url">Copiar endereço da página</string>
     <string name="torrent_action_share_description_page_url">Partilhar endereço da página</string>
     <string name="torrent_message_magnet_link_copied">Ligação magnética copiada para a área de transferência!</string>
-    <string name="torrent_message_url_copied">Url copiada para a área de transferência!</string>
+    <string name="torrent_message_url_copied">Url copiada para a área de transferência</string>
     <string name="main_cannot_search_using_url_message">Não é possível pesquisar usando um URL</string>
     <string name="main_cannot_search_blank_query_message">Não é possível pesquisar usando uma consulta em branco</string>
     <string name="crash_screen_subtitle">%1$s ocorreu um erro inesperado. Por favor exporte os logs e crie uma issue no GitHub com os logs em anexo.</string>
@@ -157,7 +157,7 @@
     <string name="settings_group_general">Geral</string>
     <string name="settings_language">Idioma</string>
     <string name="settings_enable_nsfw_mode">Ativar modo NSFW</string>
-    <string name="settings_enable_nsfw_mode_summary">Quando desativado, oculta categorias +18 e resultados de pesquisa.</string>
+    <string name="settings_enable_nsfw_mode_summary">Quando desativado, oculta categorias +18 e resultados de pesquisa</string>
     <string name="settings_blur_nsfw_images">Desfocar imagens NSFW</string>
     <string name="settings_blur_nsfw_images_summary">Automáticamente desfoca imagens NSFW</string>
     <string name="settings_clear_viewed_torrents">Limpar torrents vistos</string>
@@ -184,9 +184,9 @@
     <string name="settings_open_torrent_details_in_app">Abrir pormenores do torrent na app</string>
     <string name="settings_open_torrent_details_in_app_summary">Abrir pormenores do torrent diretamente no ecrã da app</string>
     <string name="settings_enable_share_integration">Ativar partilhamento integrado</string>
-    <string name="settings_enable_share_integration_summary">Quando ativado, adicionar esta app no menu de partilhamento.</string>
+    <string name="settings_enable_share_integration_summary">Quando ativado, adicionar esta app no menu de partilhamento</string>
     <string name="settings_enable_quick_search">Ativar pesquisa rápida</string>
-    <string name="settings_enable_quick_search_summary">Quando ativado, adiciona esta app ao menu de seleção de texto (como Copiar ou Recortar).</string>
+    <string name="settings_enable_quick_search_summary">Quando ativado, adiciona esta app ao menu de seleção de texto (como Copiar ou Recortar)</string>
     <string name="settings_export_logs_to_file">Exportar logs para o ficheiro</string>
     <string name="settings_export_logs_to_file_summary">Gera um ficheiro com os eventos da aplicação que podem ajudar a resolver problemas</string>
     <string name="settings_group_about">Sobre</string>
