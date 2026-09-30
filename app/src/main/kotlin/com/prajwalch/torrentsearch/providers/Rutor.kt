@@ -151,9 +151,9 @@ private class RutorResultsPageParser(
     private companion object {
         private const val LIST_ITEM = "div#index > table > tbody > tr"
         private const val TORRENT_NAME = "td:nth-child(2) > a:nth-child(3)"
-        private const val SIZE = "td:nth-child(3)"
-        private const val SEEDERS = "td:nth-child(4) > span:nth-child(1)"
-        private const val PEERS = "td:nth-child(4) > span:nth-child(3)"
+        private const val SIZE = "td:nth-last-child(2)"
+        private const val SEEDERS = "td:nth-last-child(1) > span:nth-child(1)"
+        private const val PEERS = "td:nth-last-child(1) > span:nth-child(3)"
         private const val UPLOAD_DATE = "td:nth-child(1)"
         private const val MAGNET_URI = "td:nth-child(2) > a:nth-child(2)"
         private const val FILE_DOWNLOAD_LINK = "td:nth-child(2) > a:nth-child(1)"
