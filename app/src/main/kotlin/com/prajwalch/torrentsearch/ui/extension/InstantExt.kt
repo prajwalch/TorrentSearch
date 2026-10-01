@@ -12,6 +12,6 @@ fun Instant.toRelativeTimeSpanString(): String {
         /* minResolution = */
         DateUtils.MINUTE_IN_MILLIS,
         /* flags = */
-        DateUtils.FORMAT_ABBREV_RELATIVE,
+        DateUtils.FORMAT_ABBREV_RELATIVE or DateUtils.FORMAT_ABBREV_MONTH,
     ).toString()
 }
