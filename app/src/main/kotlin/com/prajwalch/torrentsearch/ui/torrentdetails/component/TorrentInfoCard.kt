@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CornerBasedShape
@@ -25,6 +24,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
@@ -134,12 +134,14 @@ private fun TorrentMetadataRow(
             leadingIcon = R.drawable.ic_upload,
             label = stringResource(R.string.torrent_details_label_seeders),
             value = seeders?.toString(),
+            contentColor = MaterialTheme.colorScheme.primary,
         )
         TorrentMetadataTile(
             modifier = Modifier.weight(1f),
             leadingIcon = R.drawable.ic_download,
             label = stringResource(R.string.torrent_details_label_peers),
             value = peers?.toString(),
+            contentColor = MaterialTheme.colorScheme.tertiary,
         )
     }
 }
@@ -150,9 +152,10 @@ private fun TorrentMetadataTile(
     label: String,
     value: String?,
     modifier: Modifier = Modifier,
+    contentColor: Color = MaterialTheme.colorScheme.onSurface,
 ) {
     Surface(
-        modifier = modifier.height(80.dp),
+        modifier = modifier,
         shape = TorrentInfoCardDefaults.InnerContainerShape,
         color = TorrentInfoCardDefaults.InnerContainerColor,
     ) {
@@ -164,35 +167,37 @@ private fun TorrentMetadataTile(
             ),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
-            Icon(
-                modifier = Modifier.size(TorrentInfoCardDefaults.LeadingIconSize),
-                painter = painterResource(leadingIcon),
-                contentDescription = null,
-                tint = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
 
             Column(
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
+                Icon(
+                    modifier = Modifier.size(TorrentInfoCardDefaults.LeadingIconSize),
+                    painter = painterResource(leadingIcon),
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+
                 Text(
                     text = label,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     style = MaterialTheme.typography.labelMedium,
                 )
-
-                Text(
-                    text = value ?: "-",
-                    maxLines = 1,
-                    overflow = TextOverflow.MiddleEllipsis,
-                    color = if (value != null) {
-                        MaterialTheme.colorScheme.onSurface
-                    } else {
-                        MaterialTheme.colorScheme.onSurfaceVariant
-                    },
-                    style = MaterialTheme.typography.bodyMedium,
-                )
             }
+
+            Text(
+                text = value ?: "-",
+                maxLines = 1,
+                overflow = TextOverflow.MiddleEllipsis,
+                fontWeight = FontWeight.Medium,
+                color = if (value != null) {
+                    contentColor
+                } else {
+                    MaterialTheme.colorScheme.onSurfaceVariant
+                },
+                style = MaterialTheme.typography.bodyMedium,
+            )
         }
     }
 }

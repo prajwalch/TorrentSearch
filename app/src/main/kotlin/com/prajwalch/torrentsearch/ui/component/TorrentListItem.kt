@@ -115,13 +115,8 @@ fun TorrentMetadata(
             if (size != null) BulletPoint()
             TorrentMetadataItem(
                 icon = { TorrentMetadataIcon(R.drawable.ic_upload) },
-                text = {
-                    TorrentMetadataText(
-                        text = it.toString(),
-                        fontWeight = FontWeight.SemiBold,
-                    )
-                },
-                contentColor = MaterialTheme.colorScheme.secondary,
+                text = { TorrentMetadataText(it.toString()) },
+                contentColor = MaterialTheme.colorScheme.primary,
             )
         }
 
