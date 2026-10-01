@@ -19,7 +19,7 @@ object TorrentDateParser {
         RegexOption.IGNORE_CASE
     )
 
-    private val DefaultTimeZone = ZoneOffset.UTC
+    private val DefaultTimeZone get() = ZoneOffset.UTC
 
     // Russian month abbreviations from the provider are incompatible with
     // Java's locale data, so we normalize them to English before parsing.
@@ -111,9 +111,7 @@ object TorrentDateParser {
         OffsetDateTime.parse(date).toInstant()
 
     fun parseRFC1123(date: String): Instant =
-        LocalDate.parse(date, DateTimeFormatter.RFC_1123_DATE_TIME)
-            .atStartOfDay(DefaultTimeZone)
-            .toInstant()
+        DateTimeFormatter.RFC_1123_DATE_TIME.parse(date, Instant::from)
 
     fun getTodayDate(): Instant =
         LocalDate.now(DefaultTimeZone)
