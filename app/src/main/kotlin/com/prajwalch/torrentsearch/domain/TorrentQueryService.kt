@@ -37,7 +37,7 @@ class TorrentQueryService(
     private val settingsRepository: SettingsRepository,
 ) {
     private companion object {
-        private const val TAG = "SearchProvidersGateway"
+        private const val TAG = "TorrentQueryService"
     }
 
     private val torrentIdToMagnetUri = mutableMapOf<String, String>()
