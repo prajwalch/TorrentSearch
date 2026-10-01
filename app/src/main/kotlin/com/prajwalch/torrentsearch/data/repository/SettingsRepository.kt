@@ -197,14 +197,14 @@ class SettingsRepository(private val dataStore: DataStore<Preferences>) {
 
     suspend fun removeEnabledProviderId(id: SearchProviderId) {
         dataStore.edit {
-            val currentIds = it[ENABLED_PROVIDER_IDS] ?: emptySet()
+            val currentIds = it[ENABLED_PROVIDER_IDS] ?: return@edit
             it[ENABLED_PROVIDER_IDS] = currentIds - id
         }
     }
 
     suspend fun removeEnabledProviderIds(ids: Set<SearchProviderId>) {
         dataStore.edit {
-            val currentIds = it[ENABLED_PROVIDER_IDS] ?: emptySet()
+            val currentIds = it[ENABLED_PROVIDER_IDS] ?: return@edit
             it[ENABLED_PROVIDER_IDS] = currentIds - ids
         }
     }
