@@ -25,7 +25,9 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.pulltorefresh.PullToRefreshBox
+import androidx.compose.material3.pulltorefresh.PullToRefreshDefaults
+import androidx.compose.material3.pulltorefresh.pullToRefresh
+import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -83,39 +85,45 @@ fun HomeScreen(
             )
         },
     ) { innerPadding ->
+        val pullToRefreshState = rememberPullToRefreshState()
+
         Box(
             modifier = Modifier
                 .padding(innerPadding)
                 .fillMaxSize()
-                .consumeWindowInsets(innerPadding),
+                .consumeWindowInsets(innerPadding)
+                .pullToRefresh(
+                    state = pullToRefreshState,
+                    isRefreshing = false,
+                    onRefresh = { viewModel.checkProviders() },
+                    enabled = providersCheckState != ProvidersCheckState.Checking,
+                ),
         ) {
-            // Support for checking providers manually.
-            PullToRefreshBox(isRefreshing = false, onRefresh = { viewModel.checkProviders() }) {
-                HomeScreenContent(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .verticalScroll(rememberScrollState()),
-                    uiState = uiState,
-                    onCategorySelect = { viewModel.setCategory(it) },
-                    onFilterSearchSuggestions = { viewModel.filterSearchSuggestions(it) },
-                    onSearch = onSearch,
-                    onBrowse = onBrowse,
-                    onHideRecentSearches = { viewModel.disableShowRecentSearches() },
-                )
-            }
+            HomeScreenContent(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .verticalScroll(rememberScrollState()),
+                uiState = uiState,
+                onCategorySelect = { viewModel.setCategory(it) },
+                onFilterSearchSuggestions = { viewModel.filterSearchSuggestions(it) },
+                onSearch = onSearch,
+                onBrowse = onBrowse,
+                onHideRecentSearches = { viewModel.disableShowRecentSearches() },
+            )
 
             AnimatedContent(
                 modifier = Modifier.fillMaxWidth(),
                 targetState = providersCheckState,
                 transitionSpec = {
-                    fadeIn() + slideInVertically { -it } togetherWith
-                            slideOutVertically { it } + fadeOut()
+                    (fadeIn() + slideInVertically { -it }) togetherWith
+                            (slideOutVertically { it } + fadeOut())
                 },
                 contentKey = { it.animationContentKey() },
             ) { targetState ->
                 targetState?.let {
                     ProvidersCheckNotificationBar(
                         modifier = Modifier
+                            .align(Alignment.TopCenter)
                             .padding(MaterialTheme.spaces.large)
                             .fillMaxWidth(),
                         state = it,
@@ -128,6 +136,12 @@ fun HomeScreen(
                     )
                 }
             }
+
+            PullToRefreshDefaults.Indicator(
+                modifier = Modifier.align(Alignment.TopCenter),
+                state = pullToRefreshState,
+                isRefreshing = false,
+            )
         }
     }
 }
