@@ -99,7 +99,7 @@ private class MyPornClubResultsPageParser(
         )
 
         val name = listItem.selectFirst(NAME)?.ownText() ?: return null
-        val size = listItem.selectFirst(SIZE)?.ownText()
+        val size = listItem.selectFirst(SIZE)?.ownText()?.uppercase()
         val seeders = listItem.selectFirst(SEEDERS)?.ownText()?.toUIntOrNull()
         val peers = listItem.selectFirst(PEERS)?.ownText()?.toUIntOrNull()
         val uploadDate = listItem.selectFirst(UPLOAD_DATE)?.text()
