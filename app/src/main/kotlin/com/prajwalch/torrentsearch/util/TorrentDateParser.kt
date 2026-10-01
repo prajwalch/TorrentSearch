@@ -11,6 +11,7 @@ import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
 import java.time.format.DateTimeFormatterBuilder
 import java.time.format.DateTimeParseException
+import java.util.Locale
 
 object TorrentDateParser {
     private val RelativeTimePattern = Regex(
@@ -41,7 +42,7 @@ object TorrentDateParser {
         val inputFormatter = DateTimeFormatterBuilder()
             .parseCaseInsensitive()
             .appendPattern(format)
-            .toFormatter()
+            .toFormatter(Locale.ENGLISH)
 
         return try {
             LocalDateTime.parse(date, inputFormatter)
@@ -96,7 +97,7 @@ object TorrentDateParser {
         val timeFormatter = DateTimeFormatterBuilder()
             .parseCaseInsensitive()
             .appendPattern("h:m a")
-            .toFormatter()
+            .toFormatter(Locale.ENGLISH)
         val localTime = LocalTime.parse(time, timeFormatter)
         val dateTime = LocalDate.now(DefaultTimeZone).atTime(localTime)
 
