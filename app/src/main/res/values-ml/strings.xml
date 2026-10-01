@@ -11,12 +11,6 @@
     <string name="action_sort">സോർട്ട് ഓപ്ഷനുകൾ തുറക്കുക</string>
     <string name="torrent_action_bookmark_torrent">ടോറന്റ് ബുക്ക്‌മാർക്ക് ചെയ്യുക</string>
     <string name="torrent_action_delete_bookmark">ബുക്ക്‌മാർക്ക് മായ്ക്കുക</string>
-    <string name="torrent_action_open_magnet_link">ടോറന്റ് ഡൗൺലോഡ് ചെയ്യുക</string>
-    <string name="torrent_action_copy_magnet_link">മാഗ്നറ്റ് ലിങ്ക് കോപ്പി ചെയ്യുക</string>
-    <string name="torrent_action_share_magnet_link">മാഗ്നറ്റ് ലിങ്ക് ഷെയർ ചെയ്യുക</string>
-    <string name="torrent_action_open_description_page">ഡിസ്ക്രിപ്ഷൻ പേജ് തുറക്കുക</string>
-    <string name="torrent_action_copy_description_page_url">ഡിസ്ക്രിപ്ഷൻ പേജ് URL കോപ്പി ചെയ്യുക</string>
-    <string name="torrent_action_share_description_page_url">ഡിസ്ക്രിപ്ഷൻ പേജ് URL ഷെയർ ചെയ്യുക</string>
     <string name="torrent_message_magnet_link_copied">മാഗ്നറ്റ് ലിങ്ക് ക്ലിപ്പ്ബോർഡിലേക്ക് കോപ്പി ചെയ്തു!</string>
     <string name="torrent_message_url_copied">URL ക്ലിപ്പ്ബോർഡിലേക്ക് കോപ്പി ചെയ്തു</string>
     <string name="bookmarks_screen_title">ബുക്ക്‌മാർക്കുകൾ</string>
@@ -32,13 +26,11 @@
     <string name="settings_group_search">സേർച്ച്</string>
     <string name="settings_search_providers">സേർച്ച് പ്രൊവൈഡേഴ്‌സ്</string>
     <string name="settings_search_providers_summary_format">%1$d / %2$d സജീവമാണ്</string>
-    <string name="settings_default_category">ഡീഫാൾട്ട് വിഭാഗം</string>
     <string name="home_search_query_hint">സേർച്ച്…</string>
     <string name="settings_default_sort_options">ഡീഫാൾട്ട് സോർട്ട് ഓപ്ഷനുകൾ</string>
     <string name="settings_max_num_results">ഫലങ്ങളുടെ പരമാവധി എണ്ണം</string>
     <string name="settings_max_num_results_summary_format">%1$d ഫലങ്ങൾ</string>
     <string name="settings_max_num_results_button_unlimited">പരിധിയില്ല</string>
-    <string name="settings_group_search_history">സേർച്ച് ഹിസ്റ്ററി</string>
     <string name="settings_save_search_history">സേർച്ച് ഹിസ്റ്ററി സേവ് ചെയ്യുക</string>
     <string name="settings_show_search_history">സേർച്ച് ഹിസ്റ്ററി കാണിക്കുക</string>
     <string name="settings_show_search_history_summary">സേർച്ച് ബാറിൽ സേർച്ച് ഹിസ്റ്ററി കാണിക്കുക</string>
@@ -67,7 +59,6 @@
     <string name="home_button_search">സേർച്ച്</string>
     <string name="bookmarks_empty_message">ബുക്ക്മാർക്കുകളൊന്നുമില്ല</string>
     <string name="search_history_empty_message">സേർച്ച് ഹിസ്റ്ററിയൊന്നുമില്ല</string>
-    <string name="bookmarked_message">ബുക്ക്മാർക്ക് ചെയ്തു</string>
     <string name="main_cannot_search_using_url_message">URL ഉപയോഗിച്ച് സേർച്ച് ചെയ്യാനാകില്ല</string>
     <string name="main_cannot_search_blank_query_message">ഒന്നും അടിക്കാതെ സേർച്ച് ചെയ്യാനാകില്ല</string>
     <string name="action_sort_criteria_name">പേര്</string>
@@ -110,7 +101,6 @@
     <string name="settings_pure_black_summary">AMOLED തീം മോഡ് ഓണാക്കുന്നു</string>
     <string name="settings_enable_nsfw_mode_summary">ഓഫ് ചെയ്യുമ്പോൾ, NSFW കാറ്റഗറികളും സേർച്ച് റിസൾട്ടുകളും ഹൈഡ് ചെയ്യും</string>
     <string name="settings_save_search_history_summary">ഈയിടെ സേർച്ച് ചെയ്തവ പെട്ടെന്ന് എടുക്കാനും സജഷൻസിനുമായി ലോക്കലായി സ്റ്റോർ ചെയ്യുന്നു</string>
-    <string name="settings_section_advanced">അഡ്വാൻസ്ഡ്</string>
     <string name="settings_enable_share_integration">ഷെയർ ഇന്റഗ്രേഷൻ ഓണാക്കുക</string>
     <string name="settings_enable_share_integration_summary">ഓണാക്കുമ്പോൾ, ഈ ആപ്പിനെ ഷെയർ മെനുവിൽ ചേർക്കും</string>
     <string name="settings_enable_quick_search">ക്വിക്ക് സേർച്ച് ഓണാക്കുക</string>

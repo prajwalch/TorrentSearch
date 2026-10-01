@@ -11,12 +11,6 @@
     <string name="action_sort">Abrir opções de ordenação</string>
     <string name="torrent_action_bookmark_torrent">Favoritar torrent</string>
     <string name="torrent_action_delete_bookmark">Deletar favorito</string>
-    <string name="torrent_action_open_magnet_link">Baixar torrent</string>
-    <string name="torrent_action_copy_magnet_link">Copiar link magnético</string>
-    <string name="torrent_action_share_magnet_link">Compartilhar link magnético</string>
-    <string name="torrent_action_open_description_page">Abrir descrição da página</string>
-    <string name="torrent_action_copy_description_page_url">Copiar endereço da página</string>
-    <string name="torrent_action_share_description_page_url">Compartilhar endereço da página</string>
     <string name="torrent_message_magnet_link_copied">Link magnético copiado para a área de transferência!</string>
     <string name="torrent_message_url_copied">Url copiada para a área de transferência</string>
     <string name="bookmarks_screen_title">Favoritos</string>
@@ -31,12 +25,10 @@
     <string name="settings_group_search">Pesquisa</string>
     <string name="settings_search_providers">Repositórios de pesquisa</string>
     <string name="settings_search_providers_summary_format">%1$d ou %2$d habilitado</string>
-    <string name="settings_default_category">Categoria padrão</string>
     <string name="settings_default_sort_options">Opções de ordenação padrão</string>
     <string name="settings_max_num_results">Número máximo de resultados</string>
     <string name="settings_max_num_results_summary_format">%1$d resultados</string>
     <string name="settings_max_num_results_button_unlimited">Ilimitado</string>
-    <string name="settings_group_search_history">Histórico de pesquisa</string>
     <string name="settings_save_search_history">Salvar histórico de pesquisa</string>
     <string name="settings_show_search_history">Mostrar histórico de pesquisa</string>
     <string name="settings_show_search_history_summary">Mostrar histórico de pesquisa na barra de pesquisa</string>
@@ -68,7 +60,6 @@
     <string name="bookmarks_search_query_hint">Buscar marcadores</string>
     <string name="bookmarks_empty_message">Nenhum marcador</string>
     <string name="settings_language">Idioma</string>
-    <string name="settings_section_advanced">Avançado</string>
     <string name="settings_enable_share_integration">Ativar compartilhamento integrado</string>
     <string name="settings_enable_share_integration_summary">Quando ativado, adicionar esse aplicativo no menu de compartilhamento</string>
     <string name="settings_enable_quick_search">Ativar busca rápida</string>
@@ -103,7 +94,6 @@
     <string name="settings_dark_theme_follow_system">Conforme sistema</string>
     <string name="settings_enable_nsfw_mode_summary">Quando desativado, oculta categorias +18 e resultados de pesquisa</string>
     <string name="search_providers_screen_title">Provedores de busca</string>
-    <string name="bookmarked_message">Adicionado aos favoritos</string>
     <string name="bookmarks_dialog_title_delete_all">Apagar todos os favoritos?</string>
     <string name="bookmarks_dialog_message_delete_all">Os favoritos serão removidos permanentemente</string>
     <string name="bookmarks_button_delete">Deletar</string>
@@ -127,8 +117,6 @@
     <string name="torrent_status_file_not_found">Arquivo torrent não encontrado em qualquer fonte</string>
     <string name="torrent_status_file_saving">Salvando arquivo torrent…</string>
     <string name="torrent_status_file_saved">Arquivo torrent salvo</string>
-    <string name="torrent_status_file_save_failed">Arquivo torrent falhou ao salvar</string>
-    <string name="torrent_action_download_torrent_file">Baixar arquivo torrent</string>
     <string name="crash_screen_title">Oops!</string>
     <string name="crash_screen_subtitle">%1$s ocorreu um erro inesperado. Por favor exporte os logs e crie uma issue no GitHub com os logs em anexo.</string>
     <string name="crash_button_export_crash_logs">Exportar logs do crash em arquivo</string>
@@ -148,7 +136,6 @@
     <string name="search_state_results_not_found_description">Nenhum torrent correspondente \'%1$s\' in %2$s. Tente uma pesquisa diferente ou verifique se as fontes estão ativas.</string>
     <string name="search_button_go_to_providers">Ir para fontes</string>
     <string name="search_errors_bottom_sheet_title">Falhou ao pesquisar fontes</string>
-    <string name="search_unexpected_error">Erro inesperado</string>
     <string name="search_info_troubleshoot_help">Para pedir ajuda em algum problema, exporte os logs nas configurações do aplicativo e crie uma issue no GitHub com os logs em anexo.</string>
     <string name="torrent_details_screen_title">Detalhes</string>
     <string name="torrent_details_action_open_link">Abrir link no navegador</string>
