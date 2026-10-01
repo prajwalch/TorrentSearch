@@ -49,7 +49,7 @@ class SearchProviderManager(
     fun getProviderInfos(): Flow<List<SearchProviderInfo>> =
         combine(
             torznabConfigRepository.getAllConfigs(),
-            settingsRepository.enabledSearchProviderIds,
+            settingsRepository.enabledProviderIds,
             settingsRepository.protectionUnlockedProviderIds,
         ) { torznabConfigs, enabledProviderIds, unlockedProviderIds ->
             val enabledProviderIds = enabledProviderIds.orEmpty()
@@ -172,7 +172,7 @@ class SearchProviderManager(
      * Enables the provider associated with the given ID.
      */
     suspend fun enableProvider(id: SearchProviderId) {
-        settingsRepository.addEnabledSearchProviderId(id)
+        settingsRepository.addEnabledProviderId(id)
     }
 
 //    /**
@@ -191,7 +191,7 @@ class SearchProviderManager(
      */
     suspend fun enableProvidersByIds(ids: Set<SearchProviderId>) {
         val filteredIds = filterLockedProviderIds(ids)
-        settingsRepository.addEnabledSearchProviderIds(filteredIds)
+        settingsRepository.addEnabledProviderIds(filteredIds)
     }
 
     private suspend fun filterLockedProviderIds(
@@ -216,28 +216,28 @@ class SearchProviderManager(
             .map { it.id }
             .toSet()
 
-        settingsRepository.setEnabledSearchProviderIds(defaultProviderIds)
+        settingsRepository.setEnabledProviderIds(defaultProviderIds)
     }
 
     /**
      * Skips enabling the default set of search providers.
      */
     suspend fun skipDefaultSearchProviders() {
-        settingsRepository.setEnabledSearchProviderIds(emptySet())
+        settingsRepository.setEnabledProviderIds(emptySet())
     }
 
     /**
      * Disables the provider associated with the given ID.
      */
     suspend fun disableProvider(id: SearchProviderId) {
-        settingsRepository.removeEnabledSearchProviderId(id)
+        settingsRepository.removeEnabledProviderId(id)
     }
 
     /**
      * Disable providers associated with the given IDs.
      */
     suspend fun disableProviderByIds(ids: Set<SearchProviderId>) {
-        settingsRepository.removeEnabledSearchProviderIds(ids)
+        settingsRepository.removeEnabledProviderIds(ids)
     }
 
     /**
@@ -255,7 +255,7 @@ class SearchProviderManager(
             .map { it.id }
             .toSet()
 
-        settingsRepository.removeEnabledSearchProviderIds(unsafeProviderIds)
+        settingsRepository.removeEnabledProviderIds(unsafeProviderIds)
     }
 
     /**
@@ -309,7 +309,7 @@ class SearchProviderManager(
                 // Lock
                 settingsRepository.removeProtectionUnlockedProviderId(providerId)
                 // Disable
-                settingsRepository.removeEnabledSearchProviderId(providerId)
+                settingsRepository.removeEnabledProviderId(providerId)
                 // Remove its cookie
                 NetworkClient.removeCookie(cloudflareSolverUrl)
 
@@ -330,7 +330,7 @@ class SearchProviderManager(
      * Resets current providers settings to default.
      */
     suspend fun resetToDefault() {
-        settingsRepository.setEnabledSearchProviderIds(emptySet())
+        settingsRepository.setEnabledProviderIds(emptySet())
         settingsRepository.setProtectionUnlockedProviderIds(emptySet())
         NetworkClient.removeAllCookies()
     }
@@ -384,7 +384,7 @@ class SearchProviderManager(
      */
     suspend fun deleteTorznabConfig(id: String) {
         torznabConfigRepository.deleteConfigById(id)
-        settingsRepository.removeEnabledSearchProviderId(id)
+        settingsRepository.removeEnabledProviderId(id)
     }
 }
 

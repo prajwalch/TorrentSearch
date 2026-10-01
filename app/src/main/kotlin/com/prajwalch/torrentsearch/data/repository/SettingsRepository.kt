@@ -72,11 +72,10 @@ class SettingsRepository(private val dataStore: DataStore<Preferences>) {
      * Search settings
      */
 
-    val enabledSearchProviderIds: Flow<Set<SearchProviderId>?> =
-        dataStore.get(ENABLED_SEARCH_PROVIDER_IDS)
+    val enabledProviderIds: Flow<Set<SearchProviderId>?> =
+        dataStore.get(ENABLED_PROVIDER_IDS)
 
-    val searchProvidersInitialized: Flow<Boolean> =
-        enabledSearchProviderIds.map { it != null }
+    val providersInitialized: Flow<Boolean> = enabledProviderIds.map { it != null }
 
     val protectionUnlockedProviderIds: Flow<Set<SearchProviderId>> =
         dataStore.getOrDefault(PROTECTION_UNLOCKED_PROVIDER_IDS, emptySet())
@@ -176,37 +175,37 @@ class SettingsRepository(private val dataStore: DataStore<Preferences>) {
     }
 
     suspend fun currentEnabledProviderIds(): Set<SearchProviderId>? =
-        enabledSearchProviderIds.firstOrNull()
+        enabledProviderIds.firstOrNull()
 
-    suspend fun setEnabledSearchProviderIds(ids: Set<SearchProviderId>) {
-        dataStore.setOrUpdate(ENABLED_SEARCH_PROVIDER_IDS, ids)
+    suspend fun setEnabledProviderIds(ids: Set<SearchProviderId>) {
+        dataStore.setOrUpdate(ENABLED_PROVIDER_IDS, ids)
     }
 
-    suspend fun addEnabledSearchProviderId(id: SearchProviderId) {
+    suspend fun addEnabledProviderId(id: SearchProviderId) {
         dataStore.edit {
-            val currentIds = it[ENABLED_SEARCH_PROVIDER_IDS] ?: emptySet()
-            it[ENABLED_SEARCH_PROVIDER_IDS] = currentIds + id
+            val currentIds = it[ENABLED_PROVIDER_IDS] ?: emptySet()
+            it[ENABLED_PROVIDER_IDS] = currentIds + id
         }
     }
 
-    suspend fun addEnabledSearchProviderIds(ids: Set<SearchProviderId>) {
+    suspend fun addEnabledProviderIds(ids: Set<SearchProviderId>) {
         dataStore.edit {
-            val currentIds = it[ENABLED_SEARCH_PROVIDER_IDS] ?: emptySet()
-            it[ENABLED_SEARCH_PROVIDER_IDS] = currentIds + ids
+            val currentIds = it[ENABLED_PROVIDER_IDS] ?: emptySet()
+            it[ENABLED_PROVIDER_IDS] = currentIds + ids
         }
     }
 
-    suspend fun removeEnabledSearchProviderId(id: SearchProviderId) {
+    suspend fun removeEnabledProviderId(id: SearchProviderId) {
         dataStore.edit {
-            val currentIds = it[ENABLED_SEARCH_PROVIDER_IDS] ?: emptySet()
-            it[ENABLED_SEARCH_PROVIDER_IDS] = currentIds - id
+            val currentIds = it[ENABLED_PROVIDER_IDS] ?: emptySet()
+            it[ENABLED_PROVIDER_IDS] = currentIds - id
         }
     }
 
-    suspend fun removeEnabledSearchProviderIds(ids: Set<SearchProviderId>) {
+    suspend fun removeEnabledProviderIds(ids: Set<SearchProviderId>) {
         dataStore.edit {
-            val currentIds = it[ENABLED_SEARCH_PROVIDER_IDS] ?: emptySet()
-            it[ENABLED_SEARCH_PROVIDER_IDS] = currentIds - ids
+            val currentIds = it[ENABLED_PROVIDER_IDS] ?: emptySet()
+            it[ENABLED_PROVIDER_IDS] = currentIds - ids
         }
     }
 
@@ -284,7 +283,7 @@ class SettingsRepository(private val dataStore: DataStore<Preferences>) {
         val SHOW_RECENT_SEARCHES = booleanPreferencesKey("show_recent_searches")
 
         // Search
-        val ENABLED_SEARCH_PROVIDER_IDS = stringSetPreferencesKey("enabled_search_providers_id")
+        val ENABLED_PROVIDER_IDS = stringSetPreferencesKey("enabled_search_providers_id")
         val PROTECTION_UNLOCKED_PROVIDER_IDS =
             stringSetPreferencesKey("protection_unlocked_provider_ids")
         val DEFAULT_SORT_CRITERIA = stringPreferencesKey("default_sort_criteria")

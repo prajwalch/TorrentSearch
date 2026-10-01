@@ -61,7 +61,7 @@ fun HomeScreen(
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val providersCheckState by viewModel.providersCheckState.collectAsStateWithLifecycle()
 
-    if (uiState.settings.searchProvidersInitialized == false) {
+    if (uiState.settings.providersInitialized == false) {
         EnableSearchProvidersDialog(
             onDismiss = { viewModel.skipDefaultSearchProviders() },
             onEnableRecommended = { viewModel.enableDefaultSearchProviders() },

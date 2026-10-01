@@ -38,7 +38,7 @@ data class HomeUiState(
 
 data class HomeRelevantSettings(
     val searchHistoryEnabled: Boolean = true,
-    val searchProvidersInitialized: Boolean? = null,
+    val providersInitialized: Boolean? = null,
     val showRecentSearches: Boolean = false,
 )
 
@@ -108,7 +108,7 @@ class HomeViewModel(
     private val homeRelevantSettings: Flow<HomeRelevantSettings> =
         combine(
             settingsRepository.saveSearchHistory,
-            settingsRepository.searchProvidersInitialized,
+            settingsRepository.providersInitialized,
             settingsRepository.showRecentSearches,
             ::HomeRelevantSettings,
         )
