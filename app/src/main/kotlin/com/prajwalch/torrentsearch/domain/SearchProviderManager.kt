@@ -50,7 +50,7 @@ class SearchProviderManager(
         combine(
             torznabConfigRepository.getAllConfigs(),
             settingsRepository.enabledProviderIds,
-            settingsRepository.protectionUnlockedProviderIds,
+            settingsRepository.unlockedProviderIds,
         ) { torznabConfigs, enabledProviderIds, unlockedProviderIds ->
             val enabledProviderIds = enabledProviderIds.orEmpty()
 
@@ -197,7 +197,7 @@ class SearchProviderManager(
     private suspend fun filterLockedProviderIds(
         ids: Set<SearchProviderId>,
     ): Set<SearchProviderId> {
-        val unlockedProviderIds = settingsRepository.currentProtectionUnlockedProviderIds()
+        val unlockedProviderIds = settingsRepository.currentUnlockedProviderIds()
 
         // Torznab providers can't be locked, only built-ins can be.
         return builtinProviders
@@ -262,14 +262,14 @@ class SearchProviderManager(
      * Unlocks the provider associated with the given ID.
      */
     suspend fun unlockProvider(id: SearchProviderId) {
-        settingsRepository.addProtectionUnlockedProviderId(id)
+        settingsRepository.addUnlockedProviderId(id)
     }
 
     /**
      * Locks and disables the provider associated with the given ID.
      */
     suspend fun lockProvider(id: SearchProviderId) {
-        settingsRepository.removeProtectionUnlockedProviderId(id)
+        settingsRepository.removeUnlockedProviderId(id)
         builtinProviders.find { it.id == id }?.let {
             withContext(Dispatchers.IO) {
                 NetworkClient.removeCookie(it.cloudflareSolverUrl ?: it.url)
@@ -302,12 +302,12 @@ class SearchProviderManager(
 
                 if (!isUrlChallenged) {
                     // Unlock it
-                    settingsRepository.addProtectionUnlockedProviderId(providerId)
+                    settingsRepository.addUnlockedProviderId(providerId)
                     continue
                 }
 
                 // Lock
-                settingsRepository.removeProtectionUnlockedProviderId(providerId)
+                settingsRepository.removeUnlockedProviderId(providerId)
                 // Disable
                 settingsRepository.removeEnabledProviderId(providerId)
                 // Remove its cookie
@@ -331,7 +331,7 @@ class SearchProviderManager(
      */
     suspend fun resetToDefault() {
         settingsRepository.setEnabledProviderIds(emptySet())
-        settingsRepository.setProtectionUnlockedProviderIds(emptySet())
+        settingsRepository.setUnlockedProviderIds(emptySet())
         NetworkClient.removeAllCookies()
     }
 
