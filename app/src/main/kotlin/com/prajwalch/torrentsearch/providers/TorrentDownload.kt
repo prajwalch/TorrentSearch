@@ -83,7 +83,7 @@ private class TorrentDownloadResultsParser(
         withContext(Dispatchers.Default) {
             val html = Jsoup.parse(html, pageUrl)
 
-            if (html.selectFirst("h2")?.ownText() == "No Results Found") {
+            if (html.selectFirst("h3")?.ownText() == "No Results Found") {
                 emptyList()
             } else {
                 html.select(LIST_ITEM).mapNotNull(::parseListItem)
@@ -126,7 +126,7 @@ private class TorrentDownloadResultsParser(
     }
 
     private companion object {
-        private const val LIST_ITEM = "div.wrapper > table.table2:last-of-type > tbody > tr"
+        private const val LIST_ITEM = "table.table2 > tbody > tr:has(span.smallish)"
         private const val TORRENT_NAME = "td:nth-child(1) > div.tt-name > a"
         private const val SIZE = "td:nth-child(3)"
         private const val SEEDERS = "td:nth-child(4)"
