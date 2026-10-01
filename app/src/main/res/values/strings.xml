@@ -7,8 +7,8 @@
     <string name="nsfw">NSFW</string>
     <string name="torznab" translatable="false">Torznab</string>
     <string name="safety_status_unsafe">Unsafe</string>
-    <string name="bookmarked_message">Bookmarked</string>
     <string name="internet_connection_error">No internet connection</string>
+
     <string name="category_all">All</string>
     <string name="category_anime">Anime</string>
     <string name="category_apps">Apps</string>
@@ -19,6 +19,7 @@
     <string name="category_porn">Porn</string>
     <string name="category_series">Series</string>
     <string name="category_other">Other</string>
+
     <string name="action_sort">Sort</string>
     <string name="action_sort_criteria_name">Name</string>
     <string name="action_sort_criteria_seeders">Seeders</string>
@@ -27,12 +28,14 @@
     <string name="action_sort_criteria_date">Date</string>
     <string name="action_sort_order_ascending">Ascending</string>
     <string name="action_sort_order_descending">Descending</string>
+
     <string name="torznab_conn_check_result_conn_established">Connection established</string>
     <string name="torznab_conn_check_result_conn_failed">Connection failed. Check URL and server status.</string>
     <string name="torznab_conn_check_result_invalid_api_key">Invalid API key</string>
     <string name="torznab_conn_check_result_app_error">Application error (%1$d)</string>
     <string name="torznab_conn_check_result_unexpected_response">Unexpected response (%1$d)</string>
     <string name="torznab_conn_check_result_unexpected_error">Unexpected error</string>
+
     <string name="torrent_client_not_found_title">Torrent client not found</string>
     <string name="torrent_client_not_found_content">Install a torrent client to open magnet links</string>
     <string name="torrent_client_not_found_recommended_client_hint">Recommended client</string>
@@ -41,15 +44,9 @@
     <string name="torrent_client_gopeed" translatable="false">Gopeed</string>
     <string name="torrent_client_pikatorrent" translatable="false">PikaTorrent</string>
     <string name="torrent_client_torrserve" translatable="false">TorrServe</string>
+
     <string name="torrent_action_bookmark_torrent">Bookmark torrent</string>
     <string name="torrent_action_delete_bookmark">Delete bookmark</string>
-    <string name="torrent_action_open_magnet_link">Open magnet link</string>
-    <string name="torrent_action_download_torrent_file">Download torrent file</string>
-    <string name="torrent_action_copy_magnet_link">Copy magnet link</string>
-    <string name="torrent_action_share_magnet_link">Share magnet link</string>
-    <string name="torrent_action_open_description_page">Open description page</string>
-    <string name="torrent_action_copy_description_page_url">Copy description page URL</string>
-    <string name="torrent_action_share_description_page_url">Share description page URL</string>
     <string name="torrent_title_magnet_link">Magnet link</string>
     <string name="torrent_title_torrent_file">Torrent file</string>
     <string name="torrent_title_details_page">Details page</string>
@@ -67,18 +64,19 @@
     <string name="torrent_status_file_not_found">Not found on any source</string>
     <string name="torrent_status_file_saving">Saving…</string>
     <string name="torrent_status_file_saved">File saved</string>
-    <string name="torrent_status_file_save_failed">Save failed</string>
     <string name="torrent_status_details_ready">Tap to view details</string>
     <string name="torrent_status_unavailable">Not available</string>
     <string name="torrent_button_save_to_file">Save to file</string>
-    <!-- MainActivity -->
+
     <string name="main_cannot_search_using_url_message">Cannot search using a URL</string>
     <string name="main_cannot_search_blank_query_message">Cannot search using a blank query</string>
+
     <string name="crash_screen_title">Oops!</string>
     <string name="crash_screen_subtitle">%1$s hit an unexpected error. Please export the logs and create a GitHub issue with the logs attached.</string>
     <string name="crash_button_export_crash_logs">Export crash logs to file</string>
     <string name="crash_button_restart_application">Restart the application</string>
     <string name="crash_logs_export_success_message">Logs exported to a file</string>
+
     <string name="home_search_query_hint">Search…</string>
     <string name="home_button_search">Search</string>
     <string name="home_button_browse">Browse</string>
@@ -92,6 +90,7 @@
     <string name="home_status_providers_check_failed_subtitle">Something went wrong</string>
     <string name="home_status_providers_check_complete">Providers check complete</string>
     <string name="home_message_please_wait">Please wait</string>
+
     <string name="search_screen_title">Search</string>
     <string name="search_action_refresh">Refresh</string>
     <string name="search_action_stop_search">Stop search</string>
@@ -110,7 +109,6 @@
     <string name="search_button_go_to_providers">Go to providers</string>
     <string name="search_results_count_format">%1$s results for \'%2$s\' (%3$s)</string>
     <string name="search_errors_bottom_sheet_title">Failed search providers</string>
-    <string name="search_unexpected_error">Unexpected error</string>
     <string name="search_error_kind_crash">Crashed</string>
     <string name="search_error_kind_cloudflare_challenge">Cloudflare challenge encountered</string>
     <string name="search_error_status_retrying">Retrying…</string>
@@ -118,6 +116,7 @@
     <string name="search_title_stack_trace">Stack trace</string>
     <string name="search_message_no_stack_trace">No stack trace found</string>
     <string name="search_info_troubleshoot_help">To help troubleshoot issues, export the logs from the settings screen and create a GitHub issue with the logs attached.</string>
+
     <string name="torrent_details_screen_title">Details</string>
     <string name="torrent_details_action_open_link">Open link in browser</string>
     <string name="torrent_details_action_copy_link">Copy page link</string>
@@ -148,6 +147,7 @@
     <string name="torrent_details_button_download_torrent_file">Download torrent file</string>
     <string name="torrent_details_button_bookmark_torrent">Bookmark torrent</string>
     <string name="torrent_details_button_open_in_browser">Open in browser</string>
+
     <string name="bookmarks_screen_title">Bookmarks</string>
     <plurals name="bookmarks_count_format">
         <item quantity="one">%1$d bookmark</item>
@@ -164,6 +164,7 @@
     <string name="bookmarks_empty_message">No bookmarks</string>
     <string name="bookmarks_no_bookmarks_matched">No bookmarks matched</string>
     <string name="bookmarks_swipe_delete_tip">You can also swipe left on a bookmark to delete it.</string>
+
     <string name="browse_screen_title">Browse</string>
     <string name="browse_search_query_hint">Search torrents</string>
     <string name="browse_sort_latest">Latest</string>
@@ -173,6 +174,7 @@
     <string name="browse_state_unavailable_description">No torrents to show. The required providers may be disabled or unreachable.</string>
     <string name="browse_button_go_to_providers">Go to providers</string>
     <string name="browse_button_try_again">Try again</string>
+
     <string name="search_history_screen_title">Search history</string>
     <string name="search_history_action_delete_all">Delete all</string>
     <string name="search_history_empty_message">No search history</string>
@@ -182,6 +184,7 @@
     <string name="search_history_button_clear">Clear</string>
     <string name="search_history_today">Today</string>
     <string name="search_history_yesterday">Yesterday</string>
+
     <string name="search_providers_screen_title">Search providers</string>
     <string name="search_providers_action_enable_all">Enable all</string>
     <string name="search_providers_action_disable_all">Disable all</string>
@@ -222,6 +225,7 @@
     <string name="search_providers_protection_locked">Locked</string>
     <string name="search_providers_protection_unlocked">Unlocked</string>
     <string name="search_providers_search_hint">Search providers</string>
+
     <string name="settings_screen_title">Settings</string>
     <string name="settings_group_appearance">Appearance</string>
     <string name="settings_enable_dynamic_theme">Enable dynamic theme</string>
@@ -253,21 +257,18 @@
     <string name="settings_group_search">Search</string>
     <string name="settings_search_providers">Search providers</string>
     <string name="settings_search_providers_summary_format">%1$d of %2$d enabled</string>
-    <string name="settings_default_category">Default category</string>
     <string name="settings_default_sort_options">Default sort options</string>
     <string name="settings_section_sort_criteria">Sort criteria</string>
     <string name="settings_section_sort_order">Sort order</string>
     <string name="settings_max_num_results">Maximum number of results</string>
     <string name="settings_max_num_results_summary_format">%1$d results</string>
     <string name="settings_max_num_results_button_unlimited">Unlimited</string>
-    <string name="settings_group_search_history">Search history</string>
     <string name="settings_save_search_history">Save search history</string>
     <string name="settings_save_search_history_summary">Stores recent searches locally for quick access and suggestions</string>
     <string name="settings_show_search_history">Show search history</string>
     <string name="settings_show_recent_searches">Show recent searches</string>
     <string name="settings_show_recent_searches_summary">See your last 5 searches on the home screen</string>
     <string name="settings_show_search_history_summary">Show search history in search bar</string>
-    <string name="settings_section_advanced">Advanced</string>
     <string name="settings_group_network">Network</string>
     <string name="settings_dns_over_https">DNS over HTTPS (DoH)</string>
     <string name="settings_dns_over_https_label_provider">Provider</string>
@@ -279,6 +280,7 @@
     <string name="settings_export_logs_to_file_summary">Generates a file with application activities that can help troubleshoot issues</string>
     <string name="settings_version">Version</string>
     <string name="settings_source_code">Source code</string>
+
     <string name="limetorrents_unsafe_reason">Not technically unsafe, but it ignores category selection. Choose carefully.</string>
     <string name="tpb_unsafe_reason">Many malware reports due to inadequate moderation.</string>
     <string name="therarbg_unsafe_reason">Clone of original RARBG with many fake torrents. Use extreme caution.</string>
