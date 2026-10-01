@@ -136,7 +136,7 @@ even after unlocking it
 - Added [NikoBT](https://nikobt.to) as an Anime provider (disabled by default)
 - Added Japanese translation by [@Sakuya_San](https://github.com/Sakuya_San)
 - Added Italian translation by [@elenaferr0](https://github.com/elenaferr0)
-- In the search screen, an ongoing search can now be cancelled via `⋮ > Stop Search`
+- In the search screen, an ongoing search can now be canceled via `⋮ > Stop Search`
 - The enabled/total provider count (e.g., "3 of 24 enabled") is now displayed as a subtitle in the
   "Search providers" screen's top bar
 - `TokyoToshokan` now provides a file download link
