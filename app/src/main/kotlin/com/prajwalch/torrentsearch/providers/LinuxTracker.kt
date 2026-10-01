@@ -7,6 +7,7 @@ import com.prajwalch.torrentsearch.domain.model.Torrent
 import com.prajwalch.torrentsearch.domain.model.TorrentDetails
 import com.prajwalch.torrentsearch.network.NetworkClient
 import com.prajwalch.torrentsearch.provider.LatestTorrentsProvider
+import com.prajwalch.torrentsearch.provider.MagnetUriProvider
 import com.prajwalch.torrentsearch.provider.SearchProvider
 import com.prajwalch.torrentsearch.provider.SearchProviderId
 import com.prajwalch.torrentsearch.provider.TopTorrentsProvider
@@ -24,6 +25,7 @@ class LinuxTracker(private val networkClient: NetworkClient) :
     SearchProvider,
     LatestTorrentsProvider,
     TopTorrentsProvider,
+    MagnetUriProvider,
     TorrentDetailsProvider {
     override val id = "linuxtracker"
     override val name = "LinuxTracker"
@@ -47,7 +49,7 @@ class LinuxTracker(private val networkClient: NetworkClient) :
     }
 
     override suspend fun getLastestTorrents(category: Category): List<Torrent> {
-        val requestUrl = "$url/index.php?page=torrents&search=&category=0&active=0"
+        val requestUrl = "$url/torrents/"
         val responseHtml = networkClient.getText(requestUrl)
 
         return resultsPageParser.parse(html = responseHtml, pageUrl = requestUrl)
@@ -55,6 +57,13 @@ class LinuxTracker(private val networkClient: NetworkClient) :
 
     override suspend fun getTopTorrents(category: Category): List<Torrent> {
         return getLastestTorrents(category)
+    }
+
+    override suspend fun getMagnetUri(url: String): String {
+        val detailsPageHtml = networkClient.getText(url)
+
+        return LinuxTrackerDetailsPageParser.extractMagnetUri(detailsPageHtml)
+            ?: error("Failed to retrieve magnet URI from '$url'")
     }
 }
 
@@ -70,26 +79,26 @@ private class LinuxTrackerResultsPageParser(
         }
 
     private fun parseListItem(listItem: Element): Torrent? {
-        val torrentNameElement = listItem.selectFirst(TORRENT_NAME) ?: return null
-        val magnetUri = listItem.selectFirst(MAGNET_URI)?.attr("href") ?: return null
+        val torrentName = listItem.selectFirst(TORRENT_NAME)?.ownText() ?: return null
+        val detailsPageUrl = listItem.selectFirst(DETAILS_PAGE_URL)
+            ?.attr("abs:href")
+            ?.takeIf { it.isNotBlank() }
+            ?: return null
 
-        // href="index.php?page=torrent-details&id=df4fe3d139bcb763ffd51d50f13f6631b1e7015f"
-        val torrentRemoteId = torrentNameElement.attr("href").takeLastWhile { it != '=' }
+        // https://linuxtracker.org/torrents/5b1e0d988fc7a0c9e99bd852071681a59974b39f/
+        val torrentRemoteId = detailsPageUrl.removeSuffix("/").takeLastWhile { it != '/' }
         val torrentId = TorrentUtils.createTorrentId(
             providerId = providerId,
             sourceId = torrentRemoteId,
         )
 
-        val torrentName = torrentNameElement.ownText()
         val size = listItem.selectFirst(SIZE)?.ownText()
         val seeders = listItem.selectFirst(SEEDERS)?.ownText()?.toUIntOrNull()
         val peers = listItem.selectFirst(PEERS)?.ownText()?.toUIntOrNull()
         val uploadDate = listItem.selectFirst(UPLOAD_DATE)
             ?.ownText()
             ?.trim()
-            ?.let { TorrentDateParser.parse(date = it, format = "dd/MM/yyyy") }
-        val fileDownloadLink = listItem.selectFirst(FILE_DOWNLOAD_LINK)?.attr("abs:href")
-        val detailsPageUrl = listItem.selectFirst(DETAILS_PAGE_URL)?.attr("abs:href")
+            ?.let { TorrentDateParser.parse(date = it, format = "MMM d, yyyy") }
 
         return Torrent(
             id = torrentId,
@@ -100,56 +109,48 @@ private class LinuxTrackerResultsPageParser(
             uploadDate = uploadDate,
             category = Category.Apps,
             providerName = providerName,
-            magnetUri = MagnetUri.Available(magnetUri),
-            fileDownloadLink = fileDownloadLink,
+            magnetUri = MagnetUri.RequiresFetch(detailsPageUrl),
             detailsPageUrl = detailsPageUrl,
         )
     }
 
     private companion object {
-        private const val LIST_ITEM =
-            """table.lista[width="100%"] > tbody > tr:has(a[href^="index.php?page=torrent-details&id="][title])"""
-        private const val TORRENT_NAME = """a[href^="index.php?page=torrent-details&id="][title]"""
-        private const val SIZE = "td:nth-child(2) > table > tbody > tr:nth-child(2) > td"
-        private const val SEEDERS = "td:nth-child(2) > table > tbody > tr:nth-child(3) > td"
-        private const val PEERS = "td:nth-child(2) > table > tbody > tr:nth-child(4) > td"
-        private const val UPLOAD_DATE = "td:nth-child(2) > table > tbody > tr > td"
-        private const val MAGNET_URI = """a[href^="magnet:?"]"""
-        private const val FILE_DOWNLOAD_LINK = """a[href^="index.php?page=downloadcheck&id="]"""
+        private const val LIST_ITEM = "table.torrent-table > tbody > tr"
+        private const val TORRENT_NAME = "td.torrent-name-cell > a.torrent-name"
+        private const val SIZE = "td:nth-child(4)"
+        private const val SEEDERS = "td.seeds > strong"
+        private const val PEERS = "td.leeches > strong"
+        private const val UPLOAD_DATE = "td:nth-child(3)"
         private const val DETAILS_PAGE_URL = TORRENT_NAME
     }
 }
 
 private object LinuxTrackerDetailsPageParser {
-    private const val TORRENT_NAME = """span[itemprop="name"]"""
-    private const val SIZE = "td:containsOwn(Size)"
-    private const val PEERS_STATS = "td:containsOwn(peers)"
-    private const val UPLOAD_DATE = "td:containsOwn(AddDate)"
-    private const val UPLOADER = "td:containsOwn(Uploader)"
-    private const val DESCRIPTION = """span[itemprop="blogPost"]"""
+    private const val TORRENT_NAME = "div.detail-title-block > h2"
+    private const val SIZE = "dl.torrent-meta > div:nth-child(3) > dd"
+    private const val SEEDERS = "div.detail-stats strong.seeds"
+    private const val PEERS = "div.detail-stats strong.leeches"
+    private const val UPLOAD_DATE = "dl.torrent-meta > div:nth-child(2) > dd"
+    private const val DESCRIPTION = "div.torrent-description"
     private const val MAGNET_URI = """a[href^="magnet:?"]"""
+    private const val FILE_DOWNLOAD_LINK = "a.torrent-action.primary-action"
+    private const val SCREENSHOT = "div.torrent-screenshot-grid img"
 
     suspend fun parse(html: String, pageUrl: String): TorrentDetails? =
         withContext(Dispatchers.Default) {
-            val html = Jsoup.parse(html, pageUrl)
-            val torrentName = html.selectFirst(TORRENT_NAME)?.ownText() ?: return@withContext null
-            val magnetUri = html.selectFirst(MAGNET_URI)?.attr("href") ?: return@withContext null
-            val size = html.selectFirst(SIZE)?.nextElementSibling()?.ownText()
-            val uploadDate = html.selectFirst(UPLOAD_DATE)
-                ?.nextElementSibling()
+            val dom = Jsoup.parse(html, pageUrl)
+
+            val torrentName = dom.selectFirst(TORRENT_NAME)?.ownText() ?: return@withContext null
+            val magnetUri = dom.selectFirst(MAGNET_URI)?.attr("href") ?: return@withContext null
+            val size = dom.selectFirst(SIZE)?.ownText()
+            val seeders = dom.selectFirst(SEEDERS)?.ownText()?.toUIntOrNull()
+            val peers = dom.selectFirst(PEERS)?.ownText()?.toUIntOrNull()
+            val uploadDate = dom.selectFirst(UPLOAD_DATE)
                 ?.ownText()
-                ?.let { TorrentDateParser.parse(date = it, format = "dd/MM/yyyy") }
-            val uploader = html.selectFirst(UPLOADER)?.nextElementSibling()?.text()
-            val description = html.selectFirst(DESCRIPTION)?.html()
-            val peersStats = html.selectFirst(PEERS_STATS)?.nextElementSibling()?.ownText()
-            val seeders =
-                peersStats?.removePrefix("seeds: ")?.takeWhile { it != ',' }?.toUIntOrNull()
-            val peers = peersStats
-                ?.dropWhile { it != ',' }
-                ?.drop(2)
-                ?.removePrefix("leechers: ")
-                ?.takeWhile { !it.isWhitespace() }
-                ?.toUIntOrNull()
+                ?.let { TorrentDateParser.parse(date = it, format = "MMM d, yyyy HH:mm") }
+            val description = dom.selectFirst(DESCRIPTION)?.html()
+            val fileDownloadLink = dom.selectFirst(FILE_DOWNLOAD_LINK)?.attr("abs:href")
+            val screenshotUrls = dom.select(SCREENSHOT).map { it.attr("abs:src") }
 
             TorrentDetails(
                 infoHash = TorrentUtils.getInfoHashFromMagnetUri(magnetUri),
@@ -160,8 +161,14 @@ private object LinuxTrackerDetailsPageParser {
                 peers = peers,
                 uploadDate = uploadDate,
                 category = Category.Apps,
-                uploader = uploader,
+                fileDownloadLink = fileDownloadLink,
                 description = description,
+                screenshotUrls = screenshotUrls,
             )
+        }
+
+    suspend fun extractMagnetUri(detailsPageHtml: String): String? =
+        withContext(Dispatchers.Default) {
+            Jsoup.parse(detailsPageHtml).selectFirst(MAGNET_URI)?.attr("href")
         }
 }
