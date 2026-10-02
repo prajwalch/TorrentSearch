@@ -72,16 +72,14 @@ fun SearchHistoryScreen(
         topBar = {
             SearchHistoryScreenTopBar(
                 onNavigateBack = onNavigateBack,
-                showDeleteAction = searchHistoriesByDate != null,
+                showDeleteAction = searchHistoriesByDate.isNotEmpty(),
                 onDeleteAllSearchHistory = { showDeleteAllConfirmationDialog = true },
                 scrollBehavior = scrollBehavior,
             )
         },
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
     ) { innerPadding ->
-        val innerSearchHistoriesByDate = searchHistoriesByDate
-
-        if (innerSearchHistoriesByDate == null) {
+        if (searchHistoriesByDate.isEmpty()) {
             ContentState(
                 modifier = Modifier
                     .padding(innerPadding)
@@ -94,7 +92,7 @@ fun SearchHistoryScreen(
                     .fillMaxSize()
                     .padding(top = innerPadding.calculateTopPadding())
                     .consumeWindowInsets(innerPadding),
-                histories = innerSearchHistoriesByDate,
+                histories = searchHistoriesByDate,
                 onSearchRequest = onPerformSearch,
                 onCopyQueryToClipboard = {
                     coroutineScope.launch {

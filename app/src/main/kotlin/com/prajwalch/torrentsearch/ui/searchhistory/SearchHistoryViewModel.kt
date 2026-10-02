@@ -6,9 +6,9 @@ import androidx.lifecycle.viewModelScope
 import com.prajwalch.torrentsearch.data.repository.SearchHistoryRepository
 import com.prajwalch.torrentsearch.domain.model.SearchHistoryId
 
+import kotlinx.collections.immutable.persistentMapOf
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.WhileSubscribed
-import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
@@ -20,13 +20,11 @@ import kotlin.time.Duration.Companion.seconds
 class SearchHistoryViewModel(
     private val searchHistoryRepository: SearchHistoryRepository,
 ) : ViewModel() {
-    val uiState = searchHistoryRepository
-        .getSearchHistoriesByDate()
-        .filter { it.isNotEmpty() }
+    val uiState = searchHistoryRepository.getSearchHistoriesByDate()
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5.seconds),
-            initialValue = null,
+            initialValue = persistentMapOf(),
         )
 
     /** Deletes the search history associated with given id. */
