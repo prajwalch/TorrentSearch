@@ -8,8 +8,7 @@
 - Added support for bookmarking torrent from the Details screen
 - Added support for retrying load failed poster and screenshots on the Details screen
 - Added an option to show last 5 recent searches directly on the Home screen for quicker access
-- Search errors count is now displayed next to the results count. The count element is clickable
-which will open the same errors sheet used to open by `⋮ > View errors`.
+- Number of search errors are now displayed next to the results count. Tap it to open the errors sheet.
 - Search histories are now grouped and displayed by creation date
 - Revamped torrent actions bottom sheet UI
 - Revamped search errors card UI on the Search screen
@@ -28,20 +27,24 @@ which will open the same errors sheet used to open by `⋮ > View errors`.
 
 - Magnet link for torrents **that requires an extra request to the details page** are now retrieved
   only after clicking a torrent
+- Torrents upload date are now displayed with shorter month name
 - A dialog is now shown instead of a message box on the Home screen when search providers are not
   initialized
 - Moved the filter search bar from the top bar to the content section on the Search, Bookmarks,
-  Browse, and Search Providers screens.
+  Browse, and Search Providers screens
 - `Default category` setting is now removed
 - TokyoToshokan provider is now marked as Cloudflare-protected
 - OxTorrent provider is now marked as Cloudflare-protected
 
 ### What's fixed
 
+- Fixed a bug where setting an app language other than English made many providers stop working and
+caused date errors on the details screen for many torrents
 - Bookmarked state is now reflected on both the Search and Browse screens via the actions bottom sheet
 - Fixed an issue where restarting application from the Crash screen did not work properly
-- Fixed a screen transition issue when initiating a search by sharing or opening text with the app.
+- Fixed a screen transition issue when initiating a search by sharing or opening text with the app
 - Fixed card flashing issue on Home screen
+- Fixed LinuxTracker provider to handle new page layout
 - Fixed XXXTracker provider failing to provide size, seeders, and peers for search results
 - Fixed Rutor provider failing to provide size, seeders, and peers for search results
 - Fixed TorrentDatabase provider failing to provide peers for search results
