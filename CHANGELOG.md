@@ -3,7 +3,8 @@
 ### What's new
 
 - Improved and polished app icon
-- Added support for checking providers on startup
+- Added a "Check providers on startup" option that checks and shows how many providers are unlocked
+and how many need unlocking on the Home screen. You can also check anytime by pulling down to refresh.
 - Added support for retrying failed providers
 - Added support for bookmarking torrent from the Details screen
 - Added support for retrying load failed poster and screenshots on the Details screen
