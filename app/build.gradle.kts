@@ -17,7 +17,7 @@ android {
     defaultConfig {
         applicationId = "com.prajwalch.torrentsearch"
         minSdk = 25
-        targetSdk = 36
+        targetSdk = 37
         versionCode = 18
         versionName = "0.5.1"
 
