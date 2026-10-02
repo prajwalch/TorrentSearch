@@ -4,9 +4,11 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -16,10 +18,13 @@ import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
@@ -38,7 +43,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 
 import com.prajwalch.torrentsearch.R
@@ -50,10 +57,9 @@ import com.prajwalch.torrentsearch.ui.bookmarks.component.DeleteAllConfirmationD
 import com.prajwalch.torrentsearch.ui.component.AnimatedScrollToTopFAB
 import com.prajwalch.torrentsearch.ui.component.ContentState
 import com.prajwalch.torrentsearch.ui.component.FilterSearchBar
-import com.prajwalch.torrentsearch.ui.component.MessageCard
-import com.prajwalch.torrentsearch.ui.component.MessageType
 import com.prajwalch.torrentsearch.ui.component.TorrentClientNotFoundDialog
 import com.prajwalch.torrentsearch.ui.rememberTorrentListState
+import com.prajwalch.torrentsearch.ui.theme.TorrentSearchTheme
 import com.prajwalch.torrentsearch.ui.theme.spaces
 import com.prajwalch.torrentsearch.ui.torrentactions.TorrentActionsBottomSheet
 
@@ -217,13 +223,11 @@ private fun BookmarksScreenContent(
     Column(modifier = modifier) {
         if (bookmarksState is BookmarksState.Ready) {
             AnimatedVisibility(visible = showSwipeDeleteTip) {
-                MessageCard(
+                SwipeDeleteTipNotice(
                     modifier = Modifier
                         .padding(horizontal = MaterialTheme.spaces.large)
                         .padding(top = MaterialTheme.spaces.small),
                     onClose = onHideSwipeDeleteTip,
-                    messageType = MessageType.Tip,
-                    text = { Text(stringResource(R.string.bookmarks_swipe_delete_tip)) },
                 )
             }
         }
@@ -282,5 +286,50 @@ private fun BookmarksScreenContent(
                 }
             }
         }
+    }
+}
+
+@Composable
+private fun SwipeDeleteTipNotice(onClose: () -> Unit, modifier: Modifier = Modifier) {
+    Surface(
+        modifier = modifier,
+        shape = MaterialTheme.shapes.medium,
+        color = MaterialTheme.colorScheme.tertiaryContainer,
+        contentColor = MaterialTheme.colorScheme.onTertiaryContainer,
+    ) {
+        Row(
+            modifier = Modifier.padding(
+                horizontal = MaterialTheme.spaces.large,
+                vertical = MaterialTheme.spaces.medium,
+            ),
+            horizontalArrangement = Arrangement.spacedBy(MaterialTheme.spaces.large),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Icon(
+                painter = painterResource(R.drawable.ic_lightbulb),
+                contentDescription = null,
+            )
+
+            Text(
+                modifier = Modifier.weight(1f),
+                text = stringResource(R.string.bookmarks_swipe_delete_tip),
+                style = MaterialTheme.typography.bodyMedium,
+            )
+
+            IconButton(onClick = onClose) {
+                Icon(
+                    painter = painterResource(R.drawable.ic_close),
+                    contentDescription = null,
+                )
+            }
+        }
+    }
+}
+
+@Preview
+@Composable
+private fun SwipeDeleteTipNoticePreview() {
+    TorrentSearchTheme(darkTheme = true) {
+        SwipeDeleteTipNotice(onClose = {})
     }
 }
