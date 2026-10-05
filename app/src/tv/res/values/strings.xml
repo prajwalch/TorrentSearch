@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    TV-only strings.
+
+    Overrides live in the `tv` source set rather than `main` on purpose: the app
+    is Weblate-managed with `unqualifiedResLocale=en`, so anything added to
+    `src/main/res/values` gets pushed to all 21 translation locales. Keeping the
+    TV wording flavor-scoped avoids that churn for strings that only exist on TV.
+-->
+<resources>
+    <!-- Touch wording that is wrong with a remote. -->
+    <string name="torrent_status_magnet_link_ready">Press OK to open in torrent client</string>
+    <string name="torrent_status_file_link_ready">Press OK to download</string>
+    <string name="torrent_status_details_ready">Press OK to view details</string>
+    <string name="torrent_details_tap_to_reveal_hint">Press OK to reveal</string>
+    <string name="bookmarks_swipe_delete_tip">Select a bookmark to see its actions.</string>
+
+    <!-- TV-only labels. -->
+    <string name="action_back">Back</string>
+    <string name="action_clear">Clear</string>
+    <string name="action_refresh">Refresh</string>
+    <string name="action_stop">Stop</string>
+    <string name="torrent_badge_dead">Dead</string>
+    <string name="torrent_actions_title">Torrent actions</string>
+    <string name="tv_search_hints_title">Search tips</string>
+    <string name="tv_search_hints_body">Use the on-screen keyboard to type, then press OK to search. Press the left arrow on the remote to leave a text field without leaving the screen.</string>
+</resources>
