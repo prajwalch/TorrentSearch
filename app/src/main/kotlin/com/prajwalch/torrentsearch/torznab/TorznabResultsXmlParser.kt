@@ -1,20 +1,20 @@
 package com.prajwalch.torrentsearch.torznab
 
-import android.util.Xml
-
 import com.prajwalch.torrentsearch.constant.TorrentSearchConstants
 import com.prajwalch.torrentsearch.domain.model.Category
 import com.prajwalch.torrentsearch.domain.model.MagnetUri
 import com.prajwalch.torrentsearch.domain.model.Torrent
-import com.prajwalch.torrentsearch.extension.readParentTag
-import com.prajwalch.torrentsearch.extension.skipCurrentTag
 import com.prajwalch.torrentsearch.provider.SearchProviderId
 import com.prajwalch.torrentsearch.util.FileSizeUtils
 import com.prajwalch.torrentsearch.util.TorrentDateParser
 import com.prajwalch.torrentsearch.util.TorrentUtils
 
-import org.xmlpull.v1.XmlPullParser
-import java.time.Instant
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+
+import org.jsoup.Jsoup
+import org.jsoup.nodes.Element
+import org.jsoup.parser.Parser
 
 /**
  * An XML parser for the results returned by the indexer.
@@ -25,188 +25,107 @@ class TorznabResultsXmlParser(
     private val providerId: SearchProviderId,
     private val providerName: String,
 ) {
-    private val parser = Xml.newPullParser()
-    private val namespace: String? = null
-    private val torrents = mutableListOf<Torrent>()
+    private companion object {
+        private const val ITEM = "channel > item"
+        private const val GUID = "guid"
+        private const val TITLE = "title"
+        private const val SIZE = "size"
+        private const val PUB_DATE = "pubDate"
+        private const val COMMENTS = "comments"
+        private const val ENCLOSURE = "enclosure"
+        private const val LINK = "link"
 
-    fun parse(xml: String): List<Torrent> {
-        parser.setFeature(XmlPullParser.FEATURE_PROCESS_NAMESPACES, false)
-        parser.setInput(xml.byteInputStream(), null)
-        parser.nextTag()
+        // Torznab specific attributes
+        // See: https://torznab.github.io/spec-1.3-draft/torznab/Specification-v1.3.html#extended-attributes
+        private const val SIZE_ATTR = """torznab|attr[name="size"]"""
+        private const val SEEDERS_ATTR = """torznab|attr[name="seeders"]"""
+        private const val PEERS_ATTR = """torznab|attr[name="peers"]"""
+        private const val INFO_HASH_ATTR = """torznab|attr[name="infohash"]"""
+        private const val MAGNET_URI_ATTR = """torznab|attr[name="magneturl"]"""
+        private const val CATEGORY_ATTR = """torznab|attr[name="category"]"""
 
-        torrents.clear()
-        readRss()
-
-        return torrents.toList()
+        private const val MAGNET_URI_PREFIX = "magnet:?xt="
     }
 
-    private fun readRss() {
-        parser.require(XmlPullParser.START_TAG, namespace, "rss")
-        parser.readParentTag(tagName = "rss") {
-            if (parser.name == "channel") {
-                readChannel()
-            } else {
-                parser.skipCurrentTag()
-            }
-        }
+    suspend fun parse(xml: String): List<Torrent> = withContext(Dispatchers.Default) {
+        Jsoup.parse(xml, "", Parser.xmlParser())
+            .select(ITEM)
+            .mapNotNull(::parseItem)
     }
 
-    private fun readChannel() {
-        parser.readParentTag(tagName = "channel") {
-            if (parser.name == "item") {
-                readItem()
-            } else {
-                parser.skipCurrentTag()
-            }
-        }
-    }
+    private fun parseItem(item: Element): Torrent {
+        val guid = item.selectFirst(GUID)?.ownText()
+            ?: error("TorznabResultsXmlParser: <guid> tag not found inside <item>")
+        val torrentName = item.selectFirst(TITLE)?.ownText()
+            ?: error("TorznabResultsXmlParser: <title> tag not found inside <item>")
+        val magnetUri = extractMagnetUri(item)
+            ?: error("TorznabResultsXmlParser: magnet URI not found inside <item>")
 
-    private fun readItem() {
-        var torrentName: String? = null
-        var size: String? = null
-        var seeders: String? = null
-        var peers: String? = null
-        var uploadDate: Instant? = null
-        var detailsPageUrl: String? = null
-        var magnetUri: String? = null
-        var infoHash: String? = null
-        var fileDownloadLink: String? = null
+        val torrentId = TorrentUtils.createTorrentId(providerId, guid)
+        val size = extractSize(item)
+        val seeders = item.selectFirst(SEEDERS_ATTR)?.attr("value")?.toUIntOrNull()
+        val peers = item.selectFirst(PEERS_ATTR)?.attr("value")?.toUIntOrNull()
+        val uploadDate = item.selectFirst(PUB_DATE)?.ownText()?.let(TorrentDateParser::parseRFC1123)
+        val category = extractAndInferCategory(item)
+        val detailsPageUrl = item.selectFirst(COMMENTS)?.ownText()
+        val fileDownloadLink = extractFileDownloadLink(item)
 
-        val categoryIds = mutableSetOf<Int>()
-
-        parser.readParentTag(tagName = "item") {
-            when (parser.name) {
-                "title" -> torrentName = readTitle()
-                "comments" -> detailsPageUrl = readComments()
-                "pubDate" -> uploadDate = readPubDate()
-                "size" -> size = readSize()
-                "enclosure" if (fileDownloadLink == null) -> {
-                    fileDownloadLink = readEnclosure()?.takeIf { !it.startsWith("magnet:?") }
-                }
-                // Torznab specific attributes.
-                //
-                // TODO: Attributes are optional so they are not guaranteed to always be present.
-                //       We need some way to check them ahead of time and skip the <item> if not
-                //       present so that we can prevent un-necessary processing. `XmlPullParser`
-                //       doesn't contain any API for doing that.
-                //
-                // See: https://torznab.github.io/spec-1.3-draft/torznab/Specification-v1.3.html#extended-attributes
-                "torznab:attr" -> when (parser.getAttributeValue(null, "name")) {
-                    "seeders" -> seeders = readTorznabAttributeValue()
-                    "peers" -> peers = readTorznabAttributeValue()
-                    "magneturl" -> magnetUri = readTorznabAttributeValue()
-                    "infohash" -> infoHash = readTorznabAttributeValue()
-                    "category" -> {
-                        val id = readTorznabAttributeValue().toInt()
-
-                        if (id < TorznabConstants.CUSTOM_CATEGORY_RANGE_START) {
-                            categoryIds.add(id)
-                        }
-                    }
-
-                    // Some clients provide size inside the <torznab:size value../>
-                    //
-                    // Example: https://feed.animetosho.org/api?t=search&apikey=0&q=one
-                    "size" if (size == null) -> {
-                        size = readTorznabAttributeValue().let(FileSizeUtils::formatBytes)
-                    }
-
-                    else -> parser.skipCurrentTag()
-                }
-
-                else -> parser.skipCurrentTag()
-            }
-        }
-
-        if (torrentName == null) {
-            return
-        }
-
-        if (infoHash == null || magnetUri == null) {
-            return
-        }
-
-        val torrentId = TorrentUtils.createTorrentId(
-            providerId = providerId,
-            sourceId = infoHash,
-        )
-        val category = categoryIds.maxOrNull()
-            ?.let(TorznabCategoryMapper::getCategoryFromId) ?: Category.Other
-
-        val torrent = Torrent(
+        return Torrent(
             id = torrentId,
             name = torrentName,
             size = size,
-            seeders = seeders?.toUIntOrNull(),
-            peers = peers?.toUIntOrNull(),
-            providerName = providerName,
+            seeders = seeders,
+            peers = peers,
             uploadDate = uploadDate,
             category = category,
-            detailsPageUrl = detailsPageUrl,
+            providerName = providerName,
             magnetUri = MagnetUri.Available(magnetUri),
             fileDownloadLink = fileDownloadLink,
+            detailsPageUrl = detailsPageUrl,
         )
-        torrents.add(torrent)
     }
 
-    private fun readTitle(): String {
-        return readTextContainedTag(tagName = "title")
+    private fun extractMagnetUri(item: Element): String? {
+        fun tryGetFromInfoHash(): String? =
+            item.selectFirst(INFO_HASH_ATTR)
+                ?.attr("value")
+                ?.let(TorrentUtils::createMagnetUri)
+
+        fun tryGetFromEnclosureTag(): String? =
+            item.selectFirst(ENCLOSURE)
+                ?.takeIf { it.attr("type") == TorrentSearchConstants.MIME_TYPE_TORRENT }
+                ?.attr("url")
+
+        fun tryGetFromLinkTag(): String? =
+            item.selectFirst(LINK)
+                ?.ownText()
+                ?.takeIf { it.startsWith(MAGNET_URI_PREFIX) }
+
+        return item.selectFirst(MAGNET_URI_ATTR)?.attr("value")
+            ?: tryGetFromInfoHash()
+            ?: tryGetFromEnclosureTag()
+            ?: tryGetFromLinkTag()
     }
 
-    private fun readComments(): String {
-        return readTextContainedTag(tagName = "comments")
+    private fun extractSize(item: Element): String? {
+        return (item.selectFirst(SIZE)?.ownText() ?: item.selectFirst(SIZE_ATTR)
+            ?.attr("value"))
+            ?.let(FileSizeUtils::formatBytes)
     }
 
-    private fun readPubDate(): Instant {
-        return readTextContainedTag(tagName = "pubDate")
-            .let(TorrentDateParser::parseRFC1123)
+    private fun extractAndInferCategory(item: Element): Category? {
+        return item.select(CATEGORY_ATTR)
+            .mapNotNull {
+                it.attr("value")
+                    .toInt()
+                    .takeIf { id -> id > TorznabConstants.CUSTOM_CATEGORY_RANGE_START }
+            }
+            .maxOrNull()
+            ?.let(TorznabCategoryMapper::getCategoryFromId)
     }
 
-    private fun readSize(): String {
-        val sizeBytes = readTextContainedTag(tagName = "size")
-        return FileSizeUtils.formatBytes(bytes = sizeBytes)
-    }
-
-    private fun readTextContainedTag(tagName: String): String {
-        parser.require(XmlPullParser.START_TAG, namespace, tagName)
-
-        val text = readText()
-
-        parser.require(XmlPullParser.END_TAG, namespace, tagName)
-        return text
-    }
-
-    private fun readText(): String {
-        var text = ""
-
-        if (parser.next() == XmlPullParser.TEXT) {
-            text = parser.text
-            parser.nextTag()
-        }
-
-        return text
-    }
-
-    private fun readEnclosure(): String? {
-        parser.require(XmlPullParser.START_TAG, namespace, "enclosure")
-
-        val url: String? = parser.getAttributeValue(null, "url")
-        val type: String? = parser.getAttributeValue(null, "type")
-
-        parser.nextTag()
-        parser.require(XmlPullParser.END_TAG, namespace, "enclosure")
-
-        return if (type == TorrentSearchConstants.MIME_TYPE_TORRENT) url else null
-    }
-
-    private fun readTorznabAttributeValue(): String {
-        parser.require(XmlPullParser.START_TAG, namespace, "torznab:attr")
-
-        val value = parser.getAttributeValue(null, "value")
-
-        parser.nextTag()
-        parser.require(XmlPullParser.END_TAG, namespace, "torznab:attr")
-
-        return value
+    private fun extractFileDownloadLink(item: Element): String? {
+        return (item.selectFirst(LINK)?.ownText() ?: item.selectFirst(ENCLOSURE)?.attr("url"))
+            ?.takeIf { !it.startsWith(MAGNET_URI_PREFIX) }
     }
 }

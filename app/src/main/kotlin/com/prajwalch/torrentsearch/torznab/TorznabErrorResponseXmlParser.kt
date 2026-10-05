@@ -1,29 +1,20 @@
 package com.prajwalch.torrentsearch.torznab
 
-import android.util.Xml
-import org.xmlpull.v1.XmlPullParser
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
-/** An XML parser for the error response. */
-class TorznabErrorResponseXmlParser {
-    private val parser = Xml.newPullParser()
-    private val namespace: String? = null
+import org.jsoup.Jsoup
+import org.jsoup.parser.Parser
 
-    fun parse(xml: String): Int {
-        parser.setFeature(XmlPullParser.FEATURE_PROCESS_NAMESPACES, false)
-        parser.setInput(xml.byteInputStream(), null)
-        parser.nextTag()
-
-        return readError()
-    }
-
-    private fun readError(): Int {
-        parser.require(XmlPullParser.START_TAG, namespace, "error")
-
-        val code = parser.getAttributeValue(null, "code").toInt()
-
-        parser.nextTag()
-        parser.require(XmlPullParser.END_TAG, namespace, "error")
-
-        return code
+/**
+ * An XML parser for the error response.
+ */
+object TorznabErrorResponseXmlParser {
+    suspend fun parse(xml: String): Int = withContext(Dispatchers.Default) {
+        Jsoup.parse(xml, Parser.xmlParser())
+            .selectFirst("error")
+            ?.attr("code")
+            ?.toInt()
+            ?: error("Error code not available")
     }
 }

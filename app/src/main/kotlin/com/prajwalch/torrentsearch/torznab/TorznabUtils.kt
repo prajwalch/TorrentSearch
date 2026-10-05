@@ -11,8 +11,6 @@ import io.ktor.client.statement.bodyAsText
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
-import org.xmlpull.v1.XmlPullParserException
-
 import java.net.ConnectException
 import java.net.UnknownHostException
 
@@ -29,29 +27,18 @@ object TorznabUtils {
         apiUrl: String,
         apiKey: String,
         networkClient: NetworkClient,
-    ): Set<Category>? {
-        Log.d(LOG_TAG, "Fetching capabilities from $apiUrl")
-
+    ): Set<Category> {
         val normalizedApiUrl = normalizeApiUrl(apiUrl)
+        Log.d(LOG_TAG, "Fetching capabilities from $normalizedApiUrl")
+
         val requestUrl = "$normalizedApiUrl?t=${TorznabFunctions.CAPS}&apikey=$apiKey"
         val capabilitiesResponseXml = networkClient.getText(requestUrl)
-        Log.d(LOG_TAG, "Capabilities fetch succeed")
+        Log.d(LOG_TAG, "Capabilities fetch succeed. Attempting to parse it")
 
-        return withContext(Dispatchers.Default) {
-            val capabilitiesXmlParser = TorznabCapabilitiesXmlParser()
+        val capabilities = TorznabCapabilitiesXmlParser.parse(capabilitiesResponseXml)
+        Log.d(LOG_TAG, "Capabilities parse succeed. Returning it")
 
-            try {
-                Log.d(LOG_TAG, "Attempting to parse capabilities")
-
-                val capabilities = capabilitiesXmlParser.parse(xml = capabilitiesResponseXml)
-                Log.d(LOG_TAG, "Capabilities parse succeed")
-
-                capabilities.supportedCategories
-            } catch (e: XmlPullParserException) {
-                Log.e(LOG_TAG, "Capabilities parse failed", e)
-                null
-            }
-        }
+        return capabilities.supportedCategories
     }
 
     suspend fun checkConnection(
@@ -107,8 +94,7 @@ object TorznabUtils {
             return@withContext TorznabConnectionCheckResult.UnexpectedError
         }
 
-        val errorResponseXmlParser = TorznabErrorResponseXmlParser()
-        when (val errorCode = errorResponseXmlParser.parse(xml = responseXml)) {
+        when (val errorCode = TorznabErrorResponseXmlParser.parse(responseXml)) {
             in 100..199 -> TorznabConnectionCheckResult.InvalidApiKey
             in 200..299 -> TorznabConnectionCheckResult.ApplicationError(errorCode)
             else -> TorznabConnectionCheckResult.UnexpectedResponse(errorCode)

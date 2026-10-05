@@ -129,8 +129,8 @@ class TorznabConfigViewModel(
                 TorznabUtils.getSupportedCategories(apiUrl, apiKey, networkClient)
             _uiState.update {
                 it.copy(
-                    supportedCategories = supportedCategories.orEmpty(),
-                    isDetectingSupportedCategories = false
+                    supportedCategories = supportedCategories,
+                    isDetectingSupportedCategories = false,
                 )
             }
         }

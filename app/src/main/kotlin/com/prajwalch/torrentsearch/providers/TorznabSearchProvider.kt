@@ -13,9 +13,6 @@ import com.prajwalch.torrentsearch.torznab.TorznabFunctions
 import com.prajwalch.torrentsearch.torznab.TorznabResultsXmlParser
 import com.prajwalch.torrentsearch.torznab.TorznabUtils
 
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
-
 /** A search provider which is based on Torznab specification. */
 class TorznabSearchProvider(
     private val config: TorznabConfig,
@@ -55,9 +52,7 @@ class TorznabSearchProvider(
         val responseXml = networkClient.getText(url = requestUrl)
         Log.d(tag, "Received response of length ${responseXml.length}")
 
-        return withContext(Dispatchers.Default) {
-            resultsXmlParser.parse(xml = responseXml)
-        }
+        return resultsXmlParser.parse(responseXml)
     }
 
     private fun getCategoriesId(category: Category): String? {
