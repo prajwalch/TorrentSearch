@@ -9,6 +9,9 @@ search providers, Torznab indexers, bookmarks and settings continue to work unch
 - Every TV control shows focus as a thick high-contrast ring plus a slight scale, and
 selection is shown as a filled background. The two are distinct colours, so it is always
 clear which item is focused and which is selected.
+- Added a persistent navigation menu on the left of every TV screen, so Settings,
+Bookmarks, Browse, search history and search providers are all reachable with the remote.
+Press LEFT from anywhere to get to it.
 - TV focus stays inside the visible area: scrolling rows reserve space for the focus ring,
 content is inset past the overscan margin, and DPAD_DOWN from the search field always lands
 on the active category rather than the nearest chip.
