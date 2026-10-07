@@ -3,12 +3,15 @@ package com.prajwalch.torrentsearch.ui.tv.component
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.focusable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import kotlinx.coroutines.delay
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -19,6 +22,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -29,6 +33,7 @@ import androidx.compose.foundation.BorderStroke
 import androidx.tv.material3.ClickableSurfaceDefaults
 import androidx.tv.material3.MaterialTheme
 import androidx.tv.material3.Surface
+import androidx.compose.ui.draw.shadow
 
 import com.prajwalch.torrentsearch.ui.tv.theme.spaces
 import com.prajwalch.torrentsearch.ui.tv.theme.tvCardSurface
@@ -69,10 +74,10 @@ object TvFocusDefaults {
     const val FocusedScaleControl: Float = 1.05f
 
     /** Wide enough to survive a 4K panel being downscaled for a 1080p TV. */
-    val BorderWidth: Dp = 3.dp
+    val BorderWidth: Dp = 4.dp
 
     /** Used for large primary actions where extra weight is warranted. */
-    val BorderWidthStrong: Dp = 4.dp
+    val BorderWidthStrong: Dp = 5.dp
 
     /**
      * Space reserved around focusable content inside scrolling containers.
@@ -157,6 +162,7 @@ fun Modifier.tvFocusRing(
         targetValue = if (isFocused) scale else 1f,
         label = "tvFocusRingScale",
     )
+    val glow = if (isFocused) tvFocusColor().copy(alpha = 0.55f) else Color.Transparent
 
     return this
         .onFocusChanged { isFocused = it.isFocused }
@@ -164,6 +170,16 @@ fun Modifier.tvFocusRing(
             scaleX = animatedScale
             scaleY = animatedScale
         }
+        // Coloured shadow as a soft halo behind the focused item. The ring alone is
+        // easy to lose against a busy panel at sofa distance; the glow reads as the
+        // focus "light" and reinforces the ring without relying on the tv-material
+        // glow roles, which default to off.
+        .shadow(
+            elevation = if (isFocused) 14.dp else 0.dp,
+            shape = shape,
+            ambientColor = glow,
+            spotColor = glow,
+        )
         .border(
             width = borderWidth,
             color = if (isFocused) tvFocusColor() else Color.Transparent,
@@ -195,6 +211,19 @@ fun Modifier.tvFocusable(
         .clickable(onClick = onClick)
 }
 
+/**
+ * Focusable content with no action bound to DPAD_CENTER.
+ *
+ * For blocks that must take focus so a scrolling container can be driven by the
+ * D-pad - a details header, a screenshot, a description - but that have nothing
+ * to activate. Same ring and scale as [tvFocusable], minus the fake click.
+ */
+@Composable
+fun Modifier.tvFocusPassive(
+    shape: Shape = RoundedCornerShape(14.dp),
+    scale: Float = TvFocusDefaults.FocusedScaleCard,
+): Modifier = this.tvFocusRing(shape = shape, scale = scale).focusable()
+
 /** Border shape used for focusable cards and list rows. */
 val TvCardShape: Shape = RoundedCornerShape(16.dp)
 
@@ -208,7 +237,7 @@ val TvControlShape: Shape = RoundedCornerShape(10.dp)
 @Composable
 fun TvFocusableRow(
     modifier: Modifier = Modifier,
-    horizontalArrangement: Arrangement.Horizontal = Arrangement.spacedBy(12.dp),
+    horizontalArrangement: Arrangement.Horizontal = Arrangement.spacedBy(16.dp),
     content: @Composable androidx.compose.foundation.layout.RowScope.() -> Unit,
 ) {
     Row(
@@ -260,13 +289,13 @@ fun TvActionButton(
             enabled = enabled,
         ),
     ) {
-        Row(
-            modifier = Modifier.padding(horizontal = 26.dp, vertical = 14.dp),
-            horizontalArrangement = Arrangement.spacedBy(10.dp),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            content()
-        }
+Row(
+        modifier = Modifier.padding(horizontal = 20.dp, vertical = 12.dp),
+        horizontalArrangement = Arrangement.spacedBy(10.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        content()
+    }
     }
 }
 

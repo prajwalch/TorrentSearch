@@ -1,5 +1,8 @@
 package com.prajwalch.torrentsearch.ui.tv.component
 
+import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -15,6 +18,8 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -31,6 +36,7 @@ import com.prajwalch.torrentsearch.domain.model.Category
 import com.prajwalch.torrentsearch.domain.model.Torrent
 import com.prajwalch.torrentsearch.ui.extension.toRelativeTimeSpanString
 import com.prajwalch.torrentsearch.ui.tv.theme.spaces
+import androidx.compose.ui.res.stringResource
 import com.prajwalch.torrentsearch.ui.tv.theme.tvCardSurface
 import com.prajwalch.torrentsearch.ui.tv.theme.tvElevatedSurface
 
@@ -210,6 +216,9 @@ fun TvMessageState(
     description: String? = null,
     actionLabel: String? = null,
     onAction: (() -> Unit)? = null,
+    // Entry point for screen focus: attached to the action button, which is the
+    // only focusable this state offers.
+    focusRequester: FocusRequester? = null,
 ) {
     Column(
         modifier = modifier.fillMaxSize().padding(MaterialTheme.spaces.large),
@@ -231,14 +240,30 @@ fun TvMessageState(
             )
         }
         if (actionLabel != null && onAction != null) {
-            TvActionButton(onClick = onAction, strong = true) {
+            TvActionButton(
+                onClick = onAction,
+                strong = true,
+                modifier = if (focusRequester != null) {
+                    Modifier.focusRequester(focusRequester)
+                } else {
+                    Modifier
+                },
+            ) {
                 Text(text = actionLabel)
             }
         }
     }
 }
 
-/** Screen header. Actions are right-aligned and individually focusable. */
+/**
+ * Screen header.
+ *
+ * The action area gets its own horizontal scroll rather than being sized to its
+ * content. Some screens have four long actions (Search providers) and three on
+ * Bookmarks; without this they squeeze the title to zero width and it renders as
+ * "Bo...". Giving each side a weight keeps the title legible and lets a crowded
+ * action set scroll instead of crushing the header.
+ */
 @Composable
 fun TvTopBar(
     title: String,
@@ -257,7 +282,11 @@ fun TvTopBar(
                 Text(text = stringResource(R.string.action_back))
             }
         }
-        Column(modifier = Modifier.weight(1f)) {
+        Column(
+            modifier = Modifier
+                .weight(1f)
+                .widthIn(min = 200.dp),
+        ) {
             Text(
                 text = title,
                 style = MaterialTheme.typography.headlineMedium,
@@ -275,7 +304,20 @@ fun TvTopBar(
                 )
             }
         }
-        actions()
+        Row(
+            modifier = Modifier
+                .weight(1.3f)
+                // Padding *inside* the scroll (after horizontalScroll in the chain)
+                // so it acts as content padding: the viewport still clips to its own
+                // bounds, and a focused action parked against the start or end edge
+                // would otherwise have its enlarged body and ring cut off.
+                .horizontalScroll(rememberScrollState())
+                .padding(horizontal = TvFocusDefaults.Reserve),
+            horizontalArrangement = Arrangement.spacedBy(TvFocusDefaults.Reserve),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            actions()
+        }
     }
 }
 

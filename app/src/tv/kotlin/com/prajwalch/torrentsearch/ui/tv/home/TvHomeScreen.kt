@@ -15,6 +15,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.FocusProperties
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusProperties
@@ -32,6 +33,7 @@ import com.prajwalch.torrentsearch.R
 import com.prajwalch.torrentsearch.domain.model.Category
 import com.prajwalch.torrentsearch.ui.home.HomeViewModel
 import com.prajwalch.torrentsearch.ui.home.ProvidersCheckState
+import com.prajwalch.torrentsearch.ui.tv.component.LocalTvContentFocusRequester
 import com.prajwalch.torrentsearch.ui.tv.component.TvActionButton
 import com.prajwalch.torrentsearch.ui.tv.component.TvChip
 import com.prajwalch.torrentsearch.ui.tv.component.TvActionButton
@@ -80,6 +82,11 @@ fun TvHomeScreen(
         }
     }
 
+    // Screen entry point: focus lands on the search field's surface when this
+    // route opens. The surface, not the inner text field, so the keyboard stays
+    // closed until OK is pressed.
+    val entryFocusRequester = LocalTvContentFocusRequester.current
+
     LazyColumn(
         modifier = modifier.fillMaxSize(),
         contentPadding = tvListContentPadding(),
@@ -100,7 +107,12 @@ fun TvHomeScreen(
                     },
                     onSubmit = submit,
                     placeholder = stringResource(R.string.home_search_query_hint),
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .then(
+                            entryFocusRequester
+                                ?.let { Modifier.focusRequester(it) } ?: Modifier,
+                        ),
                     downFocusRequester = categoryFocusRequester,
                 )
                 // A disabled tv-material Button is still reachable with the D-pad, so

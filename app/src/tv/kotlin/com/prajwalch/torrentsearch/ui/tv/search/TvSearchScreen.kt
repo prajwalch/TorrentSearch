@@ -9,32 +9,45 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.tv.material3.MaterialTheme
 import androidx.tv.material3.Text
 
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.drop
+
 import com.prajwalch.torrentsearch.R
 import com.prajwalch.torrentsearch.ui.tv.theme.spaces
 import com.prajwalch.torrentsearch.domain.model.Category
+import com.prajwalch.torrentsearch.domain.model.SortCriteria
+import com.prajwalch.torrentsearch.domain.model.SortOrder
 import com.prajwalch.torrentsearch.domain.model.Torrent
 import com.prajwalch.torrentsearch.ui.search.SearchState
 import com.prajwalch.torrentsearch.ui.search.SearchViewModel
+import com.prajwalch.torrentsearch.ui.sortCriteriaStringResource
+import com.prajwalch.torrentsearch.ui.sortOrderStringResource
+import com.prajwalch.torrentsearch.ui.tv.component.LocalTvContentFocusRequester
 import com.prajwalch.torrentsearch.ui.tv.component.TvActionButton
 import com.prajwalch.torrentsearch.ui.tv.component.TvChip
-import com.prajwalch.torrentsearch.ui.tv.component.TvActionButton
 import com.prajwalch.torrentsearch.ui.tv.component.TvChipRow
 import com.prajwalch.torrentsearch.ui.tv.component.TvLoadingState
 import com.prajwalch.torrentsearch.ui.tv.component.TvMessageState
+import com.prajwalch.torrentsearch.ui.tv.component.TvOptionDialog
 import com.prajwalch.torrentsearch.ui.tv.component.TvTorrentCard
 import com.prajwalch.torrentsearch.ui.tv.component.TvTopBar
+import com.prajwalch.torrentsearch.ui.tv.component.TvTextInput
 import com.prajwalch.torrentsearch.ui.tv.component.displayName
 import com.prajwalch.torrentsearch.ui.tv.component.tvListContentPadding
 import com.prajwalch.torrentsearch.ui.tv.torrentactions.TvTorrentActionsDialog
@@ -70,6 +83,23 @@ fun TvSearchScreen(
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     var selectedTorrent by remember { mutableStateOf<Torrent?>(null) }
 
+    // Screen entry point: focus lands on the filter chips when this route opens.
+    val entryFocusRequester = LocalTvContentFocusRequester.current
+
+    // Filter-by-name, mirroring the handheld screen's top-bar search toggle: the
+    // field appears under the header and filters the list as text is typed.
+    var showFilter by remember { mutableStateOf(false) }
+    var filterField by remember { mutableStateOf(TextFieldValue()) }
+    var sortCriteriaDialog by remember { mutableStateOf(false) }
+    var sortOrderDialog by remember { mutableStateOf(false) }
+    if (showFilter) {
+        LaunchedEffect(Unit) {
+            snapshotFlow { filterField.text }
+                .drop(1)
+                .collectLatest { viewModel.filterSearchResultsByName(it) }
+        }
+    }
+
     Column(modifier = modifier.fillMaxSize()) {
         TvTopBar(
             title = query,
@@ -81,6 +111,69 @@ fun TvSearchScreen(
             ),
             actions = {
                 val isSearching = uiState.searchState is SearchState.ResultsAvailable.Searching
+                val resultsAvailable =
+                    uiState.searchState is SearchState.ResultsAvailable
+
+                TvActionButton(
+                    enabled = resultsAvailable,
+                    onClick = {
+                        showFilter = !showFilter
+                        if (!showFilter) {
+                            // Clear the text and the applied filter together, so
+                            // reopening the field starts from the full result set.
+                            filterField = TextFieldValue()
+                            viewModel.filterSearchResultsByName("")
+                        }
+                    },
+                ) {
+                    Text(
+                        text = stringResource(
+                            if (showFilter) R.string.tv_action_filter_close
+                            else R.string.tv_action_filter,
+                        ),
+                    )
+                }
+
+                if (sortCriteriaDialog) {
+                    TvOptionDialog(
+                        title = stringResource(R.string.settings_section_sort_criteria),
+                        options = SortCriteria.entries.map { criteria ->
+                            Triple(
+                                sortCriteriaStringResource(criteria),
+                                criteria == uiState.sortOptions.criteria,
+                            ) { viewModel.updateSortCriteria(criteria) }
+                        },
+                        onDismiss = { sortCriteriaDialog = false },
+                    )
+                }
+
+                if (sortOrderDialog) {
+                    TvOptionDialog(
+                        title = stringResource(R.string.settings_section_sort_order),
+                        options = SortOrder.entries.map { order ->
+                            Triple(
+                                sortOrderStringResource(order),
+                                order == uiState.sortOptions.order,
+                            ) { viewModel.updateSortOrder(order) }
+                        },
+                        onDismiss = { sortOrderDialog = false },
+                    )
+                }
+
+                TvActionButton(
+                    enabled = resultsAvailable,
+                    onClick = { sortCriteriaDialog = true },
+                ) {
+                    Text(text = stringResource(R.string.action_sort))
+                }
+
+                TvActionButton(
+                    enabled = resultsAvailable,
+                    onClick = { sortOrderDialog = true },
+                ) {
+                    Text(text = stringResource(R.string.settings_section_sort_order))
+                }
+
                 if (isSearching) {
                     TvActionButton(onClick = viewModel::stopSearch) {
                         Text(text = stringResource(R.string.search_action_stop_search))
@@ -91,6 +184,18 @@ fun TvSearchScreen(
                 }
             },
         )
+
+        if (showFilter) {
+            TvTextInput(
+                value = filterField,
+                onValueChange = { filterField = it },
+                onSubmit = { viewModel.filterSearchResultsByName(it) },
+                label = stringResource(R.string.search_filter_query_hint),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 48.dp, vertical = 4.dp),
+            )
+        }
 
         TvChipRow(
             chips = listOf(
@@ -117,6 +222,7 @@ fun TvSearchScreen(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 48.dp, vertical = 4.dp),
+            initialFocusRequester = entryFocusRequester,
         )
 
         when (val state = uiState.searchState) {

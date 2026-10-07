@@ -14,8 +14,10 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
@@ -49,6 +51,16 @@ enum class TvDestination(val label: String) {
 private val RailWidth = 260.dp
 
 /**
+ * Focus target for a screen's entry point.
+ *
+ * `TvScaffold` provides one; the screen attaches it to its first focusable
+ * element (the top of its chip row, its first list row, its message action).
+ * When a screen becomes current, focus moves there instead of staying on the
+ * menu rail, so the screen immediately shows what the D-pad is driving.
+ */
+val LocalTvContentFocusRequester = staticCompositionLocalOf<FocusRequester?> { null }
+
+/**
  * Screen chrome: a persistent left menu rail plus the screen body.
  *
  * The rail is always composed rather than hidden behind a drawer button, which is
@@ -62,13 +74,32 @@ fun TvScaffold(
     modifier: Modifier = Modifier,
     content: @Composable () -> Unit,
 ) {
-    Row(modifier = modifier.fillMaxSize()) {
-        TvNavigationRail(
-            current = destination,
-            onNavigate = onNavigate,
-            modifier = Modifier.width(RailWidth).fillMaxHeight(),
-        )
-        Box(modifier = Modifier.weight(1f).fillMaxHeight()) { content() }
+    val contentFocusRequester = remember { FocusRequester() }
+    val railFocusRequesters = remember { TvDestination.entries.map { FocusRequester() } }
+
+    // Runs whenever this route enters composition - a rail pick, a push onto the
+    // stack, or a pop back. The screen gets the frame to attach its entry
+    // focusable; if it has none (an empty state with no action), focus stays in
+    // the rail rather than disappearing.
+    LaunchedEffect(Unit) {
+        val reachedContent = runCatching { contentFocusRequester.requestFocus() }.isSuccess
+        if (!reachedContent) {
+            TvDestination.entries.indexOf(destination)
+                .takeIf { it >= 0 }
+                ?.let { runCatching { railFocusRequesters[it].requestFocus() } }
+        }
+    }
+
+    CompositionLocalProvider(LocalTvContentFocusRequester provides contentFocusRequester) {
+        Row(modifier = modifier.fillMaxSize()) {
+            TvNavigationRail(
+                current = destination,
+                onNavigate = onNavigate,
+                focusRequesters = railFocusRequesters,
+                modifier = Modifier.width(RailWidth).fillMaxHeight(),
+            )
+            Box(modifier = Modifier.weight(1f).fillMaxHeight()) { content() }
+        }
     }
 }
 
@@ -78,28 +109,20 @@ fun TvNavigationRail(
     current: TvDestination,
     onNavigate: (TvDestination) -> Unit,
     modifier: Modifier = Modifier,
+    focusRequesters: List<FocusRequester> = emptyList(),
 ) {
-    // After a section switch, move focus onto that section's rail entry.
+    // Focus normally lives in the screen body; the rail only holds focus while it
+    // is being used. `focusRequesters` exists for the fallback path in
+    // [TvScaffold] - a screen with nothing focusable leaves focus on the active
+    // menu entry, which is the one the user just picked.
     //
-    // Without this the ring stays wherever it was: pick "Settings" and the menu
-    // shows Settings filled in while the focus ring is still around "Search", so
-    // the screen contradicts the menu - exactly the "cannot tell what I picked"
-    // failure. `current` only changes on a section switch (not when drilling into
-    // search results), so this does not steal focus during normal navigation.
-    val itemFocusRequesters: List<FocusRequester> = List(TvDestination.entries.size) { index ->
-        remember(index) { FocusRequester() }
-    }
-    LaunchedEffect(current) {
-        TvDestination.entries.indexOf(current)
-            .takeIf { it >= 0 }
-            ?.let { runCatching { itemFocusRequesters[it].requestFocus() } }
-    }
-
+    // Selection is the fill, so the active section stays obvious even when the
+    // ring is elsewhere.
     Column(
         modifier = modifier
             .background(MaterialTheme.colorScheme.surface)
             .padding(vertical = TvFocusDefaults.Reserve),
-        verticalArrangement = Arrangement.spacedBy(TvFocusDefaults.Reserve / 2),
+        verticalArrangement = Arrangement.spacedBy(TvFocusDefaults.Reserve),
     ) {
         Text(
             text = "Torrent Search",
@@ -115,14 +138,17 @@ fun TvNavigationRail(
                 .weight(1f)
                 .verticalScroll(rememberScrollState())
                 .padding(horizontal = TvFocusDefaults.Reserve),
-            verticalArrangement = Arrangement.spacedBy(TvFocusDefaults.Reserve / 2),
+            verticalArrangement = Arrangement.spacedBy(TvFocusDefaults.Reserve),
         ) {
             TvDestination.entries.forEachIndexed { index, entry ->
+                val entryModifier = focusRequesters.getOrNull(index)
+                    ?.let { Modifier.focusRequester(it) }
+                    ?: Modifier
                 TvMenuItem(
                     label = entry.label,
                     active = entry == current,
                     onClick = { onNavigate(entry) },
-                    modifier = Modifier.focusRequester(itemFocusRequesters[index]),
+                    modifier = entryModifier,
                 )
             }
         }

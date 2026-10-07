@@ -28,6 +28,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.TextFieldValue
 import com.prajwalch.torrentsearch.R
 import com.prajwalch.torrentsearch.ui.tv.theme.TvMaterial3Bridge
@@ -121,8 +122,8 @@ fun TvTextInput(
                 disabledContainerColor = fieldScheme.surface,
                 focusedTextColor = fieldScheme.onSurface,
                 unfocusedTextColor = fieldScheme.onSurface,
-                focusedBorderColor = fieldScheme.primary,
-                unfocusedBorderColor = fieldScheme.onSurfaceVariant,
+                focusedBorderColor = Color.Transparent,
+                unfocusedBorderColor = Color.Transparent,
                 cursorColor = fieldScheme.primary,
                 focusedLabelColor = fieldScheme.primary,
                 unfocusedLabelColor = fieldScheme.onSurfaceVariant,

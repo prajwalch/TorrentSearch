@@ -8,6 +8,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 
@@ -16,6 +17,7 @@ import com.prajwalch.torrentsearch.domain.model.SortCriteria
 import com.prajwalch.torrentsearch.domain.model.SortOrder
 import com.prajwalch.torrentsearch.ui.settings.defaultsortoptions.DefaultSortOptionsViewModel
 import com.prajwalch.torrentsearch.ui.tv.component.TvFocusDefaults
+import com.prajwalch.torrentsearch.ui.tv.component.LocalTvContentFocusRequester
 import com.prajwalch.torrentsearch.ui.tv.component.TvMenuItem
 import com.prajwalch.torrentsearch.ui.tv.component.TvSectionHeader
 import com.prajwalch.torrentsearch.ui.tv.component.TvTopBar
@@ -39,19 +41,28 @@ fun TvDefaultSortOptionsScreen(
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
+    // Screen entry point: focus lands on the first sort option when this route opens.
+    val entryFocusRequester = LocalTvContentFocusRequester.current
+
     Column(modifier = modifier.fillMaxSize()) {
         TvTopBar(title = stringResource(R.string.settings_default_sort_options))
 
         LazyColumn(
             modifier = Modifier.weight(1f),
             contentPadding = tvListContentPadding(),
-            verticalArrangement = Arrangement.spacedBy(TvFocusDefaults.Reserve / 2),
+            verticalArrangement = Arrangement.spacedBy(TvFocusDefaults.Reserve),
         ) {
             item {
                 TvSectionHeader(text = stringResource(R.string.settings_section_sort_criteria))
             }
             items(SortCriteria.entries.toList()) { criteria ->
+                val isFirstItem = criteria == SortCriteria.entries.first()
                 TvMenuItem(
+                    modifier = if (isFirstItem && entryFocusRequester != null) {
+                        Modifier.focusRequester(entryFocusRequester)
+                    } else {
+                        Modifier
+                    },
                     label = stringResource(criteria.labelRes()),
                     active = criteria == uiState.criteria,
                     onClick = { viewModel.setDefaultSortCriteria(criteria) },

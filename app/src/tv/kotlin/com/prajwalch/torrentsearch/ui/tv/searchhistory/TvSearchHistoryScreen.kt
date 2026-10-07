@@ -11,6 +11,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -21,6 +22,7 @@ import com.prajwalch.torrentsearch.data.repository.SearchHistoryDate
 import com.prajwalch.torrentsearch.domain.model.SearchHistory
 import com.prajwalch.torrentsearch.ui.searchhistory.SearchHistoryViewModel
 import com.prajwalch.torrentsearch.ui.tv.component.TvActionButton
+import com.prajwalch.torrentsearch.ui.tv.component.LocalTvContentFocusRequester
 import com.prajwalch.torrentsearch.ui.tv.component.TvFocusDefaults
 import com.prajwalch.torrentsearch.ui.tv.component.TvMenuItem
 import com.prajwalch.torrentsearch.ui.tv.component.TvMessageState
@@ -54,11 +56,18 @@ fun TvSearchHistoryScreen(
     var pendingDelete by remember { mutableStateOf<SearchHistory?>(null) }
     var showClearAllConfirm by remember { mutableStateOf(false) }
 
+    // Screen entry point: focus lands on the top-bar action when this route opens.
+    val entryFocusRequester = LocalTvContentFocusRequester.current
+
     Column(modifier = modifier.fillMaxSize()) {
         TvTopBar(
             title = stringResource(R.string.search_history_screen_title),
             actions = {
-                TvActionButton(onClick = { showClearAllConfirm = true }) {
+                TvActionButton(
+                    onClick = { showClearAllConfirm = true },
+                    modifier = entryFocusRequester
+                        ?.let { Modifier.focusRequester(it) } ?: Modifier,
+                ) {
                     Text(text = stringResource(R.string.search_history_action_delete_all))
                 }
             },
@@ -73,7 +82,7 @@ fun TvSearchHistoryScreen(
             LazyColumn(
                 modifier = Modifier.weight(1f),
                 contentPadding = tvListContentPadding(),
-                verticalArrangement = Arrangement.spacedBy(TvFocusDefaults.Reserve / 2),
+                verticalArrangement = Arrangement.spacedBy(TvFocusDefaults.Reserve),
             ) {
                 histories.forEach { (date, entries) ->
                     item(key = "header-$date") {

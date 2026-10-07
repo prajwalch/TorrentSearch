@@ -17,6 +17,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -30,7 +31,9 @@ import com.prajwalch.torrentsearch.domain.model.CloudflareProtectionStatus
 import com.prajwalch.torrentsearch.domain.model.SearchProviderInfo
 import com.prajwalch.torrentsearch.domain.model.SearchProviderOrigin
 import com.prajwalch.torrentsearch.ui.searchproviders.SearchProvidersViewModel
-import com.prajwalch.torrentsearch.ui.tv.component.TvActionButton
+import com.prajwalch.torrentsearch.ui.tv.component.TvChip
+import com.prajwalch.torrentsearch.ui.tv.component.TvChipRow
+import com.prajwalch.torrentsearch.ui.tv.component.LocalTvContentFocusRequester
 import com.prajwalch.torrentsearch.ui.tv.component.TvBadge
 import com.prajwalch.torrentsearch.ui.tv.component.TvFocusDefaults
 import com.prajwalch.torrentsearch.ui.tv.component.tvFocusRing
@@ -63,6 +66,9 @@ fun TvSearchProvidersScreen(
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     var showResetConfirm by remember { mutableStateOf(false) }
 
+    // Screen entry point: focus lands on the bulk-action chips when this route opens.
+    val entryFocusRequester = LocalTvContentFocusRequester.current
+
     Column(modifier = modifier.fillMaxSize()) {
         TvTopBar(
             title = stringResource(R.string.search_providers_screen_title),
@@ -71,30 +77,45 @@ fun TvSearchProvidersScreen(
                 uiState.enabledProvidersCount,
                 uiState.totalNumProviders,
             ),
-            actions = {
-                TvActionButton(onClick = viewModel::enableAllSearchProviders) {
-                    Text(text = stringResource(R.string.search_providers_action_enable_all))
-                }
-                TvActionButton(onClick = viewModel::disableAllSearchProviders) {
-                    Text(text = stringResource(R.string.search_providers_action_disable_all))
-                }
-                TvActionButton(onClick = viewModel::updateProtectionStatus) {
-                    Text(
-                        text = stringResource(
-                            R.string.search_providers_action_update_protection_status,
-                        ),
-                    )
-                }
-                TvActionButton(onClick = { showResetConfirm = true }) {
-                    Text(text = stringResource(R.string.search_providers_action_reset))
-                }
-            },
+        )
+
+        // Bulk actions live in a chip row rather than the top bar: with four of
+        // them the header had no room left for the title and rendered as
+        // "Search provide...". This also matches how Search and Browse present
+        // their filters.
+        TvChipRow(
+            chips = listOf(
+                TvChip(
+                    key = "enable-all",
+                    label = stringResource(R.string.search_providers_action_enable_all),
+                    onClick = viewModel::enableAllSearchProviders,
+                ),
+                TvChip(
+                    key = "disable-all",
+                    label = stringResource(R.string.search_providers_action_disable_all),
+                    onClick = viewModel::disableAllSearchProviders,
+                ),
+                TvChip(
+                    key = "update-protection",
+                    label = stringResource(
+                        R.string.search_providers_action_update_protection_status,
+                    ),
+                    onClick = viewModel::updateProtectionStatus,
+                ),
+                TvChip(
+                    key = "reset",
+                    label = stringResource(R.string.search_providers_action_reset),
+                    onClick = { showResetConfirm = true },
+                ),
+            ),
+            modifier = Modifier.fillMaxWidth().padding(horizontal = 48.dp, vertical = 4.dp),
+            initialFocusRequester = entryFocusRequester,
         )
 
         LazyColumn(
             modifier = Modifier.weight(1f),
             contentPadding = tvListContentPadding(),
-            verticalArrangement = Arrangement.spacedBy(TvFocusDefaults.Reserve / 2),
+            verticalArrangement = Arrangement.spacedBy(TvFocusDefaults.Reserve),
         ) {
             items(uiState.searchProviders, key = { it.id }) { provider ->
                 TvSearchProviderRow(
@@ -204,7 +225,7 @@ private fun TvSearchProviderRow(
 
         // Torznab configuration was long-press-only on handheld; surfaced explicitly.
         if (provider.origin == SearchProviderOrigin.Torznab) {
-            Row(horizontalArrangement = Arrangement.spacedBy(TvFocusDefaults.Reserve / 2)) {
+            Row(horizontalArrangement = Arrangement.spacedBy(TvFocusDefaults.Reserve)) {
                 TvMenuItem(
                     label = stringResource(R.string.search_providers_list_action_edit),
                     onClick = onEdit,

@@ -20,6 +20,8 @@
     <string name="action_clear">Clear</string>
     <string name="action_refresh">Refresh</string>
     <string name="action_stop">Stop</string>
+    <string name="tv_action_filter">Filter</string>
+    <string name="tv_action_filter_close">Close filter</string>
     <string name="torrent_badge_dead">Dead</string>
     <string name="torrent_actions_title">Torrent actions</string>
     <string name="tv_search_hints_title">Search tips</string>

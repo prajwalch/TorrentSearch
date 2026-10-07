@@ -3,6 +3,7 @@ package com.prajwalch.torrentsearch.ui.tv.browse
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -12,6 +13,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -24,8 +26,10 @@ import com.prajwalch.torrentsearch.ui.browse.BrowseSort
 import com.prajwalch.torrentsearch.ui.browse.BrowseViewModel
 import com.prajwalch.torrentsearch.ui.tv.component.TvActionButton
 import com.prajwalch.torrentsearch.ui.tv.component.TvChip
+import com.prajwalch.torrentsearch.ui.tv.component.LocalTvContentFocusRequester
 import com.prajwalch.torrentsearch.ui.tv.component.TvChipRow
 import com.prajwalch.torrentsearch.ui.tv.component.TvFocusDefaults
+import com.prajwalch.torrentsearch.ui.tv.component.TvLoadingState
 import com.prajwalch.torrentsearch.ui.tv.component.TvMessageState
 import com.prajwalch.torrentsearch.ui.tv.component.TvTorrentCard
 import com.prajwalch.torrentsearch.ui.tv.component.TvTopBar
@@ -53,6 +57,10 @@ fun TvBrowseScreen(
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     var selectedTorrent by remember { mutableStateOf<Torrent?>(null) }
+
+    // Screen entry point: focus lands on the filter chips when this route opens,
+    // so the screen starts at the top instead of leaving focus in the rail.
+    val entryFocusRequester = LocalTvContentFocusRequester.current
 
     Column(modifier = modifier.fillMaxSize()) {
         TvTopBar(
@@ -107,11 +115,16 @@ fun TvBrowseScreen(
                     onClick = { viewModel.toggleSearchProviderResults(provider.provider) },
                 )
             },
-            modifier = Modifier.fillMaxSize().padding(horizontal = 48.dp, vertical = 4.dp),
+            // fillMaxWidth(), not fillMaxSize(). Inside this Column, fillMaxSize()
+            // hands the chip row the full screen height, so the results list below
+            // measures to zero height and its cards lay out past the bottom edge -
+            // the list looked frozen after the first card.
+            modifier = Modifier.fillMaxWidth().padding(horizontal = 48.dp, vertical = 4.dp),
+            initialFocusRequester = entryFocusRequester,
         )
 
         when (val state = uiState.contentState) {
-            BrowseContentState.Loading -> Unit
+            BrowseContentState.Loading -> TvLoadingState(modifier = Modifier.weight(1f))
 
             BrowseContentState.InternetError -> TvMessageState(
                 modifier = Modifier.weight(1f),
@@ -130,16 +143,31 @@ fun TvBrowseScreen(
 
             // The torrent list is carried on uiState.torrents; contentState only
             // reports whether it is trustworthy yet.
-            is BrowseContentState.Available -> LazyColumn(
-                modifier = Modifier.weight(1f),
-                contentPadding = tvListContentPadding(),
-                verticalArrangement = Arrangement.spacedBy(TvFocusDefaults.Reserve),
-            ) {
-                items(uiState.torrents, key = { it.id }) { torrent ->
-                    TvTorrentCard(
-                        torrent = torrent,
-                        onClick = { selectedTorrent = torrent },
+            is BrowseContentState.Available -> {
+                if (uiState.torrents.isEmpty()) {
+                    // Don't leave a bare empty column - it reads as a broken screen.
+                    TvMessageState(
+                        modifier = Modifier.weight(1f),
+                        title = stringResource(R.string.browse_state_unavailable_title),
+                        description = stringResource(
+                            R.string.browse_state_unavailable_description,
+                        ),
+                        actionLabel = stringResource(R.string.browse_button_try_again),
+                        onAction = viewModel::refreshTorrents,
                     )
+                } else {
+                    LazyColumn(
+                        modifier = Modifier.weight(1f),
+                        contentPadding = tvListContentPadding(),
+                        verticalArrangement = Arrangement.spacedBy(TvFocusDefaults.Reserve),
+                    ) {
+                        items(uiState.torrents, key = { it.id }) { torrent ->
+                            TvTorrentCard(
+                                torrent = torrent,
+                                onClick = { selectedTorrent = torrent },
+                            )
+                        }
+                    }
                 }
             }
         }

@@ -6,11 +6,11 @@ import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.isSystemInDarkTheme
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.tv.material3.MaterialTheme
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 
 import com.prajwalch.torrentsearch.domain.model.DarkTheme
@@ -65,7 +65,15 @@ private fun TvApp() {
         dynamicColor = uiState.enableDynamicTheme,
         pureBlack = uiState.pureBlack,
     ) {
-        Box(modifier = Modifier.fillMaxSize()) {
+        // A background surface is required: without it the content area shows the
+        // window background from Theme.TorrentSearch.Tv (black), so switching to the
+        // light theme left the content black while the navigation rail went light.
+        androidx.tv.material3.Surface(
+            colors = androidx.tv.material3.SurfaceDefaults.colors(
+                containerColor = MaterialTheme.colorScheme.background,
+            ),
+            modifier = Modifier.fillMaxSize(),
+        ) {
             TorrentSearchTvApp()
         }
     }

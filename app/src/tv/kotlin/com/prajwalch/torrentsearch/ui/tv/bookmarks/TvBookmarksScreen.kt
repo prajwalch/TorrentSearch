@@ -14,6 +14,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -26,6 +27,7 @@ import com.prajwalch.torrentsearch.domain.model.Torrent
 import com.prajwalch.torrentsearch.ui.bookmarks.BookmarksState
 import com.prajwalch.torrentsearch.ui.bookmarks.BookmarksViewModel
 import com.prajwalch.torrentsearch.ui.tv.component.TvActionButton
+import com.prajwalch.torrentsearch.ui.tv.component.LocalTvContentFocusRequester
 import com.prajwalch.torrentsearch.ui.tv.component.TvChip
 import com.prajwalch.torrentsearch.ui.tv.component.TvChipRow
 import com.prajwalch.torrentsearch.ui.tv.component.TvFocusDefaults
@@ -78,12 +80,19 @@ fun TvBookmarksScreen(
         }
     }
 
+    // Screen entry point: focus lands on the top-bar action when this route opens.
+    val entryFocusRequester = LocalTvContentFocusRequester.current
+
     Column(modifier = modifier.fillMaxSize()) {
         TvTopBar(
             title = stringResource(R.string.bookmarks_screen_title),
             subtitle = uiState.totalBookmarksCount.toString(),
             actions = {
-                TvActionButton(onClick = { showDeleteAllConfirm = true }) {
+                TvActionButton(
+                    onClick = { showDeleteAllConfirm = true },
+                    modifier = entryFocusRequester
+                        ?.let { Modifier.focusRequester(it) } ?: Modifier,
+                ) {
                     Text(text = stringResource(R.string.bookmarks_action_delete_all))
                 }
                 TvActionButton(

@@ -8,13 +8,13 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -35,7 +35,9 @@ import com.prajwalch.torrentsearch.ui.tv.component.TvActionButton
 import com.prajwalch.torrentsearch.ui.tv.component.TvChip
 import com.prajwalch.torrentsearch.ui.tv.component.TvChipRow
 import com.prajwalch.torrentsearch.ui.tv.component.TvFocusDefaults
+import com.prajwalch.torrentsearch.ui.tv.component.LocalTvContentFocusRequester
 import com.prajwalch.torrentsearch.ui.tv.component.TvMenuItem
+import com.prajwalch.torrentsearch.ui.tv.component.TvOptionDialog
 import com.prajwalch.torrentsearch.ui.tv.component.TvSectionHeader
 import com.prajwalch.torrentsearch.ui.tv.component.TvSettingRow
 import com.prajwalch.torrentsearch.ui.tv.component.TvTopBar
@@ -82,18 +84,23 @@ fun TvSettingsScreen(
         }
     }
 
+    // Screen entry point: focus lands on the first setting row when this route opens.
+    val entryFocusRequester = LocalTvContentFocusRequester.current
+
     Column(modifier = modifier.fillMaxSize()) {
         TvTopBar(title = stringResource(R.string.settings_screen_title))
 
         LazyColumn(
             modifier = Modifier.weight(1f),
             contentPadding = tvListContentPadding(),
-            verticalArrangement = Arrangement.spacedBy(TvFocusDefaults.Reserve / 2),
+            verticalArrangement = Arrangement.spacedBy(TvFocusDefaults.Reserve),
         ) {
             item { TvSectionHeader(stringResource(R.string.settings_group_appearance)) }
 
             item {
                 TvSettingRow(
+                    modifier = entryFocusRequester
+                        ?.let { Modifier.focusRequester(it) } ?: Modifier,
                     title = stringResource(R.string.settings_enable_dynamic_theme),
                     value = onOff(uiState.appearanceSettings.enableDynamicTheme),
                     onClick = {
@@ -268,7 +275,10 @@ fun TvSettingsScreen(
         TvOptionDialog(
             title = stringResource(R.string.settings_dark_theme),
             options = DarkTheme.entries.map {
-                stringResource(it.labelRes()) to { viewModel.setDarkTheme(it); darkThemeDialog = false }
+                Triple(
+                    stringResource(it.labelRes()),
+                    it == uiState.appearanceSettings.darkTheme,
+                ) { viewModel.setDarkTheme(it); darkThemeDialog = false }
             },
             onDismiss = { darkThemeDialog = false },
         )
@@ -282,7 +292,10 @@ fun TvSettingsScreen(
             // D-pad (and can overshoot wildly on a single LEFT/RIGHT press).
             options = (listOf(MaxNumResults.Unlimited) +
                 (10..100 step 10).map { MaxNumResults(it) }).map { option ->
-                option.displayText() to {
+                Triple(
+                    option.displayText(),
+                    option == uiState.searchSettings.maxNumResults,
+                ) {
                     viewModel.setMaxNumResults(option)
                     maxResultsDialog = false
                 }
@@ -295,7 +308,7 @@ fun TvSettingsScreen(
         TvOptionDialog(
             title = stringResource(R.string.settings_dns_over_https),
             options = DohProvider.entries.map {
-                it.id to {
+                Triple(it.id, it == uiState.networkSettings.dohProvider) {
                     viewModel.setDohProvider(it)
                     dohDialog = false
                 }
@@ -339,54 +352,6 @@ private fun MaxNumResults.displayText(): String =
     } else {
         stringResource(R.string.settings_max_num_results_summary_format, n)
     }
-
-/**
- * Radio-style option picker.
- *
- * Replaces `DropdownMenu`, which on a remote has no focusable trigger and no way
- * to keep the selection anchored while focus is inside it.
- */
-@Composable
-private fun TvOptionDialog(
-    title: String,
-    options: List<Pair<String, () -> Unit>>,
-    onDismiss: () -> Unit,
-) {
-    Dialog(onDismissRequest = onDismiss) {
-        androidx.tv.material3.Surface(
-            shape = MaterialTheme.shapes.extraLarge,
-            colors = androidx.tv.material3.SurfaceDefaults.colors(
-                containerColor = MaterialTheme.colorScheme.tvCardSurface,
-            ),
-            modifier = Modifier.fillMaxWidth(0.6f).padding(vertical = 32.dp),
-        ) {
-            Column(
-                modifier = Modifier
-                    .padding(MaterialTheme.spaces.large)
-                    .padding(TvFocusDefaults.Reserve),
-                verticalArrangement = Arrangement.spacedBy(TvFocusDefaults.Reserve / 2),
-            ) {
-                Text(
-                    text = title,
-                    style = MaterialTheme.typography.titleLarge,
-                    color = MaterialTheme.colorScheme.onSurface,
-                )
-                LazyColumn(
-                    modifier = Modifier.weight(1f, fill = false),
-                    verticalArrangement = Arrangement.spacedBy(TvFocusDefaults.Reserve / 2),
-                ) {
-                    items(options.size) { index ->
-                        val (label, onPick) = options[index]
-                        TvMenuItem(
-                            label = label,
-                            onClick = onPick,
-                        )
-                    }
-                }
-            }
-        }
-    }
-}
 
 /** Yes/no confirmation. */
 @Composable

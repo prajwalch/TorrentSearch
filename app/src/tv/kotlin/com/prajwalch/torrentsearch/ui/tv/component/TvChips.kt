@@ -97,7 +97,7 @@ fun TvSelectableChip(
             text = label,
             style = MaterialTheme.typography.labelLarge,
             maxLines = 1,
-            modifier = Modifier.padding(horizontal = 18.dp, vertical = 12.dp),
+            modifier = Modifier.padding(horizontal = 16.dp, vertical = 10.dp),
         )
     }
 }
@@ -127,9 +127,15 @@ fun TvChipRow(
         state = listState,
         // Reserve room at both ends. The focus scale is a graphics transform, so a
         // focused chip parked at the row edge would have its enlarged body and ring
-        // clipped, which reads as focus leaving the screen.
-        contentPadding = PaddingValues(horizontal = TvFocusDefaults.Reserve),
-        horizontalArrangement = Arrangement.spacedBy(12.dp),
+        // clipped, which reads as focus leaving the screen. Vertical reserve too:
+        // LazyRow clips to its own bounds, so the screen's outer padding does not
+        // stop the scaled chip and its ring from being cut at the row's top and
+        // bottom edges.
+        contentPadding = PaddingValues(
+            horizontal = TvFocusDefaults.Reserve,
+            vertical = TvFocusDefaults.Reserve,
+        ),
+        horizontalArrangement = Arrangement.spacedBy(16.dp),
     ) {
         items(
             count = chips.size,

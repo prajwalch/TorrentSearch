@@ -91,7 +91,7 @@ fun TvTorrentActionsDialog(
             colors = androidx.tv.material3.SurfaceDefaults.colors(
                 containerColor = MaterialTheme.colorScheme.tvElevatedSurface,
             ),
-            modifier = Modifier.fillMaxWidth(0.72f).padding(vertical = 24.dp),
+            modifier = Modifier.fillMaxWidth(0.58f).padding(vertical = 24.dp),
         ) {
             Column(
                 modifier = Modifier
@@ -106,42 +106,23 @@ fun TvTorrentActionsDialog(
                     color = MaterialTheme.colorScheme.onSurface,
                 )
 
-                // ---- Magnet link -------------------------------------------------
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(
-                        MaterialTheme.spaces.small,
-                    ),
-                ) {
-                    TvActionButton(
-                        onClick = {
-                            val magnetUri = (magnetLinkState as? MagnetLinkState.Ready)?.value
-                            if (magnetUri != null) {
-                                if (!context.openMagnetLink(magnetUri)) {
-                                    onTorrentClientNotFound()
-                                }
+                // Full-width stacked actions. Laid out side by side they get squeezed
+                // into a narrow column and wrap one letter per line ("Bo/ok/ma/rk"),
+                // which is unreadable and gives a focus target with almost no area.
+                TvActionButton(
+                    onClick = {
+                        val magnetUri = (magnetLinkState as? MagnetLinkState.Ready)?.value
+                        if (magnetUri != null) {
+                            if (!context.openMagnetLink(magnetUri)) {
+                                onTorrentClientNotFound()
                             }
-                        },
-                        enabled = magnetLinkState is MagnetLinkState.Ready,
-                    ) {
-                        Text(text = stringResource(R.string.torrent_title_magnet_link))
-                    }
-
-                    TvActionButton(
-                        onClick = {
-                            viewModel.toggleBookmark(bookmark = !isBookmarked)
-                        },
-                    ) {
-                        Text(
-                            text = stringResource(
-                                if (isBookmarked) {
-                                    R.string.torrent_action_delete_bookmark
-                                } else {
-                                    R.string.torrent_action_bookmark_torrent
-                                },
-                            ),
-                        )
-                    }
+                        }
+                    },
+                    enabled = magnetLinkState is MagnetLinkState.Ready,
+                    modifier = Modifier.fillMaxWidth(),
+                    strong = true,
+                ) {
+                    Text(text = stringResource(R.string.torrent_title_magnet_link))
                 }
 
                 Text(
@@ -159,48 +140,29 @@ fun TvTorrentActionsDialog(
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
 
-                // ---- Torrent file ------------------------------------------------
-                Row(
+                TvActionButton(
+                    onClick = {
+                        when (val fileState = torrentFileState) {
+                            is TorrentFileState.LinkReady ->
+                                viewModel.downloadTorrentFile(fileState.value)
+
+                            is TorrentFileState.DownloadComplete ->
+                                createTorrentFileLauncher.launch(fileState.fileName)
+
+                            else -> Unit
+                        }
+                    },
+                    enabled = torrentFileState is TorrentFileState.LinkReady ||
+                        torrentFileState is TorrentFileState.DownloadComplete,
                     modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(
-                        MaterialTheme.spaces.small,
-                    ),
                 ) {
-                    TvActionButton(
-                        onClick = {
-                            when (val fileState = torrentFileState) {
-                                is TorrentFileState.LinkReady ->
-                                    viewModel.downloadTorrentFile(fileState.value)
-
-                                is TorrentFileState.DownloadComplete ->
-                                    createTorrentFileLauncher.launch(fileState.fileName)
-
-                                else -> Unit
-                            }
+                    Text(
+                        text = if (torrentFileState is TorrentFileState.DownloadComplete) {
+                            stringResource(R.string.torrent_button_save_to_file)
+                        } else {
+                            stringResource(R.string.torrent_title_torrent_file)
                         },
-                        enabled = torrentFileState is TorrentFileState.LinkReady ||
-                            torrentFileState is TorrentFileState.DownloadComplete,
-                    ) {
-                        Text(
-                            text = if (torrentFileState is TorrentFileState.DownloadComplete) {
-                                stringResource(R.string.torrent_button_save_to_file)
-                            } else {
-                                stringResource(R.string.torrent_title_torrent_file)
-                            },
-                        )
-                    }
-
-                    TvActionButton(
-                        onClick = {
-                            val pageUrl = torrent.detailsPageUrl
-                            if (pageUrl != null) {
-                                onViewDetails(torrent.id, pageUrl, torrent.providerName)
-                            }
-                        },
-                        enabled = torrent.detailsPageUrl != null,
-                    ) {
-                        Text(text = stringResource(R.string.torrent_title_details_page))
-                    }
+                    )
                 }
 
                 Text(
@@ -208,6 +170,36 @@ fun TvTorrentActionsDialog(
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
+
+                TvActionButton(
+                    onClick = {
+                        val pageUrl = torrent.detailsPageUrl
+                        if (pageUrl != null) {
+                            onViewDetails(torrent.id, pageUrl, torrent.providerName)
+                        }
+                    },
+                    enabled = torrent.detailsPageUrl != null,
+                    modifier = Modifier.fillMaxWidth(),
+                ) {
+                    Text(text = stringResource(R.string.torrent_title_details_page))
+                }
+
+                TvActionButton(
+                    onClick = {
+                        viewModel.toggleBookmark(bookmark = !isBookmarked)
+                    },
+                    modifier = Modifier.fillMaxWidth(),
+                ) {
+                    Text(
+                        text = stringResource(
+                            if (isBookmarked) {
+                                R.string.torrent_action_delete_bookmark
+                            } else {
+                                R.string.torrent_action_bookmark_torrent
+                            },
+                        ),
+                    )
+                }
 
                 TvActionButton(onClick = onDismiss) {
                     Text(text = stringResource(R.string.button_cancel))
