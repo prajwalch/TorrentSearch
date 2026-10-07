@@ -65,7 +65,7 @@
     <string name="search_filter_query_hint">Wyszukaj torrenty</string>
     <string name="search_filter_chip_dead_torrents">Martwe torrenty</string>
     <string name="search_filter_chip_hide_viewed">Ukryj wyświetlone</string>
-    <string name="search_filter_chip_search_providers">Dostawcy wyszukiwania</string>
+    <string name="search_filter_chip_search_providers">Dostawcy</string>
     <string name="search_filter_providers_title">Filtruj według dostawcy wyszukiwania</string>
     <string name="search_filter_providers_action_select_all">Zaznacz wszystko</string>
     <string name="search_filter_providers_action_deselect_all">Odznacz wszystko</string>
@@ -252,4 +252,12 @@
     <string name="search_error_status_resolved">Rozwiązany</string>
     <string name="settings_show_recent_searches">Pokaż ostatnie wyszukiwania</string>
     <string name="settings_show_recent_searches_summary">Zobacz 5 ostatnich wyszukiwań na ekranie głównym</string>
+    <string name="home_status_providers_checking">Sprawdzanie dostawców…</string>
+    <string name="home_status_providers_check_failed">Sprawdzenie dostawców nie powiodło się</string>
+    <string name="home_status_providers_check_failed_subtitle">Coś poszło nie tak</string>
+    <string name="home_status_providers_check_complete">Sprawdzenie dostawców zakończone</string>
+    <string name="home_message_please_wait">Proszę czekać</string>
+    <string name="search_providers_state_protection_status_update_failed">Coś poszło nie tak</string>
+    <string name="settings_check_providers">Sprawdź dostawców podczas uruchamiania</string>
+    <string name="settings_check_providers_summary">Sprawdza dostęp dostawców i powiadamia, czy któryś z nich wymaga odblokowania</string>
 </resources>
