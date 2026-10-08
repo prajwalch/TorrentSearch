@@ -16,55 +16,6 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.TorrentSearch"
         android:usesCleartextTraffic="true"
-        tools:targetApi="36">
-        <activity
-            android:name=".ui.main.MainActivity"
-            android:exported="true"
-            android:theme="@style/Theme.TorrentSearch">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-            <intent-filter>
-                <action android:name="android.intent.action.SEARCH" />
-            </intent-filter>
-
-            <meta-data
-                android:name="android.app.searchable"
-                android:resource="@xml/searchable" />
-        </activity>
-
-        <activity-alias
-            android:name="${applicationId}.SendAlias"
-            android:exported="true"
-            android:targetActivity=".ui.main.MainActivity">
-
-            <intent-filter>
-                <action android:name="android.intent.action.SEND" />
-
-                <category android:name="android.intent.category.DEFAULT" />
-                <data android:mimeType="text/plain" />
-            </intent-filter>
-        </activity-alias>
-
-        <activity-alias
-            android:name="${applicationId}.ProcessTextAlias"
-            android:exported="true"
-            android:targetActivity=".ui.main.MainActivity">
-
-            <intent-filter>
-                <action android:name="android.intent.action.PROCESS_TEXT" />
-
-                <category android:name="android.intent.category.DEFAULT" />
-                <data android:mimeType="text/plain" />
-            </intent-filter>
-        </activity-alias>
-
-        <activity
-            android:name=".ui.crash.CrashActivity"
-            android:exported="false"
-            android:theme="@android:style/Theme.Material.Light.NoActionBar" />
-    </application>
+        tools:targetApi="36" />
 
 </manifest>

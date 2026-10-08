@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <!--
+        Handheld/tablet launcher entry point.
+
+        Touchscreen is required here so the Play Store filters this variant out
+        of TV / ChromeOS form factors. The TV variant declares it not-required.
+    -->
+    <uses-feature
+        android:name="android.hardware.touchscreen"
+        android:required="true" />
+
+    <application>
+        <activity
+            android:name=".ui.main.MainActivity"
+            android:exported="true"
+            android:theme="@style/Theme.TorrentSearch">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.SEARCH" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.app.searchable"
+                android:resource="@xml/searchable" />
+        </activity>
+
+        <activity-alias
+            android:name="${applicationId}.SendAlias"
+            android:exported="true"
+            android:targetActivity=".ui.main.MainActivity">
+
+            <intent-filter>
+                <action android:name="android.intent.action.SEND" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:mimeType="text/plain" />
+            </intent-filter>
+        </activity-alias>
+
+        <activity-alias
+            android:name="${applicationId}.ProcessTextAlias"
+            android:exported="true"
+            android:targetActivity=".ui.main.MainActivity">
+
+            <intent-filter>
+                <action android:name="android.intent.action.PROCESS_TEXT" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:mimeType="text/plain" />
+            </intent-filter>
+        </activity-alias>
+
+        <activity
+            android:name=".ui.crash.CrashActivity"
+            android:exported="false"
+            android:theme="@android:style/Theme.Material.Light.NoActionBar" />
+    </application>
+
+</manifest>

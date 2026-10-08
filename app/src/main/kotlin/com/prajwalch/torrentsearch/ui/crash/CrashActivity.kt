@@ -11,7 +11,6 @@ import androidx.activity.enableEdgeToEdge
 import androidx.lifecycle.lifecycleScope
 
 import com.prajwalch.torrentsearch.R
-import com.prajwalch.torrentsearch.ui.main.MainActivity
 import com.prajwalch.torrentsearch.ui.theme.TorrentSearchTheme
 import com.prajwalch.torrentsearch.util.LogsUtils
 import com.prajwalch.torrentsearch.util.TorrentSearchExceptionHandler
@@ -52,8 +51,12 @@ class CrashActivity : ComponentActivity() {
     }
 
     private fun restartApplication() {
-        val mainActivityIntent = Intent(this, MainActivity::class.java)
-        val restartIntent = Intent.makeRestartActivityTask(mainActivityIntent.component)
+        // Resolves against whichever launcher activity the active variant declares
+        // (LAUNCHER on handheld, LEANBACK_LAUNCHER on TV) instead of hard-coding a
+        // class name, so this stays correct across the device product flavors.
+        val launchIntent = packageManager.getLaunchIntentForPackage(packageName)
+            ?: return
+        val restartIntent = Intent.makeRestartActivityTask(launchIntent.component)
 
         startActivity(restartIntent)
         finishAffinity()
