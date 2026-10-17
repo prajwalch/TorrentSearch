@@ -1,3 +1,34 @@
+# Unreleased
+
+### What's new
+
+- Added an Android TV / Google TV build. It is a separate 10-foot, D-pad-only app installed
+side-by-side with the handheld build (`…torrentsearch.tv`).
+- The TV build covers search end to end: home, results, torrent actions and details. All 46
+search providers, Torznab indexers, bookmarks and settings continue to work unchanged.
+- Every TV control shows focus as a thick high-contrast ring plus a slight scale, and
+selection is shown as a filled background. The two are distinct colours, so it is always
+clear which item is focused and which is selected.
+- Added a persistent navigation menu on the left of every TV screen, so Settings,
+Bookmarks, Browse, search history and search providers are all reachable with the remote.
+Press LEFT from anywhere to get to it.
+- TV focus stays inside the visible area: scrolling rows reserve space for the focus ring,
+content is inset past the overscan margin, and DPAD_DOWN from the search field always lands
+on the active category rather than the nearest chip.
+
+### What's changed
+
+- The project now uses a `device` product flavor. Handheld variants are `mobileDebug`,
+`mobileStaging` and `mobileRelease`; build commands and output paths are unchanged apart from
+the new `mobile` path segment (`app/build/outputs/apk/mobile/…`).
+- Added CI for the TV variant, including automatic checks for leanback/TV manifest declarations,
+the 320x180 launcher banner, 16 KB native page alignment and 32/64-bit ABI coverage.
+
+### What's fixed
+
+- Crash recovery no longer hard-codes the handheld launcher activity, so "Restart the
+application" from the crash screen now returns to the correct entry point on both variants.
+
 # v0.5.2 (2026-10-02)
 
 ### What's new

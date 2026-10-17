@@ -1,4 +1,4 @@
-name: Build debug APK
+name: Build mobile debug APK
 
 on:
   push:
@@ -28,16 +28,16 @@ jobs:
     - name: Grant execute permission for gradlew
       run: chmod +x gradlew
 
-    - name: Assemle debug APK with gradlew
-      run: ./gradlew app:assembleDebug
+    - name: Assemble mobile debug APK
+      run: ./gradlew app:assembleMobileDebug
 
     - name: Rename APK file to torrentsearch-debug.apk
       run: |
-        cd app/build/outputs/apk/debug
-        mv app-debug.apk torrentsearch-debug.apk
+        cd app/build/outputs/apk/mobile/debug
+        mv app-mobile-debug.apk torrentsearch-debug.apk
 
     - name: Upload debug APK
       uses: actions/upload-artifact@v7.0.1
       with:
-        path: app/build/outputs/apk/debug/torrentsearch-debug.apk
+        path: app/build/outputs/apk/mobile/debug/torrentsearch-debug.apk
         archive: false

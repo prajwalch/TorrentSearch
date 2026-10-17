@@ -36,7 +36,40 @@ All types of contributions are encouraged and valued. If you do know how to code
   
 ### Development guidelines
 
-#### Code styles
+### Build variants
+
+The app is built from a single codebase with a `device` product flavor:
+
+| Variant | Application id | Module path |
+| --- | --- | --- |
+| `mobileDebug` / `mobileStaging` / `mobileRelease` | `com.prajwalch.torrentsearch[.debug\|.staging]` | `app/src/mobile/` |
+| `tvDebug` / `tvStaging` / `tvRelease` | `com.prajwalch.torrentsearch.tv[…]` | `app/src/tv/` |
+
+```sh
+./gradlew assembleMobileDebug    # handheld
+./gradlew assembleTvDebug        # Android TV / Google TV
+```
+
+Everything under `app/src/main/` is shared. The two flavors own their own `AndroidManifest.xml`
+(launcher intent filters, hardware feature declarations, banner) and their own UI package.
+When adding a screen, decide which flavor it belongs to, and keep non-UI logic in `main` so both
+benefit from it.
+
+### Android TV notes
+
+- Use `androidx.tv.material3` components. Do not introduce `TvLazyColumn`/`TvLazyRow` - they were
+  deprecated in `tv-foundation` 1.0.0-alpha11 and **removed** in alpha12. Standard
+  `LazyColumn`/`LazyRow` have carried the focus behaviour since Compose Foundation 1.7.0.
+- `androidx.tv.material3` has no `TextField`. Use `TvTextInput`, which wires up IME attachment
+  and the BACK trap. If you need a raw `androidx.compose.material3` primitive, wrap it in
+  `TvMaterial3Bridge` or it will render with the library's default light scheme.
+- Every interactive element needs a visible focus indicator, and focus must never dead-end.
+- `androidx.tv.material3.ColorScheme` has no `surfaceContainer*`/`outline` roles; use
+  `tvCardSurface` / `tvElevatedSurface`.
+- Verify with a Google TV system image:
+  `avdmanager create avd -n tvtest -k "system-images;android-36;google-tv;x86_64" -d tv_1080p`
+
+## Code styles
 
 - Follow [Kotlin Coding Conventions](https://kotlinlang.org/docs/coding-conventions.html)
 - Use Android Studio's default formatting (Ctrl+Alt+L).
