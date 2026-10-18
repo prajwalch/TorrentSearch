@@ -29,15 +29,15 @@ jobs:
       run: chmod +x gradlew
 
     - name: Assemle debug APK with gradlew
-      run: ./gradlew app:assembleDebug
+      run: ./gradlew androidApp:assembleDebug
 
     - name: Rename APK file to torrentsearch-debug.apk
       run: |
-        cd app/build/outputs/apk/debug
-        mv app-debug.apk torrentsearch-debug.apk
+        cd androidApp/build/outputs/apk/debug
+        mv androidApp-debug.apk torrentsearch-debug.apk
 
     - name: Upload debug APK
       uses: actions/upload-artifact@v7.0.1
       with:
-        path: app/build/outputs/apk/debug/torrentsearch-debug.apk
+        path: androidApp/build/outputs/apk/debug/torrentsearch-debug.apk
         archive: false

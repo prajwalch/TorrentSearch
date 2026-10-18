@@ -111,12 +111,18 @@ fun SettingsScreen(
                 onEnablePureBlackTheme = viewModel::enablePureBlackTheme,
             )
 
-            val packageManager = LocalContext.current.packageManager
+            val context = LocalContext.current
+            val packageManager = context.packageManager
+            val packageName = context.packageName
             GeneralSection(
                 uiState = uiState.generalSettings,
                 onEnableOpenTorrentDetailsInApp = viewModel::enableOpenTorrentDetailsInApp,
-                onEnableShareIntegration = { viewModel.enableShareIntegration(it, packageManager) },
-                onEnableQuickSearch = { viewModel.enableQuickSearch(it, packageManager) },
+                onEnableShareIntegration = {
+                    viewModel.enableShareIntegration(it, packageManager, packageName)
+                },
+                onEnableQuickSearch = {
+                    viewModel.enableQuickSearch(it, packageManager, packageName)
+                },
             )
 
             ContentAndPrivacySection(

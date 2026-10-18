@@ -39,30 +39,30 @@ jobs:
         SIGNING_STORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
         SIGNING_KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
         SIGNING_KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
-      run: ./gradlew app:assembleRelease
+      run: ./gradlew androidApp:assembleRelease
 
     - name: Generate SHA-256 checksum
       run: |
-        cd app/build/outputs/apk/release
-        sha256sum app-release.apk > SHA256_CHECKSUM.txt
+        cd androidApp/build/outputs/apk/release
+        sha256sum androidApp-release.apk > SHA256_CHECKSUM.txt
 
     - name: Echo SHA-256 checksum
-      run: cat app/build/outputs/apk/release/SHA256_CHECKSUM.txt
+      run: cat androidApp/build/outputs/apk/release/SHA256_CHECKSUM.txt
 
     - name: Generate artifact attestation
       id: attest
       uses: actions/attest@v4.2.2
       with:
-        subject-path: 'app/build/outputs/apk/release/app-release.apk'
+        subject-path: 'androidApp/build/outputs/apk/release/androidApp-release.apk'
 
     - name: Upload APK, R8 mapping, checksum & attestation
       uses: actions/upload-artifact@v7.0.1
       with:
         name: torrentsearch-release-aritifacts
         path: |
-          app/build/outputs/apk/release/app-release.apk
-          app/build/outputs/mapping/release/mapping.txt
-          app/build/outputs/apk/release/SHA256_CHECKSUM.txt
+          androidApp/build/outputs/apk/release/androidApp-release.apk
+          androidApp/build/outputs/mapping/release/mapping.txt
+          androidApp/build/outputs/apk/release/SHA256_CHECKSUM.txt
           ${{ steps.attest.outputs.bundle-path }}
 
     - name: Post-cleanup

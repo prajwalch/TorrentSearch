@@ -1,5 +1,5 @@
 plugins {
-    alias(libs.plugins.android.application)
+    alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.ksp)
@@ -15,49 +15,31 @@ android {
     }
 
     defaultConfig {
-        applicationId = "com.prajwalch.torrentsearch"
         minSdk = 25
-        targetSdk = 37
-        versionCode = 19
-        versionName = "0.5.2"
-
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-    }
+        consumerProguardFiles("consumer-rules.pro")
 
-    signingConfigs {
-        create("release") {
-            storeFile = System.getenv("SIGNING_STORE_FILE")?.let(::file)
-            storePassword = System.getenv("SIGNING_STORE_PASSWORD")
-            keyAlias = System.getenv("SIGNING_KEY_ALIAS")
-            keyPassword = System.getenv("SIGNING_KEY_PASSWORD")
-        }
+        // Library modules don't own the application ID or version. Mirror :androidApp's values,
+        // including build type suffixes, so the settings version row and exported logs stay accurate.
+        buildConfigField("int", "VERSION_CODE", "19")
     }
 
     buildTypes {
         release {
-            isMinifyEnabled = true
-            isShrinkResources = true
-            signingConfig = signingConfigs.getByName("release").takeIf { it.storeFile != null }
-
-            proguardFiles(
-                getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro"
-            )
+            buildConfigField("String", "APPLICATION_ID", "\"com.prajwalch.torrentsearch\"")
+            buildConfigField("String", "VERSION_NAME", "\"0.5.2\"")
         }
 
         create("staging") {
             initWith(getByName("release"))
 
-            applicationIdSuffix = ".staging"
-            versionNameSuffix = "-staging"
-            signingConfig = signingConfigs.getByName("debug")
+            buildConfigField("String", "APPLICATION_ID", "\"com.prajwalch.torrentsearch.staging\"")
+            buildConfigField("String", "VERSION_NAME", "\"0.5.2-staging\"")
         }
 
         debug {
-            applicationIdSuffix = ".debug"
-            versionNameSuffix = "-debug"
-            isDebuggable = true
-            signingConfig = signingConfigs.getByName("debug")
+            buildConfigField("String", "APPLICATION_ID", "\"com.prajwalch.torrentsearch.debug\"")
+            buildConfigField("String", "VERSION_NAME", "\"0.5.2-debug\"")
         }
     }
 
@@ -71,22 +53,6 @@ android {
         compose = true
         buildConfig = true
     }
-
-    dependenciesInfo {
-        // Disables dependency metadata when building APKs (for IzzyOnDroid/F-Droid).
-        includeInApk = false
-        // Disables dependency metadata when building Android App Bundles (for Google Play).
-        includeInBundle = false
-    }
-
-    androidResources {
-        generateLocaleConfig = true
-    }
-
-    packaging {
-        resources.excludes += "DebugProbesKt.bin"
-        jniLibs.keepDebugSymbols.add("**/*.so")
-    }
 }
 
 room {
@@ -96,24 +62,26 @@ room {
 dependencies {
     coreLibraryDesugaring(libs.desugar.jdk.libs)
 
-    implementation(libs.androidx.activity.compose)
-    implementation(libs.androidx.core.ktx)
-    implementation(libs.androidx.core.splashscreen)
+    api(libs.androidx.activity.compose)
+    api(libs.androidx.core.ktx)
+    api(libs.androidx.core.splashscreen)
+    api(libs.androidx.lifecycle.runtime.ktx)
+    api(libs.androidx.material3)
+    api(libs.androidx.ui)
+    api(libs.androidx.ui.graphics)
+    api(libs.koin.android)
+    api(libs.koin.androidx.compose)
+    api(platform(libs.androidx.compose.bom))
+
     implementation(libs.androidx.datastore.preferences)
-    implementation(libs.androidx.lifecycle.runtime.ktx)
-    implementation(libs.androidx.material3)
     implementation(libs.androidx.navigation.compose)
     implementation(libs.androidx.room.ktx)
     implementation(libs.androidx.room.runtime)
-    implementation(libs.androidx.ui)
-    implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.coil.compose)
     implementation(libs.coil.network.ktor)
     implementation(libs.compose.markdown)
     implementation(libs.jsoup)
-    implementation(libs.koin.android)
-    implementation(libs.koin.androidx.compose)
     implementation(libs.koin.annotations)
     implementation(libs.koin.core)
     implementation(libs.kotlinx.collections.immutable)
@@ -124,7 +92,6 @@ dependencies {
     implementation(libs.ktor.client.okhttp)
     implementation(libs.lazycolumnscrollbar)
     implementation(libs.okhttp.dnsoverhttps)
-    implementation(platform(libs.androidx.compose.bom))
 
     ksp(libs.androidx.room.compiler)
 
