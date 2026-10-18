@@ -19,8 +19,8 @@ import com.prajwalch.torrentsearch.util.TorrentUtils
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
-import org.jsoup.Jsoup
-import org.jsoup.nodes.Element
+import com.fleeksoft.ksoup.Ksoup
+import com.fleeksoft.ksoup.nodes.Element
 
 private object FormParamValues {
     const val CRITERIA_REGISTERED = 1
@@ -183,7 +183,7 @@ private class NnmClubResultsPageParser(
 
     suspend fun parse(html: String, pageUrl: String): List<Torrent> =
         withContext(Dispatchers.Default) {
-            Jsoup.parse(html, pageUrl)
+            Ksoup.parse(html, pageUrl)
                 .select(LIST_ITEM)
                 .mapNotNull(::parseListItem)
         }
@@ -242,7 +242,7 @@ private object NnmClubDetailsPageParser {
 
     suspend fun parse(detailsPageHtml: String): TorrentDetails? =
         withContext(Dispatchers.Default) {
-            val dom = Jsoup.parse(detailsPageHtml)
+            val dom = Ksoup.parse(detailsPageHtml)
 
             val torrentName = dom.selectFirst(TORRENT_NAME)?.ownText() ?: return@withContext null
             val magnetUri = dom.selectFirst(MAGNET_URI)?.attr("href") ?: return@withContext null
@@ -295,7 +295,7 @@ private object NnmClubDetailsPageParser {
 
     suspend fun extractMagnetUri(detailsPageHtml: String): String? =
         withContext(Dispatchers.Default) {
-            Jsoup.parse(detailsPageHtml).selectFirst(MAGNET_URI)?.attr("href")
+            Ksoup.parse(detailsPageHtml).selectFirst(MAGNET_URI)?.attr("href")
         }
 }
 

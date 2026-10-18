@@ -17,8 +17,8 @@ import com.prajwalch.torrentsearch.util.TorrentUtils
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
-import org.jsoup.Jsoup
-import org.jsoup.nodes.Element
+import com.fleeksoft.ksoup.Ksoup
+import com.fleeksoft.ksoup.nodes.Element
 
 class TorrentDownload(private val networkClient: NetworkClient) :
     SearchProvider,
@@ -81,7 +81,7 @@ private class TorrentDownloadResultsParser(
 ) {
     suspend fun parse(html: String, pageUrl: String): List<Torrent> =
         withContext(Dispatchers.Default) {
-            val html = Jsoup.parse(html, pageUrl)
+            val html = Ksoup.parse(html, pageUrl)
 
             if (html.selectFirst("h3")?.ownText() == "No Results Found") {
                 emptyList()
@@ -151,7 +151,7 @@ private object TorrentDownloadDetailsPageParser {
     private const val FILE_DOWNLOAD_LINK = """a[href^="https://itorrent.net/"]"""
 
     suspend fun parse(html: String): TorrentDetails? = withContext(Dispatchers.Default) {
-        val html = Jsoup.parse(html)
+        val html = Ksoup.parse(html)
 
         val torrentName = html.selectFirst(TORRENT_NAME)?.ownText() ?: return@withContext null
         val magnetUri = html.selectFirst(MAGNET_URI)?.attr("href") ?: return@withContext null

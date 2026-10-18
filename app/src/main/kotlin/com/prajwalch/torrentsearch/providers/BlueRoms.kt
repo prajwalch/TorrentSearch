@@ -16,9 +16,9 @@ import com.prajwalch.torrentsearch.util.TorrentUtils
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
-import org.jsoup.Jsoup
-import org.jsoup.nodes.Element
-import org.jsoup.nodes.TextNode
+import com.fleeksoft.ksoup.Ksoup
+import com.fleeksoft.ksoup.nodes.Element
+import com.fleeksoft.ksoup.nodes.TextNode
 
 import kotlin.io.encoding.Base64
 
@@ -60,7 +60,7 @@ private class BlueRomsResultsPageParser(
 ) {
     suspend fun parse(html: String, pageUrl: String): List<Torrent> =
         withContext(Dispatchers.Default) {
-            Jsoup.parse(html, pageUrl)
+            Ksoup.parse(html, pageUrl)
                 .select(LIST_ITEM)
                 .mapNotNull(::parseListItem)
         }
@@ -84,8 +84,8 @@ private class BlueRomsResultsPageParser(
 
         val size = listItem.selectFirst(SIZE)
             ?.nextSibling()
-            ?.takeIf { it is TextNode }
-            ?.nodeValue()
+            .let { it as? TextNode }
+            ?.text()
             ?.trim()
             ?.let(FileSizeUtils::normalizeSize)
         val detailsPageUrl = listItem.selectFirst(DETAILS_PAGE_URL)?.attr("abs:href")
@@ -124,7 +124,7 @@ private class BlueRomsDetailsPageParser(private val networkClient: NetworkClient
 
     suspend fun parse(html: String, pageUrl: String): TorrentDetails? =
         withContext(Dispatchers.Default) {
-            val html = Jsoup.parse(html, pageUrl)
+            val html = Ksoup.parse(html, pageUrl)
             val downloadPageUrl = html.selectFirst(DOWNLOAD_PAGE_LINK)
                 ?.attr("abs:href")
                 ?: return@withContext null
@@ -158,7 +158,7 @@ private suspend fun getMagnetUri(downloadPageUrl: String, networkClient: Network
         networkClient.getText(downloadPageUrl)
     }
     val encodedMagnetUri = withContext(Dispatchers.Default) {
-        Jsoup.parse(downloadPageHtml)
+        Ksoup.parse(downloadPageHtml)
             .selectFirst("button#magnet-button")
             ?.attr("data-link")
             ?.takeIf { it.isNotBlank() }
