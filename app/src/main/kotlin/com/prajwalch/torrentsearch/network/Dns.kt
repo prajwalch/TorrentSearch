@@ -29,7 +29,6 @@ class DynamicDns(private val dohProvider: Flow<DohProvider>) : Dns {
             DohProvider.DNSPod -> DohProviders.buildDNSPod(bootstrapClient)
             DohProvider.ThreeSixty -> DohProviders.build360(bootstrapClient)
             DohProvider.Quad101 -> DohProviders.buildQuad101(bootstrapClient)
-            DohProvider.Mullvad -> DohProviders.buildMullvad(bootstrapClient)
             DohProvider.ControlD -> DohProviders.buildControlD(bootstrapClient)
             DohProvider.Njalla -> DohProviders.buildNajalla(bootstrapClient)
             DohProvider.Shecan -> DohProviders.buildShecan(bootstrapClient)

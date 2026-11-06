@@ -11,7 +11,6 @@ enum class DohProvider(val id: String) {
     DNSPod("dnspod"),
     ThreeSixty("360"),
     Quad101("quad101"),
-    Mullvad("mullvad"),
     ControlD("controld"),
     Njalla("njalla"),
     Shecan("shecan");

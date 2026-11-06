@@ -90,7 +90,6 @@ fun DohProvider.displayName(): String = when (this) {
     DohProvider.DNSPod -> "DNSPod"
     DohProvider.ThreeSixty -> "360"
     DohProvider.Quad101 -> "Quad 101"
-    DohProvider.Mullvad -> "Mullvad"
     DohProvider.ControlD -> "Control D"
     DohProvider.Njalla -> "Njalla"
     DohProvider.Shecan -> "Shecan"

@@ -117,19 +117,6 @@ object DohProviders {
             .build()
 
     /**
-     * Mullvad DoH without ad blocking option.
-     * Source: https://mullvad.net/en/help/dns-over-https-and-dns-over-tls
-     */
-    fun buildMullvad(bootstrapClient: OkHttpClient) =
-        DnsOverHttps.Builder().client(bootstrapClient)
-            .url(" https://dns.mullvad.net/dns-query".toHttpUrl())
-            .bootstrapDnsHosts(
-                InetAddress.getByName("194.242.2.2"),
-                InetAddress.getByName("2a07:e340::2"),
-            )
-            .build()
-
-    /**
      * Control D unfiltered option.
      * Source: https://controld.com/free-dns/?
      */
