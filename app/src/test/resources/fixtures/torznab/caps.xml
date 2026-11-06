@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<caps>
+  <server version="1.1" title="Jackett" strapline="Torznab feed for 1337x" email="" url="http://127.0.0.1:9117/" image="http://127.0.0.1:9117/favicon.ico" />
+  <limits default="100" max="100" />
+  <searching>
+    <search available="yes" supportedParams="q" />
+    <tv-search available="yes" supportedParams="q,season,ep" />
+    <movie-search available="yes" supportedParams="q" />
+    <music-search available="no" supportedParams="q" />
+    <audio-search available="no" supportedParams="q" />
+    <book-search available="yes" supportedParams="q" />
+  </searching>
+  <categories>
+    <category id="2000" name="Movies">
+      <subcat id="2030" name="Movies/SD" />
+      <subcat id="2040" name="Movies/HD" />
+    </category>
+    <category id="5000" name="TV">
+      <subcat id="5070" name="TV/Anime" />
+    </category>
+    <category id="3000" name="Audio">
+      <subcat id="3030" name="Audio/Audiobook" />
+    </category>
+    <category id="4000" name="PC">
+      <subcat id="4050" name="PC/Games" />
+      <subcat id="104050" name="Games/PC" />
+    </category>
+    <category id="6000" name="XXX" />
+    <category id="100001" name="Movies/DVD">
+      <subcat id="8010" name="Other/Misc" />
+    </category>
+  </categories>
+  <tags>
+    <tag name="internal" description="Uploader is an internal release group" />
+  </tags>
+</caps>

@@ -18,8 +18,8 @@ import com.prajwalch.torrentsearch.util.TorrentUtils
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
-import org.jsoup.Jsoup
-import org.jsoup.nodes.Element
+import com.fleeksoft.ksoup.Ksoup
+import com.fleeksoft.ksoup.nodes.Element
 
 class Dmhy(private val networkClient: NetworkClient) :
     SearchProvider,
@@ -92,7 +92,7 @@ private class DmhyResultsPageParser(
 ) {
     suspend fun parse(html: String, pageUrl: String): List<Torrent> =
         withContext(Dispatchers.Default) {
-            Jsoup
+            Ksoup
                 .parse(html, pageUrl)
                 .select(LIST_ITEM)
                 .mapNotNull(::parseListItem)
@@ -153,7 +153,7 @@ private object DmhyDetailsPageParser {
     private const val MAGNET_URI = "div#resource-tabs > div#tabs-1 > p:nth-child(2) > a#a_magnet"
 
     suspend fun parse(html: String): TorrentDetails? = withContext(Dispatchers.Default) {
-        val html = Jsoup.parse(html)
+        val html = Ksoup.parse(html)
 
         val torrentName = html.selectFirst(TORRENT_NAME)?.text() ?: return@withContext null
         val magnetUri = html.selectFirst(MAGNET_URI)?.attr("href") ?: return@withContext null

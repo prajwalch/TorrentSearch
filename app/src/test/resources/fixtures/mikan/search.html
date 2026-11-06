@@ -1,0 +1,241 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>Mikan Project - &#x641C;&#x7D22;&#x7ED3;&#x679C;</title>
+        </head>
+<body class="main">
+    <div id="sk-header" class="hidden-xs hidden-sm">
+        <div id="sk-top-nav" class="container">
+            <a id="logo" href="/" style="width:205px;"><img id="mikan-pic" src="/images/mikan-pic.png" /><img src="/images/mikan-text.svg" style="height:30px;" /></a>
+            <div id="nav-list">
+                <ul class="list-inline nav-ul">
+                    <li class="">
+                        <div class="sk-col"><a href="/"><i class="fa fa-home fa-lg"></i>主页</a></div>
+                    </li>
+                    <li class="">
+                        <div class="sk-col"><a href="/Home/MyBangumi"><i class="fa fa-rss fa-lg"></i>订阅</a></div>
+                    </li>
+                    <li class="">
+                        <div class="sk-col"><a href="/Home/Classic"><i class="fa fa-slack fa-lg"></i>列表</a></div>
+                    </li>
+                </ul>
+            </div>
+            <div class="search-form">
+                <form method="get" action="/Home/Search">
+                    <div class="form-group has-feedback">
+                        <label for="search" class="sr-only">搜索</label>
+                        <input type="text" class="form-control input-sm" name="searchstr" id="header-search" placeholder="搜索" value="Bocchi the Rock 01">
+                        <span class="glyphicon glyphicon-search form-control-feedback"></span>
+                    </div>
+                </form>
+            </div>
+<section id="login">
+        <div id="user-login" class="pull-right">
+            <a href="/Account/Register" class="text-right">注册</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            <a onclick="ToggleActive(this)" class="text-right" data-toggle="popover-x" data-target="#login-popover" data-placement="bottom bottom-right" rel="popover">登录</a>
+<form action="/Account/Login?ReturnUrl=%2FHome%2FSearch" class="form-vertical" method="post">                <div id="login-popover" class="popover popover-default">
+                    <div class="arrow"></div>
+                    <div id="login-popover-conent">
+                        <div id="login-popover-input">
+                            <div id="login-popover-div-username">
+                                <img src="/images/user-name_login_icon.png" />
+                                <input type="text" placeholder="用户名" id="login-popover-input-username" name="UserName" />
+                            </div>
+                            <div id="login-popover-div-password">
+                                <img src="/images/password_login_icon.png" style="margin-left:3px;" />
+                                <input type="password" placeholder="密码" id="login-popover-input-password" name="Password" />
+                            </div>
+                        </div>
+                        <button id="login-popover-submit" type="submit" class="btn">登&nbsp;&nbsp;&nbsp;录</button>
+                        <div class="checkbox" id="login-popover-password">
+                            <label id="login-popover-remember-password"><input type="checkbox" value="true" name="RememberMe"><input type="hidden" value="false" name="RememberMe">记住密码</label>
+                            <div id="login-popover-forget-password" class="pull-right"><a href="/Account/ForgotPassword" class="forget-password">忘记密码</a></div>
+                        </div>
+                        <a id="login-popover-create-account">还没有账号？赶紧来注册一个吧~</a>
+                    </div>
+                </div>
+<input name="__RequestVerificationToken" type="hidden" value="CfDJ8GmEyw_wMGJKtQ58HXHTm3SqXDSamZIPp5e7y05rJo8-gESDrsQ5qVLX3wuI2n4Tf1namioEk-EVkMr5Eg0qnFcahUAzDVor7gLbyUDiWlftCOrc3xjOS6AwdA4E6IN-ZHxOzbfvUtva5eUHXtfU7F8" /></form>        </div>
+</section>
+        </div>
+        <div class="ribbon">
+            <span class="ribbon-color1"></span>
+            <span class="ribbon-color2"></span>
+            <span class="ribbon-color3"></span>
+            <span class="ribbon-color4"></span>
+            <span class="ribbon-color5"></span>
+            <span class="ribbon-color6"></span>
+            <span class="ribbon-color7"></span>
+        </div>
+    </div>
+    <div class="m-home-nav hidden-lg hidden-md" id="sk-mobile-header">
+        <div class="m-home-tool-left clickable" data-toggle="modal" data-target="#modal-nav">
+            <i class="fa fa-bars" aria-hidden="true"></i>
+        </div>
+        <div class="m-home-tool-left"></div>
+        <div style="text-align: center; height:100%;flex:1;">
+            <a href="/" style="text-decoration:none">
+                <img src="/images/mikan-pic.png" style="height: 3rem;margin-top: 0.5rem;">
+                <img src="/images/mikan-text.png" style="height: 1.5rem;margin-top: 0.5rem;">
+            </a>
+        </div>
+        <div class="m-home-tool-right clickable" data-toggle="modal" data-target="#modal-login">
+            <i class="fa fa-user" aria-hidden="true" style="margin-right: 1rem;"></i>
+        </div>
+        <div class="m-home-tool-right clickable" onclick="ShowNavSearch()">
+            <i class="fa fa-search" aria-hidden="true"></i>
+        </div>
+    </div>
+    <div class="m-nav-search" style="width: 100%;">
+        <div style="flex: 1;">
+            <form method="get" action="/Home/Search">
+                <div class="input-group">
+                    <span class="input-group-addon" id="sizing-addon1" style="border: none;background-color: white;">
+                        <i class="fa fa-search" aria-hidden="true"></i>
+                    </span>
+                    <input type="text" class="form-control" placeholder="搜索" name="searchstr" aria-describedby="sizing-addon1" style="border: none;font-size:16px;">
+                </div>
+            </form>
+        </div>
+        <div style="width: 4rem;" onclick="HideNavSearch()">
+            <span style="font-size: 1.25rem;">取消</span>
+        </div>
+    </div>
+    <div id="sk-container" class="container hidden-sm hidden-xs">
+        <div class="pull-left leftbar-container">
+            <div class="leftbar-nav">
+                <div class="header">相关字幕组</div>
+                <ul class="list-unstyled">
+                </ul>
+            </div>
+        </div>
+        <div class="central-container">
+            <div class="header2">
+                <span class="header2-text">相关推荐</span>
+            </div>
+            <div style="margin-top: 10px; margin-bottom: 10px;">
+<div style="width:100%; margin-right: auto; margin-left: auto;" class="hidden-xs hidden-sm">
+    <a href="https://equity.tmall.com/tm?agentId=030f9003a26d4361&amp;bc_fl_src=tmall_market_llb_1_2698459&amp;llbPlatform=_pube&amp;llbOsd=1&amp;di=__IDFA__&amp;dim=__IMEI__&amp;oaid=__OAID__&amp;caid=__CAID__&amp;sy=llb" onclick="ga('send', 'event', 'sswj_lg', 'clicked', 'ad');">
+        <img src="/images/SSWJ/sswj9_lg.jpg" style='height: 100%; width: 100%; object-fit: contain' />
+    </a>
+</div>
+<div style="width:100%; margin-right: auto; margin-left: auto;" class="hidden-lg hidden-md">
+    <a href="https://equity.tmall.com/tm?agentId=030f9003a26d4361&amp;bc_fl_src=tmall_market_llb_1_2698459&amp;llbPlatform=_pube&amp;llbOsd=1&amp;di=__IDFA__&amp;dim=__IMEI__&amp;oaid=__OAID__&amp;caid=__CAID__&amp;sy=llb" onclick="ga('send', 'event', 'sswj_sm', 'clicked', 'ad');">
+        <img src="/images/SSWJ/sswj9_sm.jpg" style='height: 100%; width: 100%; object-fit: contain' />
+    </a>
+</div>
+            </div>
+            <div class="header2" style="border-bottom:none;">
+                <span class="header2-text">搜索结果 <a class="mikan-rss" data-placement="bottom" data-toggle="tooltip" data-original-title="RSS" target="_blank"><i class="fa fa-rss-square"></i></a></span>
+            </div>
+<div class="episode-table">
+    <div class="copy-info-row">
+        <button type="button" class="btn btn-default btn-xs js-copy-selected" disabled>复制选中磁连</button>
+        <span class="text-muted js-selected-count">已选 0 项</span>
+        <span class="text-success js-copy-status" style="display:none;">已复制</span>
+    </div>
+    <table class="table table-striped tbl-border fadeIn">
+        <thead>
+            <tr>
+                <th width="5%"><input type="checkbox" class="js-select-all" aria-label="选择全部" /></th>
+                <th width="60%">番组名</th>
+                <th width="8%">大小</th>
+                <th width="17%">更新时间</th>
+                <th width="5%">下载</th>
+                <th width="5%">播放</th>
+            </tr>
+        </thead>
+        <tbody>
+                <tr class="js-search-results-row" data-itemindex="0"
+                    style="">
+                    <td>
+                        <input type="checkbox" class="js-episode-select" data-magnet="magnet:?xt=urn:btih:2a0bf7fb281a04034b2003854feb46e65181e53a&amp;tr=http%3a%2f%2ft.nyaatracker.com%2fannounce&amp;tr=http%3a%2f%2ftracker.kamigami.org%3a2710%2fannounce&amp;tr=http%3a%2f%2fshare.camoe.cn%3a8080%2fannounce&amp;tr=http%3a%2f%2fopentracker.acgnx.se%2fannounce&amp;tr=http%3a%2f%2fanidex.moe%3a6969%2fannounce&amp;tr=http%3a%2f%2ft.acg.rip%3a6699%2fannounce&amp;tr=https%3a%2f%2ftr.bangumi.moe%3a9696%2fannounce&amp;tr=udp%3a%2f%2ftr.bangumi.moe%3a6969%2fannounce&amp;tr=http%3a%2f%2fopen.acgtracker.com%3a1096%2fannounce&amp;tr=udp%3a%2f%2ftracker.opentrackr.org%3a1337%2fannounce"
+                            aria-label="选择此行" />
+                    </td>
+                    <td>
+                        <a href="/Home/Episode/2a0bf7fb281a04034b2003854feb46e65181e53a" target="_blank"
+                            class="magnet-link-wrap">[7&#xB3;ACG] &#x5B64;&#x72EC;&#x6447;&#x6EDA;&#xFF01;/Bocchi the Rock S01 | 01-12&#x2B;SPx1 [&#x7B80;&#x7E41;&#x5B57;&#x5E55;] BDrip 1080p x265 OPUS 2.0</a>
+                        <a data-clipboard-text="magnet:?xt=urn:btih:2a0bf7fb281a04034b2003854feb46e65181e53a&amp;tr=http%3a%2f%2ft.nyaatracker.com%2fannounce&amp;tr=http%3a%2f%2ftracker.kamigami.org%3a2710%2fannounce&amp;tr=http%3a%2f%2fshare.camoe.cn%3a8080%2fannounce&amp;tr=http%3a%2f%2fopentracker.acgnx.se%2fannounce&amp;tr=http%3a%2f%2fanidex.moe%3a6969%2fannounce&amp;tr=http%3a%2f%2ft.acg.rip%3a6699%2fannounce&amp;tr=https%3a%2f%2ftr.bangumi.moe%3a9696%2fannounce&amp;tr=udp%3a%2f%2ftr.bangumi.moe%3a6969%2fannounce&amp;tr=http%3a%2f%2fopen.acgtracker.com%3a1096%2fannounce&amp;tr=udp%3a%2f%2ftracker.opentrackr.org%3a1337%2fannounce" class="js-magnet magnet-link">[复制磁连]</a>
+                    </td>
+                    <td>7.9GB</td>
+                    <td>2026/06/09 08:40</td>
+                    <td>
+                        <a
+                            href="/Download/20260609/2a0bf7fb281a04034b2003854feb46e65181e53a.torrent">
+                            <img src="/images/download_icon_blue.svg" style="margin-left: 2px;width: 20px;height:15px;">
+                        </a>
+                    </td>
+                    <td>
+                        <a target="_blank"
+                            href="https://keepshare.org/rclukaia/magnet%3A%3Fxt%3Durn%3Abtih%3A2a0bf7fb281a04034b2003854feb46e65181e53a">
+                            <i class="fa fa-play-circle" style="color: #47c1c5; margin-left: 4px; font-size: 18px;"></i>
+                        </a>
+                    </td>
+                </tr>
+                <tr class="js-search-results-row" data-itemindex="1"
+                    style="">
+                    <td>
+                        <input type="checkbox" class="js-episode-select" data-magnet="magnet:?xt=urn:btih:a30771713530092565c4a1c2376abb65a912ca5f&amp;tr=http%3a%2f%2ft.nyaatracker.com%2fannounce&amp;tr=http%3a%2f%2ftracker.kamigami.org%3a2710%2fannounce&amp;tr=http%3a%2f%2fshare.camoe.cn%3a8080%2fannounce&amp;tr=http%3a%2f%2fopentracker.acgnx.se%2fannounce&amp;tr=http%3a%2f%2fanidex.moe%3a6969%2fannounce&amp;tr=http%3a%2f%2ft.acg.rip%3a6699%2fannounce&amp;tr=https%3a%2f%2ftr.bangumi.moe%3a9696%2fannounce&amp;tr=udp%3a%2f%2ftr.bangumi.moe%3a6969%2fannounce&amp;tr=http%3a%2f%2fopen.acgtracker.com%3a1096%2fannounce&amp;tr=udp%3a%2f%2ftracker.opentrackr.org%3a1337%2fannounce"
+                            aria-label="选择此行" />
+                    </td>
+                    <td>
+                        <a href="/Home/Episode/a30771713530092565c4a1c2376abb65a912ca5f" target="_blank"
+                            class="magnet-link-wrap">[7&#xB3;ACG] &#x5B64;&#x72EC;&#x6447;&#x6EDA;&#xFF01;/Bocchi the Rock S01 | 01-12&#x2B;SPx1 [&#x7B80;&#x7E41;&#x5B57;&#x5E55;] BDrip 1080p AV1 OPUS 2.0</a>
+                        <a data-clipboard-text="magnet:?xt=urn:btih:a30771713530092565c4a1c2376abb65a912ca5f&amp;tr=http%3a%2f%2ft.nyaatracker.com%2fannounce&amp;tr=http%3a%2f%2ftracker.kamigami.org%3a2710%2fannounce&amp;tr=http%3a%2f%2fshare.camoe.cn%3a8080%2fannounce&amp;tr=http%3a%2f%2fopentracker.acgnx.se%2fannounce&amp;tr=http%3a%2f%2fanidex.moe%3a6969%2fannounce&amp;tr=http%3a%2f%2ft.acg.rip%3a6699%2fannounce&amp;tr=https%3a%2f%2ftr.bangumi.moe%3a9696%2fannounce&amp;tr=udp%3a%2f%2ftr.bangumi.moe%3a6969%2fannounce&amp;tr=http%3a%2f%2fopen.acgtracker.com%3a1096%2fannounce&amp;tr=udp%3a%2f%2ftracker.opentrackr.org%3a1337%2fannounce" class="js-magnet magnet-link">[复制磁连]</a>
+                    </td>
+                    <td>4.8GB</td>
+                    <td>2026/06/07 10:29</td>
+                    <td>
+                        <a
+                            href="/Download/20260607/a30771713530092565c4a1c2376abb65a912ca5f.torrent">
+                            <img src="/images/download_icon_blue.svg" style="margin-left: 2px;width: 20px;height:15px;">
+                        </a>
+                    </td>
+                    <td>
+                        <a target="_blank"
+                            href="https://keepshare.org/rclukaia/magnet%3A%3Fxt%3Durn%3Abtih%3Aa30771713530092565c4a1c2376abb65a912ca5f">
+                            <i class="fa fa-play-circle" style="color: #47c1c5; margin-left: 4px; font-size: 18px;"></i>
+                        </a>
+                    </td>
+                </tr>
+                <tr class="js-search-results-row" data-itemindex="2"
+                    style="">
+                    <td>
+                        <input type="checkbox" class="js-episode-select" data-magnet="magnet:?xt=urn:btih:eea983d11588e5eb18be5e969696adf120097fcb&amp;tr=http%3a%2f%2ft.nyaatracker.com%2fannounce&amp;tr=http%3a%2f%2ftracker.kamigami.org%3a2710%2fannounce&amp;tr=http%3a%2f%2fshare.camoe.cn%3a8080%2fannounce&amp;tr=http%3a%2f%2fopentracker.acgnx.se%2fannounce&amp;tr=http%3a%2f%2fanidex.moe%3a6969%2fannounce&amp;tr=http%3a%2f%2ft.acg.rip%3a6699%2fannounce&amp;tr=https%3a%2f%2ftr.bangumi.moe%3a9696%2fannounce&amp;tr=udp%3a%2f%2ftr.bangumi.moe%3a6969%2fannounce&amp;tr=http%3a%2f%2fopen.acgtracker.com%3a1096%2fannounce&amp;tr=udp%3a%2f%2ftracker.opentrackr.org%3a1337%2fannounce"
+                            aria-label="选择此行" />
+                    </td>
+                    <td>
+                        <a href="/Home/Episode/eea983d11588e5eb18be5e969696adf120097fcb" target="_blank"
+                            class="magnet-link-wrap">&#x3010;&#x60A0;&#x54C8;&#x7483;&#x7FBD;&#x5B57;&#x5E55;&#x7EC4;&#x3011;[&#x5B64;&#x72EC;&#x6447;&#x6EDA;_Bocchi the Rock][01-12 &#x2B; SPs][BDRIP 1920x1080 HEVC-YUV420P10 FLAC][MKV &#x7B80;&#x7E41;&#x5916;&#x6302;]</a>
+                        <a data-clipboard-text="magnet:?xt=urn:btih:eea983d11588e5eb18be5e969696adf120097fcb&amp;tr=http%3a%2f%2ft.nyaatracker.com%2fannounce&amp;tr=http%3a%2f%2ftracker.kamigami.org%3a2710%2fannounce&amp;tr=http%3a%2f%2fshare.camoe.cn%3a8080%2fannounce&amp;tr=http%3a%2f%2fopentracker.acgnx.se%2fannounce&amp;tr=http%3a%2f%2fanidex.moe%3a6969%2fannounce&amp;tr=http%3a%2f%2ft.acg.rip%3a6699%2fannounce&amp;tr=https%3a%2f%2ftr.bangumi.moe%3a9696%2fannounce&amp;tr=udp%3a%2f%2ftr.bangumi.moe%3a6969%2fannounce&amp;tr=http%3a%2f%2fopen.acgtracker.com%3a1096%2fannounce&amp;tr=udp%3a%2f%2ftracker.opentrackr.org%3a1337%2fannounce" class="js-magnet magnet-link">[复制磁连]</a>
+                    </td>
+                    <td>24.6GB</td>
+                    <td>2025/07/12 19:22</td>
+                    <td>
+                        <a
+                            href="/Download/20250712/eea983d11588e5eb18be5e969696adf120097fcb.torrent">
+                            <img src="/images/download_icon_blue.svg" style="margin-left: 2px;width: 20px;height:15px;">
+                        </a>
+                    </td>
+                    <td>
+                        <a target="_blank"
+                            href="https://keepshare.org/rclukaia/magnet%3A%3Fxt%3Durn%3Abtih%3Aeea983d11588e5eb18be5e969696adf120097fcb">
+                            <i class="fa fa-play-circle" style="color: #47c1c5; margin-left: 4px; font-size: 18px;"></i>
+                        </a>
+                    </td>
+                </tr>
+        </tbody>
+    </table>
+</div>
+            <div class="search-results-pagination pull-right" style="margin-top:-20px"></div>
+        </div>
+        <a href="#0" class="cd-top cd-top-btn">Top</a>
+    </div>
+    <footer class="footer hidden-xs hidden-sm">
+        <div id="sk-footer" class="container text-center">
+            <div>Powered by Mikan Project <a href="/Home/Contact" target="_blank">联系我们</a></div>
+            <div>Cooperate by PlaymateCat@Lisa</div>
+        </div>
+    </footer>
+</body>
+</html>

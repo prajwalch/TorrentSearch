@@ -87,6 +87,15 @@ android {
         resources.excludes += "DebugProbesKt.bin"
         jniLibs.keepDebugSymbols.add("**/*.so")
     }
+
+    testOptions {
+        unitTests.all {
+            // Size formatting uses the default locale; keep fixture expectations
+            // ("1.40 GB") independent of the developer's machine locale.
+            it.systemProperty("user.language", "en")
+            it.systemProperty("user.country", "US")
+        }
+    }
 }
 
 room {
@@ -111,7 +120,7 @@ dependencies {
     implementation(libs.coil.compose)
     implementation(libs.coil.network.ktor)
     implementation(libs.compose.markdown)
-    implementation(libs.jsoup)
+    implementation(libs.ksoup)
     implementation(libs.koin.android)
     implementation(libs.koin.androidx.compose)
     implementation(libs.koin.annotations)
@@ -129,6 +138,8 @@ dependencies {
     ksp(libs.androidx.room.compiler)
 
     testImplementation(libs.junit)
+    testImplementation(libs.kotlinx.coroutines.test)
+    testImplementation(libs.mockk)
 
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(libs.androidx.junit)

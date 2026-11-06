@@ -5,9 +5,9 @@ import com.prajwalch.torrentsearch.domain.model.Category
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
-import org.jsoup.Jsoup
-import org.jsoup.nodes.Element
-import org.jsoup.parser.Parser
+import com.fleeksoft.ksoup.Ksoup
+import com.fleeksoft.ksoup.nodes.Element
+import com.fleeksoft.ksoup.parser.Parser
 
 /**
  * Contains the capabilities of the search provider/indexer.
@@ -24,7 +24,7 @@ object TorznabCapabilitiesXmlParser {
     private const val SUB_CATEGORY = "subcat"
 
     suspend fun parse(xml: String): TorznabCapabilities = withContext(Dispatchers.Default) {
-        val supportedCategories = Jsoup.parse(xml, Parser.xmlParser())
+        val supportedCategories = Ksoup.parse(xml, Parser.xmlParser())
             .select(CATEGORY)
             .map(::parseCategory)
             .reduce { acc, categories -> acc union categories }

@@ -1,0 +1,101 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head><meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+<title>Tokyo Toshokan :: #tokyotosho @ irc.rizon.net :: Torrent Listing</title></head><body><div id="main">
+<h1>Tokyo <span title="Japanese: Libary">Toshokan</span></h1>
+<div class="centertext">東京 図書館</div>
+<h2><a class="h2" style="font-size: 9pt" href="irc://irc.rizon.net/tokyotosho">#tokyotosho @ irc.rizon.net</a><br />
+<span style="font-size: 8pt"><a href="http://tokyotosho.info">http://tokyotosho.info</a> <a href="http://tokyotosho.se">http://tokyotosho.se</a> <a href="http://tokyo-tosho.net">http://tokyo-tosho.net</a></span>
+</h2>
+<h3>A BitTorrent <span title="English: Toshokan">Library</span> for Japanese Media</h3>
+<ul class="menuwrapper">
+<li class="menu"><a class="head" title="Lost?" href="index.php">Home</a> (<a class="head" href="https://www.tokyotosho.info/">SSL</a>) ::</li>
+<li class="menu"><a class="head" href="settings.php">Customize</a> ::</li>
+<li class="menu"><a class="head" href="login.php">Register/Login</a> ::</li>
+<li class="menu"><a class="head" title="Tell us about a torrent we don't know about" href="new.php">Submit New Torrent</a> ::</li>
+<li class="menu"><a class="head" title="We probably have what you're looking for!" href="search.php">Search</a> ::</li>
+<li class="menu"><a class="head" title="Keep on top of the releases" href="rss.php">RSS</a> (<a class="head" title="Or just some of the releases" href="rss_customize.php">Customize</a>)<br /></li>
+<li class="menu"><a class="head" title="Documents!" href="/pico">Docs</a> ::</li>
+<li class="menu"><a class="head" title="Chat or idle with us on IRC" href="irc://irc.rizon.net/tokyotosho">Chat</a> ::</li>
+<li class="menu"><a class="head" title="It's teh moniez" href="/donate.php">Donate!</a> ::</li>
+<li class="menu"><a class="head" title="Let's hear from you!" href="/contact.php">Contact</a> ::</li>
+<li class="menu"><a class="head" href="http://idlerpg.tokyotosho.info">IdleRPG</a> ::</li>
+<li class="menu"><a class="head" title="Off site status page" href="http://status.tokyotosho.info">Status Page</a></li>
+</ul>
+<p class="centertext"><acronym title="Coordinated Universal Time">(UTC)</acronym> 2026-09-19 08:56 <acronym title="Central Standard (UTC -6h) or Daylight Saving Time (GMT -5h)">(Central US)</acronym> 2026-09-19 02:56 <acronym title="UTC +9h">(Japan)</acronym> 2026-09-19 17:56</p>
+<ul class="news">
+<li><b>2021-10-01</b> Sites using Let's Encrypt are fixed now (Nyaa, etc). ca-bundle updated due to <a href="https://letsencrypt.org/docs/dst-root-ca-x3-expiration-september-2021/">X3 expiry.</a></li>
+<li><b>2021-08-14</b> The search now supports searching by <a href="https://www.tokyotosho.info/search.php?terms=Cover.jpg">filenames</a> in multi-file torrents.</li>
+<li><b>2021-08-13</b> The search now supports searching by <a href="https://www.tokyotosho.info/search.php?terms=a98090b352dc12eac2d4c20e012de69e0743f0ce">info hash</a>.</li>
+<li><b>2019-09-29</b>
+Boolean NOT queries are now possible. Thank you elasticsearch. Something like "<a href="https://www.tokyotosho.info/search.php?terms=Horriblesubs+-720p+-360p+-480p&amp;type=0&amp;searchName=true&amp;searchComment=true&amp;size_min=&amp;size_max=&amp;username=">Horriblesubs -720p -360p -480p</a>" is now possible, just prefix the terms to remove with a hyphen. This works in RSS too.
+</li>
+<li><b>2017-06-17</b>
+New RSS feed and customizer is now up! The same search features from before are now possible to use in RSS. If there are any issues, please report them to us.
+</li>
+<li><b>2017-05-28</b>
+The issue with SSL and images/CSS not working should be fixed now. Coming later this Sunday, a new backend handler for the submit form, this should fix the issues with URL encoding, particularly with apostrophies.
+</li>
+<li><b>2017-05-15</b>
+New search is now online with <a  href="https://www.elastic.co/products/elasticsearch">Elasticsearch</a>! Search comments and coming later, date and RSS search.
+</li>
+<li><b>2017-05-09</b>
+This could be useful, a rolling table of the <a href="top_trackers.php">top trackers</a> from the last 1000 entries. (We make no claims about any listed site.)
+</li>
+</ul>
+<form action="search.php" method="get" accept-charset="utf-8">
+	<table cellspacing="0" cellpadding="0" style="width: 100%; padding-bottom: 1em; margin: 0;">
+<tr><td colspan="3"><div class="dcenter">75 Most recent torrents (All)<br /><input size="60" type="text" name="terms" />
+    <select name="type">
+	<option value="0">All</option><option value="1">Anime</option><option value="10">Non-English</option><option value="3">Manga</option><option value="8">Drama</option><option value="2">Music</option><option value="9">Music Video</option><option value="7">Raws</option><option value="4">Hentai</option><option value="12">Hentai (Anime)</option><option value="13">Hentai (Manga)</option><option value="14">Hentai (Games)</option><option value="11">Batch</option><option value="15">JAV</option><option value="5">Other</option></select>
+<br />
+<input type="checkbox" name="searchName" value="true" id="searchName" checked="checked" /><label for="searchName">Search name</label>
+<span style="font-variant: small-caps;">Or</span>
+<input type="checkbox" name="searchComment" value="true" id="searchComment" checked="checked" /><label for="searchComment">Search comment</label><br />
+<label for="minMB">Torrent Size (Min MB):</label>
+<input id="minMB" size="4" type="text" name="size_min" value="" />
+<label for="maxMB">(Max MB):</label>
+<input id="maxMB" size="4" type="text" name="size_max" value="" /><br />
+<label for="submitter">Submitter:</label>
+<input size="12" id="submitter" type="text" name="username" value="" />
+    <input type="submit" value="Search" /><br />All <a href="?cat=1">Anime</a> <a href="?cat=10">Non-English</a> <a href="?cat=3">Manga</a> <a href="?cat=8">Drama</a> <a href="?cat=2">Music</a> <a href="?cat=9">Music Video</a> <a href="?cat=7">Raws</a> <a href="?cat=4">Hentai</a> <a href="?cat=12">Hentai (Anime)</a> <a href="?cat=13">Hentai (Manga)</a> <a href="?cat=14">Hentai (Games)</a> <a href="?cat=11">Batch</a> <a href="?cat=15">JAV</a> <a href="?cat=5">Other</a> <br />
+<strong>Top Searches</strong><br />
+<tr><td class="nav" style="width: 33%;"></td><td style="width: 33%; text-align: center"><a href="?mark">Mark Entries as Seen</a> | <a href="?linemarker">Go to line marker</a> | <a id="fold" href="#fold">The Fold</a> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br /><br /></td><td class="nav" style="width: 33%; text-align: right"><a href="?page=1&amp;cat=0">Next 75 &gt;&gt;</a></td></tr></table></form>
+<table class="listing">
+<tr><td colspan="3" style="text-align: center; border-top: 1px solid black"> <a href="?cat=0&amp;date=2026-09-19">September 19 2026</a></td></tr><tr class="category_0"><td rowspan="2"><a href="?cat=1"><span class="sprite_cat-anime"></span></a></td><td class="desc-top"><a href="magnet:?xt=urn:btih:7SHRLQ7UWG2HL5OOYHGMR7V3T3RXTHVW&amp;tr=http%3A%2F%2Fnyaa.tracker.wf%3A7777%2Fannounce&amp;tr=https%3A%2F%2Ftracker.nekobt.to%2Fapi%2Ftracker%2Fpublic%2Fannounce&amp;tr=udp%3A%2F%2Ftracker-udp.anirena.com%3A80%2Fannounce&amp;tr=udp%3A%2F%2Fopen.stealth.si%3A80%2Fannounce&amp;tr=udp%3A%2F%2Ftracker.opentrackr.org%3A1337%2Fannounce&amp;tr=udp%3A%2F%2Ftracker.torrent.eu.org%3A451%2Fannounce&amp;tr=udp%3A%2F%2Ftracker.tiny-vps.com%3A6969%2Fannounce&amp;tr=http%3A%2F%2Ftracker.acgnx.se%2Fannounce&amp;tr=udp%3A%2F%2Fexodus.desync.com%3A6969%2Fannounce"><span class="sprite_magnet"></span></a> <a rel="nofollow" type="application/x-bittorrent" href="https://nyaa.si/download/2163237.torrent">[Erai-raws] Rilakkuma - 25 [1080p CR WEB-DL AVC AAC][MultiSub][876A5E79].mkv</a></td><td class="web"><a rel="nofollow" href="https://nyaa.si/view/2163237">Website</a> | <a href="details.php?id=2113509">Details</a></td></tr><tr class="category_0"><td class="desc-bot">Authorized: <span class="auth_bad">No</span> Submitter: <a href="/search.php?username=ttsync">ttsync</a> | Size: 90.22MB | Date: 2026-09-19 08:15 UTC | Comment: Erai release missed by TT</td><td align="right" style="color: #BBB; font-family: monospace" class="stats">S: <span style="color: green">38</span> L: <span style="color: green">8</span> C: <span style="color: green">142</span> ID: 2113509</td></tr>
+<tr class="category_0"><td rowspan="2"><a href="?cat=1"><span class="sprite_cat-anime"></span></a></td><td class="desc-top"><a href="magnet:?xt=urn:btih:4WZKSGYMPLGRDQIWAOJKNFZW2BDTG3UJ&amp;tr=udp%3A%2F%2Ftracker.onalrie.app%3A6969%2Fannounce&amp;tr=http%3A%2F%2Ftracker.onalrie.app%3A7070%2Fannounce&amp;tr=https%3A%2F%2Ftracker.nekobt.to%2Fapi%2Ftracker%2Fpublic%2Fannounce&amp;tr=http%3A%2F%2Ftracker.beeimg.com%3A6969%2Fannounce&amp;tr=http%3A%2F%2Ftracker.mywaifu.best%3A6969%2Fannounce&amp;tr=https%3A%2F%2Ftracker.zhuqiy.com%3A443%2Fannounce&amp;tr=udp%3A%2F%2Fexodus.desync.com%3A6969%2Fannounce&amp;tr=udp%3A%2F%2Fopen.stealth.si%3A80%2Fannounce&amp;tr=udp%3A%2F%2Fretracker.hotplug.ru%3A2710%2Fannounce&amp;tr=udp%3A%2F%2Ft.overflow.biz%3A6969%2Fannounce&amp;tr=udp%3A%2F%2Ftracker.dler.com%3A6969%2Fannounce&amp;tr=udp%3A%2F%2Ftracker.opentrackr.org%3A1337%2Fannounce&amp;tr=udp%3A%2F%2Ftracker.torrent.eu.org%3A451%2Fannounce&amp;tr=udp%3A%2F%2Ftracker.tryhackx.org%3A6969%2Fannounce&amp;tr=wss%3A%2F%2Ftracker.openwebtorrent.com"><span class="sprite_magnet"></span></a> <a rel="nofollow" type="application/x-bittorrent" href="https://onalrie.app/torrent/c1ccd750-054e-44aa-85ca-109c5e36e14c/download">[Onalrie] Rilakkuma - S01E25 [1080p WEBRip AV1].mkv</a></td><td class="web"><a rel="nofollow" href="https://onalrie.app/torrent/c1ccd750-054e-44aa-85ca-109c5e36e14c">Website</a> | <a href="details.php?id=2113495">Details</a></td></tr><tr class="category_0"><td class="desc-bot">Submitter: <a href="/search.php?username=Onalrie">Onalrie</a> | Size: 16.82MB | Date: 2026-09-19 07:33 UTC | Comment: Onalrie official AV1 encodes ! Give us feedback on our site</td><td align="right" style="color: #BBB; font-family: monospace" class="stats">S: <span style="color: green">8</span> L: <span style="color: orange">2</span> C: <span style="color: green">19</span> ID: 2113495</td></tr>
+<tr class="category_0 shade"><td rowspan="2"><a href="?cat=1"><span class="sprite_cat-anime"></span></a></td><td class="desc-top"><a href="magnet:?xt=urn:btih:2WB6RDTD2NWCKEITTYKKTVVPVCTIOJWE&amp;tr=http%3A%2F%2Fnyaa.tracker.wf%3A7777%2Fannounce&amp;tr=https%3A%2F%2Ftracker.nekobt.to%2Fapi%2Ftracker%2Fpublic%2Fannounce&amp;tr=udp%3A%2F%2Ftracker-udp.anirena.com%3A80%2Fannounce&amp;tr=udp%3A%2F%2Fopen.stealth.si%3A80%2Fannounce&amp;tr=udp%3A%2F%2Ftracker.opentrackr.org%3A1337%2Fannounce&amp;tr=udp%3A%2F%2Ftracker.torrent.eu.org%3A451%2Fannounce&amp;tr=udp%3A%2F%2Ftracker.tiny-vps.com%3A6969%2Fannounce&amp;tr=http%3A%2F%2Ftracker.acgnx.se%2Fannounce&amp;tr=udp%3A%2F%2Fexodus.desync.com%3A6969%2Fannounce"><span class="sprite_magnet"></span></a> <a rel="nofollow" type="application/x-bittorrent" href="https://nyaa.si/download/2163203.torrent">[Erai-raws] Kami no Shizuku - 24 [1080p CR WEBRip HEVC AAC][MultiSub][4DCF3093].mkv</a></td><td class="web"><a rel="nofollow" href="https://nyaa.si/view/2163203">Website</a> | <a href="details.php?id=2113462">Details</a></td></tr><tr class="category_0 shade"><td class="desc-bot">Authorized: <span class="auth_bad">No</span> Submitter: <a href="/search.php?username=ttsync">ttsync</a> | Size: 499.74MB | Date: 2026-09-19 02:15 UTC | Comment: Erai release missed by TT</td><td align="right" style="color: #BBB; font-family: monospace" class="stats">S: <span style="color: red">0</span> L: <span style="color: red">0</span> C: <span style="color: red">0</span> ID: 2113462</td></tr>
+<tr class="category_0"><td rowspan="2"><a href="?cat=1"><span class="sprite_cat-anime"></span></a></td><td class="desc-top"><a href="magnet:?xt=urn:btih:466ZNR47S2SUFEVC73OEGORTGNPURSLC&amp;tr=http%3A%2F%2Fnyaa.tracker.wf%3A7777%2Fannounce&amp;tr=udp%3A%2F%2Ftracker.opentrackr.org%3A1337%2Fannounce&amp;tr=udp%3A%2F%2Fopen.stealth.si%3A80%2Fannounce&amp;tr=udp%3A%2F%2Fexodus.desync.com%3A6969%2Fannounce&amp;tr=udp%3A%2F%2Ftracker.torrent.eu.org%3A451%2Fannounce&amp;tr=http%3A%2F%2Ftracker.mywaifu.best%3A6969%2Fannounce&amp;tr=https%3A%2F%2Ftracker.zhuqiy.com%3A443%2Fannounce&amp;tr=udp%3A%2F%2Ftracker.tryhackx.org%3A6969%2Fannounce&amp;tr=udp%3A%2F%2Fretracker.hotplug.ru%3A2710%2Fannounce&amp;tr=udp%3A%2F%2Ftracker.dler.com%3A6969%2Fannounce&amp;tr=http%3A%2F%2Ftracker.beeimg.com%3A6969%2Fannounce&amp;tr=udp%3A%2F%2Ft.overflow.biz%3A6969%2Fannounce&amp;tr=wss%3A%2F%2Ftracker.openwebtorrent.com"><span class="sprite_magnet"></span></a> <a rel="nofollow" type="application/x-bittorrent" href="https://nyaa.si/view/2163235/torrent">[SubsPlease] Rilakkuma - 25 (480p) [5275DFF3].mkv</a></td><td class="web"><a rel="nofollow" href="https://subsplease.org">Website</a> | <a href="details.php?id=2113451">Details</a></td></tr><tr class="category_0"><td class="desc-bot">Authorized: <span class="auth_ok">Yes</span> Submitter: <a href="/search.php?username=subsplease">subsplease</a> | Size: 28.94MB | Date: 2026-09-19 01:20 UTC | Comment: Released by SubsPlease. Come talk to us at our Discord/IRC channels. Check out https://subsplease.org for easy downloads!</td><td align="right" style="color: #BBB; font-family: monospace" class="stats">S: <span style="color: green">26</span> L: <span style="color: orange">4</span> C: <span style="color: green">127</span> ID: 2113451</td></tr>
+<tr><td style="width: 100%" colspan="4"><br /></td></tr></table><table cellspacing="0" cellpadding="0" style="width: 100%"><tr><td class="nav" style="width: 33%; text-align: right"><a href="?page=1&amp;cat=0">Next 75 &gt;&gt;</a></td></tr></table>
+<form action="search.php" method="get" accept-charset="utf-8">
+<table class="centertext" cellspacing="0" cellpadding="0" style="width: 100%; padding-bottom: 1em; margin: 0;">
+<tr><td><label for="terms2">Search Terms:</label>
+<input id="terms2" size="60" type="text" name="terms" value="" />
+<select name="type">
+<option value="0">All</option>
+<option value="1">Anime</option>
+<option value="10">Non-English</option>
+<option value="8">Drama</option>
+<option value="3">Manga</option>
+<option value="2">Music</option>
+<option value="9">Music-Video</option>
+<option value="7">Raws</option>
+<option value="4">Hentai</option>
+<option value="11">Batch</option>
+<option value="5">Other</option>
+</select><br />
+<input type="checkbox" name="searchName" value="true" checked="checked" id="searchName2" /><label for="searchName2">Search name</label>
+<span style="font-variant: small-caps;">Or</span>
+<input type="checkbox" name="searchComment" value="true" checked="checked" id="searchComment2" /><label for="searchComment2">Search comment</label><br />
+<label for="minMB2">Torrent Size (Min MB):</label><input id="minMB2" size="4" type="text" name="size_min" value="" />
+<label for="maxMB2">(Max MB):</label><input id="maxMB2" size="4" type="text" name="size_max" value="" /><br />
+<label for="submitter2">Submitter:</label><input size="12" type="text" name="username" value="" id="submitter2" /><br />
+<input type="submit" value="Search" /><br />
+</td></tr>
+</table>
+</form>
+</div><p class="footer">
+Rolling visitor numbers <br />IPv4: 24h [530,834] 60min [20,908] 5min [1,910] 1min [414] - 5 minute rolling average [10668]<br />
+IPv6: 24h [46,400] 60min [2,076] 5min [197] 1min [35] - 5 minute rolling average [690]
+<br />Page generated in 16ms.<br />You are connecting from: 207.241.225.87 <b>SSL</b><b> (SNI supported)</b></p>
+</body></html>

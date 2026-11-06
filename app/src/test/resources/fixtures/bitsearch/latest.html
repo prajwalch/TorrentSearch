@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full">
+<head>
+<meta charset="UTF-8">
+<title>Latest Torrents | Bitsearch</title>
+</head>
+<body class="h-full bg-gray-50 text-gray-900 antialiased">
+<div class="min-h-full flex flex-col">
+<nav class="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-40">
+<div class="max-w-7xl mx-auto px-3 sm:px-4 lg:px-8">
+<div class="flex justify-between items-center h-14 sm:h-16 gap-3">
+<div class="flex-shrink-0">
+<a href="/" class="flex items-center">
+<img class="h-7 sm:h-8 w-auto" src="/images/bitsearch-logo-navbar.svg" alt="Bitsearch" />
+</a>
+</div>
+<div class="flex-1 max-w-xl mx-2 sm:mx-4">
+<form action="/search" method="GET" class="relative">
+<div class="autocomplete-container">
+<div class="relative">
+<div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+<i class="fas fa-search text-gray-400 text-sm"></i>
+</div>
+<input name="q" type="text"
+class="block w-full pl-9 pr-16 sm:pr-24 py-2 sm:py-2.5 border border-gray-300 rounded-lg leading-5 bg-white/95 backdrop-blur-sm placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 focus:bg-white text-sm transition-all duration-200 hover:shadow-md"
+placeholder="Search..." value="" autocomplete="off" id="search-input"
+style="font-size: 16px;">
+<div class="absolute inset-y-0 right-0 flex items-center pr-1">
+<button type="submit"
+class="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-2 sm:px-4 py-1.5 sm:py-2 rounded-md sm:rounded-lg hover:from-blue-700 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all duration-200 text-sm font-medium shadow-lg hover:shadow-xl transform hover:scale-105">
+<i class="fas fa-search"></i>
+<span class="hidden sm:inline ml-1">Search</span>
+</button>
+</div>
+</div>
+<div id="autocomplete-results" class="autocomplete-results hidden"></div>
+</div>
+</form>
+</div>
+<div class="flex-shrink-0 sm:hidden">
+<button type="button"
+class="mobile-menu-button inline-flex items-center justify-center w-10 h-10 rounded-lg text-gray-600 hover:text-blue-600 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-colors"
+aria-controls="mobile-menu" aria-expanded="false">
+<span class="sr-only">Open main menu</span>
+<i class="fas fa-bars text-lg"></i>
+</button>
+</div>
+<div class="hidden sm:flex sm:items-center sm:space-x-4 lg:space-x-6 flex-shrink-0">
+<a href="/trending"
+class="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium transition duration-200 ease-in-out flex items-center">
+<i class="fas fa-fire mr-2 text-orange-500"></i>
+Trending
+</a>
+<a href="/latest"
+class="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium transition duration-200 ease-in-out flex items-center">
+<i class="fas fa-clock mr-2 text-green-500"></i>
+Latest
+</a>
+<a href="/login"
+class="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium transition duration-200 ease-in-out flex items-center">
+<i class="fas fa-sign-in-alt mr-2"></i>
+Login
+</a>
+<a href="/signup"
+class="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:from-blue-700 hover:to-purple-700 transition-all duration-200 transform hover:scale-105 shadow-md">
+<i class="fas fa-user-plus mr-2"></i>
+Sign Up
+</a>
+</div>
+</div>
+</div>
+<div class="sm:hidden hidden" id="mobile-menu">
+<div class="px-4 pt-4 pb-6 space-y-3 bg-white border-t border-gray-200 shadow-lg">
+<a href="/trending"
+class="text-gray-700 hover:text-gray-900 hover:bg-gray-100 flex items-center px-4 py-3 rounded-lg text-base font-medium transition-colors">
+<i class="fas fa-fire mr-3 text-orange-500 w-5"></i>
+Trending
+</a>
+<a href="/latest"
+class="text-gray-700 hover:text-gray-900 hover:bg-gray-100 flex items-center px-4 py-3 rounded-lg text-base font-medium transition-colors">
+<i class="fas fa-clock mr-3 text-green-500 w-5"></i>
+Latest
+</a>
+<a href="/login"
+class="text-gray-700 hover:text-gray-900 hover:bg-gray-100 flex items-center px-4 py-3 rounded-lg text-base font-medium transition-colors">
+<i class="fas fa-sign-in-alt mr-3 w-5"></i>
+Login
+</a>
+<a href="/signup"
+class="bg-gradient-to-r from-blue-600 to-purple-600 text-white flex items-center px-4 py-3 rounded-lg text-base font-medium shadow-md">
+<i class="fas fa-user-plus mr-3 w-5"></i>
+Sign Up
+</a>
+</div>
+</div>
+</nav>
+<main class="flex-1">
+<div class="min-h-screen bg-gray-50">
+<div class="bg-gradient-to-r from-green-500 via-emerald-500 to-teal-500 border-b">
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
+<div class="text-center text-white">
+<div class="flex justify-center mb-4">
+<div class="bg-white/20 backdrop-blur-sm rounded-full p-4">
+<i class="fas fa-clock text-3xl sm:text-4xl text-green-200"></i>
+</div>
+</div>
+<h1 class="text-2xl sm:text-3xl lg:text-4xl font-bold mb-2">
+⏰ Latest Torrents
+</h1>
+<p class="text-green-100 text-sm sm:text-base lg:text-lg max-w-2xl mx-auto">
+Fresh content added daily! Browse the newest torrents sorted by upload date.
+</p>
+</div>
+</div>
+</div>
+<main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+<div class="mb-6">
+<div class="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
+<div class="flex flex-col sm:flex-row sm:items-center sm:justify-between">
+<div>
+<p class="text-gray-900">
+Showing <span class="font-semibold">10000</span> latest torrents
+</p>
+<p class="text-sm text-gray-600 mt-1">
+<i class="fas fa-clock mr-1"></i>
+Updated in <span class="font-medium">13ms</span>
+</p>
+</div>
+<div class="mt-4 sm:mt-0">
+<div class="flex items-center space-x-2">
+<span class="text-sm text-gray-600">Category:</span>
+<div class="relative">
+<select id="category-dropdown" class="appearance-none bg-white border border-gray-300 rounded-md px-3 py-2 pr-8 text-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 min-w-48">
+<option value="" >All Categories</option>
+<option value="1" >Other</option>
+<option value="1-1" >Other/Audio</option>
+<option value="1-2" >Other/Video</option>
+<option value="1-3" >Other/Image</option>
+<option value="1-4" >Other/Document</option>
+<option value="1-5" >Other/Program</option>
+<option value="1-6" >Other/Android</option>
+<option value="1-7" >Other/DiskImage</option>
+<option value="1-8" >Other/Source Code</option>
+<option value="1-9" >Other/Database</option>
+<option value="1-11" >Other/Archive</option>
+<option value="2" >Movies</option>
+<option value="2-1" >Movies/Dub/Dual Audio</option>
+<option value="3" >TV</option>
+<option value="4" >Anime</option>
+<option value="4-1" >Anime/Dub/Dual Audio</option>
+<option value="4-2" >Anime/Subbed</option>
+<option value="4-3" >Anime/Raw</option>
+<option value="5" selected>Softwares</option>
+<option value="5-1" >Softwares/Windows</option>
+<option value="5-2" >Softwares/Linux</option>
+<option value="5-3" >Softwares/MacOS</option>
+<option value="5-4" >Softwares/Android</option>
+<option value="5-5" >Softwares/iOS</option>
+<option value="6" >Games</option>
+<option value="6-1" >Games/PC</option>
+<option value="6-2" >Games/RIP</option>
+<option value="6-3" >Games/Console</option>
+<option value="6-4" >Games/Mobile</option>
+<option value="7" >Books</option>
+<option value="7-1" >Books/Fiction</option>
+<option value="7-2" >Books/Non-fiction</option>
+<option value="7-3" >Books/Comics</option>
+<option value="7-4" >Books/Magazines</option>
+<option value="7-5" >Books/Academic</option>
+<option value="8" >Music</option>
+<option value="8-1" >Music/FLAC</option>
+<option value="8-2" >Music/MP3</option>
+<option value="8-3" >Music/Album</option>
+<option value="8-4" >Music/Single</option>
+<option value="8-5" >Music/Discography</option>
+</select>
+<div class="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
+<i class="fas fa-chevron-down text-gray-400 text-sm"></i>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="space-y-4"><div class="bg-white rounded-lg shadow-sm border border-gray-200 hover:shadow-md hover:border-green-200 transition-all duration-200 p-4 sm:p-6">
+<div class="flex items-start justify-between">
+<div class="flex-1 min-w-0">
+<div class="flex flex-wrap items-center gap-2 mb-2">
+</div>
+<h3 class="text-base sm:text-lg font-medium text-gray-900 line-clamp-2 mb-2">
+<a href="/torrent/69900c8c090b11f759b6fd8a" class="hover:text-green-600 transition duration-150 ease-in-out">
+Netflix free Cracker 2024 v17.3.57 - DailyApp
+</a>
+</h3>
+<div class="flex flex-wrap items-center gap-3 text-sm text-gray-600 mb-3">
+<span class="inline-flex items-center space-x-1">
+<i class="fas fa-folder text-green-500"></i>
+<span>Softwares</span>
+</span>
+<span class="inline-flex items-center space-x-1">
+<i class="fas fa-hdd text-blue-500"></i>
+<span>40.23 MB</span>
+</span>
+<span class="inline-flex items-center space-x-1 font-medium">
+<i class="fas fa-clock text-green-500"></i>
+<span>7mo ago</span>
+</span>
+</div>
+<div class="flex flex-wrap items-center gap-4 text-sm">
+<span class="inline-flex items-center space-x-1 text-green-600">
+<i class="fas fa-arrow-up"></i>
+<span class="font-medium">8688</span>
+<span>seeders</span>
+</span>
+<span class="inline-flex items-center space-x-1 text-red-600">
+<i class="fas fa-arrow-down"></i>
+<span class="font-medium">5785</span>
+<span>leechers</span>
+</span>
+</div>
+</div>
+<div class="hidden sm:flex flex-col space-y-2 ml-6">
+<a href="/download/torrent/CD18941BD3D576CB84F5A27097EE5C428EA6EF08?title=Netflix free Cracker 2024 v17.3.57 - DailyApp"
+class="inline-flex items-center justify-center px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 transition duration-150 ease-in-out">
+<i class="fas fa-download mr-2"></i>
+Torrent
+</a>
+<a href="magnet:?xt&#x3D;urn:btih:CD18941BD3D576CB84F5A27097EE5C428EA6EF08&amp;dn&#x3D;%5BBitsearch.to%5D%20Netflix%20free%20Cracker%202024%20v17.3.57%20-%20DailyApp&amp;tr&#x3D;udp%3A%2F%2Ftracker.torrent.eu.org%3A451%2Fannounce&amp;tr&#x3D;udp%3A%2F%2Ftracker.opentrackr.org%3A1337%2Fannounce&amp;tr&#x3D;udp%3A%2F%2Fopen.stealth.si%3A80%2Fannounce&amp;tr&#x3D;udp%3A%2F%2Ftracker.theoks.net%3A6969%2Fannounce&amp;tr&#x3D;udp%3A%2F%2Ftracker.bitsearch.to%3A1337%2Fannounce"
+class="inline-flex items-center justify-center px-4 py-2 bg-green-600 text-white text-sm font-medium rounded-md hover:bg-green-700 transition duration-150 ease-in-out">
+<i class="fas fa-magnet mr-2"></i>
+Magnet
+</a>
+</div>
+</div>
+<div class="sm:hidden mt-4 flex space-x-2">
+<a href="/download/torrent/CD18941BD3D576CB84F5A27097EE5C428EA6EF08?title=Netflix free Cracker 2024 v17.3.57 - DailyApp"
+class="flex-1 inline-flex items-center justify-center px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 transition duration-150 ease-in-out">
+<i class="fas fa-download mr-2"></i>
+Torrent
+</a>
+<a href="magnet:?xt&#x3D;urn:btih:CD18941BD3D576CB84F5A27097EE5C428EA6EF08&amp;dn&#x3D;%5BBitsearch.to%5D%20Netflix%20free%20Cracker%202024%20v17.3.57%20-%20DailyApp&amp;tr&#x3D;udp%3A%2F%2Ftracker.torrent.eu.org%3A451%2Fannounce&amp;tr&#x3D;udp%3A%2F%2Ftracker.opentrackr.org%3A1337%2Fannounce&amp;tr&#x3D;udp%3A%2F%2Fopen.stealth.si%3A80%2Fannounce&amp;tr&#x3D;udp%3A%2F%2Ftracker.theoks.net%3A6969%2Fannounce&amp;tr&#x3D;udp%3A%2F%2Ftracker.bitsearch.to%3A1337%2Fannounce"
+class="flex-1 inline-flex items-center justify-center px-4 py-2 bg-green-600 text-white text-sm font-medium rounded-md hover:bg-green-700 transition duration-150 ease-in-out">
+<i class="fas fa-magnet mr-2"></i>
+Magnet
+</a>
+</div>
+</div><div class="bg-white rounded-lg shadow-sm border border-gray-200 hover:shadow-md hover:border-green-200 transition-all duration-200 p-4 sm:p-6">
+<div class="flex items-start justify-between">
+<div class="flex-1 min-w-0">
+<div class="flex flex-wrap items-center gap-2 mb-2">
+</div>
+<h3 class="text-base sm:text-lg font-medium text-gray-900 line-clamp-2 mb-2">
+<a href="/torrent/698e713fd299264c08cdd1e3" class="hover:text-green-600 transition duration-150 ease-in-out">
+Steinberg VST Live Pro 3.0.10 (x64)[FTUApps]
+</a>
+</h3>
+<div class="flex flex-wrap items-center gap-3 text-sm text-gray-600 mb-3">
+<span class="inline-flex items-center space-x-1">
+<i class="fas fa-folder text-green-500"></i>
+<span>Softwares</span>
+</span>
+<span class="inline-flex items-center space-x-1">
+<i class="fas fa-hdd text-blue-500"></i>
+<span>320.73 MB</span>
+</span>
+<span class="inline-flex items-center space-x-1 font-medium">
+<i class="fas fa-clock text-green-500"></i>
+<span>7mo ago</span>
+</span>
+</div>
+<div class="flex flex-wrap items-center gap-4 text-sm">
+<span class="inline-flex items-center space-x-1 text-green-600">
+<i class="fas fa-arrow-up"></i>
+<span class="font-medium">1</span>
+<span>seeders</span>
+</span>
+<span class="inline-flex items-center space-x-1 text-red-600">
+<i class="fas fa-arrow-down"></i>
+<span class="font-medium">0</span>
+<span>leechers</span>
+</span>
+</div>
+</div>
+<div class="hidden sm:flex flex-col space-y-2 ml-6">
+<a href="/download/torrent/AB679A921FA4F99CC8695CF08012D15D3E081A4A?title=Steinberg VST Live Pro 3.0.10 (x64)[FTUApps]"
+class="inline-flex items-center justify-center px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 transition duration-150 ease-in-out">
+<i class="fas fa-download mr-2"></i>
+Torrent
+</a>
+<a href="magnet:?xt&#x3D;urn:btih:AB679A921FA4F99CC8695CF08012D15D3E081A4A&amp;dn&#x3D;%5BBitsearch.to%5D%20Steinberg%20VST%20Live%20Pro%203.0.10%20(x64)%5BFTUApps%5D&amp;tr&#x3D;udp%3A%2F%2Ftracker.torrent.eu.org%3A451%2Fannounce&amp;tr&#x3D;udp%3A%2F%2Ftracker.opentrackr.org%3A1337%2Fannounce&amp;tr&#x3D;udp%3A%2F%2Fopen.stealth.si%3A80%2Fannounce&amp;tr&#x3D;udp%3A%2F%2Fwepzone.net%3A6969%2Fannounce&amp;tr&#x3D;udp%3A%2F%2Ftracker.theoks.net%3A6969%2Fannounce&amp;tr&#x3D;udp%3A%2F%2Ftracker.bitsearch.to%3A1337%2Fannounce"
+class="inline-flex items-center justify-center px-4 py-2 bg-green-600 text-white text-sm font-medium rounded-md hover:bg-green-700 transition duration-150 ease-in-out">
+<i class="fas fa-magnet mr-2"></i>
+Magnet
+</a>
+</div>
+</div>
+<div class="sm:hidden mt-4 flex space-x-2">
+<a href="/download/torrent/AB679A921FA4F99CC8695CF08012D15D3E081A4A?title=Steinberg VST Live Pro 3.0.10 (x64)[FTUApps]"
+class="flex-1 inline-flex items-center justify-center px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 transition duration-150 ease-in-out">
+<i class="fas fa-download mr-2"></i>
+Torrent
+</a>
+<a href="magnet:?xt&#x3D;urn:btih:AB679A921FA4F99CC8695CF08012D15D3E081A4A&amp;dn&#x3D;%5BBitsearch.to%5D%20Steinberg%20VST%20Live%20Pro%203.0.10%20(x64)%5BFTUApps%5D&amp;tr&#x3D;udp%3A%2F%2Ftracker.torrent.eu.org%3A451%2Fannounce&amp;tr&#x3D;udp%3A%2F%2Ftracker.opentrackr.org%3A1337%2Fannounce&amp;tr&#x3D;udp%3A%2F%2Fopen.stealth.si%3A80%2Fannounce&amp;tr&#x3D;udp%3A%2F%2Fwepzone.net%3A6969%2Fannounce&amp;tr&#x3D;udp%3A%2F%2Ftracker.theoks.net%3A6969%2Fannounce&amp;tr&#x3D;udp%3A%2F%2Ftracker.bitsearch.to%3A1337%2Fannounce"
+class="flex-1 inline-flex items-center justify-center px-4 py-2 bg-green-600 text-white text-sm font-medium rounded-md hover:bg-green-700 transition duration-150 ease-in-out">
+<i class="fas fa-magnet mr-2"></i>
+Magnet
+</a>
+</div>
+</div></div>
+<div class="mt-8 flex items-center justify-center">
+<nav class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
+<span class="relative inline-flex items-center px-4 py-2 border border-green-500 bg-green-50 text-sm font-medium text-green-600">1</span>
+<a href="/latest?category=5&page=2" class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50">2</a>
+<span class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700">...</span>
+<a href="/latest?category=5&page=20" class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50">20</a>
+<a href="/latest?category=5&page=2" class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+<span class="sr-only">Next</span>
+<i class="fas fa-chevron-right"></i>
+</a>
+</nav>
+</div>
+</main>
+</div>
+</main>
+<footer class="bg-gradient-to-r from-gray-50 to-gray-100 border-t border-gray-200">
+<div class="max-w-7xl mx-auto py-8 sm:py-10 lg:py-12 px-3 sm:px-6 lg:px-8">
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8">
+<div class="space-y-4">
+<h3 class="text-sm font-semibold text-gray-900 tracking-wider uppercase flex items-center">
+<i class="fas fa-link mr-2 text-blue-600"></i>
+Quick Links
+</h3>
+<div class="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-4">
+<a href="/about"
+class="text-gray-600 hover:text-blue-600 text-sm font-medium transition-colors flex items-center">
+<i class="fas fa-info-circle mr-2 text-xs"></i>
+About
+</a>
+<a href="/donate"
+class="text-gray-600 hover:text-green-600 text-sm font-medium transition-colors flex items-center">
+<i class="fas fa-heart mr-2 text-xs"></i>
+Donate
+</a>
+<a href="/content-removal"
+class="text-gray-600 hover:text-red-600 text-sm font-medium transition-colors flex items-center">
+<i class="fas fa-shield-alt mr-2 text-xs"></i>
+Content removal
+</a>
+<a href="/privacy-policy"
+class="text-gray-600 hover:text-purple-600 text-sm font-medium transition-colors flex items-center">
+<i class="fas fa-user-shield mr-2 text-xs"></i>
+Privacy
+</a>
+<a href="/add-torrent"
+class="text-gray-600 hover:text-blue-600 text-sm font-medium transition-colors flex items-center">
+<i class="fas fa-plus mr-2 text-xs"></i>
+Add Torrent
+</a>
+<a href="/buy-ad-space"
+class="text-gray-600 hover:text-orange-600 text-sm font-medium transition-colors flex items-center">
+<i class="fas fa-ad mr-2 text-xs"></i>
+Ad Space
+</a>
+<a href="/api"
+class="text-gray-600 hover:text-blue-600 text-sm font-medium transition-colors flex items-center">
+<i class="fas fa-code mr-2 text-xs"></i>
+API Access
+</a>
+</div>
+</div>
+<div class="space-y-4">
+<h3 class="text-sm font-semibold text-gray-900 tracking-wider uppercase flex items-center">
+<i class="fas fa-globe mr-2 text-purple-600"></i>
+Related Sites
+</h3>
+<div class="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
+<a href="https://limetorrents.eu"
+class="text-gray-600 hover:text-green-600 text-sm font-medium transition-colors flex items-center">
+<i class="fas fa-seedling mr-2 text-xs"></i>
+LimeTorrents
+</a>
+<a href="https://rarbg.mov"
+class="text-gray-600 hover:text-red-600 text-sm font-medium transition-colors flex items-center">
+<i class="fas fa-film mr-2 text-xs"></i>
+RARBG
+</a>
+<a href="https://solidtorrents.to"
+class="text-gray-600 hover:text-blue-600 text-sm font-medium transition-colors flex items-center">
+<i class="fas fa-magnet mr-2 text-xs"></i>
+SolidTorrents
+</a>
+<a href="https://torrentz2.nz"
+class="text-gray-600 hover:text-purple-600 text-sm font-medium transition-colors flex items-center">
+<i class="fas fa-search mr-2 text-xs"></i>
+Torrentz2
+</a>
+</div>
+</div>
+<div class="text-center lg:text-right space-y-3">
+<div class="flex justify-center lg:justify-end items-center space-x-4">
+<div class="flex items-center text-gray-600">
+<i class="fas fa-database mr-2 text-blue-600"></i>
+<span class="text-sm">Powered by Bitsearch</span>
+</div>
+</div>
+<p class="text-gray-600 text-sm">
+<i class="fas fa-copyright mr-1"></i>
+Bitsearch 2026 | All Rights Reserved
+</p>
+<div class="flex justify-center lg:justify-end space-x-4 text-xs text-gray-500">
+<span class="flex items-center">
+<i class="fas fa-bolt mr-1 text-yellow-500"></i>
+Fast Search
+</span>
+<span class="flex items-center">
+<i class="fas fa-shield mr-1 text-green-500"></i>
+Secure
+</span>
+<span class="flex items-center">
+<i class="fas fa-mobile-alt mr-1 text-blue-500"></i>
+Mobile Ready
+</span>
+</div>
+</div>
+</div>
+</div>
+</footer>
+</div>
+</body>
+</html>
+```

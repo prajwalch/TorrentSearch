@@ -18,8 +18,8 @@ import com.prajwalch.torrentsearch.util.TorrentUtils
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
-import org.jsoup.Jsoup
-import org.jsoup.nodes.Element
+import com.fleeksoft.ksoup.Ksoup
+import com.fleeksoft.ksoup.nodes.Element
 
 /**
  * Provider implementation for [LimeTorrents](https://www.limetorrents.lol).
@@ -128,7 +128,7 @@ private class LimeTorrentsResultsPageParser(
         searchCategory: Category? = null,
     ): List<Torrent> =
         withContext(Dispatchers.Default) {
-            Jsoup.parse(html, pageUrl)
+            Ksoup.parse(html, pageUrl)
                 .select(LIST_ITEM)
                 .mapNotNull { parseListItem(it, searchCategory) }
         }
@@ -205,7 +205,7 @@ private object LimeTorrentsDetailsPageParser {
         "#content > div:nth-child(6) > div:nth-child(1) > div > div:nth-child(7) > div > a"
 
     suspend fun parse(html: String): TorrentDetails? = withContext(Dispatchers.Default) {
-        val html = Jsoup.parse(html)
+        val html = Ksoup.parse(html)
 
         val infoHash = html.selectFirst(INFO_HASH)?.ownText()?.lowercase()
             ?: return@withContext null

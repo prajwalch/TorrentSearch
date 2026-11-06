@@ -12,9 +12,9 @@ import com.prajwalch.torrentsearch.util.TorrentUtils
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
-import org.jsoup.Jsoup
-import org.jsoup.nodes.Element
-import org.jsoup.parser.Parser
+import com.fleeksoft.ksoup.Ksoup
+import com.fleeksoft.ksoup.nodes.Element
+import com.fleeksoft.ksoup.parser.Parser
 
 /**
  * An XML parser for the results returned by the indexer.
@@ -48,7 +48,7 @@ class TorznabResultsXmlParser(
     }
 
     suspend fun parse(xml: String): List<Torrent> = withContext(Dispatchers.Default) {
-        Jsoup.parse(xml, "", Parser.xmlParser())
+        Ksoup.parse(xml, Parser.xmlParser())
             .select(ITEM)
             .mapNotNull(::parseItem)
     }

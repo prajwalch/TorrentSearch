@@ -18,8 +18,8 @@ import com.prajwalch.torrentsearch.util.TorrentUtils
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
-import org.jsoup.Jsoup
-import org.jsoup.nodes.Element
+import com.fleeksoft.ksoup.Ksoup
+import com.fleeksoft.ksoup.nodes.Element
 
 class TorrentDownloads(private val networkClient: NetworkClient) :
     SearchProvider,
@@ -139,7 +139,7 @@ private class TorrentDownloadsResultsPageParser(
 
     suspend fun parse(html: String, pageUrl: String): List<Torrent> =
         withContext(Dispatchers.Default.limitedParallelism(3)) {
-            Jsoup.parse(html, pageUrl)
+            Ksoup.parse(html, pageUrl)
                 .select(LIST_ITEM_CONTAINER)
                 .last()
                 ?.select(LIST_ITEM)
@@ -192,7 +192,7 @@ private object TorrentDownloadsDetailsPageParser {
 
     suspend fun parse(html: String, pageUrl: String): TorrentDetails? =
         withContext(Dispatchers.Default) {
-            val html = Jsoup.parse(html, pageUrl)
+            val html = Ksoup.parse(html, pageUrl)
 
             val torrentName = html.selectFirst(TORRENT_NAME)?.ownText() ?: return@withContext null
             val magnetUri = html.selectFirst(MAGNET_URI)?.attr("href") ?: return@withContext null
@@ -231,7 +231,7 @@ private object TorrentDownloadsDetailsPageParser {
 
     suspend fun extractMagnetUri(detailsPageHtml: String): String? =
         withContext(Dispatchers.Default) {
-            Jsoup.parse(detailsPageHtml).selectFirst(MAGNET_URI)?.attr("href")
+            Ksoup.parse(detailsPageHtml).selectFirst(MAGNET_URI)?.attr("href")
         }
 }
 

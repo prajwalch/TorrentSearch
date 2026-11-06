@@ -21,8 +21,8 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.withContext
 
-import org.jsoup.Jsoup
-import org.jsoup.nodes.Element
+import com.fleeksoft.ksoup.Ksoup
+import com.fleeksoft.ksoup.nodes.Element
 
 class Bt4g(private val networkClient: NetworkClient) :
     SearchProvider,
@@ -97,7 +97,7 @@ private class Bt4gResultsPageParser(
 ) {
     suspend fun parse(html: String, pageUrl: String): List<Torrent> =
         withContext(Dispatchers.Default) {
-            Jsoup.parse(html, pageUrl)
+            Ksoup.parse(html, pageUrl)
                 .select(LIST_ITEM)
                 .map { async { parseListItem(it) } }
                 .awaitAll()
@@ -167,7 +167,7 @@ private object Bt4gDetailsPageParser {
     private const val MAGNET_LINK_BTN = """a[href^="//downloadtorrentfile.com/hash/"]"""
 
     suspend fun parse(html: String): TorrentDetails? = withContext(Dispatchers.Default) {
-        val html = Jsoup.parse(html)
+        val html = Ksoup.parse(html)
 
         val infoHash = html.selectFirst(MAGNET_LINK_BTN)
             ?.attr("href")
@@ -210,7 +210,7 @@ private object Bt4gDetailsPageParser {
     }
 
     suspend fun extractInfoHash(html: String): String? = withContext(Dispatchers.Default) {
-        Jsoup.parse(html)
+        Ksoup.parse(html)
             .selectFirst(MAGNET_LINK_BTN)
             ?.attr("href")
             ?.removePrefix("//downloadtorrentfile.com/hash/")

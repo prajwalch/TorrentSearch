@@ -17,8 +17,8 @@ import com.prajwalch.torrentsearch.util.TorrentUtils
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
-import org.jsoup.Jsoup
-import org.jsoup.nodes.Element
+import com.fleeksoft.ksoup.Ksoup
+import com.fleeksoft.ksoup.nodes.Element
 
 class XXXTracker(private val networkClient: NetworkClient) :
     SearchProvider,
@@ -98,7 +98,7 @@ private class XXXTrackerResultsPageParser(
 ) {
     suspend fun parse(html: String, pageUrl: String): List<Torrent> =
         withContext(Dispatchers.Default) {
-            Jsoup.parse(html, pageUrl)
+            Ksoup.parse(html, pageUrl)
                 .select(LIST_ITEM)
                 // First item is used as a header.
                 .drop(1)
@@ -164,7 +164,7 @@ private object XXXTrackerDetailsPageParser {
 
     suspend fun parse(html: String, pageUrl: String): TorrentDetails? =
         withContext(Dispatchers.Default) {
-            val html = Jsoup.parse(html, pageUrl)
+            val html = Ksoup.parse(html, pageUrl)
 
             val name = html.selectFirst(NAME)?.text() ?: return@withContext null
             val magnetUri = html.selectFirst(MAGNET_URI)?.attr("href") ?: return@withContext null

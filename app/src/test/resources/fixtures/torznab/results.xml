@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:torznab="http://torznab.com/schemas/2015/feed">
+  <channel>
+    <atom:link href="http://127.0.0.1:9117/api/v2.0/indexers/all/results/torznab/" rel="self" type="application/rss+xml" />
+    <title>All indexers</title>
+    <description>Results from all configured indexers</description>
+    <link>http://127.0.0.1:9117/</link>
+    <language>en-US</language>
+    <category>search</category>
+    <item>
+      <title>Linux Distro ISO x64</title>
+      <guid>https://1337x.to/torrent/5432101/Linux-Distro-ISO-x64/</guid>
+      <jackettindexer id="1337x">1337x</jackettindexer>
+      <type>public</type>
+      <comments>https://1337x.to/torrent/5432101/Linux-Distro-ISO-x64/</comments>
+      <pubDate>Sat, 10 Oct 2026 07:15:00 +0000</pubDate>
+      <size>1503238553</size>
+      <grabs>120</grabs>
+      <description />
+      <link>http://127.0.0.1:9117/dl/1337x/?jackett_apikey=abc123&amp;path=Q2ZESjhP&amp;file=Linux+Distro+ISO+x64</link>
+      <category>2000</category>
+      <category>100002</category>
+      <enclosure url="http://127.0.0.1:9117/dl/1337x/?jackett_apikey=abc123&amp;path=Q2ZESjhP&amp;file=Linux+Distro+ISO+x64" length="1503238553" type="application/x-bittorrent" />
+      <torznab:attr name="category" value="2000" />
+      <torznab:attr name="category" value="100002" />
+      <torznab:attr name="seeders" value="250" />
+      <torznab:attr name="peers" value="280" />
+      <torznab:attr name="magneturl" value="magnet:?xt=urn:btih:2C6B6858D61DA9543D4231A71DB4B1C9264B0685&amp;dn=Linux+Distro+ISO+x64&amp;tr=udp%3A%2F%2Ftracker.opentrackr.org%3A1337%2Fannounce" />
+      <torznab:attr name="infohash" value="2C6B6858D61DA9543D4231A71DB4B1C9264B0685" />
+      <torznab:attr name="downloadvolumefactor" value="0" />
+      <torznab:attr name="uploadvolumefactor" value="1" />
+    </item>
+    <item>
+      <title><![CDATA[Some Show S01E01 & Friends <1080p WEB-DL>]]></title>
+      <guid>https://prowlarr.example/torrent/90210</guid>
+      <prowlarrindexer id="12" type="public">TorrentGalaxy</prowlarrindexer>
+      <type>public</type>
+      <comments>https://torrentgalaxy.example/torrent/90210/some-show-s01e01</comments>
+      <pubDate>Fri, 09 Oct 2026 21:03:11 -0400</pubDate>
+      <grabs>34</grabs>
+      <link>http://127.0.0.1:9696/12/download?apikey=def456&amp;link=dG9ycmVudA</link>
+      <enclosure url="http://127.0.0.1:9696/12/download?apikey=def456&amp;link=dG9ycmVudA" length="734003200" type="application/x-bittorrent" />
+      <torznab:attr name="category" value="5000" />
+      <torznab:attr name="category" value="5070" />
+      <torznab:attr name="size" value="734003200" />
+      <torznab:attr name="seeders" value="41" />
+      <torznab:attr name="peers" value="57" />
+      <torznab:attr name="infohash" value="5D41402ABC4B2A76B9719D911017C592DAD1E1C3" />
+    </item>
+    <item>
+      <title>Caf&#233; &amp; Bar Documentary</title>
+      <guid isPermaLink="false">tracker-77</guid>
+      <type>private</type>
+      <pubDate>Mon, 28 Sep 2026 12:00:00 GMT</pubDate>
+      <size>52428800</size>
+      <category>8000</category>
+      <enclosure url="https://tracker.example.org/download.php?id=77&amp;passkey=abc" length="52428800" type="application/x-bittorrent" />
+      <torznab:attr name="category" value="8000" />
+    </item>
+    <item>
+      <title>Magnet Only Release</title>
+      <guid>magnet-only-1</guid>
+      <type>public</type>
+      <link>magnet:?xt=urn:btih:aaf4c61ddcc5e8a2dabede0f3b482cd9aea9434d&amp;dn=Magnet+Only+Release</link>
+      <enclosure url="magnet:?xt=urn:btih:aaf4c61ddcc5e8a2dabede0f3b482cd9aea9434d&amp;dn=Magnet+Only+Release" length="0" type="application/x-bittorrent;x-scheme-handler/magnet" />
+      <torznab:attr name="category" value="100005" />
+      <torznab:attr name="category" value="102000" />
+      <torznab:attr name="size" value="4831838208" />
+      <torznab:attr name="seeders" value="0" />
+      <torznab:attr name="peers" value="1" />
+    </item>
+  </channel>
+</rss>

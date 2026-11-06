@@ -17,8 +17,8 @@ import com.prajwalch.torrentsearch.util.TorrentUtils
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
-import org.jsoup.Jsoup
-import org.jsoup.nodes.Element
+import com.fleeksoft.ksoup.Ksoup
+import com.fleeksoft.ksoup.nodes.Element
 
 import java.time.Instant
 
@@ -109,7 +109,7 @@ private class UIndexResultsPageParser(
 ) {
     suspend fun parse(html: String, pageUrl: String): List<Torrent> =
         withContext(Dispatchers.Default) {
-            Jsoup.parse(html, pageUrl)
+            Ksoup.parse(html, pageUrl)
                 .selectFirst(LIST_ITEM_CONTAINER)
                 ?.select(LIST_ITEM)
                 ?.mapNotNull(::parseListItem)
@@ -179,7 +179,7 @@ private object UIndexDetailsPageParser {
 
     suspend fun parse(responseHtml: String, baseUrl: String): TorrentDetails? =
         withContext(Dispatchers.Default) {
-            val html = Jsoup.parse(responseHtml, baseUrl)
+            val html = Ksoup.parse(responseHtml, baseUrl)
 
             // Required data. Return early as possible.
             val name = html.selectFirst(NAME)?.ownText() ?: return@withContext null

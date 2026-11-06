@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Ubuntu 26 04 live server amd64 iso | E1FC140A6391357FA1CF08DDB70274F9C05EB88B</title>
+</head>
+<body>
+  <div class="container-fluid container-custom" id="top">
+    <div id="top-right">
+      <ul class="unstyled inline no-margin-bottom">
+          <li>
+            <small>Welcome <b>Guest</b></small>
+          </li>
+          <li>
+            <small><a href="/login">Log In</a></small>
+          </li>
+          <li>
+            <small><a href="/register">Register</a></small>
+          </li>
+      </ul>
+    </div>
+    <div id="top-left">
+        <small></small>
+    </div>
+  </div>
+<div class="container-fluid container-custom">
+  <div id="search-form-left" style="margin-top: 9px; margin-left: 5px">
+  <a href="/" tabindex="-1">
+    <img src="/static/filemood-logo-small.png" alt="FileMood" />
+  </a>
+</div>
+<div id="search-form-right">
+<form class="form-inline no-margin-bottom" id="search-form" method="get" action="/result">
+  <table>
+    <tr>
+      <td>
+        <input type="text" name="q" class="input-xlarge" id="search-input" value="" maxlength="2000"/>
+      </td>
+      <td>
+        <div class="text-left">
+          <button rel="nofollow" type="submit" class="btn" id="search-btn" style="width: 95px;"><i class="fa fa-search"></i>&nbsp;Search</button>
+        </div>
+      </td>
+      <td style="vertical-align: bottom">
+        <div style="margin-left: 10px; font-size: 11px; line-height: 13px; text-decoration: underline">
+          <a style="cursor: pointer" onclick="javascript:$('#advanced-search-modal').modal({ backdrop: 'static' });">Advanced search</a>
+        </div>
+      </td>
+    </tr>
+  </table>
+</form>
+<div id="advanced-search-modal" class="modal hide" tabindex="-1" role="dialog" aria-labelledby="advanced-search-modal-label" aria-hidden="true">
+  <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal">×</button>
+    <h5 id="advanced-search-modal-label">Advanced search options</h5>
+  </div>
+  <div class="modal-body" style="overflow-y: visible">
+    <div class="form-horizontal">
+      <div class="control-group">
+        <label class="control-label">Search</label>
+        <div class="controls">
+          <table>
+            <tr>
+              <td>
+                <input type="text" id="words" value="" maxlength="2000" style="width: 200px" />
+              </td>
+              <td>
+                <div class="btn-group text-left" data-select="true">
+                  <a class="btn btn-block dropdown-toggle" data-toggle="dropdown" style="width: 170px; cursor: pointer">
+                    <span class="dropdown-display">With all the words</span>
+                    <span class="caret"></span>
+                  </a>
+                  <input type="hidden" id="type" class="dropdown-field" value="and" />
+                  <ul class="dropdown-menu">
+                    <li><a style="cursor: pointer" data-value="and">With all the words</a></li>
+                    <li><a style="cursor: pointer" data-value="or">With any of the words</a></li>
+                  </ul>
+                </div>
+              </td>
+            </tr>
+          </table>
+        </div>
+        <div style="height: 5px"></div>
+        <label class="control-label">Excluding</label>
+        <div class="controls">
+          <table>
+            <tr>
+              <td>
+                <input type="text" id="exclude-words" value="" maxlength="2000" style="width: 372px" />
+              </td>
+            </tr>
+          </table>
+        </div>
+        <div style="height: 5px"></div>
+        <label class="control-label">Size Filter</label>
+        <div class="controls">
+          <table>
+            <tr>
+              <td>
+                <input type="text" id="size-from" value="" maxlength="20" style="width: 115px" />
+              </td>
+              <td>
+                <div class="btn-group text-left" data-select="true">
+                  <a class="btn btn-block dropdown-toggle" data-toggle="dropdown" style="width: 50px; cursor: pointer">
+                    <span class="dropdown-display">B</span>
+                    <span class="caret"></span>
+                  </a>
+                  <input type="hidden" id="size-from-type" class="dropdown-field" value="" />
+                  <ul class="dropdown-menu">
+                    <li><a style="cursor: pointer" data-value="">B</a></li>
+                    <li><a style="cursor: pointer" data-value="kb">KB</a></li>
+                    <li><a style="cursor: pointer" data-value="mb">MB</a></li>
+                    <li><a style="cursor: pointer" data-value="gb">GB</a></li>
+                    <li><a style="cursor: pointer" data-value="tb">TB</a></li>
+                  </ul>
+                </div>
+              </td>
+              <td style="vertical-align: middle">
+                <p>&nbsp;to&nbsp;</p>
+              </td>
+              <td>
+                <input type="text" id="size-to" value="" maxlength="20" style="width: 115px" />
+              </td>
+              <td>
+                <div class="btn-group text-left" data-select="true">
+                  <a class="btn btn-block dropdown-toggle" data-toggle="dropdown" style="width: 50px; cursor: pointer">
+                    <span class="dropdown-display">B</span>
+                    <span class="caret"></span>
+                  </a>
+                  <input type="hidden" id="size-to-type" class="dropdown-field" value="" />
+                  <ul class="dropdown-menu">
+                    <li><a style="cursor: pointer" data-value="">B</a></li>
+                    <li><a style="cursor: pointer" data-value="kb">KB</a></li>
+                    <li><a style="cursor: pointer" data-value="mb">MB</a></li>
+                    <li><a style="cursor: pointer" data-value="gb">GB</a></li>
+                    <li><a style="cursor: pointer" data-value="tb">TB</a></li>
+                  </ul>
+                </div>
+              </td>
+            </tr>
+          </table>
+        </div>
+        <div style="height: 5px"></div>
+        <label class="control-label">Location</label>
+        <div class="controls">
+          <table>
+            <tr>
+              <td>
+                <div class="btn-group text-left" data-select="true">
+                  <a class="btn btn-block dropdown-toggle" data-toggle="dropdown" style="width: 120px; cursor: pointer">
+                    <span class="dropdown-display">Everywhere</span>
+                    <span class="caret"></span>
+                  </a>
+                  <input type="hidden" id="location" class="dropdown-field" value="all" />
+                  <ul class="dropdown-menu">
+                    <li><a style="cursor: pointer" data-value="all">Everywhere</a></li>
+                    <li><a style="cursor: pointer" data-value="title">Only in title</a></li>
+                  </ul>
+                </div>
+              </td>
+            </tr>
+          </table>
+        </div>
+        <div style="height: 5px"></div>
+        </div>
+    </div>
+  </div>
+  <div class="modal-footer">
+    <button class="btn" data-dismiss="modal">Close</button>
+    <button rel="nofollow" id="search-adv-btn" class="btn btn-primary" onclick="javascript:advancedSearch($('#words').val(), $('#type').val(), $('#exclude-words').val(), $('#size-from').val(), $('#size-from-type').val(), $('#size-to').val(), $('#size-to-type').val(), $('#location').val(), $('#subset').val())"><i class="fa fa-search"></i>&nbsp;Search</button>
+  </div>
+</div>
+</div>
+</div>
+<div class="container-fluid container-custom" id="status">
+  <div id="status-left">
+    <div class="row">
+      <div class="span12" style="min-height: 30px; white-space: nowrap; overflow: hidden;">
+      </div>
+    </div>
+  </div>
+  <div id="status-right">
+    <div class="row-fluid">
+      <div class="span12" style="min-height: 30px; white-space: nowrap; overflow: hidden;">
+        <p>Download <b>ubuntu-26.04-live-server-amd64.iso</b></p>
+      </div>
+    </div>
+  </div>
+</div>
+<div style="height: 10px;"></div>
+<div class="container-fluid container-custom">
+  <div id="content-main-right">
+      <div class="box-with-title similar-box">
+        <div class="similar clearfix">
+          <ul>
+              <li>
+                <a rel="nofollow" href="/result?q=ubuntu" title="Search for ubuntu">
+                  ubuntu
+                </a>
+              </li>
+              <li>
+                <a rel="nofollow" href="/result?q=live" title="Search for live">
+                  live
+                </a>
+              </li>
+              <li>
+                <a rel="nofollow" href="/result?q=server" title="Search for server">
+                  server
+                </a>
+              </li>
+              <li>
+                <a rel="nofollow" href="/result?q=amd64" title="Search for amd64">
+                  amd64
+                </a>
+              </li>
+              <li>
+                <a rel="nofollow" href="/result?q=iso" title="Search for iso">
+                  iso
+                </a>
+              </li>
+          </ul>
+        </div>
+      </div>
+    <div style="height: 10px;"></div>
+    <div style="text-align:center">
+        <div id="frame" style="width: 240px;margin: auto;z-index: 99998;height: auto">
+        </div>
+    </div>
+  </div>
+  <div id="content-main-center">
+    <div class="row-fluid">
+      <div class="span12" style="float: left;">
+          <div class="well">
+            <table>
+              <tr>
+                <td colspan="3" style="width: 100%;">
+                  <h1><b>Ubuntu 26 04 live server amd64 iso</b></h1>
+                </td>
+              </tr>
+              <tr>
+                <td colspan="3" style="height: 10px;">
+                </td>
+              </tr>
+            </table>
+            <div style="border-top: 1px dashed #caeaca; margin-bottom: 15px;"></div>
+            <table>
+              <tr>
+                <td>
+                  <p class="text" style="width: 90px;">Name</p>
+                </td>
+                <td style="width: 75%;">
+                  <p class="value"><b><a href="/ubuntu-26.04-live-server-amd64.iso-e1fc140a6391357fa1cf08ddb70274f9c05eb88b.html" title="Ubuntu 26 04 live server amd64 iso">ubuntu-26.04-live-server-amd64.iso</a></b></p>
+                </td>
+                <td rowspan="5" style="vertical-align: top; width: 30%;">
+                    <a id="download-btn" class="btn btn-large btn-success btn-block content-dn-btn" title="Download now">
+                      <b><i class="fa fa-magnet"></i>&nbsp;&nbsp;DOWNLOAD</b>
+                    </a>
+                    <a id="copylink-btn" class="btn btn-medium btn-success btn-block content-dn-btn" title="Copy url link">
+                      <b>Copy Link</b>
+                    </a>
+                    <br />
+                    <p class="text" style="width: 75%;">Trouble downloading? see <a href="/howto">How To</a></p>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <p class="text">Total Size</p>
+                </td>
+                <td>
+                  <p class="value"><b>2.9 GB</b></p>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <p class="text">Total Files</p>
+                </td>
+                <td>
+                  <p class="value"><b>1</b></p>
+                </td>
+              </tr>
+                <tr>
+                  <td>
+                    <p class="text">Last Seen</p>
+                  </td>
+                  <td>
+                    <p class="value"><b></b></p>
+                  </td>
+                </tr>
+              <tr>
+                <td>
+                  <p class="text">Hash</p>
+                </td>
+                <td>
+                  <p class="value">E1FC140A6391357FA1CF08DDB70274F9C05EB88B</p>
+                </td>
+              </tr>
+            </table>
+          </div>
+          <div class="path-list">
+            <table>
+                              <tr>
+                  <td colspan="2">
+                    <div style="height: 2px"></div>
+                  </td>
+                </tr>
+            </table>
+          </div>
+        <hr class="faded" />
+<div class="text-center" style="margin-bottom: 20px">
+  <ul class="unstyled inline no-margin-bottom" id="footer">
+    <li><small><a href="/result">Most Active</a></small></li>
+    <li style="padding: 0"><small>|</small></li>
+    <li><small><a href="/browse?d=20261009">Browse</a></small></li>
+    <li style="padding: 0"><small>|</small></li>
+    <li><small><a href="/contactus">Contact Us</a></small></li>
+    <li style="padding: 0"><small>|</small></li>
+    <li><small><a href="/termsofuse">Terms of Use</a></small></li>
+    <li style="padding: 0"><small>|</small></li>
+    <li><small><a href="/privacypolicy">Privacy Policy</a></small></li>
+    <li style="padding: 0"><small>|</small></li>
+    <li><small><a href="/howto">How To</a></small></li>
+    <li style="padding: 0"><small>|</small></li>
+    <li><small><a href="/remove">DMCA</a></small></li>
+  </ul>
+  <p><small>Copyright &copy; 2026 FileMood.com</small></p>
+</div>
+      </div>
+    </div>
+  </div>
+</div>
+<div id="widget-modal" class="modal hide" tabindex="-1" role="dialog" aria-labelledby="widget-modal-label" aria-hidden="true">
+  <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+    <h5 id="widget-modal-label">Information</h5>
+  </div>
+  <div class="modal-body">
+  </div>
+  <div class="modal-footer">
+    <button class="btn" data-dismiss="modal" aria-hidden="true">Cancel</button>
+  </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<title>Linux Mangaka Moe v4 :: Nyaa</title>
+		</head>
+	<body>
+		<nav class="navbar navbar-default navbar-static-top navbar-inverse">
+			<div class="container">
+				<div class="navbar-header">
+					<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+					<span class="sr-only">Toggle navigation</span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+					</button>
+					<a class="navbar-brand" href="/">Nyaa</a>
+				</div>
+				<div id="navbar" class="navbar-collapse collapse">
+					<ul class="nav navbar-nav">
+						<li ><a href="/upload">Upload</a></li>
+						<li class="dropdown">
+							<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+								Info
+								<span class="caret"></span>
+							</a>
+							<ul class="dropdown-menu">
+								<li ><a href="/rules">Rules</a></li>
+								<li ><a href="/help">Help</a></li>
+							</ul>
+						</li>
+						<li><a href="/?page=rss">RSS</a></li>
+						<li><a href="https://twitter.com/NyaaV2">Twitter</a></li>
+						<li><a href="//sukebei.nyaa.si">Fap</a></li>
+					</ul>
+					<ul class="nav navbar-nav navbar-right">
+						<li class="dropdown">
+							<a href="#" class="dropdown-toggle visible-lg visible-sm visible-xs" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+								<i class="fa fa-user fa-fw"></i>
+								Guest
+								<span class="caret"></span>
+							</a>
+							<a href="#" class="dropdown-toggle hidden-lg hidden-sm hidden-xs" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+								<i class="fa fa-user fa-fw"></i>
+								<span class="caret"></span>
+							</a>
+							<ul class="dropdown-menu">
+								<li>
+									<a href="/login">
+										<i class="fa fa-sign-in fa-fw"></i>
+										Login
+									</a>
+								</li>
+								<li>
+									<a href="/register">
+										<i class="fa fa-pencil fa-fw"></i>
+										Register
+									</a>
+								</li>
+							</ul>
+						</li>
+					</ul>
+					<div class="search-container visible-xs visible-sm">
+						<form class="navbar-form navbar-right form" action="/" method="get">
+							<input type="text" class="form-control" name="q" placeholder="Search..." value="">
+							<br>
+							<select class="form-control" title="Filter" data-width="120px" name="f">
+								<option value="0" title="No filter" selected>No filter</option>
+								<option value="1" title="No remakes" >No remakes</option>
+								<option value="2" title="Trusted only" >Trusted only</option>
+							</select>
+							<br>
+							<select class="form-control" title="Category" data-width="200px" name="c">
+								<option value="0_0" title="All categories" selected>
+									All categories
+								</option>
+								<option value="1_0" title="Anime" >
+									Anime
+								</option>
+								<option value="1_1" title="Anime - AMV" >
+									- Anime Music Video
+								</option>
+								<option value="1_2" title="Anime - English" >
+									- English-translated
+								</option>
+								<option value="1_3" title="Anime - Non-English" >
+									- Non-English-translated
+								</option>
+								<option value="1_4" title="Anime - Raw" >
+									- Raw
+								</option>
+								<option value="2_0" title="Audio" >
+									Audio
+								</option>
+								<option value="2_1" title="Audio - Lossless" >
+									- Lossless
+								</option>
+								<option value="2_2" title="Audio - Lossy" >
+									- Lossy
+								</option>
+								<option value="3_0" title="Literature" >
+									Literature
+								</option>
+								<option value="3_1" title="Literature - English" >
+									- English-translated
+								</option>
+								<option value="3_2" title="Literature - Non-English" >
+									- Non-English-translated
+								</option>
+								<option value="3_3" title="Literature - Raw" >
+									- Raw
+								</option>
+								<option value="4_0" title="Live Action" >
+									Live Action
+								</option>
+								<option value="4_1" title="Live Action - English" >
+									- English-translated
+								</option>
+								<option value="4_2" title="Live Action - Idol/PV" >
+									- Idol/Promotional Video
+								</option>
+								<option value="4_3" title="Live Action - Non-English" >
+									- Non-English-translated
+								</option>
+								<option value="4_4" title="Live Action - Raw" >
+									- Raw
+								</option>
+								<option value="5_0" title="Pictures" >
+									Pictures
+								</option>
+								<option value="5_1" title="Pictures - Graphics" >
+									- Graphics
+								</option>
+								<option value="5_2" title="Pictures - Photos" >
+									- Photos
+								</option>
+								<option value="6_0" title="Software" >
+									Software
+								</option>
+								<option value="6_1" title="Software - Apps" >
+									- Applications
+								</option>
+								<option value="6_2" title="Software - Games" >
+									- Games
+								</option>
+							</select>
+							<br>
+							<button class="btn btn-primary form-control" type="submit">
+								<i class="fa fa-search fa-fw"></i> Search
+							</button>
+						</form>
+					</div>
+					<form class="navbar-form navbar-right form" action="/" method="get">
+						<div class="input-group search-container hidden-xs hidden-sm">
+							<div class="input-group-btn nav-filter" id="navFilter-criteria">
+								<select class="selectpicker show-tick" title="Filter" data-width="120px" name="f">
+									<option value="0" title="No filter" selected>No filter</option>
+									<option value="1" title="No remakes" >No remakes</option>
+									<option value="2" title="Trusted only" >Trusted only</option>
+								</select>
+							</div>
+							<div class="input-group-btn nav-filter" id="navFilter-category">
+								<select class="selectpicker show-tick" title="Category" data-width="130px" name="c">
+									<option value="0_0" title="All categories" selected>
+										All categories
+									</option>
+									<option value="1_0" title="Anime" >
+										Anime
+									</option>
+									<option value="1_1" title="Anime - AMV" >
+										- Anime Music Video
+									</option>
+									<option value="1_2" title="Anime - English" >
+										- English-translated
+									</option>
+									<option value="1_3" title="Anime - Non-English" >
+										- Non-English-translated
+									</option>
+									<option value="1_4" title="Anime - Raw" >
+										- Raw
+									</option>
+									<option value="2_0" title="Audio" >
+										Audio
+									</option>
+									<option value="2_1" title="Audio - Lossless" >
+										- Lossless
+									</option>
+									<option value="2_2" title="Audio - Lossy" >
+										- Lossy
+									</option>
+									<option value="3_0" title="Literature" >
+										Literature
+									</option>
+									<option value="3_1" title="Literature - English" >
+										- English-translated
+									</option>
+									<option value="3_2" title="Literature - Non-English" >
+										- Non-English-translated
+									</option>
+									<option value="3_3" title="Literature - Raw" >
+										- Raw
+									</option>
+									<option value="4_0" title="Live Action" >
+										Live Action
+									</option>
+									<option value="4_1" title="Live Action - English" >
+										- English-translated
+									</option>
+									<option value="4_2" title="Live Action - Idol/PV" >
+										- Idol/Promotional Video
+									</option>
+									<option value="4_3" title="Live Action - Non-English" >
+										- Non-English-translated
+									</option>
+									<option value="4_4" title="Live Action - Raw" >
+										- Raw
+									</option>
+									<option value="5_0" title="Pictures" >
+										Pictures
+									</option>
+									<option value="5_1" title="Pictures - Graphics" >
+										- Graphics
+									</option>
+									<option value="5_2" title="Pictures - Photos" >
+										- Photos
+									</option>
+									<option value="6_0" title="Software" >
+										Software
+									</option>
+									<option value="6_1" title="Software - Apps" >
+										- Applications
+									</option>
+									<option value="6_2" title="Software - Games" >
+										- Games
+									</option>
+								</select>
+							</div>
+							<input type="text" class="form-control search-bar" name="q" placeholder="Search..." value="" />
+							<div class="input-group-btn search-btn">
+								<button class="btn btn-primary" type="submit">
+									<i class="fa fa-search fa-fw"></i>
+								</button>
+							</div>
+						</div>
+					</form>
+				</div>
+			</div>
+		</nav>
+		<div class="container">
+<div class="panel panel-default">
+	<div class="panel-heading">
+		<h3 class="panel-title">
+			Linux Mangaka Moe v4
+		</h3>
+	</div>
+	<div class="panel-body">
+		<div class="row">
+			<div class="col-md-1">Category:</div>
+			<div class="col-md-5">
+				<a href="/?c=6_0">Software</a> - <a href="/?c=6_1">Applications</a>
+			</div>
+			<div class="col-md-1">Date:</div>
+			<div class="col-md-5" data-timestamp="1281885900">2010-08-15 15:25 UTC</div>
+		</div>
+		<div class="row">
+			<div class="col-md-1">Submitter:</div>
+			<div class="col-md-5">
+<a class="text-default" href="/user/NyaaTorrents" data-toggle="tooltip" title="User">NyaaTorrents</a>			</div>
+			<div class="col-md-1">Seeders:</div>
+			<div class="col-md-5"><span style="color: green;">0</span></div>
+		</div>
+		<div class="row">
+			<div class="col-md-1">Information:</div>
+			<div class="col-md-5">
+				<a rel="noopener noreferrer nofollow" href="http://www.animesoft-international.co.de">http://www.animesoft-international.co.de</a>
+			</div>
+			<div class="col-md-1">Leechers:</div>
+			<div class="col-md-5"><span style="color: red;">1</span></div>
+		</div>
+		<div class="row">
+			<div class="col-md-1">File size:</div>
+			<div class="col-md-5">3.4 GiB</div>
+			<div class="col-md-1">Completed:</div>
+			<div class="col-md-5">0</div>
+		</div>
+		<div class="row">
+			<div class="col-md-offset-6 col-md-1">Info hash:</div>
+			<div class="col-md-5"><kbd>ad83a84c69c38870934bc6e967fa18bf8e76a0ab</kbd></div>
+		</div>
+	</div>
+	<div class="panel-footer clearfix">
+<a href="/download/151471.torrent"><i class="fa fa-download fa-fw"></i>Download Torrent</a> or <a href="magnet:?xt=urn:btih:ad83a84c69c38870934bc6e967fa18bf8e76a0ab&amp;dn=Linux%20Mangaka%20Moe%20v4&amp;tr=http%3A%2F%2Fnyaa.tracker.wf%3A7777%2Fannounce&amp;tr=udp%3A%2F%2Fopen.stealth.si%3A80%2Fannounce&amp;tr=udp%3A%2F%2Ftracker.opentrackr.org%3A1337%2Fannounce&amp;tr=udp%3A%2F%2Fexodus.desync.com%3A6969%2Fannounce&amp;tr=udp%3A%2F%2Ftracker.torrent.eu.org%3A451%2Fannounce" class="card-footer-item"><i class="fa fa-magnet fa-fw"></i>Magnet</a>
+	</div>
+</div>
+<div class="panel panel-default">
+	<div markdown-text class="panel-body" id="torrent-description">http://animesoft.wordpress.com/2010/08/14/linux-mangaka-moe-v4-screenshots/</div>
+</div>
+<div class="panel panel-default">
+	<div class="panel-heading">
+		<h3 class="panel-title">File list</h3>
+	</div>
+	<div class="torrent-file-list panel-body">
+		<ul>
+			<li><i class="fa fa-file"></i>Linux-Mangaka-Moe-v4.iso <span class="file-size">(3.5 GiB)</span></li>
+		</ul>
+	</div>
+</div>
+<div id="comments" class="panel panel-default">
+	<div class="panel-heading">
+		<a data-toggle="collapse" href="#collapse-comments" role="button" aria-expanded="true" aria-controls="collapse-comments">
+		<h3 class="panel-title">
+			Comments - 0
+		</h3>
+		</a>
+	</div>
+	<div class="collapse in" id="collapse-comments">
+	</div>
+</div>
+		</div> 
+		<footer style="text-align: center;">
+			<p>Dark Mode: <a href="#" id="themeToggle">Toggle</a></p>
+		</footer>
+	</body>
+</html>

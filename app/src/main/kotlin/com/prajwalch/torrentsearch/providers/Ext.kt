@@ -24,9 +24,9 @@ import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.Json
 
-import org.jsoup.Jsoup
-import org.jsoup.nodes.Document
-import org.jsoup.nodes.Element
+import com.fleeksoft.ksoup.Ksoup
+import com.fleeksoft.ksoup.nodes.Document
+import com.fleeksoft.ksoup.nodes.Element
 
 import java.security.MessageDigest
 
@@ -140,7 +140,7 @@ private class ExtResultsPageParser(
 ) {
     suspend fun parse(html: String, pageUrl: String): List<Torrent> =
         withContext(Dispatchers.Default) {
-            Jsoup.parse(html, pageUrl)
+            Ksoup.parse(html, pageUrl)
                 .select(LIST_ITEM)
                 .mapNotNull { async { parseListItem(it) } }
                 .awaitAll()
@@ -258,7 +258,7 @@ private class ExtDetailsPageParser(private val networkClient: NetworkClient) {
 
     suspend fun parse(html: String, pageUrl: String): TorrentDetails? =
         withContext(Dispatchers.Default) {
-            val html = Jsoup.parse(html, pageUrl)
+            val html = Ksoup.parse(html, pageUrl)
 
             val torrentId = html.selectFirst(TORRENT_ID)?.attr("data-id") ?: return@withContext null
             val sessionId = html.selectFirst(SESSION_ID)?.attr("content") ?: return@withContext null
@@ -324,7 +324,7 @@ private class ExtDetailsPageParser(private val networkClient: NetworkClient) {
 
     suspend fun getMagnetUri(detailsPageHtml: String): String? =
         withContext(Dispatchers.Default) {
-            val detailsPageDom = Jsoup.parse(detailsPageHtml)
+            val detailsPageDom = Ksoup.parse(detailsPageHtml)
 
             val torrentId = detailsPageDom.selectFirst(TORRENT_ID)
                 ?.attr("data-id")

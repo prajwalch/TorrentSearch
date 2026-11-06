@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full">
+<head>
+<meta charset="UTF-8">
+<title>ubuntu-ultimate-1.4-dvd | Bitsearch</title>
+</head>
+<body class="h-full bg-gray-50 text-gray-900 antialiased">
+<div class="min-h-full flex flex-col">
+<nav class="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-40">
+<div class="max-w-7xl mx-auto px-3 sm:px-4 lg:px-8">
+<div class="flex justify-between items-center h-14 sm:h-16 gap-3">
+<div class="flex-shrink-0">
+<a href="/" class="flex items-center">
+<img class="h-7 sm:h-8 w-auto" src="/images/bitsearch-logo-navbar.svg" alt="Bitsearch" />
+</a>
+</div>
+<div class="flex-1 max-w-xl mx-2 sm:mx-4">
+<form action="/search" method="GET" class="relative">
+<div class="autocomplete-container">
+<div class="relative">
+<div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+<i class="fas fa-search text-gray-400 text-sm"></i>
+</div>
+<input name="q" type="text"
+class="block w-full pl-9 pr-16 sm:pr-24 py-2 sm:py-2.5 border border-gray-300 rounded-lg leading-5 bg-white/95 backdrop-blur-sm placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 focus:bg-white text-sm transition-all duration-200 hover:shadow-md"
+placeholder="Search..." value="" autocomplete="off" id="search-input"
+style="font-size: 16px;">
+<div class="absolute inset-y-0 right-0 flex items-center pr-1">
+<button type="submit"
+class="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-2 sm:px-4 py-1.5 sm:py-2 rounded-md sm:rounded-lg hover:from-blue-700 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all duration-200 text-sm font-medium shadow-lg hover:shadow-xl transform hover:scale-105">
+<i class="fas fa-search"></i>
+<span class="hidden sm:inline ml-1">Search</span>
+</button>
+</div>
+</div>
+<div id="autocomplete-results" class="autocomplete-results hidden"></div>
+</div>
+</form>
+</div>
+<div class="flex-shrink-0 sm:hidden">
+<button type="button"
+class="mobile-menu-button inline-flex items-center justify-center w-10 h-10 rounded-lg text-gray-600 hover:text-blue-600 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-colors"
+aria-controls="mobile-menu" aria-expanded="false">
+<span class="sr-only">Open main menu</span>
+<i class="fas fa-bars text-lg"></i>
+</button>
+</div>
+<div class="hidden sm:flex sm:items-center sm:space-x-4 lg:space-x-6 flex-shrink-0">
+<a href="/trending"
+class="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium transition duration-200 ease-in-out flex items-center">
+<i class="fas fa-fire mr-2 text-orange-500"></i>
+Trending
+</a>
+<a href="/latest"
+class="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium transition duration-200 ease-in-out flex items-center">
+<i class="fas fa-clock mr-2 text-green-500"></i>
+Latest
+</a>
+<a href="/login"
+class="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium transition duration-200 ease-in-out flex items-center">
+<i class="fas fa-sign-in-alt mr-2"></i>
+Login
+</a>
+<a href="/signup"
+class="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:from-blue-700 hover:to-purple-700 transition-all duration-200 transform hover:scale-105 shadow-md">
+<i class="fas fa-user-plus mr-2"></i>
+Sign Up
+</a>
+</div>
+</div>
+</div>
+<div class="sm:hidden hidden" id="mobile-menu">
+<div class="px-4 pt-4 pb-6 space-y-3 bg-white border-t border-gray-200 shadow-lg">
+<a href="/trending"
+class="text-gray-700 hover:text-gray-900 hover:bg-gray-100 flex items-center px-4 py-3 rounded-lg text-base font-medium transition-colors">
+<i class="fas fa-fire mr-3 text-orange-500 w-5"></i>
+Trending
+</a>
+<a href="/latest"
+class="text-gray-700 hover:text-gray-900 hover:bg-gray-100 flex items-center px-4 py-3 rounded-lg text-base font-medium transition-colors">
+<i class="fas fa-clock mr-3 text-green-500 w-5"></i>
+Latest
+</a>
+<a href="/login"
+class="text-gray-700 hover:text-gray-900 hover:bg-gray-100 flex items-center px-4 py-3 rounded-lg text-base font-medium transition-colors">
+<i class="fas fa-sign-in-alt mr-3 w-5"></i>
+Login
+</a>
+<a href="/signup"
+class="bg-gradient-to-r from-blue-600 to-purple-600 text-white flex items-center px-4 py-3 rounded-lg text-base font-medium shadow-md">
+<i class="fas fa-user-plus mr-3 w-5"></i>
+Sign Up
+</a>
+</div>
+</div>
+</nav>
+<main class="flex-1">
+<div class="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100" data-torrent-id="5c36630591125666e6ee9b90" data-related-ids="[&quot;6084c41030a594bb21bdeef6&quot;,&quot;5d3407d545f2987d8f1ccfbd&quot;,&quot;5c08caad6ff3fe4dcba50210&quot;,&quot;6983483d3cb66ec24a9c11d0&quot;,&quot;61a0241d3ac57ae554f24dea&quot;,&quot;5ed36828f25bab45b1ff7f50&quot;,&quot;5c464f4829dd4319e433b83f&quot;,&quot;5c4627da29dd4319e48726c0&quot;,&quot;5e5a7278c2b77e427ce9c2ee&quot;,&quot;5c462ec229dd4319e4a95133&quot;,&quot;654cf855c8469079d557d915&quot;,&quot;5f44c814e996e34063798b98&quot;,&quot;614206c2790fbfc52cd917fa&quot;,&quot;5c89f3b72c360a3a2bd2b65d&quot;,&quot;622d474ebef06e54b34aca3e&quot;]">
+<div class="bg-white border-b border-gray-200">
+<div class="max-w-7xl mx-auto px-3 sm:px-4 lg:px-8 py-2 sm:py-3">
+<div class="flex items-center justify-between gap-2 sm:gap-3">
+<div class="flex items-center space-x-2 sm:space-x-3 min-w-0 flex-1">
+<button onclick="history.back()" class="inline-flex items-center px-2 py-1.5 sm:px-3 sm:py-2 border border-gray-300 rounded-md text-xs sm:text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 touch-manipulation">
+<i class="fas fa-arrow-left mr-1 sm:mr-2"></i>
+<span class="hidden sm:inline">Back</span>
+</button>
+<nav class="flex min-w-0 flex-1" aria-label="Breadcrumb">
+<div class="sm:hidden flex items-center min-w-0">
+<div class="inline-flex items-center px-2 py-1 bg-gray-100 rounded-md">
+<i class="fas fa-file-alt text-gray-500 text-xs mr-1"></i>
+<span class="text-xs text-gray-700 font-medium truncate">Torrent</span>
+</div>
+</div>
+<ol class="hidden sm:flex items-center space-x-1 text-xs">
+<li><a href="/" class="text-gray-500 hover:text-gray-700 transition-colors">Home</a></li>
+<li><i class="fas fa-chevron-right text-gray-400 text-xs mx-1"></i></li>
+<li><a href="/search" class="text-gray-500 hover:text-gray-700 transition-colors">Search</a></li>
+<li><i class="fas fa-chevron-right text-gray-400 text-xs mx-1"></i></li>
+<li class="text-gray-900 font-medium">Torrent Details</li>
+</ol>
+</nav>
+</div>
+<button onclick="shareContent()" class="inline-flex items-center px-2 py-1.5 sm:px-3 sm:py-2 bg-blue-600 text-white rounded-md text-xs sm:text-sm hover:bg-blue-700 transition-colors touch-manipulation">
+<i class="fas fa-share mr-1 sm:mr-2"></i>
+<span class="hidden sm:inline">Share</span>
+</button>
+</div>
+</div>
+</div>
+<main class="max-w-7xl mx-auto px-3 sm:px-4 lg:px-8 py-4 sm:py-8">
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8">
+<div class="lg:col-span-2 space-y-4 sm:space-y-6 lg:space-y-8">
+<div class="bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden">
+<div class="bg-gradient-to-r from-blue-600 to-purple-600 p-3 sm:p-4 text-white">
+<div class="flex flex-col gap-3 sm:gap-4">
+<div class="flex flex-col sm:flex-row gap-3 sm:gap-4">
+<div class="flex-shrink-0 self-center sm:self-start">
+<div class="w-24 h-24 sm:w-32 sm:h-32 bg-white bg-opacity-20 rounded-lg flex items-center justify-center shadow-xl backdrop-blur-sm">
+<i class="fas fa-laptop-code text-2xl sm:text-3xl text-white"></i>
+</div>
+</div>
+<div class="flex-1 min-w-0 text-center sm:text-left">
+<h1 class="text-lg sm:text-xl lg:text-2xl font-bold mb-2 sm:mb-3 leading-tight text-white drop-shadow-lg">ubuntu-ultimate-1.4-dvd</h1>
+<div class="flex flex-wrap justify-center sm:justify-start gap-1.5 sm:gap-2 mb-2 sm:mb-3">
+<span class="inline-flex items-center px-2 sm:px-3 py-1 rounded-full text-xs font-semibold bg-white bg-opacity-20 text-white backdrop-blur-sm">
+<i class="fas fa-tag mr-1"></i>
+Softwares/Android
+</span>
+<span class="inline-flex items-center px-2 sm:px-3 py-1 rounded-full text-xs font-semibold bg-green-500 bg-opacity-90 text-white">
+<i class="fas fa-shield-check mr-1"></i>
+Verified
+</span>
+<span class="inline-flex items-center px-2 sm:px-3 py-1 rounded-full text-xs font-semibold bg-purple-500 bg-opacity-90 text-white">
+<i class="fas fa-source-branch mr-1"></i>
+1337x
+</span>
+</div>
+<div class="flex flex-wrap justify-center sm:justify-start gap-1 mb-2 sm:mb-3">
+<span class="inline-flex items-center px-2 py-0.5 rounded-md text-xs font-medium bg-white bg-opacity-10 text-white backdrop-blur-sm">
+Apps
+</span>
+<span class="inline-flex items-center px-2 py-0.5 rounded-md text-xs font-medium bg-white bg-opacity-10 text-white backdrop-blur-sm">
+Linux
+</span>
+</div>
+</div>
+</div>
+<div class="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3">
+<div class="text-center p-2 sm:p-3 bg-white bg-opacity-20 rounded-lg backdrop-blur-sm">
+<div class="text-lg sm:text-xl font-bold text-white">8</div>
+<div class="text-xs text-white text-opacity-80">Seeders</div>
+</div>
+<div class="text-center p-2 sm:p-3 bg-white bg-opacity-20 rounded-lg backdrop-blur-sm">
+<div class="text-lg sm:text-xl font-bold text-white">1</div>
+<div class="text-xs text-white text-opacity-80">Leechers</div>
+</div>
+<div class="text-center p-2 sm:p-3 bg-white bg-opacity-20 rounded-lg backdrop-blur-sm">
+<div class="text-lg sm:text-xl font-bold text-white">1.94 GB</div>
+<div class="text-xs text-white text-opacity-80">Size</div>
+</div>
+<div class="text-center p-2 sm:p-3 bg-white bg-opacity-20 rounded-lg backdrop-blur-sm">
+<div class="text-lg sm:text-xl font-bold text-white">3</div>
+<div class="text-xs text-white text-opacity-80">Files</div>
+</div>
+</div>
+</div>
+</div>
+<div class="p-3 sm:p-4 bg-gray-50">
+<div class="flex flex-col gap-2.5 sm:gap-3">
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 sm:gap-3">
+<a href="magnet:?xt&#x3D;urn:btih:FEBD9A2CB755EC82E6E7A015A8DC497FDE9DD507&amp;dn&#x3D;%5Bbitsearch.to%5D%20ubuntu-ultimate-1.4-dvd&amp;tr&#x3D;udp%3A%2F%2Ftracker.opentrackr.org%3A1337%2Fannounce&amp;tr&#x3D;udp%3A%2F%2Fipv4.tracker.harry.lu%3A80%2Fannounce&amp;tr&#x3D;udp%3A%2F%2Ftracker.moeking.me%3A6969%2Fannounce&amp;tr&#x3D;udp%3A%2F%2Ftracker.bitsearch.to%3A1337%2Fannounce&amp;tr&#x3D;udp%3A%2F%2Ftracker.torrent.eu.org%3A451%2Fannounce" data-download-id="5c36630591125666e6ee9b90"
+class="inline-flex items-center justify-center px-4 sm:px-6 py-2.5 sm:py-3 bg-gradient-to-r from-green-600 to-green-700 text-white font-semibold rounded-lg hover:from-green-700 hover:to-green-800 transition-all duration-200 shadow-md hover:shadow-lg transform hover:-translate-y-0.5 touch-manipulation">
+<i class="fas fa-magnet mr-2 text-base"></i>
+<span class="text-sm sm:text-base">Magnet Download</span>
+</a>
+<a href="/download/torrent/FEBD9A2CB755EC82E6E7A015A8DC497FDE9DD507?title=ubuntu-ultimate-1.4-dvd" data-download-id="5c36630591125666e6ee9b90"
+class="inline-flex items-center justify-center px-4 sm:px-6 py-2.5 sm:py-3 bg-gradient-to-r from-blue-600 to-blue-700 text-white font-semibold rounded-lg hover:from-blue-700 hover:to-blue-800 transition-all duration-200 shadow-md hover:shadow-lg transform hover:-translate-y-0.5 touch-manipulation">
+<i class="fas fa-download mr-2 text-base"></i>
+<span class="text-sm sm:text-base">Download .torrent</span>
+</a>
+</div>
+<button onclick="copyToClipboard('magnet:?xt&#x3D;urn:btih:FEBD9A2CB755EC82E6E7A015A8DC497FDE9DD507&amp;dn&#x3D;%5Bbitsearch.to%5D%20ubuntu-ultimate-1.4-dvd&amp;tr&#x3D;udp%3A%2F%2Ftracker.opentrackr.org%3A1337%2Fannounce&amp;tr&#x3D;udp%3A%2F%2Fipv4.tracker.harry.lu%3A80%2Fannounce&amp;tr&#x3D;udp%3A%2F%2Ftracker.moeking.me%3A6969%2Fannounce&amp;tr&#x3D;udp%3A%2F%2Ftracker.bitsearch.to%3A1337%2Fannounce&amp;tr&#x3D;udp%3A%2F%2Ftracker.torrent.eu.org%3A451%2Fannounce')" 
+class="inline-flex items-center justify-center px-4 py-2.5 bg-gradient-to-r from-gray-600 to-gray-700 text-white font-semibold rounded-lg hover:from-gray-700 hover:to-gray-800 transition-all duration-200 shadow-md hover:shadow-lg transform hover:-translate-y-0.5 touch-manipulation">
+<i class="fas fa-copy mr-2 text-base"></i>
+<span class="text-sm">Copy Magnet Link</span>
+</button>
+</div>
+</div>
+</div>
+<div id="frame" style="width: 100%;margin: auto;position: relative; z-index: 99998;">
+</div>
+<div class="flex flex-col gap-6">
+<div class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
+<div class="px-6 py-4 bg-gray-50/50 border-b border-gray-100 flex items-center justify-between">
+<h3 class="text-sm font-bold text-gray-900 uppercase tracking-wider flex items-center">
+<i class="fas fa-info-circle mr-2.5 text-blue-600"></i>
+Torrent Information
+</h3>
+<span class="px-2 py-0.5 bg-blue-100 text-blue-700 text-[10px] font-black rounded uppercase tracking-tighter">Details</span>
+</div>
+<div class="p-6">
+<div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+<div class="bg-gradient-to-br from-blue-50/50 to-indigo-50/30 p-5 rounded-2xl border border-blue-100/50 group transition-all hover:shadow-md">
+<div class="flex items-center justify-between mb-2">
+<i class="fas fa-database text-blue-400 text-xs"></i>
+<span class="text-[10px] font-bold text-blue-400 uppercase tracking-widest">Total Size</span>
+</div>
+<div class="text-2xl font-black text-gray-900 leading-tight">1.94 GB</div>
+</div>
+<div class="bg-gradient-to-br from-green-50/50 to-emerald-50/30 p-5 rounded-2xl border border-green-100/50 group transition-all hover:shadow-md">
+<div class="flex items-center justify-between mb-2">
+<i class="fas fa-seedling text-green-400 text-xs"></i>
+<span class="text-[10px] font-bold text-green-400 uppercase tracking-widest">Active Seeds</span>
+</div>
+<div class="text-2xl font-black text-gray-900 leading-tight">8</div>
+</div>
+<div class="bg-gradient-to-br from-red-50/50 to-orange-50/30 p-5 rounded-2xl border border-red-100/50 group transition-all hover:shadow-md">
+<div class="flex items-center justify-between mb-2">
+<i class="fas fa-users text-red-400 text-xs"></i>
+<span class="text-[10px] font-bold text-red-400 uppercase tracking-widest">Total Peers</span>
+</div>
+<div class="text-2xl font-black text-gray-900 leading-tight">1</div>
+</div>
+<div class="bg-gradient-to-br from-purple-50/50 to-pink-50/30 p-5 rounded-2xl border border-purple-100/50 group transition-all hover:shadow-md">
+<div class="flex items-center justify-between mb-2">
+<i class="fas fa-cloud-download-alt text-purple-400 text-xs"></i>
+<span class="text-[10px] font-bold text-purple-400 uppercase tracking-widest">Downloads</span>
+</div>
+<div class="text-2xl font-black text-gray-900 leading-tight">122</div>
+</div>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+<div class="space-y-4">
+<h4 class="text-[10px] font-black text-gray-400 uppercase tracking-widest px-1">Global Parameters</h4>
+<div class="space-y-3">
+<div class="flex items-center justify-between py-2.5 border-b border-gray-50">
+<div class="flex items-center text-xs text-gray-500 font-medium">
+<i class="far fa-calendar-plus mr-3 text-gray-400 w-4"></i> Added on
+</div>
+<div class="text-sm font-bold text-gray-900">1/9/2019</div>
+</div>
+<div class="flex items-center justify-between py-2.5 border-b border-gray-50">
+<div class="flex items-center text-xs text-gray-500 font-medium">
+<i class="far fa-clock mr-3 text-gray-400 w-4"></i> Last Activity
+</div>
+<div class="text-sm font-bold text-gray-900">1/24/2022</div>
+</div>
+<div class="flex items-center justify-between py-2.5">
+<div class="flex items-center text-xs text-gray-500 font-medium">
+<i class="fas fa-heartbeat mr-3 text-gray-400 w-4"></i> Health Status
+</div>
+<div>
+<span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-black uppercase tracking-tighter
+bg-yellow-100 text-yellow-700">
+Stable
+</span>
+</div>
+</div>
+</div>
+</div>
+<div class="flex flex-col">
+<h4 class="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-3 px-1">Identification Hash</h4>
+<div class="flex-1 bg-gray-900 rounded-2xl p-5 border border-gray-800 flex flex-col justify-center group/hash relative overflow-hidden min-h-[100px]">
+<div class="absolute inset-0 bg-gradient-to-br from-blue-500/10 via-transparent to-transparent opacity-0 group-hover/hash:opacity-100 transition-opacity pointer-events-none"></div>
+<div class="flex items-start justify-between gap-4">
+<code class="text-sm font-mono text-blue-300 break-all select-all leading-relaxed">FEBD9A2CB755EC82E6E7A015A8DC497FDE9DD507</code>
+<button onclick="copyToClipboard('FEBD9A2CB755EC82E6E7A015A8DC497FDE9DD507')" 
+class="p-2.5 bg-gray-800 text-gray-400 rounded-xl hover:text-white hover:bg-blue-600 transition-all active:scale-95 shadow-lg group-hover/hash:shadow-blue-500/20">
+<i class="fas fa-copy text-sm"></i>
+</button>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
+<div class="px-6 py-4 bg-gray-50/50 border-b border-gray-100">
+<h3 class="text-sm font-bold text-gray-900 uppercase tracking-wider flex items-center">
+<i class="fas fa-heart mr-2.5 text-red-500"></i>
+Community Trust & Feedback
+</h3>
+</div>
+<div class="p-6">
+<div class="grid grid-cols-1 md:grid-cols-2 gap-10">
+<div class="flex flex-col justify-center">
+<div class="flex items-end justify-between mb-3 px-1">
+<div class="flex flex-col">
+<span class="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Reputation Score</span>
+<div class="flex items-baseline">
+<span class="text-3xl font-black text-gray-900 tracking-tight">
+100%
+</span>
+<span class="text-sm text-gray-400 font-bold ml-2">Positive Rating</span>
+</div>
+</div>
+<div class="flex flex-col items-end">
+<span class="px-3 py-1 bg-blue-50 text-blue-600 text-[10px] font-black rounded-full uppercase tracking-widest border border-blue-100">
+<i class="fas fa-shield-check mr-1"></i> Verified
+</span>
+</div>
+</div>
+<div class="relative h-3 bg-gray-100 rounded-full overflow-hidden flex shadow-inner">
+<div class="bg-blue-500 h-full w-full opacity-20"></div>
+</div>
+<div class="flex justify-between mt-3 px-1">
+<div class="flex items-center">
+<div class="w-2.5 h-2.5 bg-green-500 rounded-full mr-2 shadow-[0_0_8px_rgba(34,197,94,0.4)]"></div>
+<span class="text-xs font-bold text-gray-600">0 Likes</span>
+</div>
+<div class="flex items-center">
+<span class="text-xs font-bold text-gray-600 mr-2">0 Dislikes</span>
+<div class="w-2.5 h-2.5 bg-red-500 rounded-full shadow-[0_0_8px_rgba(239,68,68,0.4)]"></div>
+</div>
+</div>
+</div>
+<div class="flex flex-col gap-6">
+<div class="grid grid-cols-2 gap-4">
+<button onclick="rate('like')" 
+class="flex items-center justify-center py-4 bg-white border-2 border-green-100 text-green-700 rounded-2xl hover:bg-green-50 hover:border-green-200 transition-all active:scale-95 group/btn shadow-sm">
+<i class="fas fa-thumbs-up mr-2.5 group-hover/btn:scale-110 transition-transform"></i>
+<span class="text-xs font-black uppercase tracking-widest">Like</span>
+</button>
+<button onclick="rate('dislike')" 
+class="flex items-center justify-center py-4 bg-white border-2 border-red-100 text-red-700 rounded-2xl hover:bg-red-50 hover:border-red-200 transition-all active:scale-95 group/btn shadow-sm">
+<i class="fas fa-thumbs-down mr-2.5 group-hover/btn:scale-110 transition-transform"></i>
+<span class="text-xs font-black uppercase tracking-widest">Dislike</span>
+</button>
+</div>
+<div class="flex items-center justify-between p-4 bg-gray-50 rounded-2xl border border-gray-100">
+<div class="flex items-center space-x-4">
+<div class="h-10 w-10 bg-white rounded-xl flex items-center justify-center text-blue-500 shadow-sm">
+<i class="fas fa-fire-alt"></i>
+</div>
+<div>
+<div class="text-[9px] font-black text-gray-400 uppercase tracking-widest leading-none mb-1.5">Visibility</div>
+<div class="text-sm font-extrabold text-gray-900 leading-none">High Ranking Content</div>
+</div>
+</div>
+<div class="flex items-center gap-2">
+<a href="/torrent/5c36630591125666e6ee9b90/report" 
+class="flex items-center gap-2 px-4 py-2 bg-white border border-red-100 text-red-500 rounded-xl hover:bg-red-50 hover:border-red-200 transition-all shadow-sm group/rep">
+<i class="fas fa-flag text-xs group-hover/rep:animate-bounce"></i>
+<span class="text-xs font-black uppercase tracking-widest">Report Content</span>
+</a>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+
+</div>
+
+</div>
+</main>
+</div>
+</div>
+</main>
+<footer class="bg-gradient-to-r from-gray-50 to-gray-100 border-t border-gray-200">
+<div class="max-w-7xl mx-auto py-8 sm:py-10 lg:py-12 px-3 sm:px-6 lg:px-8">
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8">
+<div class="space-y-4">
+<h3 class="text-sm font-semibold text-gray-900 tracking-wider uppercase flex items-center">
+<i class="fas fa-link mr-2 text-blue-600"></i>
+Quick Links
+</h3>
+<div class="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-4">
+<a href="/about"
+class="text-gray-600 hover:text-blue-600 text-sm font-medium transition-colors flex items-center">
+<i class="fas fa-info-circle mr-2 text-xs"></i>
+About
+</a>
+<a href="/donate"
+class="text-gray-600 hover:text-green-600 text-sm font-medium transition-colors flex items-center">
+<i class="fas fa-heart mr-2 text-xs"></i>
+Donate
+</a>
+<a href="/content-removal"
+class="text-gray-600 hover:text-red-600 text-sm font-medium transition-colors flex items-center">
+<i class="fas fa-shield-alt mr-2 text-xs"></i>
+Content removal
+</a>
+<a href="/privacy-policy"
+class="text-gray-600 hover:text-purple-600 text-sm font-medium transition-colors flex items-center">
+<i class="fas fa-user-shield mr-2 text-xs"></i>
+Privacy
+</a>
+<a href="/add-torrent"
+class="text-gray-600 hover:text-blue-600 text-sm font-medium transition-colors flex items-center">
+<i class="fas fa-plus mr-2 text-xs"></i>
+Add Torrent
+</a>
+<a href="/buy-ad-space"
+class="text-gray-600 hover:text-orange-600 text-sm font-medium transition-colors flex items-center">
+<i class="fas fa-ad mr-2 text-xs"></i>
+Ad Space
+</a>
+<a href="/api"
+class="text-gray-600 hover:text-blue-600 text-sm font-medium transition-colors flex items-center">
+<i class="fas fa-code mr-2 text-xs"></i>
+API Access
+</a>
+</div>
+</div>
+<div class="space-y-4">
+<h3 class="text-sm font-semibold text-gray-900 tracking-wider uppercase flex items-center">
+<i class="fas fa-globe mr-2 text-purple-600"></i>
+Related Sites
+</h3>
+<div class="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
+<a href="https://limetorrents.eu"
+class="text-gray-600 hover:text-green-600 text-sm font-medium transition-colors flex items-center">
+<i class="fas fa-seedling mr-2 text-xs"></i>
+LimeTorrents
+</a>
+<a href="https://rarbg.mov"
+class="text-gray-600 hover:text-red-600 text-sm font-medium transition-colors flex items-center">
+<i class="fas fa-film mr-2 text-xs"></i>
+RARBG
+</a>
+<a href="https://solidtorrents.to"
+class="text-gray-600 hover:text-blue-600 text-sm font-medium transition-colors flex items-center">
+<i class="fas fa-magnet mr-2 text-xs"></i>
+SolidTorrents
+</a>
+<a href="https://torrentz2.nz"
+class="text-gray-600 hover:text-purple-600 text-sm font-medium transition-colors flex items-center">
+<i class="fas fa-search mr-2 text-xs"></i>
+Torrentz2
+</a>
+</div>
+</div>
+<div class="text-center lg:text-right space-y-3">
+<div class="flex justify-center lg:justify-end items-center space-x-4">
+<div class="flex items-center text-gray-600">
+<i class="fas fa-database mr-2 text-blue-600"></i>
+<span class="text-sm">Powered by Bitsearch</span>
+</div>
+</div>
+<p class="text-gray-600 text-sm">
+<i class="fas fa-copyright mr-1"></i>
+Bitsearch 2026 | All Rights Reserved
+</p>
+<div class="flex justify-center lg:justify-end space-x-4 text-xs text-gray-500">
+<span class="flex items-center">
+<i class="fas fa-bolt mr-1 text-yellow-500"></i>
+Fast Search
+</span>
+<span class="flex items-center">
+<i class="fas fa-shield mr-1 text-green-500"></i>
+Secure
+</span>
+<span class="flex items-center">
+<i class="fas fa-mobile-alt mr-1 text-blue-500"></i>
+Mobile Ready
+</span>
+</div>
+</div>
+</div>
+</div>
+</footer>
+</div>
+</body>
+</html>
+```
