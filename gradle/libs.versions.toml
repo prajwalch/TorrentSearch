@@ -25,6 +25,12 @@ lifecycleRuntimeKtx = "2.11.0"
 navigationCompose = "2.10.2"
 okhttpDnsoverhttps = "5.5.0"
 room = "2.8.5"
+# Compose for TV. Both artifacts are stable as of May 2026.
+# NOTE: the TvLazyColumn/TvLazyRow composables were deprecated in tv-foundation
+# 1.0.0-alpha11 and removed in alpha12 - standard Compose Foundation lazy
+# layouts now carry the focus-positioning behaviour instead.
+tvFoundation = "1.0.0"
+tvMaterial = "1.1.0"
 
 [libraries]
 androidx-activity-compose = { group = "androidx.activity", name = "activity-compose", version.ref = "activityCompose" }
@@ -64,6 +70,8 @@ ktor-client-core = { group = "io.ktor", name = "ktor-client-core", version.ref =
 ktor-client-okhttp = { group = "io.ktor", name = "ktor-client-okhttp", version.ref = "ktor" }
 lazycolumnscrollbar = { group = "com.github.nanihadesuka.LazyColumnScrollbar", name = "lazycolumnscrollbar", version.ref = "lazycolumnscrollbar" }
 okhttp-dnsoverhttps = { group = "com.squareup.okhttp3", name = "okhttp-dnsoverhttps", version.ref = "okhttpDnsoverhttps" }
+androidx-tv-foundation = { group = "androidx.tv", name = "tv-foundation", version.ref = "tvFoundation" }
+androidx-tv-material = { group = "androidx.tv", name = "tv-material", version.ref = "tvMaterial" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

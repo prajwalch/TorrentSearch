@@ -1,4 +1,4 @@
-name: Build release APK
+name: Build mobile release APK
 
 on: workflow_dispatch
 
@@ -33,36 +33,36 @@ jobs:
     - name: Grant execute permission for gradlew
       run: chmod +x gradlew
 
-    - name: Assemble release APK with gradlew
+    - name: Assemble mobile release APK
       env:
         SIGNING_STORE_FILE: ${{ github.workspace }}/release-keystore.jks
         SIGNING_STORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
         SIGNING_KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
         SIGNING_KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
-      run: ./gradlew app:assembleRelease
+      run: ./gradlew app:assembleMobileRelease
 
     - name: Generate SHA-256 checksum
       run: |
-        cd app/build/outputs/apk/release
-        sha256sum app-release.apk > SHA256_CHECKSUM.txt
+        cd app/build/outputs/apk/mobile/release
+        sha256sum app-mobile-release.apk > SHA256_CHECKSUM.txt
 
     - name: Echo SHA-256 checksum
-      run: cat app/build/outputs/apk/release/SHA256_CHECKSUM.txt
+      run: cat app/build/outputs/apk/mobile/release/SHA256_CHECKSUM.txt
 
     - name: Generate artifact attestation
       id: attest
       uses: actions/attest@v4.2.2
       with:
-        subject-path: 'app/build/outputs/apk/release/app-release.apk'
+        subject-path: 'app/build/outputs/apk/mobile/release/app-mobile-release.apk'
 
     - name: Upload APK, R8 mapping, checksum & attestation
       uses: actions/upload-artifact@v7.0.1
       with:
         name: torrentsearch-release-aritifacts
         path: |
-          app/build/outputs/apk/release/app-release.apk
+          app/build/outputs/apk/mobile/release/app-mobile-release.apk
           app/build/outputs/mapping/release/mapping.txt
-          app/build/outputs/apk/release/SHA256_CHECKSUM.txt
+          app/build/outputs/apk/mobile/release/SHA256_CHECKSUM.txt
           ${{ steps.attest.outputs.bundle-path }}
 
     - name: Post-cleanup

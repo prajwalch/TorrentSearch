@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!--
+        Lean-back / D-pad device support.
+
+        leanback:        this app exposes a CATEGORY_LEANBACK_LAUNCHER activity
+                         below, so it appears on the Android TV / Google TV home row.
+        touchscreen:     required="false" is the mandatory Google Play TV
+                         criterion (TV-MT) - the UI is fully D-pad operable and
+                         must never be filtered out as needing a touchscreen.
+        faketouch:       touch emulation is meaningless for a remote-driven UI and
+                         would otherwise be implied as required.
+    -->
+    <uses-feature
+        android:name="android.software.leanback"
+        android:required="false" />
+    <uses-feature
+        android:name="android.hardware.touchscreen"
+        android:required="false" />
+    <uses-feature
+        android:name="android.hardware.faketouch"
+        android:required="false" />
+
+    <!--
+        Exactly one <application> element on purpose. Attributes merge with the
+        <application> declared in src/main (android:name, icon, usesCleartextTraffic,
+        backup rules...). Declaring a second standalone <application> makes the
+        manifest merger emit two <application> nodes, and Android only honours the
+        first - which silently drops android:name and therefore never instantiates
+        TorrentSearchApplication, so startKoin never runs.
+
+        android:banner is a 320x180 px bitmap in drawable-xhdpi. Google TV quality
+        criterion TV-BN requires the app name to be legible inside the banner
+        image itself, which is why this is a bitmap rather than a themed drawable.
+    -->
+    <application android:banner="@drawable/app_banner">
+
+        <activity
+            android:name=".ui.tv.TvMainActivity"
+            android:exported="true"
+            android:theme="@style/Theme.TorrentSearch.Tv">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LEANBACK_LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <activity
+            android:name=".ui.crash.CrashActivity"
+            android:exported="false"
+            android:theme="@style/Theme.TorrentSearch.Tv" />
+    </application>
+
+</manifest>

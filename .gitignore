@@ -9,3 +9,8 @@
 .cxx
 local.properties
 .kotlin
+# TV port build artifacts (not committed)
+/dist-tv/
+
+# Draft issue prepared for upstream
+/UPSTREAM_ISSUE.md

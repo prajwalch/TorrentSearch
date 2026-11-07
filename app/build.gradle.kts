@@ -61,6 +61,23 @@ android {
         }
     }
 
+    flavorDimensions += "device"
+
+    productFlavors {
+        create("mobile") {
+            dimension = "device"
+        }
+
+        create("tv") {
+            dimension = "device"
+
+            // Installs side-by-side with the phone build. Compose for TV is only
+            // on this variant's classpath so the phone APK is unaffected.
+            applicationIdSuffix = ".tv"
+            versionNameSuffix = "-tv"
+        }
+    }
+
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
@@ -127,6 +144,12 @@ dependencies {
     implementation(platform(libs.androidx.compose.bom))
 
     ksp(libs.androidx.room.compiler)
+
+    // Compose for TV: 10-foot Material 3 with built-in D-pad focus feedback.
+    // The TextField composables stay on androidx.compose.material3 by design -
+    // tv-material has no text input component, so the TV theme bridges to it.
+    "tvImplementation"(libs.androidx.tv.foundation)
+    "tvImplementation"(libs.androidx.tv.material)
 
     testImplementation(libs.junit)
 

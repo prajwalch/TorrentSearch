@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!--
+        TV window theme.
+
+        Deliberately not derived from Theme.SplashScreen: Android TV drives its own
+        cold-start appearance and installSplashScreen() is a handheld-only code
+        path (kept in the mobile variant). A black windowBackground matches the
+        app's pureBlack setting and avoids a white flash before Compose draws.
+    -->
+    <style name="Theme.TorrentSearch.Tv" parent="android:Theme.Material.NoActionBar">
+        <item name="android:windowBackground">@color/black</item>
+    </style>
+</resources>

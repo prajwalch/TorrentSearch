@@ -17,6 +17,7 @@
 - [Intro](#intro)
 - [Screenshots](#screenshots)
 - [Download](#download)
+- [Android TV](#android-tv)
 - [Features](#features)
    * [Search](#search)
    * [Detailed results](#detailed-results)
@@ -59,6 +60,55 @@ TorrentSearch is an Android app for searching torrents across multiple providers
 [<img src="https://f-droid.org/badge/get-it-on.png" alt="Get it on F-Droid" height="80">](https://f-droid.org/packages/com.prajwalch.torrentsearch)
 [<img src="https://github.com/machiav3lli/oandbackupx/blob/034b226cea5c1b30eb4f6a6f313e4dadcbb0ece4/badge_github.png" alt="Get it on GitHub" height="80">](https://github.com/prajwalch/TorrentSearch/releases/latest/)
 [<img src="https://github.com/ImranR98/Obtainium/blob/main/assets/graphics/badge_obtainium.png" alt="Get it on Obtainium" height="80">](https://apps.obtainium.imranr.dev/redirect?r=obtainium://add/https://github.com/prajwalch/TorrentSearch/)
+
+## Android TV
+
+TorrentSearch ships a separate Android TV / Google TV build alongside the handheld app. It is a
+10-foot, D-pad-only interface - no touch, swipe or gesture input is required anywhere.
+
+### What is different
+
+- **Build variant.** A `device` product flavor produces `mobile*` and `tv*` variants from one
+  codebase. The TV variant gets its own application id (`…torrentsearch.tv`) so it installs
+  side-by-side with the phone app.
+- **Compose for TV.** The TV variant is built on `androidx.tv.material3` / `androidx.tv.foundation`
+  (stable since May 2026) for its focus, scale and glow treatment. The handheld UI is untouched.
+- **Shared logic.** All 46 search providers, Torznab, Room, DataStore and every existing
+  `ViewModel` are reused as-is. Only the composables are TV-specific.
+- **D-pad focus.** Every focusable row, chip and card has a visible focus border and scale
+  animation. Focus enters a chip row on the *selected* chip rather than whichever chip is
+  geometrically nearest.
+- **Text input.** The search field is wrapped so DPAD_CENTER attaches the on-screen keyboard,
+  and BACK closes the keyboard without leaving the screen.
+- **Deliberately absent on TV.** Clipboard copy, system share, and the `ACTION_SEND` /
+  `ACTION_PROCESS_TEXT` / global-search entry points - all of which have no usable TV
+  equivalent. Opening a magnet link in an installed TV torrent client and saving a `.torrent`
+  file are both supported.
+
+### Building and installing
+
+```sh
+./gradlew assembleTvDebug        # app/build/outputs/apk/tv/debug/app-tv-debug.apk
+./gradlew assembleTvRelease      # R8 + resource shrinking
+```
+
+Sideload the APK, or install over ADB:
+
+```sh
+adb connect <TV_IP>:5555
+adb install -r app/build/outputs/apk/tv/debug/app-tv-debug.apk
+```
+
+Enabling developer options and wireless debugging on a Google TV device is described in the
+[Android TV developer guide](https://developer.android.com/training/tv/start/start).
+
+### Leanback requirements
+
+The TV manifest declares `android.software.leanback`, `android.hardware.touchscreen` and
+`android.hardware.faketouch` as **not required**, registers a `CATEGORY_LEANBACK_LAUNCHER`
+activity, and ships a 320x180 xhdpi banner with the app name baked into the image. These are
+checked on every CI run against the built APK, along with 16 KB native page alignment and the
+presence of both 32-bit and 64-bit ABIs.
 
 ## Features
 

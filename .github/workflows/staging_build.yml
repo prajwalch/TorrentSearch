@@ -1,4 +1,4 @@
-name: Build staging APK
+name: Build mobile staging APK
 
 on:
   push:
@@ -28,16 +28,16 @@ jobs:
     - name: Grant execute permission for gradlew
       run: chmod +x gradlew
 
-    - name: Assemble staging APK with gradlew
-      run: ./gradlew app:assembleStaging
+    - name: Assemble mobile staging APK
+      run: ./gradlew app:assembleMobileStaging
 
     - name: Rename APK file to torrentsearch-staging.apk
       run: |
-        cd app/build/outputs/apk/staging
-        mv app-staging.apk torrentsearch-staging.apk
+        cd app/build/outputs/apk/mobile/staging
+        mv app-mobile-staging.apk torrentsearch-staging.apk
 
     - name: Upload staging APK
       uses: actions/upload-artifact@v7.0.1
       with:
-        path: app/build/outputs/apk/staging/torrentsearch-staging.apk
+        path: app/build/outputs/apk/mobile/staging/torrentsearch-staging.apk
         archive: false
