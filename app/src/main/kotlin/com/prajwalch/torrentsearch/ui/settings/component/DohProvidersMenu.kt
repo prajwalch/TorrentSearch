@@ -2,7 +2,7 @@ package com.prajwalch.torrentsearch.ui.settings.component
 
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExposedDropdownMenu
 import androidx.compose.material3.ExposedDropdownMenuAnchorType
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuBoxScope
@@ -22,7 +22,6 @@ import com.prajwalch.torrentsearch.R
 import com.prajwalch.torrentsearch.domain.model.DohProvider
 import com.prajwalch.torrentsearch.ui.displayName
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DohProvidersMenu(
     expanded: Boolean,
@@ -55,7 +54,6 @@ fun DohProvidersMenu(
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun ExposedDropdownMenuBoxScope.DohProvidersDropdownMenu(
     expanded: Boolean,

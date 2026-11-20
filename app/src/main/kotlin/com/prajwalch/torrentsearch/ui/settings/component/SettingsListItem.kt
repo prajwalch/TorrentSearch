@@ -22,7 +22,7 @@ fun SettingsListItem(
     subtitle: @Composable (() -> Unit)? = null,
     leadingIcon: @Composable (() -> Unit)? = null,
     trailingContent: @Composable (() -> Unit)? = null,
-    colors: ListItemColors = ListItemDefaults.colors().copy(
+    colors: ListItemColors = ListItemDefaults.colors(
         containerColor = MaterialTheme.colorScheme.surfaceContainer,
     ),
     shape: Shape = MaterialTheme.shapes.large,
@@ -31,10 +31,10 @@ fun SettingsListItem(
         modifier = Modifier
             .clip(shape)
             .then(modifier),
-        headlineContent = title,
-        supportingContent = subtitle,
         leadingContent = leadingIcon,
+        content = title,
         trailingContent = trailingContent,
+        supportingContent = subtitle,
         colors = colors,
     )
 }

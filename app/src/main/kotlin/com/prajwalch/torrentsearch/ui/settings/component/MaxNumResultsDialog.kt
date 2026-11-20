@@ -10,11 +10,8 @@ import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Slider
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.rememberSliderState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableFloatStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -24,17 +21,19 @@ import com.prajwalch.torrentsearch.ui.theme.spaces
 
 @Composable
 fun MaxNumResultsDialog(
-    onDismiss: () -> Unit,
     num: Int?,
-    onNumChange: (Int) -> Unit,
+    onDismiss: () -> Unit,
+    onConfirm: (Int) -> Unit,
     onUnlimitedClick: () -> Unit,
     modifier: Modifier = Modifier,
     sliderRange: ClosedFloatingPointRange<Float> = 10f..100f,
     incrementBy: Int = 5,
 ) {
-    var sliderValue by rememberSaveable(num) {
-        mutableFloatStateOf(num?.toFloat() ?: sliderRange.start)
-    }
+    val sliderState = rememberSliderState(
+        value = num?.toFloat() ?: sliderRange.start,
+        steps = ((sliderRange.endInclusive - sliderRange.start) / incrementBy).toInt() - 1,
+        trackRange = sliderRange
+    )
 
     AlertDialog(
         modifier = modifier,
@@ -48,16 +47,14 @@ fun MaxNumResultsDialog(
                 Text(
                     text = stringResource(
                         R.string.settings_max_num_results_summary_format,
-                        sliderValue.toInt()
+                        sliderState.value.toInt(),
                     ),
                     style = MaterialTheme.typography.bodyLarge,
                 )
                 Spacer(modifier = Modifier.height(MaterialTheme.spaces.large))
                 Slider(
-                    value = sliderValue,
-                    onValueChange = { sliderValue = (it / incrementBy) * incrementBy },
-                    valueRange = sliderRange,
-                    steps = ((sliderRange.endInclusive - sliderRange.start) / incrementBy).toInt() - 1,
+                    state = sliderState,
+                    onValueChange = { sliderState.value = (it / incrementBy) * incrementBy },
                 )
                 OutlinedButton(onClick = onUnlimitedClick) {
                     Text(text = stringResource(R.string.settings_max_num_results_button_unlimited))
@@ -70,10 +67,7 @@ fun MaxNumResultsDialog(
             }
         },
         confirmButton = {
-            TextButton(onClick = {
-                onNumChange(sliderValue.toInt())
-                onDismiss()
-            }) {
+            TextButton(onClick = { onConfirm(sliderState.value.toInt()) }) {
                 Text(text = stringResource(R.string.button_done))
             }
         },

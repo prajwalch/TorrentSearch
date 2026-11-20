@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.ListItem
@@ -36,7 +35,6 @@ import com.prajwalch.torrentsearch.ui.theme.spaces
 
 import org.koin.androidx.compose.koinViewModel
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DefaultSortOptionsScreen(
     onNavigateBack: () -> Unit,
@@ -76,7 +74,6 @@ fun DefaultSortOptionsScreen(
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun DefaultSortOptionsScreenTopBar(
     onNavigateBack: () -> Unit,
@@ -123,7 +120,7 @@ private fun SortCriteriaSection(
                         onClick = { onCriteriaSelect(criteria) },
                     )
                 },
-                headlineContent = { Text(text = sortCriteriaStringResource(criteria)) },
+                content = { Text(text = sortCriteriaStringResource(criteria)) },
             )
         }
     }
@@ -154,7 +151,7 @@ private fun SortOrderSection(
                         onClick = { onOrderSelect(order) },
                     )
                 },
-                headlineContent = { Text(text = sortOrderStringResource(order)) },
+                content = { Text(text = sortOrderStringResource(order)) },
             )
         }
     }

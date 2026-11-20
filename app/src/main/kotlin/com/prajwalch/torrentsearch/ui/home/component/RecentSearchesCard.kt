@@ -77,7 +77,7 @@ private fun QueryListItem(query: String, modifier: Modifier = Modifier) {
                 contentDescription = null,
             )
         },
-        headlineContent = {
+        content = {
             Text(
                 text = query,
                 maxLines = 1,

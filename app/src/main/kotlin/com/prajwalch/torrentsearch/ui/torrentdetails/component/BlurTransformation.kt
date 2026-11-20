@@ -38,8 +38,7 @@ class BlurTransformation(
         input.blur(scale = scale, radius = radius) ?: input
 
     override fun equals(other: Any?): Boolean {
-        if (this === other) return true
-        return other is BlurTransformation && radius == other.radius
+        return this === other || other is BlurTransformation && radius == other.radius
     }
 
     override fun hashCode(): Int = radius.hashCode()

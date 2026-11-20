@@ -21,7 +21,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.plus
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -66,7 +65,6 @@ import com.prajwalch.torrentsearch.ui.theme.spaces
 
 import org.koin.androidx.compose.koinViewModel
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SettingsScreen(
     onNavigateBack: () -> Unit,
@@ -153,7 +151,6 @@ fun SettingsScreen(
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun SettingsScreenTopBar(
     onNavigateBack: () -> Unit,
@@ -447,9 +444,12 @@ private fun SearchSection(
     var showMaxNumResultsDialog by rememberSaveable { mutableStateOf(false) }
     if (showMaxNumResultsDialog) {
         MaxNumResultsDialog(
-            onDismiss = { showMaxNumResultsDialog = false },
             num = if (uiState.maxNumResults.isUnlimited()) null else uiState.maxNumResults.n,
-            onNumChange = { onSetMaxNumResults(MaxNumResults(n = it)) },
+            onDismiss = { showMaxNumResultsDialog = false },
+            onConfirm = {
+                onSetMaxNumResults(MaxNumResults(n = it))
+                showMaxNumResultsDialog = false
+            },
             onUnlimitedClick = {
                 onSetMaxNumResults(MaxNumResults.Unlimited)
                 showMaxNumResultsDialog = false

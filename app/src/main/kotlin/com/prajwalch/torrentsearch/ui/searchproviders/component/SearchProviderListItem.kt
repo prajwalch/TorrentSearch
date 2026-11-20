@@ -66,31 +66,13 @@ fun SearchProviderListItem(
 ) {
     ListItem(
         modifier = modifier,
-        headlineContent = {
+        content = {
             Row(
                 horizontalArrangement = Arrangement.spacedBy(MaterialTheme.spaces.extraSmall),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 Text(name)
                 SearchProviderProtectionStatus(protectionStatus)
-            }
-        },
-        supportingContent = {
-            Column(
-                verticalArrangement = Arrangement.spacedBy(
-                    space = MaterialTheme.spaces.extraSmall,
-                    alignment = Alignment.CenterVertically,
-                ),
-            ) {
-                SearchProviderUrl(url)
-                SupportedCategories(
-                    categories = supportedCategories,
-                    containerColor = colors.containerColor,
-                )
-                BadgeRow {
-                    if (origin == SearchProviderOrigin.Torznab) TorznabBadge()
-                    if (safety.isUnsafe()) UnsafeBadge()
-                }
             }
         },
         trailingContent = {
@@ -110,6 +92,24 @@ fun SearchProviderListItem(
                     } else {
                         Switch(checked = enabled, onCheckedChange = onEnable)
                     }
+                }
+            }
+        },
+        supportingContent = {
+            Column(
+                verticalArrangement = Arrangement.spacedBy(
+                    space = MaterialTheme.spaces.extraSmall,
+                    alignment = Alignment.CenterVertically,
+                ),
+            ) {
+                SearchProviderUrl(url)
+                SupportedCategories(
+                    categories = supportedCategories,
+                    containerColor = colors.containerColor,
+                )
+                BadgeRow {
+                    if (origin == SearchProviderOrigin.Torznab) TorznabBadge()
+                    if (safety.isUnsafe()) UnsafeBadge()
                 }
             }
         },
@@ -181,7 +181,7 @@ private fun SupportedCategories(
     // TODO: For maximum flexibility, use WindowSizeClass.
     val currentOrientation = LocalConfiguration.current.orientation
     val isPortraitMode = currentOrientation == Configuration.ORIENTATION_PORTRAIT
-    val showFadeOut = if (isPortraitMode) hasOverflowed else false
+    val showFadeOut = isPortraitMode && hasOverflowed
 
     Box(modifier = modifier.height(IntrinsicSize.Max)) {
         BadgeRow(Modifier.horizontalScroll(rememberScrollState())) {

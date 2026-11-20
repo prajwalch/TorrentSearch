@@ -16,7 +16,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.TorrentSearch"
         android:usesCleartextTraffic="true"
-        tools:targetApi="36">
+        tools:targetApi="37">
         <activity
             android:name=".ui.main.MainActivity"
             android:exported="true"

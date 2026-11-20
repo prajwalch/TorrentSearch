@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -34,7 +33,6 @@ import com.prajwalch.torrentsearch.ui.component.RoundedDropdownMenu
 import com.prajwalch.torrentsearch.ui.component.SortDropdownMenu
 import com.prajwalch.torrentsearch.ui.theme.spaces
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun BookmarksScreenTopBar(
     onNavigateBack: () -> Unit,

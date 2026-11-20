@@ -19,7 +19,8 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.SheetState
-import androidx.compose.material3.rememberModalBottomSheetState
+import androidx.compose.material3.SheetValue
+import androidx.compose.material3.rememberBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
@@ -51,7 +52,7 @@ fun CloudflareChallengeBottomSheet(
     onChallengeSolved: () -> Unit,
     modifier: Modifier = Modifier,
     webViewMaxHeight: Dp = 400.dp,
-    sheetState: SheetState = rememberModalBottomSheetState(),
+    sheetState: SheetState = rememberBottomSheetState(initialValue = SheetValue.Hidden),
 ) {
     var challengeSolveState by remember {
         mutableStateOf<ChallengeSolveState>(ChallengeSolveState.Solving)

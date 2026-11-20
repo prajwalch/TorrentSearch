@@ -21,7 +21,6 @@ fun CategoryInputChip(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-
     InputChip(
         modifier = modifier,
         selected = selected,

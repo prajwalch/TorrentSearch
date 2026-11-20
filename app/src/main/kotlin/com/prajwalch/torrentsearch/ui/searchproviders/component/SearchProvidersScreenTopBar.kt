@@ -3,7 +3,6 @@ package com.prajwalch.torrentsearch.ui.searchproviders.component
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LocalContentColor
@@ -25,7 +24,6 @@ import androidx.compose.ui.res.stringResource
 import com.prajwalch.torrentsearch.R
 import com.prajwalch.torrentsearch.ui.component.RoundedDropdownMenu
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SearchProvidersScreenTopBar(
     onNavigateBack: () -> Unit,

@@ -206,12 +206,13 @@ private fun TorrentClientListItem(
             .clip(shape = shape)
             .height(60.dp)
             .then(modifier),
-        headlineContent = {
+        content = {
             Text(
                 text = stringResource(client.name),
                 style = MaterialTheme.typography.bodyMedium,
             )
         },
+        trailingContent = { TorrentClientSourcesRow(sources = client.sources) },
         supportingContent = {
             if (client.isRecommended) {
                 Text(
@@ -220,7 +221,6 @@ private fun TorrentClientListItem(
                 )
             }
         },
-        trailingContent = { TorrentClientSourcesRow(sources = client.sources) },
         colors = listItemColors,
     )
 }

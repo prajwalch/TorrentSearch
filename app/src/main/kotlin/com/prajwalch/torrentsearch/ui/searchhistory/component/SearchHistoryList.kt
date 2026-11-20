@@ -134,9 +134,8 @@ private fun SearchHistoryListItem(
                 contentDescription = null,
             )
         },
-        headlineContent = { Text(text = query) },
+        content = { Text(text = query) },
         trailingContent = {
-            // Delete button.
             IconButton(onClick = onDeleteClick) {
                 Icon(
                     painter = painterResource(R.drawable.ic_delete),

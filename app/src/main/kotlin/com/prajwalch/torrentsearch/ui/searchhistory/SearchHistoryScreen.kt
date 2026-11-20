@@ -3,7 +3,6 @@ package com.prajwalch.torrentsearch.ui.searchhistory
 import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
@@ -36,7 +35,6 @@ import com.prajwalch.torrentsearch.ui.searchhistory.component.SearchHistoryList
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SearchHistoryScreen(
     onNavigateBack: () -> Unit,
@@ -106,7 +104,6 @@ fun SearchHistoryScreen(
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun SearchHistoryScreenTopBar(
     onNavigateBack: () -> Unit,

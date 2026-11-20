@@ -237,7 +237,6 @@ private fun BrowseContentState.getAnimationContentKey() = when (this) {
     is BrowseContentState.Available -> BrowseContentState.Available::class
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun BrowseScreenTopBar(
     onNavigateBack: () -> Unit,

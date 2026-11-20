@@ -52,7 +52,7 @@ private fun SearchSuggestionListItem(
                 contentDescription = null,
             )
         },
-        headlineContent = { Text(text = query) },
+        content = { Text(text = query) },
         trailingContent = {
             IconButton(onClick = onInsertClick) {
                 Icon(

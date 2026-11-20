@@ -2,7 +2,7 @@
 activityCompose = "1.13.0"
 agp = "9.5.1"
 coil = "3.6.3"
-composeBom = "2026.09.00"
+composeBom = "2026.11.01"
 composeMarkdown = "0.7.0"
 coreKtx = "1.19.1"
 coreSplashscreen = "1.2.0"

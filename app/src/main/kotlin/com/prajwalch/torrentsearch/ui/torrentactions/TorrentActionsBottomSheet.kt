@@ -29,8 +29,9 @@ import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.SheetValue
 import androidx.compose.material3.Text
-import androidx.compose.material3.rememberModalBottomSheetState
+import androidx.compose.material3.rememberBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
@@ -38,6 +39,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.platform.LocalClipboard
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalUriHandler
@@ -92,7 +94,10 @@ fun TorrentActionsBottomSheet(
     val clipboard = LocalClipboard.current
     val uriHandler = LocalUriHandler.current
 
-    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+    val sheetState = rememberBottomSheetState(
+        initialValue = SheetValue.Hidden,
+        enabledValues = setOf(SheetValue.Hidden, SheetValue.Expanded),
+    )
     val coroutineScope = rememberCoroutineScope()
     val createTorrentFileLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.CreateDocument(TorrentSearchConstants.MIME_TYPE_TORRENT),
@@ -314,6 +319,17 @@ private fun BottomSheetHeader(
     }
 }
 
+private object ActionItemDefaults {
+    val colors: ListItemColors
+        @Composable get() = ListItemDefaults.colors(
+            contentColor = MaterialTheme.colorScheme.primary,
+            leadingContentColor = MaterialTheme.colorScheme.primary,
+        )
+
+    val shape: Shape
+        @Composable get() = MaterialTheme.shapes.large
+}
+
 @Composable
 private fun MagnetLinkActionItem(
     state: MagnetLinkState,
@@ -324,7 +340,7 @@ private fun MagnetLinkActionItem(
 ) {
     ListItem(
         modifier = modifier
-            .clip(MaterialTheme.shapes.large)
+            .clip(ActionItemDefaults.shape)
             .clickable(enabled = state is MagnetLinkState.Ready, role = Role.Button) {
                 if (state is MagnetLinkState.Ready) {
                     onOpenMagnetLink(state.value)
@@ -337,7 +353,6 @@ private fun MagnetLinkActionItem(
             ) { targetState ->
                 when (targetState) {
                     MagnetLinkState.Loading -> LoadingIndicator()
-
                     MagnetLinkState.Error -> {
                         Icon(
                             painter = painterResource(R.drawable.ic_error),
@@ -355,29 +370,12 @@ private fun MagnetLinkActionItem(
                 }
             }
         },
-        headlineContent = {
+        content = {
             Text(
                 text = stringResource(R.string.torrent_title_magnet_link),
                 fontWeight = FontWeight.SemiBold,
                 style = MaterialTheme.typography.bodyMedium,
             )
-        },
-        supportingContent = {
-            Crossfade(
-                modifier = Modifier.fillMaxWidth(),
-                targetState = state,
-                label = "Magnet link action supporting text animation",
-            ) { targetState ->
-                Text(
-                    text = targetState.displayName(),
-                    color = if (targetState == MagnetLinkState.Error) {
-                        MaterialTheme.colorScheme.error
-                    } else {
-                        LocalContentColor.current
-                    },
-                    style = MaterialTheme.typography.bodySmall,
-                )
-            }
         },
         trailingContent = {
             AnimatedVisibility(
@@ -405,7 +403,24 @@ private fun MagnetLinkActionItem(
                 }
             }
         },
-        colors = ListItemDefaults.colors(enabled = true),
+        supportingContent = {
+            Crossfade(
+                modifier = Modifier.fillMaxWidth(),
+                targetState = state,
+                label = "Magnet link action supporting text animation",
+            ) { targetState ->
+                Text(
+                    text = targetState.displayName(),
+                    color = if (targetState == MagnetLinkState.Error) {
+                        MaterialTheme.colorScheme.error
+                    } else {
+                        LocalContentColor.current
+                    },
+                    style = MaterialTheme.typography.bodySmall,
+                )
+            }
+        },
+        colors = ActionItemDefaults.colors,
     )
 }
 
@@ -429,7 +444,7 @@ private fun TorrentFileActionItem(
 ) {
     ListItem(
         modifier = modifier
-            .clip(MaterialTheme.shapes.large)
+            .clip(ActionItemDefaults.shape)
             .clickable(
                 enabled = state is TorrentFileState.LinkReady,
                 role = Role.Button,
@@ -438,6 +453,7 @@ private fun TorrentFileActionItem(
                     onDownloadTorrentFile(state.value)
                 }
             },
+        enabled = state != TorrentFileState.LinkUnavailable,
         leadingContent = {
             Crossfade(
                 targetState = state,
@@ -487,12 +503,31 @@ private fun TorrentFileActionItem(
                 }
             }
         },
-        headlineContent = {
+        content = {
             Text(
                 text = stringResource(R.string.torrent_title_torrent_file),
                 fontWeight = FontWeight.SemiBold,
                 style = MaterialTheme.typography.bodyMedium,
             )
+        },
+        trailingContent = {
+            AnimatedVisibility(
+                visible = state is TorrentFileState.DownloadComplete,
+                enter = fadeIn(),
+                exit = fadeOut(),
+                label = "Torrent file action save button animation",
+            ) {
+                IconButton(onClick = {
+                    if (state is TorrentFileState.DownloadComplete) {
+                        onCreateTorrentFile(state.fileName)
+                    }
+                }) {
+                    Icon(
+                        painter = painterResource(R.drawable.ic_save),
+                        contentDescription = stringResource(R.string.torrent_button_save_to_file),
+                    )
+                }
+            }
         },
         supportingContent = {
             Crossfade(
@@ -514,28 +549,7 @@ private fun TorrentFileActionItem(
                 )
             }
         },
-        trailingContent = {
-            AnimatedVisibility(
-                visible = state is TorrentFileState.DownloadComplete,
-                enter = fadeIn(),
-                exit = fadeOut(),
-                label = "Torrent file action save button animation",
-            ) {
-                IconButton(onClick = {
-                    if (state is TorrentFileState.DownloadComplete) {
-                        onCreateTorrentFile(state.fileName)
-                    }
-                }) {
-                    Icon(
-                        painter = painterResource(R.drawable.ic_save),
-                        contentDescription = stringResource(R.string.torrent_button_save_to_file),
-                    )
-                }
-            }
-        },
-        colors = ListItemDefaults.colors(
-            enabled = state != TorrentFileState.LinkUnavailable,
-        ),
+        colors = ActionItemDefaults.colors,
     )
 }
 
@@ -567,35 +581,24 @@ private fun DetailsPageActionItem(
 ) {
     ListItem(
         modifier = modifier
-            .clip(MaterialTheme.shapes.large)
+            .clip(ActionItemDefaults.shape)
             .clickable(
                 onClick = onOpenTorrentDetails,
                 enabled = enabled,
                 role = Role.Button,
             ),
+        enabled = enabled,
         leadingContent = {
             Icon(
                 painter = painterResource(R.drawable.ic_link),
                 contentDescription = null,
             )
         },
-        headlineContent = {
+        content = {
             Text(
                 text = stringResource(R.string.torrent_title_details_page),
                 fontWeight = FontWeight.SemiBold,
                 style = MaterialTheme.typography.bodyMedium,
-            )
-        },
-        supportingContent = {
-            val textResId = if (enabled) {
-                R.string.torrent_status_details_ready
-            } else {
-                R.string.torrent_status_unavailable
-            }
-
-            Text(
-                text = stringResource(textResId),
-                style = MaterialTheme.typography.bodySmall,
             )
         },
         trailingContent = {
@@ -617,7 +620,19 @@ private fun DetailsPageActionItem(
                 }
             }
         },
-        colors = ListItemDefaults.colors(enabled),
+        supportingContent = {
+            val textResId = if (enabled) {
+                R.string.torrent_status_details_ready
+            } else {
+                R.string.torrent_status_unavailable
+            }
+
+            Text(
+                text = stringResource(textResId),
+                style = MaterialTheme.typography.bodySmall,
+            )
+        },
+        colors = ActionItemDefaults.colors,
     )
 }
 
@@ -629,20 +644,4 @@ private fun LoadingIndicator(modifier: Modifier = Modifier) {
         trackColor = MaterialTheme.colorScheme.primaryContainer,
         strokeWidth = 2.0.dp,
     )
-}
-
-@Composable
-private fun ListItemDefaults.colors(enabled: Boolean): ListItemColors {
-    return if (enabled) {
-        colors(
-            leadingIconColor = MaterialTheme.colorScheme.primary,
-        )
-    } else {
-        with(colors()) {
-            copy(
-                headlineColor = disabledHeadlineColor,
-                leadingIconColor = disabledLeadingIconColor,
-            )
-        }
-    }
 }

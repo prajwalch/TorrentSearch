@@ -61,6 +61,15 @@ fun TorrentListItem(
                 contentDescription = null,
             )
         },
+        content = {
+            Text(
+                text = name,
+                fontWeight = FontWeight.SemiBold,
+                overflow = TextOverflow.Ellipsis,
+                maxLines = 3,
+                style = MaterialTheme.typography.bodyMedium,
+            )
+        },
         overlineContent = {
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -76,15 +85,6 @@ fun TorrentListItem(
                 }
                 Text(providerName)
             }
-        },
-        headlineContent = {
-            Text(
-                text = name,
-                fontWeight = FontWeight.SemiBold,
-                overflow = TextOverflow.Ellipsis,
-                maxLines = 3,
-                style = MaterialTheme.typography.bodyMedium,
-            )
         },
         supportingContent = {
             TorrentMetadata(

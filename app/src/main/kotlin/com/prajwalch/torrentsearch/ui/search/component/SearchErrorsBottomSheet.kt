@@ -28,8 +28,9 @@ import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.SheetValue
 import androidx.compose.material3.Text
-import androidx.compose.material3.rememberModalBottomSheetState
+import androidx.compose.material3.rememberBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
@@ -63,7 +64,10 @@ fun SearchErrorsBottomSheet(
     onRetryError: (ErrorItem) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val bottomSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+    val bottomSheetState = rememberBottomSheetState(
+        initialValue = SheetValue.Hidden,
+        enabledValues = setOf(SheetValue.Hidden, SheetValue.Expanded),
+    )
 
     ModalBottomSheet(
         modifier = modifier,
@@ -165,21 +169,7 @@ private fun ErrorItemCard(
                     }
                 }
             },
-            headlineContent = { Text(errorItem.providerError.providerName) },
-            supportingContent = {
-                Crossfade(errorItem) { targetErrorItem ->
-                    Text(
-                        text = targetErrorItem.supportingText(),
-                        maxLines = 2,
-                        overflow = TextOverflow.Ellipsis,
-                        color = if (targetErrorItem.state == ErrorItem.State.Active) {
-                            MaterialTheme.colorScheme.error
-                        } else {
-                            LocalContentColor.current
-                        },
-                    )
-                }
-            },
+            content = { Text(errorItem.providerError.providerName) },
             trailingContent = {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     IconButton(onClick = onRetryError, enabled = enableRetryButton) {
@@ -193,6 +183,20 @@ private fun ErrorItemCard(
                         modifier = Modifier.rotate(chevronIconRotation),
                         painter = painterResource(R.drawable.ic_keyboard_arrow_down),
                         contentDescription = null,
+                    )
+                }
+            },
+            supportingContent = {
+                Crossfade(errorItem) { targetErrorItem ->
+                    Text(
+                        text = targetErrorItem.supportingText(),
+                        maxLines = 2,
+                        overflow = TextOverflow.Ellipsis,
+                        color = if (targetErrorItem.state == ErrorItem.State.Active) {
+                            MaterialTheme.colorScheme.error
+                        } else {
+                            LocalContentColor.current
+                        },
                     )
                 }
             },
