@@ -1,13 +1,11 @@
 package com.prajwalch.torrentsearch.ui.searchproviders.component
 
-import androidx.compose.foundation.LocalIndication
-import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
@@ -16,7 +14,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 
@@ -24,7 +21,6 @@ import com.prajwalch.torrentsearch.domain.model.CloudflareProtectionStatus
 import com.prajwalch.torrentsearch.domain.model.SearchProviderInfo
 import com.prajwalch.torrentsearch.domain.model.SearchProviderOrigin
 import com.prajwalch.torrentsearch.provider.SearchProviderId
-import com.prajwalch.torrentsearch.ui.theme.spaces
 
 @Composable
 fun SearchProviderList(
@@ -38,10 +34,13 @@ fun SearchProviderList(
 ) {
     LazyColumn(
         modifier = modifier,
-        verticalArrangement = Arrangement.spacedBy(MaterialTheme.spaces.small),
+        verticalArrangement = Arrangement.spacedBy(ListItemDefaults.SegmentedGap),
         contentPadding = contentPadding,
     ) {
-        items(items = searchProviders, key = { it.id }) { provider ->
+        itemsIndexed(
+            items = searchProviders,
+            key = { _, provider -> provider.id },
+        ) { index, provider ->
             var showUnsafeReason by rememberSaveable { mutableStateOf<Int?>(null) }
             var showTorznabContextMenu by rememberSaveable { mutableStateOf(false) }
 
@@ -54,7 +53,7 @@ fun SearchProviderList(
                 )
             }
 
-            val onClick: () -> Unit = {
+            val onClickHandler: () -> Unit = {
                 if (provider.cloudflareProtectionStatus == CloudflareProtectionStatus.Locked) {
                     onUnlockProtection(
                         provider.id,
@@ -70,12 +69,6 @@ fun SearchProviderList(
                 SearchProviderOrigin.Builtin -> null
                 SearchProviderOrigin.Torznab -> ({ showTorznabContextMenu = true })
             }
-            val clickableModifier = Modifier.combinedClickable(
-                interactionSource = null,
-                indication = LocalIndication.current,
-                onClick = onClick,
-                onLongClick = longClickHandler,
-            )
 
             Box(
                 modifier = Modifier
@@ -83,9 +76,8 @@ fun SearchProviderList(
                     .animateItem()
             ) {
                 SearchProviderListItem(
-                    modifier = Modifier
-                        .clip(shape = MaterialTheme.shapes.large)
-                        .then(clickableModifier),
+                    onClick = onClickHandler,
+                    onLongClick = longClickHandler,
                     name = provider.name,
                     url = provider.url,
                     supportedCategories = provider.supportedCategories,
@@ -101,6 +93,7 @@ fun SearchProviderList(
                         )
                     },
                     onShowUnsafeReason = { reasonResId -> showUnsafeReason = reasonResId },
+                    shapes = ListItemDefaults.segmentedShapes(index, searchProviders.size),
                     colors = ListItemDefaults.colors(
                         containerColor = MaterialTheme.colorScheme.surfaceContainer,
                     ),

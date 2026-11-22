@@ -1,16 +1,18 @@
 package com.prajwalch.torrentsearch.ui.searchhistory.component
 
-import androidx.compose.foundation.LocalIndication
-import androidx.compose.foundation.combinedClickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.ListItem
+import androidx.compose.material3.ListItemDefaults
+import androidx.compose.material3.ListItemShapes
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SegmentedListItem
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -39,7 +41,11 @@ fun SearchHistoryList(
     modifier: Modifier = Modifier,
     contentPadding: PaddingValues = PaddingValues(0.dp),
 ) {
-    LazyColumn(modifier = modifier, contentPadding = contentPadding) {
+    LazyColumn(
+        modifier = modifier,
+        contentPadding = contentPadding,
+        verticalArrangement = Arrangement.spacedBy(ListItemDefaults.SegmentedGap),
+    ) {
         histories.forEach { (historyDate, histories) ->
             stickyHeader {
                 Surface(
@@ -47,29 +53,29 @@ fun SearchHistoryList(
                     contentColor = MaterialTheme.colorScheme.onSurfaceVariant,
                 ) {
                     Text(
-                        modifier = Modifier.padding(
-                            horizontal = MaterialTheme.spaces.large,
-                            vertical = MaterialTheme.spaces.small,
-                        ),
                         text = historyDate.toGroupLabel(),
                         style = MaterialTheme.typography.bodyMedium,
                     )
                 }
             }
 
-            items(items = histories, key = { it.id }) {
+            item {
+                Spacer(Modifier.height(MaterialTheme.spaces.small))
+            }
+
+            itemsIndexed(items = histories, key = { _, history -> history.id }) { index, history ->
                 SearchHistoryListItem(
-                    modifier = Modifier
-                        .combinedClickable(
-                            interactionSource = null,
-                            indication = LocalIndication.current,
-                            onClick = { onSearchRequest(it.query) },
-                            onLongClick = { onCopyQueryToClipboard(it.query) },
-                        )
-                        .animateItem(),
-                    query = it.query,
-                    onDeleteClick = { onDeleteSearchHistory(it.id) },
+                    modifier = Modifier.animateItem(),
+                    query = history.query,
+                    onClick = { onSearchRequest(history.query) },
+                    onLongClick = { onCopyQueryToClipboard(history.query) },
+                    onDeleteClick = { onDeleteSearchHistory(history.id) },
+                    shapes = ListItemDefaults.segmentedShapes(index, histories.size),
                 )
+            }
+
+            item {
+                Spacer(Modifier.height(MaterialTheme.spaces.small))
             }
         }
     }
@@ -123,11 +129,17 @@ private fun LocalDate.toMediumDateString(): String {
 @Composable
 private fun SearchHistoryListItem(
     query: String,
+    onClick: () -> Unit,
+    onLongClick: () -> Unit,
     onDeleteClick: () -> Unit,
     modifier: Modifier = Modifier,
+    shapes: ListItemShapes = ListItemDefaults.shapes(),
 ) {
-    ListItem(
+    SegmentedListItem(
         modifier = modifier,
+        onClick = onClick,
+        onLongClick = onLongClick,
+        shapes = shapes,
         leadingContent = {
             Icon(
                 painter = painterResource(R.drawable.ic_history),
@@ -143,5 +155,24 @@ private fun SearchHistoryListItem(
                 )
             }
         },
+        colors = ListItemDefaults.segmentedColors(containerColor = MaterialTheme.colorScheme.surfaceContainer),
     )
+//    ListItem(
+//        modifier = modifier,
+//        leadingContent = {
+//            Icon(
+//                painter = painterResource(R.drawable.ic_history),
+//                contentDescription = null,
+//            )
+//        },
+//        content = { Text(text = query) },
+//        trailingContent = {
+//            IconButton(onClick = onDeleteClick) {
+//                Icon(
+//                    painter = painterResource(R.drawable.ic_delete),
+//                    contentDescription = null,
+//                )
+//            }
+//        },
+//    )
 }

@@ -19,10 +19,12 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.pulltorefresh.PullToRefreshDefaults
 import androidx.compose.material3.pulltorefresh.pullToRefresh
@@ -32,12 +34,13 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 
 import com.prajwalch.torrentsearch.R
 import com.prajwalch.torrentsearch.domain.model.Category
-import com.prajwalch.torrentsearch.ui.home.component.AppBranding
 import com.prajwalch.torrentsearch.ui.home.component.EnableSearchProvidersDialog
 import com.prajwalch.torrentsearch.ui.home.component.ProvidersCheckNotificationBar
 import com.prajwalch.torrentsearch.ui.home.component.RecentSearchesCard
@@ -46,6 +49,7 @@ import com.prajwalch.torrentsearch.ui.theme.spaces
 
 import org.koin.androidx.compose.koinViewModel
 
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun HomeScreen(
     onNavigateToBookmarks: () -> Unit,
@@ -136,7 +140,7 @@ fun HomeScreen(
                 }
             }
 
-            PullToRefreshDefaults.Indicator(
+            PullToRefreshDefaults.LoadingIndicator(
                 modifier = Modifier.align(Alignment.TopCenter),
                 state = pullToRefreshState,
                 isRefreshing = false,
@@ -216,7 +220,11 @@ private fun HomeScreenContent(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(MaterialTheme.spaces.extraLarge),
         ) {
-            AppBranding()
+            Text(
+                text = stringResource(R.string.app_name),
+                fontWeight = FontWeight.Bold,
+                style = MaterialTheme.typography.headlineMedium,
+            )
             SearchBox(
                 onSearch = { query -> onSearch(query, uiState.selectedCategory) },
                 onBrowse = { onBrowse(uiState.selectedCategory) },
@@ -228,7 +236,7 @@ private fun HomeScreenContent(
             )
         }
 
-        AnimatedVisibility(showRecentSearches) {
+        AnimatedVisibility(visible = showRecentSearches) {
             RecentSearchesCard(
                 modifier = Modifier.padding(horizontal = MaterialTheme.spaces.large),
                 queries = uiState.recentSearches,

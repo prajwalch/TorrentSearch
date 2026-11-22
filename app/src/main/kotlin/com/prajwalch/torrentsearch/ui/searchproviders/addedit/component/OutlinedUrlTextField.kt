@@ -2,7 +2,9 @@ package com.prajwalch.torrentsearch.ui.searchproviders.addedit.component
 
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -19,34 +21,40 @@ fun OutlinedUrlTextField(
     isError: Boolean,
     modifier: Modifier = Modifier,
 ) {
-    val trailingIcon = if (isError) {
-        @Composable {
-            Icon(
-                painter = painterResource(R.drawable.ic_info),
-                contentDescription = null,
-            )
-        }
-    } else {
-        null
-    }
-
-    val supportingText = if (isError) {
-        @Composable {
-            Text(stringResource(R.string.search_providers_url_validation_error))
-        }
-    } else {
-        null
-    }
-
     OutlinedTextField(
         modifier = modifier,
         value = url,
         onValueChange = onUrlChange,
         label = { Text(stringResource(R.string.search_providers_label_url)) },
-        trailingIcon = trailingIcon,
-        supportingText = supportingText,
+        leadingIcon = {
+            Icon(
+                painter = painterResource(R.drawable.ic_link),
+                contentDescription = null,
+            )
+        },
+        trailingIcon = if (isError) {
+            {
+                Icon(
+                    painter = painterResource(R.drawable.ic_info),
+                    contentDescription = null,
+                )
+            }
+        } else {
+            null
+        },
+        supportingText = if (isError) {
+            {
+                Text(stringResource(R.string.search_providers_url_validation_error))
+            }
+        } else {
+            null
+        },
         isError = isError,
         singleLine = true,
+        colors = OutlinedTextFieldDefaults.colors(
+            focusedLeadingIconColor = MaterialTheme.colorScheme.primary,
+            errorLeadingIconColor = MaterialTheme.colorScheme.error,
+        ),
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Uri),
     )
 }

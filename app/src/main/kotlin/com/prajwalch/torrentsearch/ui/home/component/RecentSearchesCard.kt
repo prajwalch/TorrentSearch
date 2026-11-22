@@ -6,15 +6,18 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.ListItem
+import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
@@ -29,14 +32,24 @@ fun RecentSearchesCard(
     onClose: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    OutlinedCard(modifier = modifier) {
-        Column(modifier = Modifier.fillMaxWidth()) {
+    Card(
+        modifier = modifier,
+        shape = MaterialTheme.shapes.extraLarge,
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surfaceContainerLow,
+        ),
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = MaterialTheme.spaces.small)
+        ) {
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(
-                        horizontal = MaterialTheme.spaces.large,
-                        vertical = MaterialTheme.spaces.extraSmall,
+                        start = MaterialTheme.spaces.large,
+                        end = MaterialTheme.spaces.small,
                     ),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically,
@@ -84,5 +97,6 @@ private fun QueryListItem(query: String, modifier: Modifier = Modifier) {
                 overflow = TextOverflow.Ellipsis,
             )
         },
+        colors = ListItemDefaults.colors(containerColor = Color.Transparent),
     )
 }

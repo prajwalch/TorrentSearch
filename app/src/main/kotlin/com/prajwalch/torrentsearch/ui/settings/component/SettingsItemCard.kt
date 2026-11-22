@@ -17,6 +17,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.res.painterResource
@@ -32,7 +33,7 @@ fun SettingsItemCard(
     modifier: Modifier = Modifier,
     subtitle: (@Composable () -> Unit)? = null,
     leadingIcon: (@Composable () -> Unit)? = null,
-    shape: Shape = MaterialTheme.shapes.large,
+    shape: Shape = RectangleShape,
     content: @Composable ColumnScope.() -> Unit,
 ) {
     Card(

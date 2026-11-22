@@ -11,6 +11,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.unit.dp
@@ -25,7 +26,7 @@ fun SettingsListItem(
     colors: ListItemColors = ListItemDefaults.colors(
         containerColor = MaterialTheme.colorScheme.surfaceContainer,
     ),
-    shape: Shape = MaterialTheme.shapes.large,
+    shape: Shape = RectangleShape,
 ) {
     ListItem(
         modifier = Modifier

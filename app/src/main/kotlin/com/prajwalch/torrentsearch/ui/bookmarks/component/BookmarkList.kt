@@ -2,16 +2,17 @@ package com.prajwalch.torrentsearch.ui.bookmarks.component
 
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyListState
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.Icon
+import androidx.compose.material3.ListItemDefaults
+import androidx.compose.material3.ListItemShapes
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SwipeToDismissBox
 import androidx.compose.material3.SwipeToDismissBoxValue
@@ -45,18 +46,19 @@ fun BookmarkList(
         modifier = modifier,
         state = lazyListState,
         contentPadding = contentPadding,
-        verticalArrangement = Arrangement.spacedBy(MaterialTheme.spaces.small),
+        verticalArrangement = Arrangement.spacedBy(ListItemDefaults.SegmentedGap),
     ) {
-        items(
+        itemsIndexed(
             items = bookmarks,
-            key = { it.id },
-            contentType = { it.category },
-        ) {
+            key = { _, bookmark -> bookmark.id },
+            contentType = { _, bookmark -> bookmark.category },
+        ) { index, bookmark ->
             BookmarkListItem(
                 modifier = Modifier.animateItem(),
-                bookmark = it,
-                onClick = { onBookmarkClick(it) },
-                onDelete = { onDeleteBookmark(it.id) },
+                bookmark = bookmark,
+                onClick = { onBookmarkClick(bookmark) },
+                onDelete = { onDeleteBookmark(bookmark.id) },
+                shapes = ListItemDefaults.segmentedShapes(index, bookmarks.size),
             )
         }
     }
@@ -67,6 +69,7 @@ private fun BookmarkListItem(
     bookmark: Torrent,
     onClick: () -> Unit,
     onDelete: () -> Unit,
+    shapes: ListItemShapes,
     modifier: Modifier = Modifier,
 ) {
     val swipeToDismissBoxState = rememberSwipeToDismissBoxState()
@@ -97,7 +100,7 @@ private fun BookmarkListItem(
                     .fillMaxSize()
                     .background(
                         color = backgroundContentColor,
-                        shape = MaterialTheme.shapes.large,
+                        shape = shapes.shape,
                     )
                     .wrapContentSize(align = Alignment.CenterEnd)
                     .padding(horizontal = MaterialTheme.spaces.large),
@@ -116,7 +119,7 @@ private fun BookmarkListItem(
         },
     ) {
         TorrentListItem(
-            modifier = Modifier.clickable(onClick = onClick),
+            onClick = onClick,
             name = bookmark.name,
             size = bookmark.size,
             seeders = bookmark.seeders,
@@ -125,6 +128,7 @@ private fun BookmarkListItem(
             category = bookmark.category,
             providerName = bookmark.providerName,
             isNSFW = bookmark.isNSFW,
+            shapes = shapes,
         )
     }
 }

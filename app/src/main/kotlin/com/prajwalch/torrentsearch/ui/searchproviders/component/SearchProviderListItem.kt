@@ -18,10 +18,11 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material3.FilledTonalIconButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButtonDefaults
-import androidx.compose.material3.ListItem
 import androidx.compose.material3.ListItemColors
 import androidx.compose.material3.ListItemDefaults
+import androidx.compose.material3.ListItemShapes
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SegmentedListItem
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -51,6 +52,7 @@ import com.prajwalch.torrentsearch.ui.theme.spaces
 
 @Composable
 fun SearchProviderListItem(
+    onClick: () -> Unit,
     name: String,
     url: String,
     supportedCategories: Set<Category>,
@@ -62,10 +64,15 @@ fun SearchProviderListItem(
     onUnlockProtection: () -> Unit,
     onShowUnsafeReason: (resId: Int) -> Unit,
     modifier: Modifier = Modifier,
+    onLongClick: (() -> Unit)? = null,
+    shapes: ListItemShapes = ListItemDefaults.shapes(),
     colors: ListItemColors = ListItemDefaults.colors(),
 ) {
-    ListItem(
+    SegmentedListItem(
         modifier = modifier,
+        shapes = shapes,
+        onClick = onClick,
+        onLongClick = onLongClick,
         content = {
             Row(
                 horizontalArrangement = Arrangement.spacedBy(MaterialTheme.spaces.extraSmall),
@@ -238,6 +245,7 @@ private fun LockOpenButton(onClick: () -> Unit, modifier: Modifier = Modifier) {
 @Composable
 private fun SearchProviderListItemPreview() {
     SearchProviderListItem(
+        onClick = {},
         name = "ThePirateBay",
         url = "https://thepiratebay.org",
         supportedCategories = Category.entries.toSet(),

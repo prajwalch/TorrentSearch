@@ -1,10 +1,12 @@
 package com.prajwalch.torrentsearch.ui.searchhistory
 
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
@@ -31,6 +33,7 @@ import com.prajwalch.torrentsearch.ui.component.ContentState
 import com.prajwalch.torrentsearch.ui.extension.copyText
 import com.prajwalch.torrentsearch.ui.searchhistory.component.DeleteAllConfirmationDialog
 import com.prajwalch.torrentsearch.ui.searchhistory.component.SearchHistoryList
+import com.prajwalch.torrentsearch.ui.theme.spaces
 
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
@@ -99,6 +102,7 @@ fun SearchHistoryScreen(
                     }
                 },
                 onDeleteSearchHistory = { viewModel.deleteSearchHistory(id = it) },
+                contentPadding = PaddingValues(horizontal = MaterialTheme.spaces.large),
             )
         }
     }

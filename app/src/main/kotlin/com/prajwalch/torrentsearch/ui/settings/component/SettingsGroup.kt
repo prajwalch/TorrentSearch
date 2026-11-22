@@ -4,19 +4,21 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-
-import com.prajwalch.torrentsearch.ui.theme.spaces
+import androidx.compose.ui.unit.dp
 
 @Composable
 fun SettingsGroup(
     modifier: Modifier = Modifier,
     content: @Composable ColumnScope.() -> Unit,
 ) {
-    Column(
-        modifier = modifier,
-        verticalArrangement = Arrangement.spacedBy(MaterialTheme.spaces.extraSmall),
-        content = content,
-    )
+    Surface(shape = MaterialTheme.shapes.large) {
+        Column(
+            modifier = modifier,
+            verticalArrangement = Arrangement.spacedBy(2.dp),
+            content = content,
+        )
+    }
 }

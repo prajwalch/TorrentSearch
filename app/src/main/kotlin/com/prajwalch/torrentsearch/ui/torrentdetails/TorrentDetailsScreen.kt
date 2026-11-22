@@ -19,7 +19,8 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ContainedLoadingIndicator
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.FilledTonalIconButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -34,6 +35,8 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
+import androidx.compose.material3.pulltorefresh.PullToRefreshDefaults
+import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -79,6 +82,7 @@ import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
 import java.time.Instant
 
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun TorrentDetailsScreen(
     onNavigateBack: () -> Unit,
@@ -201,7 +205,7 @@ fun TorrentDetailsScreen(
                         modifier = Modifier.fillMaxSize(),
                         contentAlignment = Alignment.Center
                     ) {
-                        CircularProgressIndicator()
+                        ContainedLoadingIndicator()
                     }
                 }
 
@@ -319,6 +323,7 @@ private fun TorrentDetailsScreenTopBar(
     )
 }
 
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 private fun TorrentDetailsScreenContent(
     details: TorrentDetails,
@@ -333,10 +338,20 @@ private fun TorrentDetailsScreenContent(
     modifier: Modifier = Modifier,
     blurNSFWImage: Boolean = true,
 ) {
+    val pullToRefreshState = rememberPullToRefreshState()
+
     PullToRefreshBox(
         modifier = modifier,
+        state = pullToRefreshState,
         isRefreshing = isRefreshing,
         onRefresh = onRefresh,
+        indicator = {
+            PullToRefreshDefaults.LoadingIndicator(
+                modifier = Modifier.align(Alignment.TopCenter),
+                isRefreshing = isRefreshing,
+                state = pullToRefreshState,
+            )
+        },
     ) {
         Column(
             modifier = Modifier

@@ -1,7 +1,6 @@
 package com.prajwalch.torrentsearch.ui.searchproviders.addedit
 
 import android.content.res.Resources
-
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -16,6 +15,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
@@ -175,7 +175,16 @@ private fun TorznabConfigForm(
                     value = uiState.searchProviderName,
                     onValueChange = onChangeSearchProviderName,
                     label = { Text(stringResource(R.string.search_providers_label_name)) },
+                    leadingIcon = {
+                        Icon(
+                            painter = painterResource(R.drawable.ic_label),
+                            contentDescription = null,
+                        )
+                    },
                     singleLine = true,
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedLeadingIconColor = MaterialTheme.colorScheme.primary,
+                    ),
                 )
                 OutlinedUrlTextField(
                     modifier = Modifier.fillMaxWidth(),
@@ -188,7 +197,16 @@ private fun TorznabConfigForm(
                     value = uiState.apiKey,
                     onValueChange = onChangeApiKey,
                     label = { Text(stringResource(R.string.search_providers_label_api_key)) },
+                    leadingIcon = {
+                        Icon(
+                            painter = painterResource(R.drawable.ic_key),
+                            contentDescription = null,
+                        )
+                    },
                     singleLine = true,
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedLeadingIconColor = MaterialTheme.colorScheme.primary,
+                    ),
                 )
                 CheckConnectionButton(
                     onClick = onCheckConnection,
@@ -198,7 +216,7 @@ private fun TorznabConfigForm(
             }
         }
 
-        Card(Modifier.fillMaxWidth()) {
+        Card(modifier = Modifier.fillMaxWidth()) {
             Column(
                 modifier = Modifier.padding(MaterialTheme.spaces.large),
                 verticalArrangement = Arrangement.spacedBy(MaterialTheme.spaces.small),

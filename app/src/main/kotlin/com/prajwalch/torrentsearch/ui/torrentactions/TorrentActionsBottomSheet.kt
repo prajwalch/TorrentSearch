@@ -322,7 +322,6 @@ private fun BottomSheetHeader(
 private object ActionItemDefaults {
     val colors: ListItemColors
         @Composable get() = ListItemDefaults.colors(
-            contentColor = MaterialTheme.colorScheme.primary,
             leadingContentColor = MaterialTheme.colorScheme.primary,
         )
 
