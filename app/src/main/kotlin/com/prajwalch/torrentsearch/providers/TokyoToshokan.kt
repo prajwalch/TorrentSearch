@@ -92,7 +92,7 @@ class TokyoToshokan(private val networkClient: NetworkClient) :
     }
 }
 
-private class TokyoToshokanResultsPageParser(
+internal class TokyoToshokanResultsPageParser(
     private val providerId: SearchProviderId,
     private val providerName: String,
 ) {
@@ -103,6 +103,7 @@ private class TokyoToshokanResultsPageParser(
                 .select(LIST_ITEM)
                 .zipWithNext()
                 .mapNotNull { (tr1, tr2) -> parseListItem(tr1, tr2) }
+                .distinctBy { it.id }
         }
 
     private fun parseListItem(tr1: Element, tr2: Element): Torrent? {
