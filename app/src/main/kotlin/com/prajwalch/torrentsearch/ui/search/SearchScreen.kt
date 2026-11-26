@@ -249,6 +249,8 @@ fun SearchScreen(
                             onShowErrors = { showSearchErrors = true },
                             isRefreshing = searchState is SearchState.ResultsAvailable.Refreshing,
                             onRefresh = viewModel::refreshSearchResults,
+                            hiddenTorrentsCount = uiState.hiddenTorrentsCount,
+                            onShowAllResults = viewModel::disableExactMatch,
                             viewedTorrentIds = uiState.viewedTorrentIds,
                             lazyListState = torrentListState.lazyListState,
                         )

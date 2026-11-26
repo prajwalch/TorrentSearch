@@ -55,6 +55,8 @@ data class SearchUiState(
     val searchParams: SearchParams = SearchParams(),
     val searchState: SearchState = SearchState.Loading,
     val torrents: PersistentList<Torrent> = persistentListOf(),
+    /** Number of torrents that pass every other filter but fail exact match. */
+    val hiddenTorrentsCount: Int = 0,
     val errors: PersistentList<ErrorItem> = persistentListOf(),
     val sortOptions: SortOptions = SortOptions(),
     val torrentFilter: TorrentFilter = TorrentFilter(),
@@ -163,6 +165,7 @@ class SearchViewModel(
                 searchParams = searchParams,
                 searchState = searchState,
                 torrents = processResult.torrents,
+                hiddenTorrentsCount = processResult.hiddenTorrentsCount,
                 errors = errors.values.toPersistentList(),
                 sortOptions = processResult.sortOptions,
                 torrentFilter = processResult.filter,
@@ -267,6 +270,12 @@ class SearchViewModel(
         viewModelScope.launch {
             val enabled = settingsRepository.enableExactMatch.first()
             settingsRepository.enableExactMatch(!enabled)
+        }
+    }
+
+    fun disableExactMatch() {
+        viewModelScope.launch {
+            settingsRepository.enableExactMatch(false)
         }
     }
 
@@ -465,6 +474,7 @@ private class TorrentsProcessor(
 ) {
     data class ProcessResult(
         val torrents: PersistentList<Torrent>,
+        val hiddenTorrentsCount: Int,
         val filter: TorrentFilter,
         val sortOptions: SortOptions,
     )
@@ -553,6 +563,7 @@ private class TorrentsProcessor(
 
         return ProcessResult(
             torrents = processedTorrents,
+            hiddenTorrentsCount = filteredTorrents.size - processedTorrents.size,
             filter = torrentFilter,
             sortOptions = sortOptions,
         )

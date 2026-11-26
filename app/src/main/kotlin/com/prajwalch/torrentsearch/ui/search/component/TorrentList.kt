@@ -5,7 +5,9 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.minus
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyListState
@@ -51,6 +53,8 @@ fun TorrentList(
     onShowErrors: () -> Unit,
     isRefreshing: Boolean,
     onRefresh: () -> Unit,
+    hiddenTorrentsCount: Int,
+    onShowAllResults: () -> Unit,
     modifier: Modifier = Modifier,
     viewedTorrentIds: Set<String> = emptySet(),
     lazyListState: LazyListState = rememberLazyListState(),
@@ -71,6 +75,8 @@ fun TorrentList(
         },
     ) {
         LazyColumnWithScrollbar(
+            // Fill the box, so that pull to refresh also works when the list is empty.
+            modifier = Modifier.fillMaxSize(),
             state = lazyListState,
             contentPadding = PaddingValues(MaterialTheme.spaces.large),
             verticalArrangement = Arrangement.spacedBy(ListItemDefaults.SegmentedGap),
@@ -78,6 +84,7 @@ fun TorrentList(
             item {
                 SearchResultsSummary(
                     resultsCount = torrents.size,
+                    hiddenCount = hiddenTorrentsCount,
                     errorsCount = searchErrorsCount,
                     query = searchQuery,
                     category = searchCategory,
@@ -110,12 +117,23 @@ fun TorrentList(
                 )
             }
         }
+
+        if (torrents.isEmpty() && hiddenTorrentsCount > 0) {
+            NoExactMatchesState(
+                modifier = Modifier
+                    .align(Alignment.Center)
+                    .padding(horizontal = MaterialTheme.spaces.large),
+                hiddenTorrentsCount = hiddenTorrentsCount,
+                onShowAllResults = onShowAllResults,
+            )
+        }
     }
 }
 
 @Composable
 private fun SearchResultsSummary(
     resultsCount: Int,
+    hiddenCount: Int,
     errorsCount: Int,
     query: String,
     category: Category,
@@ -127,14 +145,27 @@ private fun SearchResultsSummary(
         horizontalArrangement = Arrangement.spacedBy(MaterialTheme.spaces.large),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        Text(
-            modifier = Modifier.weight(1f),
-            text = stringResource(
+        val categoryName = categoryStringResource(category)
+        val summary = if (hiddenCount > 0) {
+            stringResource(
+                R.string.search_results_count_with_hidden_format,
+                resultsCount,
+                query,
+                categoryName,
+                hiddenCount,
+            )
+        } else {
+            stringResource(
                 R.string.search_results_count_format,
                 resultsCount,
                 query,
-                categoryStringResource(category),
-            ),
+                categoryName,
+            )
+        }
+
+        Text(
+            modifier = Modifier.weight(1f),
+            text = summary,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             style = MaterialTheme.typography.bodyMedium,
         )
