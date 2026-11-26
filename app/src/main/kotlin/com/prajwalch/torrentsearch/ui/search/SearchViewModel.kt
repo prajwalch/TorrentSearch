@@ -169,7 +169,10 @@ class SearchViewModel(
         }.stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5.seconds),
-            initialValue = SearchUiState(searchState = SearchState.Loading),
+            initialValue = SearchUiState(
+                searchParams = searchParams,
+                searchState = SearchState.Loading,
+            ),
         )
 
     init {
@@ -218,10 +221,6 @@ class SearchViewModel(
 
     fun retryError(errorItem: ErrorItem) {
         resultsLoader.retryError(errorItem, searchParams.query, searchParams.category)
-    }
-
-    fun filterSearchResultsByName(query: String) {
-        torrentsProcessor.updateFilterQuery(query)
     }
 
     fun updateSortCriteria(criteria: SortCriteria) {
@@ -462,7 +461,6 @@ private class TorrentsProcessor(
      * A snapshot of the current configuration of [TorrentFilter].
      */
     private data class TorrentFilterConfig(
-        val query: String = "",
         val excludedProviders: Set<String> = emptySet(),
         val showDeadTorrents: Boolean = true,
         val category: Category = Category.All,
@@ -517,8 +515,6 @@ private class TorrentsProcessor(
             if (!nsfwModeEnabled) add(TorrentFilters.isSfw())
             if (!filterConfig.showDeadTorrents) add(TorrentFilters.isAlive())
             if (filterConfig.hideViewed) add(TorrentFilters.notViewed(viewedTorrentIds))
-            if (filterConfig.query.isNotBlank())
-                add(TorrentFilters.matchesQuery(filterConfig.query))
             if (filterConfig.category != Category.All)
                 add(TorrentFilters.matchesCategory(filterConfig.category))
         }.sortedWithComparator(sortComparator)
@@ -558,13 +554,6 @@ private class TorrentsProcessor(
             category = filterConfig.category,
             hideViewed = filterConfig.hideViewed,
         )
-    }
-
-    /**
-     * Shows only those search results that contains the given query.
-     */
-    fun updateFilterQuery(query: String) {
-        filterConfig.update { it.copy(query = query.trim()) }
     }
 
     /**

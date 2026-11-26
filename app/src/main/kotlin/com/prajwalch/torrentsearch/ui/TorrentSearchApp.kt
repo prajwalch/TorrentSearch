@@ -99,6 +99,13 @@ fun TorrentSearchApp(initialSearchQuery: String? = null) {
                         is Search -> activity?.finish()
                     }
                 },
+                onSearch = { query, category ->
+                    // Replace the current search, so that back doesn't
+                    // return to the previous results.
+                    navController.navigate(Search(query, category)) {
+                        popUpTo<Search> { inclusive = true }
+                    }
+                },
                 onNavigateToSettings = { navController.navigateToSettings() },
                 onNavigateToProviders = { navController.navigateToSearchProviders() },
                 onNavigateToTorrentDetails = { id, pageUrl, providerName ->

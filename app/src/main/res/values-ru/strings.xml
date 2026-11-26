@@ -31,7 +31,6 @@
     <string name="torrent_message_url_copied">Ссылка скопирована в буфер обмена</string>
     <string name="home_search_query_hint">Поиск…</string>
     <string name="home_button_search">Поиск</string>
-    <string name="search_filter_query_hint">Поиск торрентов</string>
     <string name="search_filter_providers_title">Фильтровать по поисковым системам</string>
     <string name="search_filter_chip_dead_torrents">Неактивные торренты</string>
     <string name="internet_connection_error">Нет интернет соединения</string>

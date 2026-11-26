@@ -44,7 +44,6 @@
     <string name="torrent_message_url_copied">URL disalin ke clipboard</string>
     <string name="home_search_query_hint">Cari…</string>
     <string name="home_button_search">Cari</string>
-    <string name="search_filter_query_hint">Cari torrent</string>
     <string name="search_action_view_errors">Lihat kesalahan</string>
     <string name="search_action_settings">Pengaturan</string>
     <string name="search_filter_providers_title">Penyedia pencarian</string>

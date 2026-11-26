@@ -4,6 +4,8 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.layout.requiredHeight
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.text.input.KeyboardActionHandler
 import androidx.compose.foundation.text.input.TextFieldLineLimits
 import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.foundation.text.input.clearText
@@ -23,6 +25,7 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 
 import com.prajwalch.torrentsearch.R
@@ -33,6 +36,7 @@ fun FilterSearchBar(
     textFieldState: TextFieldState,
     modifier: Modifier = Modifier,
     placeholder: @Composable (() -> Unit)? = null,
+    onSearch: ((String) -> Unit)? = null,
 ) {
     val showClearTextButton by remember {
         derivedStateOf { textFieldState.text.isNotEmpty() }
@@ -71,6 +75,14 @@ fun FilterSearchBar(
             }
         },
         textStyle = MaterialTheme.typography.bodyLarge,
+        keyboardOptions = if (onSearch != null) {
+            KeyboardOptions(imeAction = ImeAction.Search)
+        } else {
+            KeyboardOptions.Default
+        },
+        onKeyboardAction = onSearch?.let {
+            KeyboardActionHandler { onSearch(textFieldState.text.toString()) }
+        },
         lineLimits = TextFieldLineLimits.SingleLine,
         shape = MaterialTheme.shapes.extraLarge,
         colors = TextFieldDefaults.colors(

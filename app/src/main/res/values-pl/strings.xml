@@ -62,7 +62,6 @@
     <string name="search_action_stop_search">Zatrzymaj wyszukiwanie</string>
     <string name="search_action_view_errors">Wyświetl błędy</string>
     <string name="search_action_settings">Ustawienia</string>
-    <string name="search_filter_query_hint">Wyszukaj torrenty</string>
     <string name="search_filter_chip_dead_torrents">Martwe torrenty</string>
     <string name="search_filter_chip_hide_viewed">Ukryj wyświetlone</string>
     <string name="search_filter_chip_search_providers">Dostawcy</string>

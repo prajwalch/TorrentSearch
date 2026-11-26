@@ -31,7 +31,6 @@
     <string name="torrent_message_url_copied">تم نسخ الرابط إلى الحافظة</string>
     <string name="home_search_query_hint">البحث…</string>
     <string name="home_button_search">أبحث</string>
-    <string name="search_filter_query_hint">ابحث عن ملفات التورنت</string>
     <string name="search_filter_providers_title">مزوّدو البحث</string>
     <string name="search_filter_chip_dead_torrents">التورنت الميتة</string>
     <string name="internet_connection_error">لا يوجد اتصال بالإنترنت</string>

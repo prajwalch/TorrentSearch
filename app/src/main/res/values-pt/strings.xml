@@ -56,7 +56,6 @@
     <string name="search_action_stop_search">Parar pesquisa</string>
     <string name="search_action_view_errors">Visualizar erros</string>
     <string name="search_action_settings">Configurações</string>
-    <string name="search_filter_query_hint">Pesquisar torrents</string>
     <string name="search_filter_chip_dead_torrents">Torrents mortos</string>
     <string name="search_filter_chip_hide_viewed">Esconder visto</string>
     <string name="search_filter_chip_search_providers">Pesquisar fontes</string>

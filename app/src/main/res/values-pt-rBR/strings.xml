@@ -53,7 +53,6 @@
     <string name="button_cancel">Cancelar</string>
     <string name="nsfw">NSFW</string>
     <string name="home_button_search">Busca</string>
-    <string name="search_filter_query_hint">Pesquisar torrents</string>
     <string name="search_filter_providers_title">Provedores de busca</string>
     <string name="search_filter_chip_dead_torrents">Torrents mortos</string>
     <string name="search_results_count_format">%1$s resultados para \\\'%2$s\\\'(%3$s)</string>

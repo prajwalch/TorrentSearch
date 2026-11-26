@@ -51,7 +51,6 @@
     <string name="home_button_search">Cerca</string>
     <string name="search_action_view_errors">Vedi errori</string>
     <string name="search_action_settings">Impostazioni</string>
-    <string name="search_filter_query_hint">Filtra per nome</string>
     <string name="search_filter_chip_dead_torrents">Torrent morti</string>
     <string name="search_filter_chip_hide_viewed">Nascondi visualizzati</string>
     <string name="search_filter_chip_search_providers">Cerca provider</string>

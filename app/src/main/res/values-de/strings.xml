@@ -33,7 +33,6 @@
     <string name="torrent_message_url_copied">Die URL wurde in die Zwischenablage kopiert</string>
     <string name="home_search_query_hint">Suche…</string>
     <string name="home_button_search">Suche</string>
-    <string name="search_filter_query_hint">Suche nach Torrents</string>
     <string name="search_filter_providers_title">Filtern Sie nach Suchanbieter</string>
     <string name="search_filter_chip_dead_torrents">Tote Torrents</string>
     <string name="internet_connection_error">Keine Internet Verbindung</string>

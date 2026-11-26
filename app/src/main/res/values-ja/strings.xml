@@ -37,7 +37,6 @@
     <string name="search_action_refresh">再読み込み</string>
     <string name="search_action_stop_search">検索を停止</string>
     <string name="search_action_view_errors">エラーを表示</string>
-    <string name="search_filter_query_hint">トレントを検索</string>
     <string name="browse_search_query_hint">トレントを検索</string>
     <string name="browse_sort_latest">最新</string>
     <string name="search_filter_providers_action_select_all">全て選択</string>
