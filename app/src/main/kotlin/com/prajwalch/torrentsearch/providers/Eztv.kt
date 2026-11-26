@@ -63,14 +63,18 @@ private class EztvResultsPageParser(
     private fun parseListItem(listItem: Element): Torrent? {
         val torrentName = listItem.selectFirst(TORRENT_NAME)?.ownText() ?: return null
         val magnetUri = listItem.selectFirst(MAGNET_URI)?.attr("href") ?: return null
-        val torrentId = TorrentUtils.createTorrentId(
-            providerId = providerId,
-            sourceId = TorrentUtils.getInfoHashFromMagnetUri(magnetUri),
-        )
+        val detailsPageUrl = listItem.selectFirst(DETAILS_PAGE_URL)?.attr("abs:href") ?: return null
+        val remoteId = detailsPageUrl
+            .removePrefix("https://")
+            .dropWhile { it != '/' }
+            .drop(1)
+            .dropWhile { it != '/' }
+            .drop(1)
+            .takeWhile { it != '/' }
+        val torrentId = TorrentUtils.createTorrentId(providerId = providerId, sourceId = remoteId)
         val size = listItem.selectFirst(SIZE)?.ownText()
         val seeders = listItem.selectFirst(SEEDERS)?.ownText()?.toUIntOrNull()
         val fileDownloadLink = listItem.selectFirst(FILE_DOWNLOAD_LINK)?.attr("abs:href")
-        val detailsPageUrl = listItem.selectFirst(DETAILS_PAGE_URL)?.attr("abs:href")
 
         return Torrent(
             id = torrentId,
