@@ -32,6 +32,7 @@ import com.prajwalch.torrentsearch.ui.theme.spaces
 @Composable
 fun TorrentFilter(
     filter: TorrentFilter,
+    onToggleExactMatch: () -> Unit,
     onToggleDeadTorrents: () -> Unit,
     onToggleHideViewed: () -> Unit,
     onToggleSearchProvider: (providerName: String) -> Unit,
@@ -77,6 +78,21 @@ fun TorrentFilter(
         verticalAlignment = Alignment.CenterVertically,
         contentPadding = PaddingValues(horizontal = MaterialTheme.spaces.large),
     ) {
+        item(key = "exact_match") {
+            FilterChip(
+                selected = filter.exactMatch,
+                onClick = onToggleExactMatch,
+                leadingIcon = {
+                    Icon(
+                        modifier = Modifier.size(FilterChipDefaults.IconSize),
+                        painter = painterResource(R.drawable.ic_search),
+                        contentDescription = null,
+                    )
+                },
+                label = { Text(text = stringResource(R.string.search_filter_chip_exact_match)) },
+            )
+        }
+
         item(key = "dead_torrents") {
             FilterChip(
                 selected = filter.showDeadTorrents,
