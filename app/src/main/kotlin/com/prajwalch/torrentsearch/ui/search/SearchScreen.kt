@@ -217,6 +217,7 @@ fun SearchScreen(
 
                             TorrentFilter(
                                 filter = uiState.torrentFilter,
+                                onToggleExactMatch = viewModel::toggleExactMatch,
                                 onToggleDeadTorrents = viewModel::toggleDeadTorrents,
                                 onToggleHideViewed = viewModel::toggleHideViewedTorrents,
                                 onToggleSearchProvider = viewModel::toggleSearchProviderResults,

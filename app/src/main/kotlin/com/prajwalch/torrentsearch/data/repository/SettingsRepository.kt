@@ -98,6 +98,9 @@ class SettingsRepository(private val dataStore: DataStore<Preferences>) {
     val maxNumResults: Flow<MaxNumResults> =
         dataStore.getMapOrDefault(MAX_NUM_RESULTS, ::MaxNumResults, MaxNumResults.Unlimited)
 
+    val enableExactMatch: Flow<Boolean> =
+        dataStore.getOrDefault(ENABLE_EXACT_MATCH, true)
+
     /*
      * Network settings
      */
@@ -243,6 +246,10 @@ class SettingsRepository(private val dataStore: DataStore<Preferences>) {
         dataStore.setOrUpdate(MAX_NUM_RESULTS, maxNumResults.n)
     }
 
+    suspend fun enableExactMatch(enable: Boolean) {
+        dataStore.setOrUpdate(ENABLE_EXACT_MATCH, enable)
+    }
+
     suspend fun setDohProvider(provider: DohProvider) {
         dataStore.setOrUpdate(DOH_PROVIDER, provider.id)
     }
@@ -287,6 +294,7 @@ class SettingsRepository(private val dataStore: DataStore<Preferences>) {
         val DEFAULT_SORT_CRITERIA = stringPreferencesKey("default_sort_criteria")
         val DEFAULT_SORT_ORDER = stringPreferencesKey("default_sort_order")
         val MAX_NUM_RESULTS = intPreferencesKey("max_num_results")
+        val ENABLE_EXACT_MATCH = booleanPreferencesKey("enable_exact_match")
 
         // Network
         val DOH_PROVIDER = stringPreferencesKey("doh_provider")

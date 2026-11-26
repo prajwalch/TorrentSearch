@@ -90,6 +90,7 @@ data class ErrorItem(
 }
 
 data class TorrentFilter(
+    val exactMatch: Boolean = true,
     val providers: ImmutableList<SearchProviderOption> = persistentListOf(),
     val showDeadTorrents: Boolean = true,
     val category: Category = Category.All,
@@ -144,6 +145,7 @@ class SearchViewModel(
         torrents = resultsLoader.torrents,
         settingsRepository = settingsRepository,
         viewedTorrentIds = viewedTorrentRepository.getAllViewedIds(),
+        searchQuery = searchParams.query,
         searchCategory = searchParams.category,
     )
 
@@ -259,6 +261,13 @@ class SearchViewModel(
             .map { it.provider }
             .toSet()
             .let(torrentsProcessor::updateExcludedSearchProviders)
+    }
+
+    fun toggleExactMatch() {
+        viewModelScope.launch {
+            val enabled = settingsRepository.enableExactMatch.first()
+            settingsRepository.enableExactMatch(!enabled)
+        }
     }
 
     fun toggleDeadTorrents() {
@@ -444,11 +453,13 @@ private class SearchResultsLoader(
  * @param torrents The flow that emits the torrents.
  * @param settingsRepository The repository from where user-define filter options are fetched.
  * @param viewedTorrentIds The flow that emits the viewed torrent IDs.
+ * @param searchQuery The search query, against which the exact match filter is applied.
  * @param searchCategory The search [Category].
  */
 private class TorrentsProcessor(
     torrents: Flow<PersistentList<Torrent>>,
     settingsRepository: SettingsRepository,
+    searchQuery: String,
     searchCategory: Category = Category.All,
     private val viewedTorrentIds: Flow<Set<String>>,
 ) {
@@ -480,6 +491,13 @@ private class TorrentsProcessor(
     private val sortOptions = MutableStateFlow(SortOptions())
 
     /**
+     * The exact match filter for the search query.
+     *
+     * The query never changes, so it is built once.
+     */
+    private val exactMatchFilter = TorrentFilters.matchesAllWords(searchQuery)
+
+    /**
      * The flow that emits the [ProcessResult].
      */
     val result: Flow<ProcessResult> =
@@ -488,6 +506,7 @@ private class TorrentsProcessor(
             filterConfig,
             sortOptions,
             settingsRepository.enableNSFWMode,
+            settingsRepository.enableExactMatch,
             ::processTorrents,
         ).flowOn(Dispatchers.Default)
 
@@ -500,6 +519,7 @@ private class TorrentsProcessor(
         filterConfig: TorrentFilterConfig,
         sortOptions: SortOptions,
         nsfwModeEnabled: Boolean,
+        exactMatchEnabled: Boolean,
     ): ProcessResult {
         val sortComparator = createSortComparator(
             criteria = sortOptions.criteria,
@@ -511,7 +531,7 @@ private class TorrentsProcessor(
             emptySet()
         }
 
-        val processedTorrents = torrents.filterIfAll {
+        val filteredTorrents = torrents.filterIfAll {
             add(TorrentFilters.notExcludedProvider(filterConfig.excludedProviders))
 
             if (!nsfwModeEnabled) add(TorrentFilters.isSfw())
@@ -521,8 +541,15 @@ private class TorrentsProcessor(
                 add(TorrentFilters.matchesQuery(filterConfig.query))
             if (filterConfig.category != Category.All)
                 add(TorrentFilters.matchesCategory(filterConfig.category))
-        }.sortedWithComparator(sortComparator)
-        val torrentFilter = createTorrentFilter(filterConfig, torrents)
+        }
+
+        // Kept separate from the filters above, so that the torrents hidden
+        // only by exact match stay distinguishable.
+        val processedTorrents = filteredTorrents
+            .filterIfAll { if (exactMatchEnabled) add(exactMatchFilter) }
+            .sortedWithComparator(sortComparator)
+
+        val torrentFilter = createTorrentFilter(filterConfig, exactMatchEnabled, torrents)
 
         return ProcessResult(
             torrents = processedTorrents,
@@ -540,6 +567,7 @@ private class TorrentsProcessor(
      */
     private fun createTorrentFilter(
         filterConfig: TorrentFilterConfig,
+        exactMatchEnabled: Boolean,
         torrents: ImmutableList<Torrent>,
     ): TorrentFilter {
         val providerFilters = torrents
@@ -553,6 +581,7 @@ private class TorrentsProcessor(
             }
 
         return TorrentFilter(
+            exactMatch = exactMatchEnabled,
             providers = providerFilters.toImmutableList(),
             showDeadTorrents = filterConfig.showDeadTorrents,
             category = filterConfig.category,

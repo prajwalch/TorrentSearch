@@ -97,6 +97,7 @@
     <string name="search_action_view_errors">View errors</string>
     <string name="search_action_settings">Settings</string>
     <string name="search_filter_query_hint">Search torrents</string>
+    <string name="search_filter_chip_exact_match">Exact match</string>
     <string name="search_filter_chip_dead_torrents">Dead torrents</string>
     <string name="search_filter_chip_hide_viewed">Hide viewed</string>
     <string name="search_filter_chip_search_providers">Providers</string>
